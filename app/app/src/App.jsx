@@ -1,16 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./index.css"; 
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
-    <>
-      <h>frontend</h>
-    </>
-  )
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="container max-w-md p-6 bg-white shadow-lg rounded-lg">
+        <h1 className="text-3xl font-bold text-blue-500 text-center">Frontend</h1>
+        <p className="mt-2 text-gray-600 text-center">This is a sample Tailwind test.</p>
+        
+        <div className="flex justify-center mt-4">
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            onClick={() => setCount(count + 1)}
+          >
+            Count: {count}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
