@@ -1,0 +1,10 @@
+# Core dependencies
+fastapi==0.115.11
+uvicorn==0.34.0 
+
+# Database dependencies (PostgreSQL )
+sqlalchemy==2.0.39  
+psycopg2-binary==2.9.10 
+
+# Auth
+python-dotenv==1.0.1

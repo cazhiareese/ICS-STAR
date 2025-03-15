@@ -5,3 +5,12 @@ __pycache__/
 venv/
 .env
 .env.local
+*.pyc
+*.pyo
+
+# Database files
+*.sqlite3
+
+# Logs
+logs/
+*.log
