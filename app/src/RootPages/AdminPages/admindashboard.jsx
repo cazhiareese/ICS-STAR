@@ -33,6 +33,12 @@ function AdminLanding() {
     registeredAlumni: 542,
   }
 
+  const donations = [
+    { name: "Lorem Ipsum Dolor", raised: 12000, goal: 15000, donors: 6 },
+    { name: "Lorem Ipsum", raised: 14000, goal: 20000, donors: 30 },
+    { name: "Lorem Ipsum", raised: 13500, goal: 20000, donors: 21 },
+  ];
+
   const alumniLocations = [
     { "country": "Philippines", "percentage": "78%" },
     { "country": "United States", "percentage": "22%" },
@@ -93,7 +99,7 @@ function AdminLanding() {
           </p>
         </div>
         {/* Grid */}
-        <div className="flex-1 grid grid-cols-4 grid-rows-[0.5fr_1fr_1fr_1.7fr_0.2fr_2fr] gap-4">
+        <div className="flex-1 grid grid-cols-4 grid-rows-[0.5fr_0.7fr_0.7fr_1.7fr_0.2fr_2fr] gap-4">
         {/* Dashboard Banner */}
           <div className="col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
             <p className="text-white font-satoshi-bold text-2xl ml-5"> Dashboard </p>
@@ -158,14 +164,36 @@ function AdminLanding() {
           <div className={`${dashboardCard} col-span-4 row-span-1 flex flex-row gap-6`}> 
           {/* Donations */}
             <div className="flex-1 flex flex-col">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <HandCoins/>
                   <p className="text-2xl "> Donations </p>
                 </div>
-              <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light text-sm">View All Events</p> <MoveRight/></button>            
+              <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light text-sm">View All Donations</p> <MoveRight/></button>            
               </div>
-              {/* TODO: Insert percentage bars here */}
+              {/* Donation Bars */}
+              {donations.map((donation, index) => {
+                const progress = (donation.raised / donation.goal) * 100;
+                return (
+                  <div key={index} className="mb-4">
+                    <div className="flex justify-between text-black text-sm mb-1">
+                      <span>{donation.name}</span>
+                      <div className="flex flex-row gap-4">
+                        <span>{donation.raised.toLocaleString()} PHP / {donation.goal.toLocaleString()} PHP</span>
+                        <div className="w-6 h-6 text-xs font-semibold flex items-center justify-center bg-secondary text-primary rounded-full">
+                          {donation.donors}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="relative w-full h-2 bg-gray-200 rounded-full">
+                      <div
+                        className="absolute h-full bg-primary rounded-full"
+                        style={{ width: `${progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             {/* Recent Donors */}
             <div className="flex-1 flex flex-col">
