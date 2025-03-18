@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Home, FileText, Calendar, Newspaper, BriefcaseBusiness, Heart, LogOut, CircleUserRound, FileUser, ShieldUser, TriangleAlert, HandCoins, MoveRight, Users, Wallet } from "lucide-react";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+
 import SidebarItem from "../../components/AdminComponents/sidebaritem";
 
 function AdminLanding() {
@@ -15,6 +17,10 @@ function AdminLanding() {
     { id: "career", title: "Career", icon: <BriefcaseBusiness size={24} /> },
     { id: "donations", title: "Donations", icon: <Heart size={24} /> },    
   ];
+  
+  const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4";
+
+  // SAMPLE DATA
 
   const response = {
     pendingVerifications: 28,
@@ -32,7 +38,13 @@ function AdminLanding() {
     { "country": "United Kingdom", "percentage": "9%" }
   ]
 
-  const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4";
+  const alumniIndustries = [
+    { name: "Services", value: 40, color: "#0B2B6F" },
+    { name: "Finance", value: 25, color: "#2858D6" },
+    { name: "Manufacturing", value: 15, color: "#8CA6DB" },
+    { name: "Retail Trade", value: 10, color: "#CBD7F1" },
+    { name: "Others", value: 10, color: "#E8F0FF" }
+  ];
 
   return <>
   <div className="flex flex-row">
@@ -174,6 +186,7 @@ function AdminLanding() {
                   <p className="font-satoshi-medium">Alumni Locations</p>
                 </div>
                 <div>
+                  {/* Table showing the top locations */}
                 <table className="w-full mt-2">
                   <tbody>
                     {alumniLocations.map((location, index) => (
@@ -184,13 +197,41 @@ function AdminLanding() {
                         ))}
                   </tbody>
                 </table>
-                {/* TODO: Insert Countries and percent here */}
                 </div>
               </div>
               {/* Alumni Industries */}
               <div className="flex-1/5">
                 <div className="bg-secondary rounded-2xl px-4 py-1">
                   <p className="font-satoshi-medium">Alumni Industries</p>
+                </div>
+                <div className="flex flex-row items-center justify-center">
+                  {/* Donut Chart */}
+                  <PieChart width={140} height={140}>
+                    <Pie
+                      data={alumniIndustries}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={35}
+                      outerRadius={60}
+                      dataKey="value"
+                    >
+                      {alumniIndustries.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                  {/* Legend */}
+                  <div>
+                    {alumniIndustries.map((entry, index) => (
+                      <div key={index} className="flex items-center gap-2 text-gray-800">
+                        <span
+                          className="inline-block w-3 h-3 rounded-full"
+                          style={{ backgroundColor: entry.color }}
+                        ></span>
+                        <span>{entry.name}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
