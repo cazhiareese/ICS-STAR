@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Home, FileText, Calendar, Newspaper, BriefcaseBusiness, Heart, LogOut, CircleUserRound, FileUser, ShieldUser, TriangleAlert, HandCoins, MoveRight, Users, Wallet } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import { 
+  PieChart, Pie, Cell, Tooltip, Legend, 
+  LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid
+} from "recharts";
 
 import SidebarItem from "../../components/AdminComponents/sidebaritem";
 
@@ -44,6 +47,18 @@ function AdminLanding() {
     { name: "Manufacturing", value: 15, color: "#8CA6DB" },
     { name: "Retail Trade", value: 10, color: "#CBD7F1" },
     { name: "Others", value: 10, color: "#E8F0FF" }
+  ];
+
+  const systemEngagementReport = [
+    { date: "1 Oct", visits: 100 },
+    { date: "3 Oct", visits: 250 },
+    { date: "7 Oct", visits: 300 },
+    { date: "10 Oct", visits: 180 },
+    { date: "14 Oct", visits: 450 },
+    { date: "20 Oct", visits: 700 },
+    { date: "23 Oct", visits: 457 },
+    { date: "27 Oct", visits: 600 },
+    { date: "30 Oct", visits: 320 },
   ];
 
   return <>
@@ -244,6 +259,26 @@ function AdminLanding() {
                 <p className="font-satoshi-light text-xs">User visit for the last 30 days</p>
               </div>
               <button className="flex flex-row gap-4 cursor-pointer"> <p className="font-satoshi-light text-sm">View User Information Reports</p> <MoveRight/></button>      
+            </div>
+            <div className="flex items-center mt-2">
+              <ResponsiveContainer width="90%" height={200}>
+                <LineChart data={systemEngagementReport}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis 
+                    dataKey="date" 
+                    tickLine={true} 
+                    axisLine={true} 
+                    tick={{ fontSize: "14px", fontFamily: "Satoshi-Light, sans-serif" }} 
+                    />
+                  <YAxis 
+                    tickLine={true} 
+                    axisLine={true} 
+                    tick={{ fontSize: "14px", fontFamily: "Satoshi-Light, sans-serif" }} 
+                    />
+                  <Tooltip />
+                  <Line type="linear" dataKey="visits" stroke="#0B2B6F" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div> 
         </div>
