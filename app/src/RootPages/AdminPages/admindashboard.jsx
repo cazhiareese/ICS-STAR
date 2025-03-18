@@ -33,6 +33,21 @@ function AdminLanding() {
     registeredAlumni: 542,
   }
 
+  const events = [
+    {
+      dateLabel: "Tomorrow",
+      items: [{ title: "Lorem Ipsum Dolor sit Amet", time: "10 am, ICSMH" }]
+    },
+    {
+      dateLabel: "In 4 days",
+      items: [
+        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
+        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
+        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" }
+      ]
+    }
+  ];
+
   const donations = [
     { name: "Lorem Ipsum Dolor", raised: 12000, goal: 15000, donors: 6 },
     { name: "Lorem Ipsum", raised: 14000, goal: 20000, donors: 30 },
@@ -165,6 +180,26 @@ function AdminLanding() {
             <div className="flex flex-row justify-between">
               <p className="font-satoshi-medium text-2xl"> Upcoming Events </p> 
                 <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light">View All Events</p> <MoveRight/></button>
+            </div>
+            <div className="gap-3 flex flex-col flex-1 mt-3">
+              {events.map((event, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  {/* Date Label */}
+                  <div className="bg-secondary text-black font-medium px-4 py-2 rounded-full text-sm whitespace-nowrap min-w-24 flex items-center justify-center">
+                    {event.dateLabel}
+                  </div>
+
+                  {/* Event Details */}
+                  <div className="flex flex-col gap-3 flex-1 mt-1">
+                    {event.items.map((item, idx) => (
+                      <div key={idx} className="flex flex-row justify-between flex-1 text-sm items-center">
+                        <div>{item.title}</div>
+                        <div className="font-satoshi-light">{item.time}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div> 
         {/* Donations Card */}
