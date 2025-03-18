@@ -1,7 +1,7 @@
 import React from "react";
 
-function AlumniLanding() {
-  return <h1>AlumniLanding</h1>;
+function AdminLanding() {
+  return <h1>AdminLanding</h1>;
 }
 
-export default AlumniLanding;
+export default AdminLanding;
