@@ -39,6 +39,13 @@ function AdminLanding() {
     { name: "Lorem Ipsum", raised: 13500, goal: 20000, donors: 21 },
   ];
 
+  const donors = [
+    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  ];
+
   const alumniLocations = [
     { "country": "Philippines", "percentage": "78%" },
     { "country": "United States", "percentage": "22%" },
@@ -196,11 +203,29 @@ function AdminLanding() {
               })}
             </div>
             {/* Recent Donors */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col overflow-hidden">
               <p className="text-2xl font-satoshi-medium"> Recent Donors</p>
-              {/* TODO: Insert recent donor table here */}
+              <table className="w-full border-collapse">
+                <thead className="bg-secondary text-black text-sm">
+                  <tr>
+                    <th className="text-left px-3 py-2 font-satoshi-regular">Donation</th>
+                    <th className="text-left font-satoshi-regular ">Name</th>
+                    <th className="text-left font-satoshi-regular">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {donors.map((donor, index) => (
+                    <tr key={index} className="">
+                      <td className="py-1 px-3 font-satoshi-light">{donor.donation}</td>
+                      <td className="font-satoshi-light">{donor.name}</td>
+                      <td className="text-left font-satoshi-light">{donor.amount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div> 
+          {/* Alumni part */}
           <h2 className="col-span-4 text-2xl font-satoshi-medium -mb-4">More about your Alumni</h2>
         {/* Registered Alumni */}
           <div className={`${dashboardCard} col-span-2 row-span-2 flex flex-col`}>
