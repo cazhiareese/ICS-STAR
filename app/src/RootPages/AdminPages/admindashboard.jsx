@@ -19,9 +19,9 @@ function AdminLanding() {
   const dashboardCard = "bg-white drop-shadow-sm rounded-2xl";
 
   return <>
-  <div className="flex">
+  <div className="flex h-screen w-screen">
     {/* Sidebar */}
-    <div className="bg-white h-screen flex-1 flex flex-col gap-3 p-4 pt-20">
+    <div className="bg-white h-screen flex flex-col gap-3 px-4 pt-20 min-w-56">
       {/* Sidebar items */}
       {sidebarItems.map((item) => (
           <SidebarItem
@@ -39,8 +39,30 @@ function AdminLanding() {
       </div>
     </div>
     {/* Dashboard */}
-    <div className="bg-[#F3F1F4] h-screen flex-1/2 grid grid-cols-4 grid-rows-[0.5fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-4">
-
+    <div>
+      <div className="bg-[#F3F1F4] h-screen w-full grid grid-cols-4 grid-rows-[0.5fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-4">
+        {/* Dashboard Banner */}
+        <div className="col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
+          <p className="text-white font-satoshi-bold text-2xl ml-5"> Dashboard </p>
+          <p className="text-white font-satoshi-light mr-52"> Bridging Alumni across the Cosmos </p>
+        </div> 
+        {/* Pending Verifications */}
+        <div className={`${dashboardCard} col-start-1 row-start-2`}> Pending Verifications </div> 
+        {/* Reported Postings */}
+        <div className={`${dashboardCard} cols-start-2 row-start-2`}> Reported Postings </div> 
+        {/* Reported Users */}
+        <div className={`${dashboardCard} cols-start-1 row-start-3`}> Reported Users </div> 
+        {/* Funding Requests */}
+        <div className={`${dashboardCard} cols-start-2 row-start-3`}> Funding Requests </div> 
+        {/* Upcoming Events */}
+        <div className={`${dashboardCard} col-span-2 row-span-2`}> Upcoming Events </div> 
+        {/* Donations */}
+        <div className={`${dashboardCard} col-span-4 row-start-4`}> Donations </div> 
+        {/* Registered Alumni */}
+        <div className={`${dashboardCard} col-span-2 row-span-2`}> Registered Alumni </div> 
+        {/* System Engagement */}
+        <div className={`${dashboardCard} col-span-2 row-span-2`}> System Engagement </div> 
+      </div>
     </div>
   </div>
   </>;
