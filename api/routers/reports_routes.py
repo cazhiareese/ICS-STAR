@@ -10,10 +10,17 @@ router = APIRouter(
     tags=["users"]
 )
 
+# Call get_all_logs by sending a GET request to /user/all endpoint which will return all user logs that have been created
+#
+# Returns: a dictionary containing all user logs
 @router.get("/all")
 def get_all_logs(): # Get all existing users
     return {"logs": user_logs} 
 
+# Call get_last_30_days_report by sending a GET request to /user/last30days endpoint which will return a report of user visits in the last 30 days
+# Uses logic functions from reports_logic
+#
+# Returns: a dictionary containing the report
 @router.get("/last30days")
 def get_last_30_days_report():
     
@@ -31,6 +38,10 @@ def get_last_30_days_report():
     
     return {"report": report}
 
+# Call get_batch_report by sending a GET request to /user/by_batch endpoint which will return a report of user visits by graduation batch
+# Uses logic functions from reports_logic
+#
+# Returns: a dictionary containing the report
 @router.get("/by_batch")
 def get_batch_report():
     batch_visits, batch_unique_users = logic_batch_vists(user_logs) # Call logic function from reports_logic
@@ -49,6 +60,14 @@ def get_batch_report():
     
     return {"report": report}
 
+# Call get_specific_batch_report by sending a GET request to /user/batch/{batch_year} endpoint which will return a report of user visits for 
+# a specific graduation batch
+#
+# Uses logic functions from reports_logic
+# 
+# Arguments: batch_year - the graduation batch year to filter the report
+# 
+# Returns: a dictionary containing the report
 @router.get("/batch/{batch_year}")
 def get_specific_batch_report(batch_year: int):
     batch_logs = []

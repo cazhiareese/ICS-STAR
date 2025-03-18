@@ -2,6 +2,11 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Set
 from schemas.user import UserLog
 
+# Filters logs by including only those from the last 30 days
+#
+# Arguments: logs - a list of dictionaries containing user logs
+#
+# Returns: a list of dictionaries containing user logs from the last 30 days
 def logic_30_days_report(logs: List[Dict]):
     # Step 1: Calculate range of dates
     current_date = datetime.now()
@@ -15,7 +20,11 @@ def logic_30_days_report(logs: List[Dict]):
             recent_logs.append(log)
     
     return recent_logs
-
+# Get unique users from a list of logs
+#
+# Arguments: logs - a list of dictionaries containing user logs
+#
+# Returns: a set of unique user IDs
 def logic_unique_users(logs: List[Dict]) -> Set:
     unique_users = set()
     for log in logs:
@@ -23,6 +32,11 @@ def logic_unique_users(logs: List[Dict]) -> Set:
     
     return unique_users
 
+# Count visits and unique users by batch
+#
+# Arguments: logs - a list of dictionaries containing user logs
+#
+# Returns: a tuple of dictionaries containing visit counts and unique users by batch
 def logic_batch_vists(logs: List[Dict]):
     # Step 1: Initialize dictionaries to store visit counts and unique users
     batch_visits = {}
