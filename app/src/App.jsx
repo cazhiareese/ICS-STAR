@@ -9,12 +9,11 @@ import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem("User"));
+  //const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem("User"));
 
   return (
       <Routes>
-        <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/login" replace />} />
-        <Route path="/login" element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
+        <Route path="/login" element={<LoginPage/>} />
         <Route path="/student" element={<StudentLanding />} />
         <Route path="/admin" element={<AdminLanding />} />
         <Route path="/alumni" element={<AlumniLanding />} />
