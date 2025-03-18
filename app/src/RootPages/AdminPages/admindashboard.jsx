@@ -24,6 +24,14 @@ function AdminLanding() {
     registeredAlumni: 542,
   }
 
+  const alumniLocations = [
+    { "country": "Philippines", "percentage": "78%" },
+    { "country": "United States", "percentage": "22%" },
+    { "country": "Canada", "percentage": "18%" },
+    { "country": "Australia", "percentage": "12%" },
+    { "country": "United Kingdom", "percentage": "9%" }
+  ]
+
   const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4";
 
   return <>
@@ -48,7 +56,7 @@ function AdminLanding() {
     </div>
 
     {/* Dashboard area */}
-    <div className="bg-[#F3F1F4] flex-1 overflow-auto">
+    <div className="bg-[#F3F1F4] flex-1 max-h-screen overflow-auto">
       <div className=" p-4 flex flex-col max-w-7xl mx-auto">
         <div className="flex flex-row mb-3 items-center">
           <CircleUserRound size={32}/>
@@ -166,6 +174,16 @@ function AdminLanding() {
                   <p className="font-satoshi-medium">Alumni Locations</p>
                 </div>
                 <div>
+                <table className="w-full mt-2">
+                  <tbody>
+                    {alumniLocations.map((location, index) => (
+                          <tr key={index} className="flex justify-between px-6 py-1">
+                            <td className="text-black font-satoshi-light text-sm">{location.country}</td>
+                            <td className="text-primary font-medium text-sm">{location.percentage}</td>
+                          </tr>
+                        ))}
+                  </tbody>
+                </table>
                 {/* TODO: Insert Countries and percent here */}
                 </div>
               </div>
