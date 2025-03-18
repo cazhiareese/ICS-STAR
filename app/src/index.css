@@ -1,1 +1,37 @@
 @import "tailwindcss";
+@import "./assets/fonts/satoshi.css";
+
+@theme {
+    /* 
+        Colors
+        examples of use: text-primary, bg-white
+    */
+    --color-primary: #00369C;
+    --color-secondary: #ECF3FF;
+    --color-white: #F9F9FB;
+    --color-black: #1D2939;
+    --color-error: #C80808;
+    --color-warning: #FFC964;
+    --color-success: #27AE60;
+    --color-hover: #437BE4;
+    --color-on-click: #082762;
+    --color-disabled: #DDDDDD;
+
+    /* 
+        Fonts 
+        examples of use: font-satoshi-regular, font-satoshi-italic
+    */
+    --font-satoshi-variable: 'Satoshi-Variable', sans-serif;
+    --font-satoshi-variable-italic: 'Satoshi-VariableItalic', sans-serif;
+    --font-satoshi-light: 'Satoshi-Light', sans-serif;
+    --font-satoshi-light-italic: 'Satoshi-LightItalic', sans-serif;
+    --font-satoshi-regular: 'Satoshi-Regular', sans-serif;
+    --font-satoshi-italic: 'Satoshi-Italic', sans-serif;
+    --font-satoshi-medium: 'Satoshi-Medium', sans-serif;
+    --font-satoshi-medium-italic: 'Satoshi-MediumItalic', sans-serif;
+    --font-satoshi-bold: 'Satoshi-Bold', sans-serif;
+    --font-satoshi-bold-italic: 'Satoshi-BoldItalic', sans-serif;
+    --font-satoshi-black: 'Satoshi-Black', sans-serif;
+    --font-satoshi-black-italic: 'Satoshi-BlackItalic', sans-serif;
+}
+
