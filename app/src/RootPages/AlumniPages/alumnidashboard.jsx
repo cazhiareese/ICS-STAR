@@ -22,13 +22,17 @@ function AlumniLanding() {
       <img src={wave} alt="Wave" className="absolute top-0 left-0 w-full h-auto z-0" />
 
       {/* Rotating Stars */}
-      {stars.map((s) => (
+      {stars.map((s, index) => (
         <img
           key={s.id}
           src={star}
           alt="Star"
-          className={`absolute opacity-80 ${s.size} animate-spin-slow z-10`}
-          style={{ top: s.top, left: s.left }}
+          className={`absolute opacity-80 ${s.size} z-10`}
+          style={{
+            top: s.top,
+            left: s.left,
+            animation: `rotateStar ${10}s linear infinite`, // Slow rotation
+          }}
         />
       ))}
 
@@ -49,6 +53,17 @@ function AlumniLanding() {
           <CardComponent icon={HelpingHand} text="Give ICS a helping hand" />
         </div>
       </div>
+      
+      {/* Add CSS for rotation animation */}
+      <style>
+        {`
+          @keyframes rotateStar {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      
     </div>
   );
 }
