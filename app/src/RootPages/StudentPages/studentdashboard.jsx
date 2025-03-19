@@ -15,14 +15,15 @@ function StudentLanding() {
         </h1>
       </div>
 
-      {/* Cards Section */}
-      <div className="grid grid-cols-2 gap-4 mt-6">
-        <CardComponent icon={Calendar} text="Look for events to attend" />
-        <CardComponent icon={Newspaper} text="Catch up with ICS" />
-        <CardComponent icon={Briefcase} text="Browse job opportunities" />
-        <CardComponent icon={User} text="Connect with Alumni" />
-        <CardComponent icon={Handshake} text="Give ICS a helping hand" />
-      </div>
+{/* Cards Section */}
+<div className="flex flex-wrap justify-center gap-4 mt-6">
+  <CardComponent icon={Calendar} text="Look for events to attend" />
+  <CardComponent icon={Newspaper} text="Catch up with ICS" />
+  <CardComponent icon={Briefcase} text="Browse job opportunities" />
+  <CardComponent icon={User} text="Connect with Alumni" />
+  <CardComponent icon={Handshake} text="Give ICS a helping hand" />
+</div>
+
     </div>
   );
 }
