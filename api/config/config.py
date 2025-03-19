@@ -22,7 +22,5 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-Base.metadata.create_all(engine)
-
 SECRET_KEY = secrets.token_hex(32)
 SECRET_KEY = os.getenv("SECRET_KEY")
