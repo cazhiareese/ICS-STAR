@@ -34,11 +34,11 @@ function Login() {
 
         <div className="absolute inset-0 bg-cover object-fill bg-center scale-100 opacity-50 md:opacity-50"
             style={{ backgroundImage: `url(${loginBg})` }}>
-            <div className="absolute inset-0"></div>
+            <div className="sticky inset-0"></div>
         </div>
 
         {/* Lower COnstellation */}
-        <div className="hidden sm:absolute bottom-0 left-0 min-w-2xl w-3/5 ">
+        <div className="absolute opacity-0 sm:opacity-100 bottom-0 left-0 sm:min-w-2xl w-3/5 ">
             <img 
                 src={Constellations}
                 alt="Login Background" 
@@ -47,7 +47,7 @@ function Login() {
         </div>
 
         {/* Upper COnstellation */}
-        <div className="hidden sm:absolute top-0 right-0 w-3/5 min-w-2xl">
+        <div className="absolute opacity-0 sm:opacity-100 top-0 right-0 w-3/5 sm:min-w-2xl ">
             <img 
                 src={ConstellationsUp}
                 alt="Login Background" 
@@ -55,16 +55,16 @@ function Login() {
             />
         </div>
 
-        {/* Login Signup */}
-        <div className="flex flex-col items-center justify-center w-screen h-screen p-10 z-10">
+        {/* Lower Portion */}
+        <div className="flex flex-col overflow-auto [@media(max-height:800px)]:justify-normal items-center justify-center w-screen h-screen p-10 z-10">
             
 
             {/* Mobile COnstellation */}
-            <div className="sm:hidden block w-screen -mt-20 h-[40%] ">
+            <div className="sm:hidden block w-screen -mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 [@media(max-height:800px)]:opacity-40">
                 <img 
                     src={ConstellationsMobile}
                     alt="Login Background" 
-                    className="w-[100%]  object-cover"
+                    className="w-[100%] object-cover"
                 />
             </div>
 
@@ -85,7 +85,7 @@ function Login() {
             </div>
 
             {/* Login Signup */}
-            <div className="flex flex-col items-center justify-center -mt-10 sm:mt-30 w-[30%] h-[70%] min-w-md sm:min-w-lg sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
+            <div className="flex flex-col items-center justify-center overflow-scroll -mt-10 sm:mt-30 w-[30%] h-[70%] min-h-130 min-w-md sm:min-w-lg sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
                     <h1 className="hidden sm:block text-8xl font-satoshi-medium mb-16 text-[#102E46]">Login</h1> 
                     
                     
