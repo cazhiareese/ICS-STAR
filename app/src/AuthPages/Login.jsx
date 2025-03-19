@@ -32,7 +32,7 @@ function Login() {
     <div className="flex items-center justify-center h-screen">
         {/* Background */}
 
-        <div className="absolute inset-0 bg-cover object-fill bg-center scale-150 opacity-50 md:opacity-50"
+        <div className="absolute inset-0 bg-cover object-fill bg-center scale-100 opacity-50 md:opacity-50"
             style={{ backgroundImage: `url(${loginBg})` }}>
             <div className="absolute inset-0"></div>
         </div>
@@ -47,7 +47,7 @@ function Login() {
         </div>
 
         {/* Upper COnstellation */}
-        <div className="hidden sm:absolute top-0 right-0 w-3/5 min-w-2xl ">
+        <div className="hidden sm:absolute top-0 right-0 w-3/5 min-w-2xl">
             <img 
                 src={ConstellationsUp}
                 alt="Login Background" 
@@ -55,36 +55,38 @@ function Login() {
             />
         </div>
 
-        
+        {/* Login Signup */}
         <div className="flex flex-col items-center justify-center w-screen h-screen p-10 z-10">
             
 
             {/* Mobile COnstellation */}
-            <div className="sm:hidden block w-screen -mt-15 h-[35%] ">
+            <div className="sm:hidden block w-screen -mt-20 h-[40%] ">
                 <img 
                     src={ConstellationsMobile}
                     alt="Login Background" 
-                    className="w-[100%] object-cover"
+                    className="w-[100%]  object-cover"
                 />
             </div>
 
             {/* ICS-STAR */}
 
-            <div className="flex justify-center sm:pt-30 md:pt-0 md:absolute md:top-10 md:left-0 md:min-w-3xl ">
+            <div className="flex justify-center sm:pt-30 md:pt-0 sm:absolute sm:top-10 sm:left-0 sm:min-w-3xl ">
                 <img 
                     src={ICSSTARHEAD}
                     alt="Login Background" 
-                    className="md:absolute md:left-15 md:w-[25%] w-50"
+                    className="sm:absolute sm:left-15 sm:top-0 sm:w-[25%] w-50"
                 />
             </div>
-            {/* Login Signup */}
+            
 
-            <div className="md:hidden flex flex-col w-full mt-5">
+            <div className="sm:hidden flex flex-col w-full mt-5">
                         <h1 className="text-3xl sm:text-5xl font-satoshi-light text-center">Bridging Alumni</h1>
                         <h1 className="text-3xl sm:text-5xl font-satoshi-bold font-bold text-primary text-center">Across the Cosmos</h1>
             </div>
-            <div className="flex flex-col items-center justify-center -mt-10 md:mt-30 w-[30%] h-[70%] min-w-lg md:bg-[#F5F5F5] md:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] rounded-4xl">
-                    <h1 className="hidden md:block text-8xl font-satoshi-medium mb-16 text-[#102E46]">Login</h1> 
+
+            {/* Login Signup */}
+            <div className="flex flex-col items-center justify-center -mt-10 sm:mt-30 w-[30%] h-[70%] min-w-md sm:min-w-lg sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
+                    <h1 className="hidden sm:block text-8xl font-satoshi-medium mb-16 text-[#102E46]">Login</h1> 
                     
                     
                     {/* Email Input */}
@@ -220,7 +222,7 @@ function Login() {
             </div>
             
             {/* Caption below */}
-            <div className="hidden md:block flex flex-col w-full pt-10 ">
+            <div className="hidden sm:block flex flex-col w-full pt-10 ">
                 <h1 className="text-5xl font-satoshi-light text-right">Bridging Alumni</h1>
                 <h1 className="text-5xl font-satoshi-bold font-bold text-primary text-right">Across the Cosmos</h1>
             </div>
