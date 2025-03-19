@@ -4,6 +4,7 @@ import { PersonStanding } from "lucide-react";
 import loginBg from "./login_gradientbg.jpeg";
 import Constellations from "./constellationLogin.png";
 import ConstellationsUp from "./constellationLoginUp.png";
+import ConstellationsMobile from "./constellationMobile.png";
 import ICSSTARHEAD from "./ics-starhead.png";
 import Star from "./Star 52.png"
 import { Eye, EyeClosed } from 'lucide-react';
@@ -31,13 +32,13 @@ function Login() {
     <div className="flex items-center justify-center h-screen">
         {/* Background */}
 
-        <div className="absolute inset-0 bg-cover bg-center scale-105 opacity-30"
+        <div className="absolute inset-0 bg-cover object-fill bg-center scale-150 opacity-50 md:opacity-50"
             style={{ backgroundImage: `url(${loginBg})` }}>
-            <div className="absolute inset-0 bg-primary/10"></div>
+            <div className="absolute inset-0"></div>
         </div>
 
         {/* Lower COnstellation */}
-        <div className="absolute bottom-0 left-0 min-w-2xl w-3/5 ">
+        <div className="hidden sm:absolute bottom-0 left-0 min-w-2xl w-3/5 ">
             <img 
                 src={Constellations}
                 alt="Login Background" 
@@ -46,7 +47,7 @@ function Login() {
         </div>
 
         {/* Upper COnstellation */}
-        <div className="absolute top-0 right-0 w-3/5 min-w-2xl ">
+        <div className="hidden sm:absolute top-0 right-0 w-3/5 min-w-2xl ">
             <img 
                 src={ConstellationsUp}
                 alt="Login Background" 
@@ -56,24 +57,42 @@ function Login() {
 
         
         <div className="flex flex-col items-center justify-center w-screen h-screen p-10 z-10">
+            
+
+            {/* Mobile COnstellation */}
+            <div className="sm:hidden block w-screen -mt-15 h-[35%] ">
+                <img 
+                    src={ConstellationsMobile}
+                    alt="Login Background" 
+                    className="w-[100%] object-cover"
+                />
+            </div>
+
             {/* ICS-STAR */}
-            <div className="absolute top-10 left-0 min-w-3xl ">
+
+            <div className="flex justify-center sm:pt-30 md:pt-0 md:absolute md:top-10 md:left-0 md:min-w-3xl ">
                 <img 
                     src={ICSSTARHEAD}
                     alt="Login Background" 
-                    className="absolute left-15 w-[25%]"
+                    className="md:absolute md:left-15 md:w-[25%] w-50"
                 />
             </div>
             {/* Login Signup */}
-            <div className="flex flex-col items-center justify-center mt-30 w-[30%] h-[70%] min-w-lg bg-[#F5F5F5] shadow-[0px_10px_30px_rgba(0,0,0,0.3)] rounded-4xl">
-                    <h1 className="text-8xl font-satoshi-medium mb-16 text-[#102E46]">Login</h1> 
 
+            <div className="md:hidden flex flex-col w-full mt-5">
+                        <h1 className="text-3xl sm:text-5xl font-satoshi-light text-center">Bridging Alumni</h1>
+                        <h1 className="text-3xl sm:text-5xl font-satoshi-bold font-bold text-primary text-center">Across the Cosmos</h1>
+            </div>
+            <div className="flex flex-col items-center justify-center -mt-10 md:mt-30 w-[30%] h-[70%] min-w-lg md:bg-[#F5F5F5] md:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] rounded-4xl">
+                    <h1 className="hidden md:block text-8xl font-satoshi-medium mb-16 text-[#102E46]">Login</h1> 
+                    
+                    
                     {/* Email Input */}
                     
-                    <div className="emailButton mb-12 cursor-pointer w-[70%]">
+                    <div className="emailButton mb-12 cursor-pointer w-[60%] sm:w-[70%]">
 
                         
-                        <label className="block cursor-pointer text-gray-600 text-lg -mb-0" onClick={() => setActiveEmail(!activeEmail)}>
+                        <label className="block cursor-pointer text-gray-600 sm:text-lg -mb-0" onClick={() => setActiveEmail(!activeEmail)}>
                         {!activeEmail ? (
                             email ? `Email: ${email}` : <span className="text-gray-600">Email</span>
                         ) : (
@@ -108,10 +127,10 @@ function Login() {
                     </div>
 
                     {/* Password */}
-                    <div className="passwordButton mb-12 cursor-pointer w-[70%]">
+                    <div className="passwordButton mb-12 cursor-pointer w-[60%] sm:w-[70%]">
 
                         
-                        <label className="block cursor-pointer text-gray-600 text-lg -mb-0" onClick={() => setActivePassword(!activePassword)}>
+                        <label className="block cursor-pointer text-gray-600 sm:text-lg -mb-0" onClick={() => setActivePassword(!activePassword)}>
                         {!activePassword ? (
                             password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="text-gray-600">Password</span>
                         ) : (
@@ -201,9 +220,9 @@ function Login() {
             </div>
             
             {/* Caption below */}
-            <div className="flex flex-col w-full pt-10 ">
-                <h1 className="text-5xl font-satoshi-light md:text-right text-center">Bridging Alumni</h1>
-                <h1 className="text-5xl font-satoshi-bold font-bold text-primary md:text-right text-center">Across the Cosmos</h1>
+            <div className="hidden md:block flex flex-col w-full pt-10 ">
+                <h1 className="text-5xl font-satoshi-light text-right">Bridging Alumni</h1>
+                <h1 className="text-5xl font-satoshi-bold font-bold text-primary text-right">Across the Cosmos</h1>
             </div>
         </div>
     </div>
