@@ -14,7 +14,7 @@ function App() {
       <Route path="/" element={<LoginPage />} />
 
       {/* Routes that include the Navbar */}
-      <Route path="/" element={<Root />}>
+      <Route path='/' element={<Root />}>
         <Route path="student" element={<StudentLanding />} />
         <Route path="admin" element={<AdminLanding />} />
         <Route path="alumni" element={<AlumniLanding />} />
