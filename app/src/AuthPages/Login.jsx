@@ -8,8 +8,9 @@ import ConstellationsMobile from "./constellationMobile.png";
 import ICSSTARHEAD from "./ics-starhead.png";
 import Star from "./Star 52.png"
 import { Eye, EyeClosed } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
-function Login() {
+function LoginPage() {
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -31,11 +32,12 @@ function Login() {
     // };
 
     const login = async (e) => {
-        setIsLoading(true);
-        setTimeout(() => {
-        setIsLoading(false); // Simulate loading (remove if unnecessary)
-        }, 3000);
-        e.preventDefault(); // Prevent page reload
+        // setIsLoading(true);
+        // setTimeout(() => {
+        // setIsLoading(false); // Simulate loading (remove if unnecessary)
+        // }, 3000);
+
+        // e.preventDefault(); // Prevent page reload
         setIsLoading(true); // Show loading spinner
 
         try {
@@ -50,7 +52,7 @@ function Login() {
             if (response.ok) {
                 localStorage.setItem("token", data.access_token);  // ✅ Store token
                 alert("Login Successful!");
-                window.location.href = "/dashboard";  // ✅ Redirect user
+                
             } else {
                 alert(data.detail || "Login failed!");
                 alert(data)
@@ -90,14 +92,31 @@ function Login() {
     
             const userData = await response.json();
             console.log("User Info:", userData);
+
+            if (userData.user_type=="alumni"){
+                window.location.href = "/alumni";
+
+            } else if (userData.user_type=="student"){
+                window.location.href = "/student";
+
+            } else if (userData.user_type=="admin"){
+                window.location.href = "/admin";
+            }
+
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
     };
+    // bob@student.com
 
     useEffect(() => {
         fetchUserData();
     }, []);
+
+    const handleLogin = (userType) => {
+        sessionStorage.setItem("User", JSON.stringify({ type: userType }));
+        navigate(`/${userType}`);
+      };
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -303,4 +322,41 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginPage;
+
+
+// function LoginPage() {
+//   const navigate = useNavigate();
+
+  
+
+//   return (
+//     <>
+//         <div className="flex items-center justify-center min-h-screen bg-gray-100">
+//         <div className="container max-w-md p-6 bg-white shadow-lg rounded-lg text-center">
+//             <h1 className="text-3xl font-bold text-blue-500">Login</h1>
+//             <button
+//             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+//             onClick={() => handleLogin("student")}
+//             >
+//             Login as Student
+//             </button>
+//             <button
+//             className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+//             onClick={() => handleLogin("admin")}
+//             >
+//             Login as Admin
+//             </button>
+//             <button
+//             className="mt-4 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+//             onClick={() => handleLogin("alumni")}
+//             >
+//             Login as Alumni
+//             </button>
+//         </div>
+//         </div>
+//     </>
+//   );
+// }
+
+// export default LoginPage;
