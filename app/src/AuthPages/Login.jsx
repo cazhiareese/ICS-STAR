@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../index.css";
 import { PersonStanding } from "lucide-react";
 import loginBg from "./login_gradientbg.jpeg";
@@ -21,12 +21,83 @@ function Login() {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const loginClick = () => {
+    // const loginClick = () => {  
+    //     setIsLoading(true);
+    //     setTimeout(() => {
+    //     setIsLoading(false); // Simulate loading (remove if unnecessary)
+    //     }, 3000);
+
+        
+    // };
+
+    const login = async (e) => {
         setIsLoading(true);
         setTimeout(() => {
         setIsLoading(false); // Simulate loading (remove if unnecessary)
         }, 3000);
+        e.preventDefault(); // Prevent page reload
+        setIsLoading(true); // Show loading spinner
+
+        try {
+            const response = await fetch("http://localhost:8000/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ username: email, password: password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem("token", data.access_token);  // ✅ Store token
+                alert("Login Successful!");
+                window.location.href = "/dashboard";  // ✅ Redirect user
+            } else {
+                alert(data.detail || "Login failed!");
+                alert(data)
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Something went wrong!");
+        } finally {
+            setIsLoading(false); // Hide loading spinner
+        }
     };
+
+    const loginClick = async (e) => {
+        e.preventDefault();
+        await login(email, password);
+    };
+
+    const fetchUserData = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.log("No token found.");
+            return;
+        }
+    
+        try {
+            const response = await fetch("http://localhost:8000/users/me/", {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            if (!response.ok) {
+                console.error("Failed to fetch user data:", response.status);
+                return; // Stop execution if response is not OK
+            }
+    
+            const userData = await response.json();
+            console.log("User Info:", userData);
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -85,7 +156,7 @@ function Login() {
             </div>
 
             {/* Login Signup */}
-            <div className="flex flex-col items-center justify-center overflow-scroll -mt-10 sm:mt-30 w-[30%] h-[70%] min-h-130 min-w-md sm:min-w-lg sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
+            <div className="flex flex-col items-center justify-center -mt-10 sm:mt-30 w-[30%] h-[70%] min-h-130 min-w-md sm:min-w-lg sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
                     <h1 className="hidden sm:block text-8xl font-satoshi-medium mb-16 text-[#102E46]">Login</h1> 
                     
                     

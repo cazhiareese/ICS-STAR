@@ -1,0 +1,8 @@
+https://auth-server.com/oauth/authorize
+  ?client_id=YOUR_CLIENT_ID
+  &redirect_uri=YOUR_REDIRECT_URI
+  &response_type=code
+  &scope=openid profile email
+  &code_challenge=CODE_CHALLENGE
+  &code_challenge_method=S256
+  &state=RANDOM_STRING
