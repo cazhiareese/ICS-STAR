@@ -1,62 +1,72 @@
 from datetime import datetime, timedelta
-from typing import List, Dict, Set
-from schemas.user import UserLog
+from sqlalchemy.orm import Session
+from models.log import Log
+from models.user import User 
+from config import config
+
+def get_db():
+    db = config.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 # Filters logs by including only those from the last 30 days
 #
-# Arguments: logs - a list of dictionaries containing user logs
+# Arguments: db - SQLAlchemy session
 #
-# Returns: a list of dictionaries containing user logs from the last 30 days
-def logic_30_days_report(logs: List[Dict]):
-    # Step 1: Calculate range of dates
+# Returns: a list of dictionaries containing log information
+def logic_30_days_report(db: Session):
+    # Calculate range of dates
     current_date = datetime.now()
     thirty_days_ago = current_date - timedelta(days=30)
     
-    # Step 2: Filter logs for the last 30 days
-    recent_logs = []
-    for log in logs:
-        log_time = datetime.fromisoformat(log["time"])
-        if log_time >= thirty_days_ago:
-            recent_logs.append(log)
+    # Query the database directly with filtering
+    recent_logs = db.query(Log).filter(
+        Log.date_time >= thirty_days_ago
+    ).all()
     
-    return recent_logs
-# Get unique users from a list of logs
-#
-# Arguments: logs - a list of dictionaries containing user logs
-#
-# Returns: a set of unique user IDs
-def logic_unique_users(logs: List[Dict]) -> Set:
-    unique_users = set()
-    for log in logs:
-        unique_users.add(log["user_id"])
+    # Convert to dictionaries for JSON serialization
+    log_dicts = [
+        {
+            "log_id": log.log_id,
+            "date_time": log.date_time,
+            "is_active": log.is_active,
+            "user_id": log.user_id
+        } 
+        for log in recent_logs
+    ]
     
-    return unique_users
+    return log_dicts
 
 # Count visits and unique users by batch
 #
-# Arguments: logs - a list of dictionaries containing user logs
+# Arguments: db - SQLAlchemy session
 #
-# Returns: a tuple of dictionaries containing visit counts and unique users by batch
-def logic_batch_vists(logs: List[Dict]):
-    # Step 1: Initialize dictionaries to store visit counts and unique users
+# Returns: a tuple of dictionaries containing visit counts and unique users by batch (null/no batch are included)
+def logic_batch_visits(db: Session):
+    # Assuming you have a batch field in your User model
+    # This might need adjustment based on your actual model structure
+    
+    # Get all logs with user batch information
+    logs_with_batch = db.query(Log, User.graduation_year).join(
+        User, Log.user_id == User.user_id
+    ).all()
+    
+    # Initialize dictionaries to store visit counts and unique users
     batch_visits = {}
     batch_unique_users = {}
     
-    # Step 2: Count visits and unique users for each batch
-    for log in logs:
-        batch = log["batch"]
-        user_id = log["user_id"]
+    # Count visits and unique users for each batch
+    for log, batch in logs_with_batch:
+        user_id = log.user_id
         
-        # Update visit count with existence check
-        if batch in batch_visits:
-            batch_visits[batch] += 1
-        else:
-            batch_visits[batch] = 1
+        # Update visit count
+        batch_visits[batch] = batch_visits.get(batch, 0) + 1
         
-        # Update unique users with existence check
-        if batch in batch_unique_users:
-            batch_unique_users[batch].add(user_id)
-        else:
-            batch_unique_users[batch] = {user_id}
+        # Update unique users
+        if batch not in batch_unique_users:
+            batch_unique_users[batch] = set()
+        batch_unique_users[batch].add(user_id)
     
     return batch_visits, batch_unique_users
