@@ -1,20 +1,22 @@
+from typing import Optional
+from uuid import UUID
 from pydantic import BaseModel
+from datetime import datetime
 
 class UserOut(BaseModel):
-    userid: int
+    user_id: UUID
     first_name: str
     last_name: str
     email: str
-    mobile: str
+    mobile: Optional[str] = None
     age: int
     gender: str
     city: str
     state: str
     country: str
-    last_login: str | None
-    marital_status: str
+    marital_status: Optional[str] = None
     user_type: str
-    is_banned: bool
+    is_banned: Optional[bool] = None
 
     class Config:
-        from_attributes = True 
+        from_attributes = True
