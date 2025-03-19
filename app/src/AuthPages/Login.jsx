@@ -32,38 +32,39 @@ function LoginPage() {
     // };
 
     const login = async (e) => {
-        // setIsLoading(true);
-        // setTimeout(() => {
-        // setIsLoading(false); // Simulate loading (remove if unnecessary)
-        // }, 3000);
+      // setIsLoading(true);
+      // setTimeout(() => {
+      // setIsLoading(false); // Simulate loading (remove if unnecessary)
+      // }, 3000);
 
-        // e.preventDefault(); // Prevent page reload
-        setIsLoading(true); // Show loading spinner
+      // e.preventDefault(); // Prevent page reload
+      setIsLoading(true); // Show loading spinner
 
-        try {
-            const response = await fetch("http://localhost:8000/token", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({ username: email, password: password }),
-            });
+      try {
+          const response = await fetch("http://localhost:8000/token", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({ username: email, password: password }),
+          });
 
-            const data = await response.json();
+          const data = await response.json();
 
-            if (response.ok) {
-                localStorage.setItem("token", data.access_token);  // ✅ Store token
-                alert("Login Successful!");
-                
-            } else {
-                alert(data.detail || "Login failed!");
-                alert(data)
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Something went wrong!");
-        } finally {
-            setIsLoading(false); // Hide loading spinner
-        }
-    };
+          if (response.ok) {
+              localStorage.setItem("token", data.access_token);
+              // alert("Login Successful!");
+              fetchUserData();
+              
+          } else {
+              alert(data.detail || "Login failed!");
+              alert(data)
+          }
+      } catch (error) {
+          console.error("Error:", error);
+          alert("Something went wrong!");
+      } finally {
+          setIsLoading(false); 
+      }
+  };
 
     const loginClick = async (e) => {
         e.preventDefault();
