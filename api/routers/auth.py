@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Annotated
 from config.config import ACCESS_TOKEN_EXPIRE_MINUTES
-from util.userutil import get_current_active_user, require_student, require_alum, require_admin, get_db
+from util.userutil import get_current_active_user, require_student, require_alum, require_admin, get_db, authenticate_user, create_access_token
 from schemas.user import UserOut
 from models.usermodel import User
 
@@ -23,13 +23,13 @@ async def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.userid, "role": user.user_type}, expires_delta=access_token_expires
+        data={"sub": str(user.user_id), "role": str(user.user_type)}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/users/me/", response_model=UserOut)
 async def read_users_me(current_user: Annotated[User, Depends(get_current_active_user)]):
-    return current_user
+    return UserOut.model_validate(current_user)
 
 @router.get("/dashboard/student")
 async def student_dashboard(current_user: User = Depends(require_student)):
