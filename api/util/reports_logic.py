@@ -45,9 +45,6 @@ def logic_30_days_report(db: Session):
 #
 # Returns: a tuple of dictionaries containing visit counts and unique users by batch (null/no batch are included)
 def logic_batch_visits(db: Session):
-    # Assuming you have a batch field in your User model
-    # This might need adjustment based on your actual model structure
-    
     # Get all logs with user batch information
     logs_with_batch = db.query(Log, User.graduation_year).join(
         User, Log.user_id == User.user_id
