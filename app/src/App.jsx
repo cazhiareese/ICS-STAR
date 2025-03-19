@@ -6,6 +6,7 @@ import LoginPage from "./AuthPages/Login";
 import StudentLanding from "./RootPages/StudentPages/studentdashboard";
 import AdminLanding from "./RootPages/AdminPages/admindashboard";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
+import Root from "./RootPages/Root";
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
 
   return (
       <Routes>
+        <Route path='/' element={<Root/>} />
         <Route path="/" element={<LoginPage/>} />
         <Route path="/student" element={<StudentLanding />} />
         <Route path="/admin" element={<AdminLanding />} />
