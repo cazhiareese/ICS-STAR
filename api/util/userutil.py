@@ -4,13 +4,12 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from config.config import SessionLocal
+from config.config import SessionLocal, SECRET_KEY, ALGORITHM
 from models.usermodel import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# Dependency to get database session
 def get_db():
     db = SessionLocal()
     try:
@@ -23,7 +22,10 @@ def verify_password(plain_password, hashed_password):
 
 
 def get_user(db, email: str):
-    return db.query(User).filter(User.email == email).first()
+    db = SessionLocal()
+    user = db.query(User).filter(User.email == email).first()
+    return user
+
 
 def authenticate_user(db: Session, email: str, password: str):
     user = get_user(db, email)
@@ -50,14 +52,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        userid: int = payload.get("sub")
+        user_id: int = payload.get("sub")
         role: str = payload.get("role")
-        if userid is None or role is None:
+        if user_id is None or role is None:
             raise credentials_exception
     except InvalidTokenError:
         raise credentials_exception
 
-    user = db.query(User).filter(User.userid == userid).first()
+    user = db.query(User).filter(User.user_id == user_id).first()
     if user is None:
         raise credentials_exception
 
@@ -69,16 +71,16 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 async def require_student(user: User = Depends(get_current_active_user)):
-    if user.user_type != "student":
+    if user.user_type.value != "student":
         raise HTTPException(status_code=403, detail="Forbidden: Students only")
     return user
 
 async def require_alum(user: User = Depends(get_current_active_user)):
-    if user.user_type != "alum":
+    if user.user_type.value != "alumni":
         raise HTTPException(status_code=403, detail="Forbidden: Alumni only")
     return user
 
 async def require_admin(user: User = Depends(get_current_active_user)):
-    if user.user_type != "admin":
+    if user.user_type.value != "admin":
         raise HTTPException(status_code=403, detail="Forbidden: Admin only")
     return user
