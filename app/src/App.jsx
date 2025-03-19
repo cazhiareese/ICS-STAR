@@ -1,15 +1,15 @@
 import { useState } from "react";
 import "./index.css";
 import { PersonStanding } from "lucide-react";
-
+import Login from "./AuthPages/Login";
 
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="container max-w-md p-6 bg-white shadow-lg rounded-lg 
+    <div className="">
+      {/* <div className="container max-w-md p-6 bg-white shadow-lg rounded-lg 
                       hover:-translate-y-2 transition-transform duration-300 ease-in-out">
         <h1 className="text-3xl font-bold text-blue-500 text-center">Frontend</h1>
         <p className="mt-2 text-gray-600 text-center">This is a sample Tailwind test.</p>
@@ -22,7 +22,9 @@ function App() {
             Count: {count}
           </button>
         </div>
-      </div>
+      </div> */}
+      <Login/>
+      
     </div>
   );
 }
