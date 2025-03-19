@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import "../index.css";
 import { PersonStanding } from "lucide-react";
-import loginBg from "./login_gradientbg.jpeg";
-import Constellations from "./constellationLogin.png";
-import ConstellationsUp from "./constellationLoginUp.png";
-import ConstellationsMobile from "./constellationMobile.png";
-import ICSSTARHEAD from "./ics-starhead.png";
-import Star from "./Star 52.png"
+import loginBg from "../assets/login_gradientbg.jpeg";
+import Constellations from "../assets/constellationLogin.png";
+import ConstellationsUp from "../assets/constellationLoginUp.png";
+import ConstellationsMobile from "../assets/constellationMobile.png";
+import ICSSTARHEAD from "../assets/ics-starhead.png";
+import Star from "../assets/Star 52.png"
 import { Eye, EyeClosed } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
