@@ -5,16 +5,18 @@ import CardComponent from "../../components/cardcomponent";
 function StudentLanding() {
   return (
     <div className="p-6 flex flex-col items-center">
+      {/* Heading Wrapper */}
+      <div className="flex flex-col items-center text-center">
+        <h1 className="font-satoshi-bold  text-[60px] leading-[60px] tracking-[-2%]">
+          Bridging Alumni
+        </h1>
+        <h1 className="font-satoshi-bold  text-[60px] leading-[60px] tracking-[-2%] text-primary">
+          Across the Cosmos
+        </h1>
+      </div>
 
-      <h1 className="font-satoshi-medium font-bold text-[60px] leading-[60px] tracking-[-2%] text-center mb-8">
-        Bridging Alumni
-      </h1>
-
-
-      <h2 className="text-2xl font-bold mb-4">Frontend</h2>
-
-
-      <div className="grid grid-cols-2 gap-4">
+      {/* Cards Section */}
+      <div className="grid grid-cols-2 gap-4 mt-6">
         <CardComponent icon={Calendar} text="Look for events to attend" />
         <CardComponent icon={Newspaper} text="Catch up with ICS" />
         <CardComponent icon={Briefcase} text="Browse job opportunities" />
