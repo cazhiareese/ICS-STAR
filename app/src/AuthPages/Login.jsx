@@ -11,6 +11,7 @@ import { Eye, EyeClosed } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+    const baseURL = import.meta.env.VITE_BACKEND_URL || ""
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -41,7 +42,8 @@ function LoginPage() {
       setIsLoading(true); // Show loading spinner
 
       try {
-          const response = await fetch("http://localhost:8000/token", {
+
+          const response = await fetch(`${baseURL}/token`, {
               method: "POST",
               headers: { "Content-Type": "application/x-www-form-urlencoded" },
               body: new URLSearchParams({ username: email, password: password }),
@@ -79,7 +81,7 @@ function LoginPage() {
         }
     
         try {
-            const response = await fetch("http://localhost:8000/users/me/", {
+            const response = await fetch(`${baseURL}/users/me/`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
