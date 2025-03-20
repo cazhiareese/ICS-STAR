@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from sqlalchemy.pool import NullPool
 
 load_dotenv()
-DATABASE_URL = "postgresql://postgres.ocmxiyulokpueycaxbuv:cmsc128@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+DATABASE_URL = os.getenv('DB_STRING')
 engine = create_engine(DATABASE_URL, client_encoding='utf8', poolclass=NullPool)
 try:
    connection = engine.connect()
