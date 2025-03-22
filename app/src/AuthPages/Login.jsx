@@ -182,7 +182,7 @@ function LoginPage() {
                     
                     {/* Email Input */}
                     
-                    <div className="flex flex-col justify-center  h-[20%] emailButton sm:-mb-5 cursor-pointer w-[60%] sm:w-[70%]">
+                    <div className="flex flex-col justify-end pb-7 h-[20%] emailButton sm:-mb-5 cursor-pointer w-[60%] sm:w-[70%]">
 
                         
                         <label className="block overflow-x-scroll whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg -mb-0" onClick={() => setActiveEmail(!activeEmail)}>
@@ -212,18 +212,19 @@ function LoginPage() {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                // onBlur={() => setActiveEmail(false)}
+                                onBlur={() => setActiveEmail(false)}
                                 className="w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-variable"
+                                placeholder="Enter Email Here"
                                 /> }
                             
                         </div>
                     </div>
 
                     {/* Password */}
-                    <div className="flex flex-col justify-center h-[20%] -passwordButton mb-12 cursor-pointer w-[60%] sm:w-[70%]">
+                    <div className="flex flex-col justify-end  h-[15%] -passwordButton mb-16 cursor-pointer w-[60%] sm:w-[70%]">
 
                         
-                        <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg -mb-0" onClick={() => setActivePassword(!activePassword)}>
+                        <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => setActivePassword(!activePassword)}>
                             {!activePassword ? (
                                 password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="text-gray-600">Password</span>
                             ) : (
@@ -237,7 +238,7 @@ function LoginPage() {
                         
                             {/* Diamond swing */}
                             <span
-                                className={`absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 pt-4 mr-2' : 'translate-x-0 left-0'} z-10`}
+                                className={`absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-2 pt-5.5' : 'translate-x-0 left-0'} z-10`}
                                 onClick={() => setActivePassword(!activePassword)}
                             >◆</span>
 
@@ -262,12 +263,13 @@ function LoginPage() {
                                         type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        // onBlur={() => setActivePassword(false)}
-                                        className="absolute w-full border-b-2 border-gray-400 focus:border-blue-500 outline-none py-1 text-lg font-satoshi-variable pr-10"
+                                        onBlur={() => setActivePassword(false)}
+                                        className=" w-full border-b-2 mt-3 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
+                                        placeholder="Enter Password Here"
                                     /> 
 
                                     <span 
-                                        className="absolute right-2 top-1 text-gray-500 cursor-pointer" 
+                                        className="absolute right-2 top-3 text-gray-500 cursor-pointer" 
                                         onClick={() => setShowPassword(!showPassword)}
                                     >{
                                         showPassword ? (
