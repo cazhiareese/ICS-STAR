@@ -7,10 +7,10 @@ import ConstellationsUp from "../assets/constellationLoginUp.png";
 import ConstellationsMobile from "../assets/constellationMobile.png";
 import ICSSTARHEAD from "../assets/ics-starhead.png";
 import Star from "../assets/Star 52.png"
-import { Eye, EyeClosed, CircleX } from 'lucide-react';
+import { Eye, EyeClosed } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
-function LoginPage() {
+function SignupPage() {
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -22,7 +22,14 @@ function LoginPage() {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const [codeError, setCodeError] = useState(false);
+    // const loginClick = () => {  
+    //     setIsLoading(true);
+    //     setTimeout(() => {
+    //     setIsLoading(false); // Simulate loading (remove if unnecessary)
+    //     }, 3000);
+
+        
+    // };
 
     const login = async (e) => {
       // setIsLoading(true);
@@ -33,32 +40,31 @@ function LoginPage() {
       // e.preventDefault(); // Prevent page reload
       setIsLoading(true); // Show loading spinner
 
-    try {
-        const response = await fetch("http://localhost:8000/token", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ username: email, password: password }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            localStorage.setItem("token", data.access_token);
-            // alert("Login Successful!");
-            fetchUserData();
-            
-        } else {
-            alert(data.detail || "Login failed!");
-            // alert(data)
-            setCodeError(true)
-        }
+      try {
+          const response = await fetch("http://localhost:8000/token", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({ username: email, password: password }),
+          });
 
-        } catch (error) {
-            console.error("Error:", error);
-            // alert("Something went wrong!");
-            setCodeError(true)
-        } finally {
-            setIsLoading(false); 
-        }
-    };
+          const data = await response.json();
+
+          if (response.ok) {
+              localStorage.setItem("token", data.access_token);
+              // alert("Login Successful!");
+              fetchUserData();
+              
+          } else {
+              alert(data.detail || "Login failed!");
+              alert(data)
+          }
+      } catch (error) {
+          console.error("Error:", error);
+          alert("Something went wrong!");
+      } finally {
+          setIsLoading(false); 
+      }
+  };
 
     const loginClick = async (e) => {
         e.preventDefault();
@@ -106,18 +112,7 @@ function LoginPage() {
 
     useEffect(() => {
         fetchUserData();
-        
-        document.querySelectorAll('.inputLine').forEach(element => {
-            element.style.borderColor = codeError ? 'red' : '#00369C'; // Change border color based on codeError
-        });
-
-        document.querySelectorAll('.inputDiamond').forEach(element => {
-            element.style.color = codeError ? 'red' : '#00369C'; // Change border color based on codeError
-        });
-        
-
-        
-    }, [codeError]);
+    }, []);
 
     const handleLogin = (userType) => {
         sessionStorage.setItem("User", JSON.stringify({ type: userType }));
@@ -181,8 +176,8 @@ function LoginPage() {
             </div>
 
             {/* Login Signup */}
-            <div onClick={() => setCodeError(false)} className="flex flex-col items-center justify-center h-screen sm:mt-30 w-[30%]  min-h-110 sm:min-h-140 min-w-sm sm:min-w-md sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
-                    <h1 className="hidden sm:block text-8xl font-satoshi-light mb-0 text-[#102E46]">Login</h1> 
+            <div className="flex flex-col items-center justify-center sm:mt-30 w-[30%]  min-h-110 sm:min-h-135 min-w-sm sm:min-w-md sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
+                    <h1 className="hidden sm:block text-8xl font-satoshi-light mb-0 text-[#102E46]">Signup</h1> 
                     
                     
                     {/* Email Input */}
@@ -204,13 +199,13 @@ function LoginPage() {
                         
                             {/* Diamond swing */}
                             <span
-                                className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activeEmail ? 'translate-x-full right-0 pt-7 mr-2' : 'translate-x-0 -left-1'}`}
+                                className={`absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activeEmail ? 'translate-x-full right-0 pt-7 mr-2' : 'translate-x-0 left-0'}`}
                                 onClick={() => setActiveEmail(!activeEmail)}
                             >◆</span>
 
                                 {!activeEmail ? 
                                 
-                                <div className="inputLine w-full border-b-2 border-gray-400 focus-within:border-blue-500 outline-none py-2" 
+                                <div className="w-full border-b-2 border-gray-400 focus-within:border-blue-500 outline-none py-2" 
                                 onClick={() => setActiveEmail(!activeEmail)}></div>
                                 
                                 : <input 
@@ -218,7 +213,7 @@ function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 onBlur={() => setActiveEmail(false)}
-                                className="inputLine w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-variable"
+                                className="w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-variable"
                                 placeholder="Enter Email Here"
                                 /> }
                             
@@ -226,7 +221,7 @@ function LoginPage() {
                     </div>
 
                     {/* Password */}
-                    <div className="flex flex-col justify-end  h-[15%] -passwordButton mb-18 cursor-pointer w-[60%] sm:w-[70%]">
+                    <div className="flex flex-col justify-end  h-[15%] -passwordButton mb-16 cursor-pointer w-[60%] sm:w-[70%]">
 
                         
                         <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => setActivePassword(!activePassword)}>
@@ -243,13 +238,13 @@ function LoginPage() {
                         
                             {/* Diamond swing */}
                             <span
-                                className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-2 pt-6.5' : 'translate-x-0 -left-1'} z-10`}
+                                className={`absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-2 pt-5.5' : 'translate-x-0 left-0'} z-10`}
                                 onClick={() => setActivePassword(!activePassword)}
                             >◆</span>
 
                                 {!activePassword ? 
                                     <>
-                                    <div className="inputLine w-full border-b-2 border-gray-400 focus-within:border-blue-500 outline-none py-2" 
+                                    <div className="w-full border-b-2 border-gray-400 focus-within:border-blue-500 outline-none py-2" 
                                     onClick={() => setActivePassword(!activePassword)}>
                                     </div>
                                     <span className="absolute right-2 -top-6 text-gray-500 cursor-pointer "onClick={() => setShowPassword(!showPassword)}>
@@ -269,7 +264,7 @@ function LoginPage() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         onBlur={() => setActivePassword(false)}
-                                        className="inputLine w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
+                                        className=" w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
                                         placeholder="Enter Password Here"
                                     /> 
 
@@ -290,9 +285,7 @@ function LoginPage() {
                         </div>
                     </div>
                     
-                    <p className={`flex flex-row text-center items-center text-red-400 mb-6 -mt-12 ${codeError ? 'block' : 'hidden'}`}>
-                        <CircleX size={18}/> &nbsp;Invalid Email/Password. Please enter again.
-                    </p>
+
                     {/* Login Button */}
                     {/* <button className="bg-primary cursor-pointer text-white py-3 rounded-lg text-lg w-[50%] font-bold hover:bg-blue-700 transition mt-0">
                     Login
@@ -317,7 +310,7 @@ function LoginPage() {
 
                     {/* Signup Link */}
                     <p className="text-center text-gray-600 mt-4">
-                        Don’t have an account? <a href="/signup" className="text-blue-600 font-semibold">Signup here</a>
+                        Don’t have an account? <a href="#" className="text-blue-600 font-semibold">Signup here</a>
                     </p>
             </div>
             
@@ -332,4 +325,41 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default SignupPage;
+
+
+// function LoginPage() {
+//   const navigate = useNavigate();
+
+  
+
+//   return (
+//     <>
+//         <div className="flex items-center justify-center min-h-screen bg-gray-100">
+//         <div className="container max-w-md p-6 bg-white shadow-lg rounded-lg text-center">
+//             <h1 className="text-3xl font-bold text-blue-500">Login</h1>
+//             <button
+//             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+//             onClick={() => handleLogin("student")}
+//             >
+//             Login as Student
+//             </button>
+//             <button
+//             className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+//             onClick={() => handleLogin("admin")}
+//             >
+//             Login as Admin
+//             </button>
+//             <button
+//             className="mt-4 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+//             onClick={() => handleLogin("alumni")}
+//             >
+//             Login as Alumni
+//             </button>
+//         </div>
+//         </div>
+//     </>
+//   );
+// }
+
+// export default LoginPage;
