@@ -7,7 +7,7 @@ import secrets
 
 load_dotenv()
 
-DATABASE_URL = "postgresql://postgres.ocmxiyulokpueycaxbuv:cmsc128@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL, client_encoding='utf8', poolclass=NullPool)
 
@@ -22,5 +22,4 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-SECRET_KEY = secrets.token_hex(32)
 SECRET_KEY = os.getenv("SECRET_KEY")
