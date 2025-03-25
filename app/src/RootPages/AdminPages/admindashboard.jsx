@@ -265,7 +265,7 @@ function AdminLanding() {
           <h2 className="">More about your Alumni</h2>
         </div>
         {/* Registered Alumni */}
-          <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 flex flex-col`}>
+          <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 flex lg:flex-row flex-col`}>
             {/* Alumni header */}
             <div className="flex flex-row justify-between">
               {/* Registed Alumni count */}
@@ -284,7 +284,7 @@ function AdminLanding() {
               </div>
             </div>
             {/* Alumni Locations and Industries */}
-            <div className="mt-3 flex flex-collg:flex-row gap-2">
+            <div className="mt-3 flex flex-col lg:flex-row gap-2">
               {/* Alumni Locations */}
               <div className="flex-1">
                 <div className="bg-secondary rounded-2xl px-4 py-1">
