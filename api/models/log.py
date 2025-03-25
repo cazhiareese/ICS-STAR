@@ -1,8 +1,9 @@
 from sqlalchemy import Column, UUID, DateTime, Boolean, ForeignKey, func
+from sqlalchemy.ext.declarative import declarative_base
 
-from config import config
+Base = declarative_base()
 
-class Log(config.Base):
+class Log(Base):
     __tablename__ = 'log'
     log_id = Column(UUID(as_uuid = True), primary_key = True)
     date_time = Column(DateTime, default = func.now(), nullable = False)

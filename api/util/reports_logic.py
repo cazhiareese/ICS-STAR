@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from models.log import Log
-from models.user import User 
+from models.usermodel import User 
 from config import config
 
 def get_db():

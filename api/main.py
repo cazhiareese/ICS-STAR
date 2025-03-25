@@ -7,11 +7,14 @@ app.include_router(log_route.router)
 
 @app.get("/")
 def read_root():
-    return {"ICS-STAR API": "Welcome to the ICS-STAR API!"}
+    return {"message": "Hello, FastAPI!"}
 
 origins = [
-    "http://localhost",
-    "http://localhost:8080",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
 
 app.add_middleware(
