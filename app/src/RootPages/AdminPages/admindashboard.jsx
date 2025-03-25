@@ -122,11 +122,11 @@ function AdminLanding() {
           </p>
         </div>
         {/* Grid */}
-        <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 grid-rows-[5em_7em_7em_14em_28em_1em_29em_19em] md:grid-rows-[5em_7em_7em_14em_1em_18em] gap-4">
+        <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 grid-rows-[5em_7em_7em_14em_28em_1em_29em_19em] lg:grid-rows-[5em_7em_7em_14em_1em_18em] gap-4">
         {/* Dashboard Banner */}
-          <div className="col-start-1 col-span-2 md:col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
+          <div className="col-start-1 col-span-2 lg:col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
             <p className="text-white font-satoshi-bold text-2xl ml-5"> Dashboard </p>
-            <p className="text-white font-satoshi-light mr-3 md:mr-52"> Bridging Alumni across the Cosmos </p>
+            <p className="text-white font-satoshi-light mr-3 lg:mr-52"> Bridging Alumni across the Cosmos </p>
           </div> 
         {/* Pending Verifications */}
           <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-row justify-between`}> 
@@ -177,7 +177,7 @@ function AdminLanding() {
             </div>
           </div> 
         {/* Upcoming Events */}
-          <div className={`${dashboardCard} col-start-1 md:col-start-3 col-span-2 row-start-4 md:row-start-2 md:row-span-2`}> 
+          <div className={`${dashboardCard} col-start-1 lg:col-start-3 col-span-2 row-start-4 lg:row-start-2 lg:row-span-2`}> 
             <div className="flex flex-row justify-between">
               <p className="font-satoshi-medium text-2xl"> Upcoming Events </p> 
                 <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light">View All Events</p> <MoveRight/></button>
@@ -203,7 +203,7 @@ function AdminLanding() {
             </div>
           </div> 
         {/* Donations Card */}
-          <div className={`${dashboardCard} col-span-2 col-start-1 md:col-span-4 flex flex-col md:flex-row gap-6`}> 
+          <div className={`${dashboardCard} col-span-2 col-start-1 lg:col-span-4 flex flex-col lg:flex-row gap-6`}> 
           {/* Donations */}
             <div className="flex-1 flex flex-col">
               <div className="flex items-center justify-between mb-2">
@@ -261,11 +261,11 @@ function AdminLanding() {
             </div>
           </div> 
         {/* Alumni part */}
-        <div className="row-start-6 md:row-start-5 md:col-span-4 text-2xl font-satoshi-medium -mb-4">
+        <div className="row-start-6 lg:row-start-5 lg:col-span-4 text-2xl font-satoshi-medium -mb-4">
           <h2 className="">More about your Alumni</h2>
         </div>
         {/* Registered Alumni */}
-          <div className={`${dashboardCard} col-span-2 row-start-7 md:row-start-6 flex flex-col`}>
+          <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 flex flex-col`}>
             {/* Alumni header */}
             <div className="flex flex-row justify-between">
               {/* Registed Alumni count */}
@@ -284,7 +284,7 @@ function AdminLanding() {
               </div>
             </div>
             {/* Alumni Locations and Industries */}
-            <div className="mt-3 flex flex-col md:flex-row gap-2">
+            <div className="mt-3 flex flex-collg:flex-row gap-2">
               {/* Alumni Locations */}
               <div className="flex-1">
                 <div className="bg-secondary rounded-2xl px-4 py-1">
@@ -342,7 +342,7 @@ function AdminLanding() {
             </div>
           </div> 
         {/* System Engagement */}
-          <div className={`${dashboardCard} col-start-1 row-start-8 md:row-start-6 md:col-start-3 col-span-2 flex flex-col`}> 
+          <div className={`${dashboardCard} col-start-1 row-start-8 lg:row-start-6 lg:col-start-3 col-span-2 flex flex-col`}> 
             <div className="flex flex-row justify-between">
               <div className="flex flex-col">
                 <h2 className="font-satoshi-medium text-2xl"> System Engagement</h2>  
