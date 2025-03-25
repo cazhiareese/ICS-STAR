@@ -115,52 +115,52 @@ function AdminLanding() {
             <p className="text-white font-satoshi-light mr-3 lg:mr-52 hidden lg:block"> Bridging Alumni across the Cosmos </p>
           </div> 
         {/* Pending Verifications */}
-          <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-row justify-between`}> 
-            <div className="flex flex-col">
-              <p className="font-satoshi-light text-sm"> Pending Verifications </p>
+          <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-col justify-between`}> 
+            <div className="flex flex-row justify-between">
               <p className="text-5xl"> {response.pendingVerifications} </p>
-            </div>
-            <div className="">
-              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-                <FileUser className="w-6 h-6 text-white" />
+              <div className="">
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <FileUser className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
+              <p className="font-satoshi-light text-sm "> Pending Verifications </p>
           </div> 
         {/* Reported Postings */}
-          <div className={`${dashboardCard} cols-start-2 row-start-2 flex flex-row justify-between`}>
-            <div className="flex flex-col">
-              <p className="font-satoshi-light text-sm"> Reported Postings </p>
+        <div className={`${dashboardCard} col-start-2 row-start-2 flex flex-col justify-between`}> 
+            <div className="flex flex-row justify-between">
               <p className="text-5xl"> {response.reportedPostings} </p>
-            </div>
-            <div className="">
-              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-                <TriangleAlert className="w-6 h-6 text-white" />
+              <div className="">
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <TriangleAlert className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
+              <p className="font-satoshi-light text-sm "> Reported Postings </p>
           </div> 
         {/* Reported Users */}
-          <div className={`${dashboardCard} col-start-1 row-start-3 flex flex-row justify-between`}>
-            <div className="flex flex-col">
-              <p className="font-satoshi-light text-sm"> Reported Users </p>
+        <div className={`${dashboardCard} col-start-1 row-start-3 flex flex-col justify-between`}> 
+            <div className="flex flex-row justify-between">
               <p className="text-5xl"> {response.reportedUsers} </p>
-            </div>
-            <div className="">
-              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-                <ShieldUser className="w-6 h-6 text-white" />
+              <div className="">
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <ShieldUser className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
+              <p className="font-satoshi-light text-sm "> Reported Users </p>
           </div> 
         {/* Funding Requests */}
-          <div className={`${dashboardCard} col-start-2 row-start-3 flex flex-row justify-between`}>
-            <div className="flex flex-col">
-              <p className="font-satoshi-light text-sm"> Funding Requests </p>
+        <div className={`${dashboardCard} col-start-2 row-start-3 flex flex-col justify-between`}> 
+            <div className="flex flex-row justify-between">
               <p className="text-5xl"> {response.fundingRequests} </p>
-            </div>
-            <div className="">
-              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-white" />
+              <div className="">
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <Wallet className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
+              <p className="font-satoshi-light text-sm "> Funding Requests </p>
           </div> 
         {/* Upcoming Events */}
           <div className={`${dashboardCard} col-start-1 lg:col-start-3 col-span-2 row-start-4 lg:row-start-2 lg:row-span-2`}> 
