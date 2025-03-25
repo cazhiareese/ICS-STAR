@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from models.log import Log
 from models.usermodel import User 
 from config import config
+import uuid
 
 def get_db():
     db = config.SessionLocal()
@@ -67,3 +68,47 @@ def logic_batch_visits(db: Session):
         batch_unique_users[batch].add(user_id)
     
     return batch_visits, batch_unique_users
+
+def logic_login_log(db: Session, user_id: str):
+    # Get current date and time
+    current_date = datetime.now()
+
+    # Assign log ID (UUID)
+    log_id = str(uuid.uuid4())
+
+    # Create new log entry
+    new_log = Log(
+        log_id = log_id,
+        date_time = current_date,
+        is_active = True,
+        user_id = user_id
+    )
+
+    # Add to database
+    db.add(new_log)
+    db.commit()
+    db.refresh(new_log)
+
+    return new_log
+
+def logic_logout_log(db: Session, user_id: str):
+    # Get current date and time
+    current_date = datetime.now()
+
+    # Assign log ID (UUID)
+    log_id = str(uuid.uuid4())
+
+    # Create new log entry
+    new_log = Log(
+        log_id = log_id,
+        date_time = current_date,
+        is_active = False,
+        user_id = user_id
+    )
+
+    # Add to database
+    db.add(new_log)
+    db.commit()
+    db.refresh(new_log)
+
+    return new_log

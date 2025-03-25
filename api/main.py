@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import log_route
+from routers import log_route, auth
 
 app = FastAPI()
 app.include_router(log_route.router)
+app.include_router(auth.router)
 
 @app.get("/")
 def read_root():
