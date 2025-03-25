@@ -4,7 +4,7 @@ import "./index.css";
 import LoginPage from "./AuthPages/Login";
 import SignupPage from "./AuthPages/Signup";
 import StudentLanding from "./RootPages/StudentPages/studentdashboard";
-import AdminLanding from "./RootPages/AdminPages/admindashboard";
+import AdminRoot from "./RootPages/AdminPages/adminroot";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 
@@ -19,7 +19,7 @@ function App() {
       {/* Routes that include the Navbar */}
       <Route path='/' element={<Root />}>
         <Route path="student" element={<StudentLanding />} />
-        <Route path="admin" element={<AdminLanding />} />
+        <Route path="admin/*" element={<AdminRoot />} />
         <Route path="alumni" element={<AlumniLanding />} />
       </Route>
 
