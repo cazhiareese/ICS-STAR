@@ -6,6 +6,8 @@ import {
 } from "recharts";
 
 import SidebarItem from "../../components/AdminComponents/sidebaritem";
+import IcsStarLogo from "../../components/icsstar_logo";
+import Sidebar from "../../components/AdminComponents/adminsidebar";
 
 function AdminLanding() {
   // To apply selected on sidebar item
@@ -90,25 +92,9 @@ function AdminLanding() {
   ];
 
   return <>
-  <div className="flex flex-row">
+  <div className="flex lg:flex-row flex-col">
     {/* Sidebar */}
-    <div className="bg-white hidden h-screen lg:flex flex-col gap-3 px-4 pt-20 w-2/12">
-      {/* Sidebar items */}
-      {sidebarItems.map((item) => (
-          <SidebarItem
-            key={item.id}
-            title={item.title}
-            icon={item.icon}
-            isSelected={selected === item.id}
-            onClick={() => setSelected(item.id)}
-          />
-        ))}
-        {/* Log out */}
-      <div className={`flex flex-row p-2 rounded-r-3xl items-center ml-2 mt-16 cursor-pointer`}>
-        <span className="mr-3"><LogOut /></span>
-        <p className="text-lg font-satoshi-medium">Log out</p>
-      </div>
-    </div>
+    <Sidebar selected={selected} setSelected={setSelected} sidebarItems={sidebarItems} />
 
     {/* Dashboard area */}
     <div className="bg-[rgb(243,241,244)] flex-1 lg:max-h-screen overflow-auto">
@@ -126,7 +112,7 @@ function AdminLanding() {
         {/* Dashboard Banner */}
           <div className="col-start-1 col-span-2 lg:col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
             <p className="text-white font-satoshi-bold text-2xl ml-5"> Dashboard </p>
-            <p className="text-white font-satoshi-light mr-3 lg:mr-52"> Bridging Alumni across the Cosmos </p>
+            <p className="text-white font-satoshi-light mr-3 lg:mr-52 hidden lg:block"> Bridging Alumni across the Cosmos </p>
           </div> 
         {/* Pending Verifications */}
           <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-row justify-between`}> 
@@ -265,7 +251,7 @@ function AdminLanding() {
           <h2 className="">More about your Alumni</h2>
         </div>
         {/* Registered Alumni */}
-          <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 flex lg:flex-row flex-col`}>
+          <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 flex flex-col`}>
             {/* Alumni header */}
             <div className="flex flex-row justify-between">
               {/* Registed Alumni count */}
