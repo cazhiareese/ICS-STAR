@@ -92,9 +92,9 @@ function AdminLanding() {
   ];
 
   return <>
-  <div className="flex lg:flex-row flex-col">
+  <div className="">
     {/* Sidebar */}
-    <Sidebar selected={selected} setSelected={setSelected} sidebarItems={sidebarItems} />
+    {/* <Sidebar selected={selected} setSelected={setSelected} sidebarItems={sidebarItems} /> */}
 
     {/* Dashboard area */}
     <div className="bg-[rgb(243,241,244)] flex-1 lg:max-h-screen overflow-auto">

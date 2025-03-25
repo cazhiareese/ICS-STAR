@@ -1,49 +1,46 @@
 import React, { useState } from "react";
 import { LogOut, Menu } from "lucide-react";
-import SidebarItem from "./sidebaritem";
-import IcsStarLogo from "../icsstar_logo"; // Ensure correct import path
+import { Link, useLocation } from "react-router-dom";
+import SidebarItem from "./SidebarItem";
+import IcsStarLogo from "../icsstar_logo";
 
-function Sidebar({ selected, setSelected, sidebarItems }) {
-  const [isOpen, setIsOpen] = useState(false); // Manage mobile menu state
+function Sidebar({ sidebarItems }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation(); 
 
   return (
     <>
-      {/* Top Bar for Small Screens */}
-      <div className={`${isOpen ? "hidden" : ""}bg-white w-full flex lg:hidden items-center justify-between px-4 py-3 shadow-md`}>
-        {/* Menu Button */}
-        <button onClick={() => setIsOpen(true)} className="text-gray-700">
+      {/* Mobile Top Bar */}
+      <div className="bg-white top-0 w-full flex lg:hidden items-center justify-between px-4 py-3 shadow-md">
+        <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700">
           <Menu size={28} />
         </button>
-        {/* Placeholder for alignment */}
         <div className="w-7"></div>
       </div>
 
-      {/* Sidebar */}
-      <div
-        className={`fixed top-0 left-0 h-full bg-white shadow-lg transition-transform duration-300 z-50 ${
-          isOpen ? "translate-x-0 w-3/4 sm:w-1/2" : "-translate-x-full"
-        } lg:translate-x-0 lg:static lg:flex lg:flex-col lg:w-2/12 lg:h-screen px-4 pt-4`}
-      >
-        {/* ICS-STAR Logo */}
-        <div className="mb-10">
+      {/* Overlay when sidebar is open */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black opacity-90 lg:hidden z-50" onClick={() => setIsOpen(false)}></div>
+      )}
+
+      {/* Sidebar - Sliding Drawer */}
+      <div className={`bg-white fixed z-50 top-0 left-0 h-screen w-3/4 lg:w-2/12 shadow-lg lg:static px-4 pt-4 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
+        <div className="mb-10 lg:block">
           <IcsStarLogo />
         </div>
 
-        {/* Sidebar items */}
+        {/* Sidebar Items */}
         {sidebarItems.map((item) => (
-          <SidebarItem
-            key={item.id}
-            title={item.title}
-            icon={item.icon}
-            isSelected={selected === item.id}
-            onClick={() => {
-              setSelected(item.id);
-              setIsOpen(false); // Close menu on mobile when selecting an item
-            }}
-          />
+          <Link to={item.path} key={item.id} onClick={() => setIsOpen(false)}>
+            <SidebarItem
+              title={item.title}
+              icon={item.icon}
+              isSelected={location.pathname === item.path} 
+            />
+          </Link>
         ))}
 
-        {/* Log out */}
+        {/* Log Out */}
         <div className="flex flex-row p-2 rounded-r-3xl items-center ml-2 mt-16 cursor-pointer">
           <span className="mr-3">
             <LogOut />
@@ -51,14 +48,6 @@ function Sidebar({ selected, setSelected, sidebarItems }) {
           <p className="text-lg font-satoshi-medium">Log out</p>
         </div>
       </div>
-
-      {/* Overlay (Backdrop) - Click to Close Sidebar */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black opacity-90 lg:hidden z-40"
-          onClick={() => setIsOpen(false)}
-        ></div>
-      )}
     </>
   );
 }
