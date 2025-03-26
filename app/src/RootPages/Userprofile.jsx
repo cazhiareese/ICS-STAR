@@ -8,7 +8,7 @@ const alumniUsers = [
     { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: "profile_images/jane_smith.jpg", password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "Freelance UX Designer", work_location: "Remote", work_mode: "Remote", employer_class: "Freelancer", tenured_status: "No", salary_grade: "N/A", is_banned: false }  
   ];
   
-  console.log(alumniUsers);
+const signedinuser = { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: '../assets/prince boy.jpg', password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "Freelance UX Designer", work_location: "Remote", work_mode: "Remote", employer_class: "Freelancer", tenured_status: "No", salary_grade: "N/A", is_banned: false }
   
 
 function UserProfile() {
@@ -34,10 +34,10 @@ function UserProfile() {
                     {/* Name and Email */}
                     <div className="flex flex-col items-center sm:items-start gap-2 text-center sm:text-left">
                         <h2 className="font-satoshi-black text-[24px] sm:text-[32px] leading-[22px] tracking-[-0.02em] text-primary">
-                            Kiefer L. Tayawa
+                            {signedinuser.first_name} {signedinuser.last_name}
                         </h2>
                         <p className="font-satoshi-medium text-[18px] sm:text-[24px] leading-[22px] tracking-[-0.02em] text-black">
-                            kltayawa@up.edu.ph
+                            {signedinuser.email}
                         </p>
 
                         {/* Social Icons */}
@@ -57,33 +57,17 @@ function UserProfile() {
 
             {/* Nav Section */}
             <div className="w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-white p-2 flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-7 mt-4 px-6">
-                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">
-                    About
-                </span>
-                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">
-                    Work
-                </span>
-                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">
-                    Job Posted
-                </span>
-                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">
-                    Donation History
-                </span>
+                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">About</span>
+                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Work</span>
+                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Job Posted</span>
+                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Donation History</span>
             </div>
 
             {/* Information Sections */}
-            <div className="w-full max-w-[1100px] mt-6">
-                <SectionHeader title="PERSONAL INFORMATION" />
-            </div>
-            <div className="w-full max-w-[1100px] mt-6">
-                <SectionHeader title="SKILLS AND INTEREST" />
-            </div>
-            <div className="w-full max-w-[1100px] mt-6">
-                <SectionHeader title="AFFILIATIONS" />
-            </div>
-            <div className="w-full max-w-[1100px] mt-6">
-                <SectionHeader title="SCHOLARSHIPS" />
-            </div>
+            <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="PERSONAL INFORMATION" /></div>
+            <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="SKILLS AND INTEREST" /></div>
+            <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="AFFILIATIONS" /></div>
+            <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="SCHOLARSHIPS" /></div>
         </div>
     );
 }
