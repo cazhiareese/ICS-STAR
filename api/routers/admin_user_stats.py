@@ -41,8 +41,14 @@ async def get_per_batch(db: Session = Depends(get_db)):
 
     return {"message": "success", "data": user_per_batch}
 
-@router.get("/admin/filter/batch")
-async def get_filtered_batch(db: Session = Depends(get_db), batch: str ="", type: str=""):
-    user_from_batch = get_user_filter_batch(db, batch, type)
+@router.get("/admin/filter/batch-alumni")
+async def get_filtered_batch(db: Session = Depends(get_db), batch: str =""):
+    user_from_batch = get_user_filter_batch(db, batch, "alumni")
+
+    return {"message": "success", "data": user_from_batch}
+
+@router.get("/admin/filter/batch-student")
+async def get_filtered_batch(db: Session = Depends(get_db), batch: str =""):
+    user_from_batch = get_user_filter_batch(db, batch, "student")
 
     return {"message": "success", "data": user_from_batch}
