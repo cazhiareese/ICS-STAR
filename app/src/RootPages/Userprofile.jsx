@@ -1,5 +1,5 @@
-import React from 'react';
-import { MapPin, Phone, IdCard, GraduationCap, Camera, Facebook, Github, Linkedin, Pencil, PlusCircle } from "lucide-react";
+import React, {useState} from 'react';
+import { MapPin, Phone, IdCard, GraduationCap, Camera, Facebook, Github, Linkedin, Pencil, PlusCircle, XCircle } from "lucide-react";
 import prince from '../assets/prince boy.jpg';
 import SectionHeader from '../components/sectionheader';
 
@@ -18,6 +18,7 @@ const affiliations = [
 const scholarships = ["DOST Scholarship", "UPLB SLAS"];
 
 function UserProfile() {
+    const [editMode, setEditMode] = useState(false);
     return (
 <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
 
@@ -57,8 +58,8 @@ function UserProfile() {
                 </div>
 
                 {/* Right Section: Edit Profile Button */}
-                <button className="mt-4 sm:mt-0 flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[16px] font-medium hover:bg-blue-800 transition">
-                    <Pencil size={16} /> Edit Profile
+                <button onClick={() => setEditMode(!editMode)}className="mt-4 sm:mt-0 flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[16px] font-medium hover:bg-blue-800 transition">
+                    <Pencil size={16} /> {editMode ? "Done Editing" : "Edit Profile"}
                 </button>
             </div>
 
@@ -126,15 +127,21 @@ function UserProfile() {
       <div className="flex justify-between items-center mt-4">
         {/* Skills List */}
         <div className="flex flex-wrap gap-3">
-          {skills.map((skill, index) => (
-            <span
-              key={index}
-              className="px-4 py-2 border border-blue-700 text-blue-700 rounded-full font-medium text-[16px] hover:bg-blue-50 transition"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
+  {skills.map((skill, index) => (
+    <div key={index} className="relative inline-block">
+      <span className="px-4 py-2 border border-blue-700 text-blue-700 rounded-full font-medium text-[16px] hover:bg-blue-50 transition">
+        {skill}
+      </span>
+      {editMode && (
+        <XCircle
+          size={18}
+          className="absolute -top-2 -right-2 text-red-500 cursor-pointer bg-white rounded-full"
+        />
+      )}
+    </div>
+  ))}
+</div>
+
 
         {/* Add Skills Button */}
         <button className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition">
