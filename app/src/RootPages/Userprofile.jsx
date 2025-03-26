@@ -5,15 +5,13 @@ import SectionHeader from '../components/sectionheader';
 function UserProfile() {
   return (
     <div className="flex flex-col items-center relative min-h-screen justify-center">
-      <div>Profile</div>
       <div className="w-[1100px] h-[226px] border border-gray-300 rounded-[10px] bg-white not-only-of-type:shadow-md p-4 flex items-center justify-center">
         Profile Container
       </div>
       <div className="w-[1100px] h-[45px] border border-gray-300 rounded-[10px] bg-white shadow-md p-2 flex items-center justify-center mt-4">
         Another Container
       </div>
-      <div>nav</div>
-      
+
       {/* Personal Information Section */}
       <div className="w-[1100px] mt-6 relative">
         <SectionHeader title="PERSONAL INFORMATION" />
