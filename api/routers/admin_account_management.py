@@ -1,5 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
+from schemas.user import UserOut
 from util.userutil import get_db, get_current_user, require_admin
 from models.usermodel import User
 
@@ -14,9 +15,10 @@ def isAdmin(current_user: User = Depends(require_admin)):
 # Get all unverified users
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified users
-@router.get("/admin/unverified", dependencies=[Depends(isAdmin)])
+@router.get("/admin/unverified", dependencies=[Depends(isAdmin)], response_model=list[UserOut])
 async def read_unverified_users(db: Session = Depends(get_db)):
-    return db.query(User).filter(User.isVerified == False).all()
+    users = db.query(User).filter(User.is_verified == False).all()
+    return [UserOut.model_validate(user) for user in users]
 
 # Verify and confirm user registration
 # Arguments: db - SQLAlchemy session, user_id - the user ID
@@ -30,4 +32,23 @@ async def confirm_user(db: Session = Depends(get_db), user_id: int = None):
     db.commit()
     return {"message": "User registration confirmed"}
 
+# Get all graduating students
+# Arguments: db - SQLAlchemy session
+# Returns: a list of all graduating students
+@router.get("/admin/graduating", dependencies=[Depends(isAdmin)], response_model=list[UserOut])
+async def read_graduating_students(db: Session = Depends(get_db)):
+    students = db.query(User).filter(User.user_type == "student", User.standing == 'graduating').all()
+    return [UserOut.model_validate(student) for student in students]
+
+# Transition graduating students to alumni
+# Arguments: db - SQLAlchemy session, user_id - the user ID
+# Returns: a message confirming the transition
+@router.put("/admin/transition/{user_id}", dependencies=[Depends(isAdmin)])
+async def transition_student(db: Session = Depends(get_db), user_id: int = None):
+    student = db.query(User).filter(User.user_id == user_id).first()
+    if student is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    student.user_type = "alumni"
+    db.commit()
+    return {"message": "Student transitioned to alumni"}
 
