@@ -229,7 +229,7 @@ function AdminDashboard() {
             </div>
           </div> 
         {/* Alumni part */}
-        <div className="row-start-6 lg:row-start-5 lg:col-span-4 text-2xl font-satoshi-medium -mb-4">
+        <div className="row-start-6 col-span-2 lg:row-start-5 lg:col-span-4 text-2xl font-satoshi-medium -mb-4">
           <h2 className="">More about your Alumni</h2>
         </div>
         {/* Registered Alumni */}
