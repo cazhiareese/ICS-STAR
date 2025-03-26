@@ -19,7 +19,8 @@ const scholarships = ["DOST Scholarship", "UPLB SLAS"];
 
 function UserProfile() {
     return (
-        <div className="flex flex-col items-center relative min-h-screen mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
+<div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
+
             {/* Profile Section */}
             <div className="w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
                 
