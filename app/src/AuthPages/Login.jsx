@@ -11,6 +11,7 @@ import { Eye, EyeClosed, CircleX } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+    const baseURL = import.meta.env.VITE_BACKEND_URL || ""
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -33,32 +34,32 @@ function LoginPage() {
       // e.preventDefault(); // Prevent page reload
       setIsLoading(true); // Show loading spinner
 
-    try {
-        const response = await fetch("http://localhost:8000/token", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ username: email, password: password }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            localStorage.setItem("token", data.access_token);
-            // alert("Login Successful!");
-            fetchUserData();
-            
-        } else {
-            alert(data.detail || "Login failed!");
-            // alert(data)
-            setCodeError(true)
-        }
+      try {
 
-        } catch (error) {
-            console.error("Error:", error);
-            // alert("Something went wrong!");
-            setCodeError(true)
-        } finally {
-            setIsLoading(false); 
-        }
-    };
+          const response = await fetch(`${baseURL}/token`, {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({ username: email, password: password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+              localStorage.setItem("token", data.access_token);
+              // alert("Login Successful!");
+              fetchUserData();
+              
+          } else {
+              alert(data.detail || "Login failed!");
+              alert(data)
+          }
+      } catch (error) {
+          console.error("Error:", error);
+          alert("Something went wrong!");
+      } finally {
+          setIsLoading(false); 
+      }
+  };
 
     const loginClick = async (e) => {
         e.preventDefault();
@@ -73,7 +74,7 @@ function LoginPage() {
         }
     
         try {
-            const response = await fetch("http://localhost:8000/users/me/", {
+            const response = await fetch(`${baseURL}/users/me/`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
