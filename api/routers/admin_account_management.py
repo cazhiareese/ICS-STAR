@@ -52,3 +52,10 @@ async def transition_student(db: Session = Depends(get_db), user_id: int = None)
     db.commit()
     return {"message": "Student transitioned to alumni"}
 
+# Get all students (not transitioned students)
+# Arguments: db - SQLAlchemy session
+# Returns: a list of all students
+@router.get("/admin/students", dependencies=[Depends(isAdmin)], response_model=list[UserOut])
+async def read_students(db: Session = Depends(get_db)):
+    students = db.query(User).filter(User.user_type == "student").all()
+    return [UserOut.model_validate(student) for student in students]
