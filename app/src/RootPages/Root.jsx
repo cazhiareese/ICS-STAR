@@ -11,7 +11,7 @@ function Root() {
   return (
     <div>
 
- <Navbar user={user} />
+{user.type !== "admin" && <Navbar user={user} />}
       <Outlet context={user} />
     </div>
   );
