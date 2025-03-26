@@ -67,3 +67,13 @@ async def report_post(report: Report, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(report)
     return {"message": "Post reported"}
+
+# Add an attachment to a report
+# Arguments: db - SQLAlchemy session, attachment - the attachment
+# Returns: a message confirming the attachment
+@router.post("/reports/attachments")
+async def add_attachment(attachment: ReportAttachment, db: Session = Depends(get_db)):
+    db.add(attachment)
+    db.commit()
+    db.refresh(attachment)
+    return {"message": "Attachment added"}
