@@ -4,7 +4,7 @@ from schemas.user import UserOut
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
-from util.user_information_stats import get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch
+from util.user_information_stats import get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch
 router = APIRouter()
 
 #Get alumni and students per city (for admin users only)
@@ -42,4 +42,7 @@ async def get_per_batch(db: Session = Depends(get_db)):
     return {"message": "success", "data": user_per_batch}
 
 @router.get("/admin/filter/batch")
-async def get_filtered_batch(db: Session = Depends(get_db), )
+async def get_filtered_batch(db: Session = Depends(get_db), batch: str ="", type: str=""):
+    user_from_batch = get_user_filter_batch(db, batch, type)
+
+    return {"message": "success", "data": user_from_batch}
