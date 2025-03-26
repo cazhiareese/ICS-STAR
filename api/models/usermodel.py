@@ -19,6 +19,13 @@ class UserTypeEnum(PyEnum):
    student = 'student'
    alumni = 'alumni'
 
+class UserStandingEnum(PyEnum):
+   freshman = 'freshman'
+   old_freshman = 'old freshman'
+   sophomore = 'sophomore'
+   junior = 'junior'
+   senior = 'senior'
+   graduating = 'graduating'
 
 # Models
 class User(Base):
@@ -42,7 +49,7 @@ class User(Base):
    position = Column(String(50))
    is_banned = Column(Boolean)
    student_number = Column(String(15), unique=True)
-   standing = Column(String(20))
+   standing = Column(Enum(UserStandingEnum), nullable=True)
    graduation_year = Column(Integer)
    graduation_semester = Column(String(20))
    employment_status = Column(String(50))
