@@ -12,6 +12,10 @@ function Navbar({ user }) {
     navigate("/");
   }
 
+  function handleProfileClick() {
+    navigate("/profile"); 
+  }
+
   return (
     <nav className="bg-white text-black px-6 py-4 shadow-md flex justify-between items-center border-b border-gray-300 h-20">
       {/* Logo + Title */}
@@ -31,7 +35,7 @@ function Navbar({ user }) {
 
       {/* Icons */}
       <div className="flex items-center gap-4">
-        <User className="cursor-pointer hover:text-primary transition" size={20} />
+        <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
         <Globe className="cursor-pointer hover:text-primary transition" size={20} />
         <LogOut 
           className="cursor-pointer hover:text-red-500 transition" 
