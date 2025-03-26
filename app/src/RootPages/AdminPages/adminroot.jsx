@@ -1,12 +1,14 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "../../components/AdminComponents/adminsidebar";
-import AdminDashboard from "./AdminDashboard";
-import AdminRecords from "./AdminRecords";
-import AdminEvents from "./AdminEvents";
-import AdminNewsletter from "./AdminNewsletter";
-import AdminCareer from "./AdminCareer";
-import AdminDonations from "./AdminDonations";
+
+import AdminDashboard from "./admindashboard.jsx";
+import AdminRecords from "./adminrecords.jsx";
+import AdminEvents from "./adminevents.jsx";
+import AdminNewsletter from "./adminnewsletter.jsx";
+import AdminCareer from "./admincareer.jsx";
+import AdminDonations from "./admindonations.jsx";
+
 import { Home, FileText, Calendar, Newspaper, BriefcaseBusiness, Heart } from "lucide-react";
 
 function AdminRoot() {

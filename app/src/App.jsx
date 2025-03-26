@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 import LoginPage from "./AuthPages/Login";
+import SignupPage from "./AuthPages/Signup";
 import StudentLanding from "./RootPages/StudentPages/studentdashboard";
 import AdminRoot from "./RootPages/AdminPages/adminroot";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
@@ -12,6 +13,8 @@ function App() {
     <Routes>
       {/* Login Page (No Navbar) */}
       <Route path="/" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
 
       {/* Routes that include the Navbar */}
       <Route path='/' element={<Root />}>
