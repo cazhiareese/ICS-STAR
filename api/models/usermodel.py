@@ -5,7 +5,6 @@ from sqlalchemy.pool import NullPool
 import uuid
 from enum import Enum as PyEnum
 
-
 Base = declarative_base()
 
 # Enums
@@ -59,6 +58,7 @@ class User(Base):
    skills = relationship("UserSkill", back_populates="user")
    scholarships = relationship("UserScholarship", back_populates="user")
    affiliations = relationship("UserAffiliation", back_populates="user")
+   logs = relationship("Log", back_populates="user")
 
 
 class UserSkill(Base):
