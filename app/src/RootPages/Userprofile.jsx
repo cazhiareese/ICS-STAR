@@ -2,12 +2,12 @@ import React from 'react';
 
 function UserProfile() {
   return (
-    <div className="flex flex-col relative">
+    <div className="flex flex-col items-center relative min-h-screen mt-10 gap-y-4">
       <div>Profile</div>
-      <div className="absolute w-[1100px] h-[226px] top-[134px] left-[170px] border border-gray-300 rounded-[10px] bg-gray-200 shadow-md p-4">
+      <div className="w-[1100px] h-[226px] border border-gray-300 rounded-[10px] bg-gray-200 shadow-md p-4 flex items-center justify-center">
         Profile Container
       </div>
-      <div className="absolute w-[1100px] h-[45px] top-[379px] left-[170px] border border-gray-300 rounded-[10px] bg-gray-200 shadow-md p-2">
+      <div className="w-[1100px] h-[45px] border border-gray-300 rounded-[10px] bg-gray-200 shadow-md p-2 flex items-center justify-center">
         Another Container
       </div>
       <div>nav</div>
