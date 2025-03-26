@@ -56,3 +56,14 @@ class UserOut(BaseModel):
 
     class Config:
         from_attributes = True
+        
+class UserIn(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    password: str
+    student_number: Optional[str] = None
+    graduation_year: Optional[int] = None
+    graduation_semester: Optional[str] = None
+    verification_file: Optional[str] = None
+    user_type: UserTypeEnum
