@@ -4,8 +4,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Annotated
 from config.config import ACCESS_TOKEN_EXPIRE_MINUTES
-from util.userutil import get_current_active_user, require_student, require_alum, require_admin, get_db, authenticate_user, create_access_token
+from config.database import get_db
 
+from util.userutil import get_current_active_user, require_student, require_alum, require_admin, authenticate_user, create_access_token
 from util.reports_logic import logic_login_log, logic_logout_log
 
 from schemas.user import UserOut
