@@ -15,6 +15,7 @@ const affiliations = [
     { affiliation: "Young Software Engineers’ Society", role: "Resident Member" },
     { affiliation: "Young Software Engineers’ Society", role: "Resident Member" },
   ];
+const scholarships = ["DOST Scholarship", "UPLB SLAS"];
 
 function UserProfile() {
     return (
@@ -162,7 +163,27 @@ function UserProfile() {
         </button>
       </div>
     </div>
-            <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="SCHOLARSHIPS" /></div>
+    <div className="w-full max-w-[1100px] mt-6">
+      <SectionHeader title="SCHOLARSHIPS" />
+
+      <div className="flex justify-between items-center mt-4">
+        {/* Scholarship List */}
+        <div className="w-full">
+          {scholarships.map((scholarship, index) => (
+            <div key={index}>
+              <p className="text-blue-700 font-medium py-2">{scholarship}</p>
+              <div className="w-full border-b border-gray-300"></div> {/* Divider below every item */}
+            </div>
+          ))}
+        </div>
+
+        {/* Add Scholarships Button */}
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition">
+          <PlusCircle size={16} />
+          Add scholarships
+        </button>
+      </div>
+    </div>
         </div>
     );
 }
