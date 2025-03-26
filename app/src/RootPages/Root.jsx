@@ -7,10 +7,11 @@ function Root() {
     id: 123,
     type: "admin",
   };
-
+//{user.type !== "admin" && <Navbar user={user} />}
   return (
     <div>
-      {user.type !== "admin" && <Navbar user={user} />}
+
+ <Navbar user={user} />
       <Outlet context={user} />
     </div>
   );
