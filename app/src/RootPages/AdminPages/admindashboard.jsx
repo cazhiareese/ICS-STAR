@@ -1,28 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Home, FileText, Calendar, Newspaper, BriefcaseBusiness, Heart, LogOut, CircleUserRound, FileUser, ShieldUser, TriangleAlert, HandCoins, MoveRight, Users, Wallet } from "lucide-react";
 import { 
   PieChart, Pie, Cell, Tooltip, Legend, 
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid
 } from "recharts";
 
-import SidebarItem from "../../components/AdminComponents/sidebaritem";
-import IcsStarLogo from "../../components/icsstar_logo";
-import Sidebar from "../../components/AdminComponents/adminsidebar";
 
-function AdminLanding() {
-  // To apply selected on sidebar item
-  const [selected, setSelected] = useState('dashboard')
+function AdminDashboard() {
 
-  // Items for the sidebar
-  const sidebarItems = [
-    { id: "dashboard", title: "Dashboard", icon: <Home size={24} /> },
-    { id: "records", title: "Records", icon: <FileText size={24} /> },
-    { id: "events", title: "Events", icon: <Calendar size={24} /> },
-    { id: "newsletter", title: "Newsletter", icon: <Newspaper size={24} /> },
-    { id: "career", title: "Career", icon: <BriefcaseBusiness size={24} /> },
-    { id: "donations", title: "Donations", icon: <Heart size={24} /> },    
-  ];
-  
   const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
 
   // SAMPLE DATA
@@ -93,9 +78,6 @@ function AdminLanding() {
 
   return <>
   <div className="">
-    {/* Sidebar */}
-    {/* <Sidebar selected={selected} setSelected={setSelected} sidebarItems={sidebarItems} /> */}
-
     {/* Dashboard area */}
     <div className="bg-[rgb(243,241,244)] flex-1 lg:max-h-screen overflow-auto">
       <div className="p-4 flex flex-col max-w-7xl mx-auto">
@@ -364,4 +346,4 @@ function AdminLanding() {
   </>;
 }
 
-export default AdminLanding;
+export default AdminDashboard;
