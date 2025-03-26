@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { LogOut, Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import SidebarItem from "./SidebarItem";
+import SidebarItem from "./sidebaritem.jsx";
 import IcsStarLogo from "../icsstar_logo";
 
 function Sidebar({ sidebarItems }) {
