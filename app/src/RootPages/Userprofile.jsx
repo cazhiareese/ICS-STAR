@@ -24,20 +24,23 @@ function UserProfile() {
                         </div>
                     </div>
 
-                    {/* Name and Email */}
-                    <div>
-                        <h2 className="font-satoshi font-bold text-[24px] text-blue-700 leading-[30px]">
-                            Kiefer L. Tayawa
-                        </h2>
-                        <p className="text-gray-500 text-[18px] leading-[24px]">kltayawa@up.edu.ph</p>
+{/* Name and Email */}
+<div>
+    <h2 className="font-satoshi-black text-[32px] leading-[22px] tracking-[-0.02em] text-primary">
+        Kiefer L. Tayawa
+    </h2>
+    <p className="font-satoshi-medium text-[24px] leading-[22px] tracking-[-0.02em] text-black">
+        kltayawa@up.edu.ph
+    </p>
 
-                        {/* Social Icons */}
-                        <div className="flex gap-4 mt-2">
-                            <Facebook size={24} className="text-black cursor-pointer hover:text-blue-600" />
-                            <Github size={24} className="text-black cursor-pointer hover:text-blue-600" />
-                            <Linkedin size={24} className="text-black cursor-pointer hover:text-blue-600" />
-                        </div>
-                    </div>
+    {/* Social Icons */}
+    <div className="flex gap-4 mt-2">
+        <Facebook size={24} className="text-black cursor-pointer hover:text-blue-600" />
+        <Github size={24} className="text-black cursor-pointer hover:text-blue-600" />
+        <Linkedin size={24} className="text-black cursor-pointer hover:text-blue-600" />
+    </div>
+</div>
+
                 </div>
 
                 {/* Right Section: Edit Profile Button */}
