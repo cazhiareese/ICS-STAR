@@ -27,21 +27,32 @@ class UserOut(BaseModel):
     first_name: str
     last_name: str
     email: str
-    mobile_number: Optional[str] = None  
+    mobile_number: str
     age: int
-    gender: GenderEnum  
+    gender: GenderEnum
     city: str
     state: str
     country: str
     marital_status: Optional[str] = None
-    user_type: UserTypeEnum  
+    image: Optional[str] = None
+    verification_file: Optional[str] = None
     is_verified: bool
     is_banned: Optional[bool] = None
+    user_type: UserTypeEnum
+    position: Optional[str] = None
+    student_number: Optional[str] = None
     standing: Optional[UserStandingEnum] = None
     graduation_year: Optional[int] = None
     graduation_semester: Optional[str] = None
+    employment_status: Optional[str] = None
+    job_title: Optional[str] = None
+    work_location: Optional[str] = None
+    work_mode: Optional[str] = None
+    employer_class: Optional[str] = None
+    tenured_status: Optional[str] = None
+    salary_grade: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
     class Config:
-        from_attributes = True  
+        from_attributes = True
