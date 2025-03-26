@@ -12,7 +12,7 @@ function UserProfile() {
                 
                 {/* Left Section: Profile Picture */}
                 <div className="relative flex items-center gap-6">
-                    <div className="relative w-[160px] h-[160px] rounded-full border-[1.5px] border-black flex items-center justify-center overflow-hidden">
+                    <div className="relative w-[160px] h-[160px] rounded-full border-[1.5px] border-black flex items-center justify-center overflow-hidden mx-5">
                         <img 
                             src={prince}
                             alt="Profile" 
