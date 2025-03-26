@@ -25,7 +25,7 @@ function UserProfile() {
                     </div>
 
 {/* Name and Email */}
-<div>
+<div className="flex flex-col justify-between gap-2">
     <h2 className="font-satoshi-black text-[32px] leading-[22px] tracking-[-0.02em] text-primary">
         Kiefer L. Tayawa
     </h2>
@@ -34,12 +34,13 @@ function UserProfile() {
     </p>
 
     {/* Social Icons */}
-    <div className="flex gap-4 mt-2">
+    <div className="flex gap-4">
         <Facebook size={24} className="text-black cursor-pointer hover:text-blue-600" />
         <Github size={24} className="text-black cursor-pointer hover:text-blue-600" />
         <Linkedin size={24} className="text-black cursor-pointer hover:text-blue-600" />
     </div>
 </div>
+
 
                 </div>
 
