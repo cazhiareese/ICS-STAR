@@ -15,7 +15,7 @@ function UserProfile() {
     return (
         <div className="flex flex-col items-center relative min-h-screen mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
             {/* Profile Section */}
-            <div className="w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-white p-6 flex flex-col sm:flex-row items-center sm:justify-between">
+            <div className="w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
                 
                 {/* Left Section: Profile Picture */}
                 <div className="relative flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto">
@@ -56,7 +56,7 @@ function UserProfile() {
             </div>
 
             {/* Nav Section */}
-            <div className="w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-white p-2 flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-7 mt-4 px-6">
+            <div className="w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-whitey p-2 flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-7 mt-4 px-6">
                 <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">About</span>
                 <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Work</span>
                 <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Job Posted</span>
@@ -64,7 +64,55 @@ function UserProfile() {
             </div>
 
             {/* Information Sections */}
-            <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="PERSONAL INFORMATION" /></div>
+            <div className="w-full max-w-[1100px] mt-6">
+      <SectionHeader title="PERSONAL INFORMATION" />
+
+      <div className="flex flex-wrap justify-between items-center mt-4 text-gray-700 text-[16px]">
+        {/* Location */}
+        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+          <div className="flex items-center gap-2">
+            <MapPin size={20} className="text-gray-600" />
+            <span>Location</span>
+          </div>
+          <span className="text-blue-700 font-medium">
+            {signedinuser.city}, {signedinuser.state}
+          </span>
+        </div>
+
+        {/* Mobile Number */}
+        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+          <div className="flex items-center gap-2">
+            <Phone size={20} className="text-gray-600" />
+            <span>Mobile Number</span>
+          </div>
+          <span className="text-blue-700 font-medium">
+            {signedinuser.mobile_number}
+          </span>
+        </div>
+
+        {/* Student Number */}
+        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+          <div className="flex items-center gap-2">
+            <IdCard size={20} className="text-gray-600" />
+            <span>Student Number</span>
+          </div>
+          <span className="text-blue-700 font-medium">
+            {signedinuser.student_number}
+          </span>
+        </div>
+
+        {/* Graduating Class */}
+        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+          <div className="flex items-center gap-2">
+            <GraduationCap size={20} className="text-gray-600" />
+            <span>Graduating Class</span>
+          </div>
+          <span className="text-blue-700 font-medium">
+            {signedinuser.graduation_year} - {signedinuser.graduation_semester}
+          </span>
+        </div>
+      </div>
+    </div>
             <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="SKILLS AND INTEREST" /></div>
             <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="AFFILIATIONS" /></div>
             <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="SCHOLARSHIPS" /></div>
