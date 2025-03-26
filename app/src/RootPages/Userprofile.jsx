@@ -4,7 +4,7 @@ import SectionHeader from '../components/sectionheader';
 
 function UserProfile() {
   return (
-    <div className="flex flex-col items-center relative min-h-screen justify-center">
+    <div className="flex flex-col items-center relative min-h-screen mt-10 gap-y-4">
       <div className="w-[1100px] h-[226px] border border-gray-300 rounded-[10px] bg-white not-only-of-type:shadow-md p-4 flex items-center justify-center">
         Profile Container
       </div>
