@@ -3,14 +3,8 @@ from sqlalchemy.orm import Session
 from models.log import Log
 from models.usermodel import User 
 from config import config
+from config.database import get_db
 import uuid
-
-def get_db():
-    db = config.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # Filters logs by including only those from the last 30 days
 #
