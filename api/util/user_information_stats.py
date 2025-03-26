@@ -36,7 +36,6 @@ def get_user_filtered_city (db: Session):
     return {'students': stud_with_loc, 'alumni': alum_with_loc}
 
 def get_user_filtered_state (db: Session):
-    # [location : {alumni: [{}], student: [{}]}]
     states = db.query(User.state).distinct().where(User.state.is_not(None), User.user_type != 'admin').all()
 
     if states is None:
@@ -66,7 +65,7 @@ def get_user_filtered_state (db: Session):
     return {'students': stud_with_loc, 'alumni': alum_with_loc}
 
 def get_user_filtered_country (db: Session):
-    # [location : {alumni: [{}], student: [{}]}]
+
     countries = db.query(User.country).distinct().where(User.country.is_not(None), User.user_type != 'admin').all()
 
     if countries is None:
@@ -94,6 +93,8 @@ def get_user_filtered_country (db: Session):
 
     
     return {'students': stud_with_loc, 'alumni': alum_with_loc}
+
+
 
 
 
