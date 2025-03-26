@@ -1,6 +1,7 @@
 from operator import is_not
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from models.usermodel import User
 from schemas.user import UserOut
 
@@ -25,7 +26,8 @@ def get_user_filtered_city (db: Session):
         if stud_loc is None:
             raise HTTPException(status_code=404, detail=f"No stud from this {loc}")
         
-
+        # alum_loc_dict = {loc: [UserOut.model_validate(user) for user in alum_loc]}
+        # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
         
         alum_loc_dict = {loc: [user[0] for user in alum_loc]}
         stud_loc_dict = {loc: [user[0] for user in stud_loc]}
@@ -54,6 +56,8 @@ def get_user_filtered_state (db: Session):
         if stud_loc is None:
             raise HTTPException(status_code=404, detail=f"No stud from this {loc}")
         
+        # alum_loc_dict = {loc: [UserOut.model_validate(user) for user in alum_loc]}
+        # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
 
         
         alum_loc_dict = {loc: [user[0] for user in alum_loc]}
@@ -84,7 +88,8 @@ def get_user_filtered_country (db: Session):
         if stud_loc is None:
             raise HTTPException(status_code=404, detail=f"No stud from this {loc}")
         
-
+        # alum_loc_dict = {loc: [UserOut.model_validate(user) for user in alum_loc]}
+        # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
         
         alum_loc_dict = {loc: [user[0] for user in alum_loc]}
         stud_loc_dict = {loc: [user[0] for user in stud_loc]}
@@ -95,6 +100,32 @@ def get_user_filtered_country (db: Session):
     return {'students': stud_with_loc, 'alumni': alum_with_loc}
 
 
+def get_user_all_batch (db: Session):
+    batches = db.query(func.split_part(User.student_number, '-', 1)).distinct().filter(User.student_number.is_not(None), User.user_type != 'admin').all()
 
+    if batches is None:
+        raise HTTPException(status_code=404, detail="No batches found")
+    
+    batches_formatted = [batch[0] for batch in batches]
+
+    alum_batch_list = []
+    stud_batch_list = []
+    for batch in batches_formatted:
+        alumni_batch = db.query(User.user_id).filter(User.student_number.like(f"{batch}-%"), User.user_type == 'alumni').all()
+        student_batch = db.query(User.user_id).filter(User.student_number.like(f"{batch}-%"), User.user_type == 'student').all()
+
+        alum_batch_dict = {batch: [user[0] for user in alumni_batch]}
+        stud_batch_dict = {batch: [user[0] for user in student_batch]}
+
+        alum_batch_list.append(alum_batch_dict)
+        stud_batch_list.append(stud_batch_dict)
+
+    return {'alumni': alum_batch_list, 'students': stud_batch_list}
+
+def get_user_filter_batch(db: Session, batch: str, type: str):
+    user_batch =  db.query(User.user_id).filter(User.student_number.like(f"{batch}-%"), User.user_type == type).all()
+
+    # return [UserOut.model_validate(user) for user in user_batch]
+    return[user[0] for user in user_batch]
 
 

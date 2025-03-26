@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routers import admin_user_stats
+from routers import admin_user_stats
 from routers import log_route, auth
 
 
