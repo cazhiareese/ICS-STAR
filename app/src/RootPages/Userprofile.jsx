@@ -10,6 +10,11 @@ const alumniUsers = [
   
 const signedinuser = { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: '../assets/prince boy.jpg', password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "Freelance UX Designer", work_location: "Remote", work_mode: "Remote", employer_class: "Freelancer", tenured_status: "No", salary_grade: "N/A", is_banned: false }
 const skills = ["Artificial Intelligence", "Cybersecurity", "Web Development"];
+const affiliations = [
+    { affiliation: "Young Software Engineers’ Society", role: "Resident Member" },
+    { affiliation: "Young Software Engineers’ Society", role: "Resident Member" },
+    { affiliation: "Young Software Engineers’ Society", role: "Resident Member" },
+  ];
 
 function UserProfile() {
     return (
@@ -136,7 +141,27 @@ function UserProfile() {
         </button>
       </div>
     </div>
-            <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="AFFILIATIONS" /></div>
+    <div className="w-full max-w-[1100px] mt-6">
+      <SectionHeader title="AFFILIATIONS" />
+
+      <div className="flex justify-between items-center mt-4">
+        {/* Affiliation List (Two-column layout) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 w-full">
+          {affiliations.map((affiliation, index) => (
+            <div key={index} className="text-left">
+              <p className="text-blue-700 font-medium">{affiliation.affiliation}</p>
+              <p className="text-gray-600">{affiliation.role}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Add Affiliations Button */}
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition">
+          <PlusCircle size={16} />
+          Add affiliations
+        </button>
+      </div>
+    </div>
             <div className="w-full max-w-[1100px] mt-6"><SectionHeader title="SCHOLARSHIPS" /></div>
         </div>
     );
