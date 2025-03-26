@@ -12,19 +12,10 @@ function UserProfile() {
 
 {/* Nav Section */}
 <div className="w-[1100px] h-[45px] border border-gray-300 rounded-[10px] bg--[#FFFF] p-2 flex items-center justify-start gap-7 mt-4 px-6 shadow-none">
-
-  <span className="font-satoshi  text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">
-    About
-  </span>
-  <span className="font-satoshi  text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">
-    Work
-  </span>
-  <span className="font-satoshi  text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">
-    Job Posted
-  </span>
-  <span className="font-satoshi text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">
-    Donation History
-  </span>
+  <span className="font-satoshi  text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">About</span>
+  <span className="font-satoshi  text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Work</span>
+  <span className="font-satoshi  text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Job Posted</span>
+  <span className="font-satoshi text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Donation History</span>
 </div>
 
 
