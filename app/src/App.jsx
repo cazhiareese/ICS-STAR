@@ -7,6 +7,7 @@ import StudentLanding from "./RootPages/StudentPages/studentdashboard";
 import AdminRoot from "./RootPages/AdminPages/adminroot";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
+import UserProfile from "./RootPages/Userprofile";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="student" element={<StudentLanding />} />
         <Route path="admin/*" element={<AdminRoot />} />
         <Route path="alumni" element={<AlumniLanding />} />
+        <Route path="profile" element={<UserProfile />} />
       </Route>
 
       {/* Redirect unknown routes */}
