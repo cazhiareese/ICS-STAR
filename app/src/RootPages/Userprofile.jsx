@@ -1,13 +1,49 @@
 import React from 'react';
-import { MapPin, Phone, IdCard, GraduationCap } from "lucide-react";
+import { MapPin, Phone, IdCard, GraduationCap, Camera, Facebook, Github, Linkedin, Pencil } from "lucide-react";
+import prince from '../assets/prince boy.jpg';
+
 import SectionHeader from '../components/sectionheader';
 
 function UserProfile() {
   return (
     <div className="flex flex-col items-center relative min-h-screen mt-10 gap-y-4">
-        {/* Profile section */}
-      <div className="w-[1100px] h-[226px] border border-disabled rounded-[10px] bg-[#FFFF] p-4 flex items-center justify-center">
-        Profile Container
+      {/* Profile Section */}
+      <div className="w-[1100px] h-[226px] border border-gray-300 rounded-[10px] bg-whitey p-6 flex items-center justify-between ">
+        
+        {/* Left Section: Profile Picture */}
+        <div className="relative flex items-center gap-6">
+          <div className="relative w-[120px] h-[120px] rounded-full border-2 border-gray-300 overflow-hidden">
+            <img 
+              src={prince}
+              alt="Profile" 
+              className="w-full h-full object-cover"
+            />
+            {/* Camera Icon Overlay */}
+            <div className="absolute bottom-1 right-1 bg-whitey p-1 rounded-full shadow-md cursor-pointer">
+              <Camera size={18} className="text-gray-600" />
+            </div>
+          </div>
+
+          {/* Name and Email */}
+          <div>
+            <h2 className="font-satoshi font-bold text-[24px] text-blue-700 leading-[30px]">
+              Kiefer L. Tayawa
+            </h2>
+            <p className="text-gray-500 text-[18px] leading-[24px]">kltayawa@up.edu.ph</p>
+
+            {/* Social Icons */}
+            <div className="flex gap-4 mt-2">
+              <Facebook size={24} className="text-black cursor-pointer hover:text-blue-600" />
+              <Github size={24} className="text-black cursor-pointer hover:text-blue-600" />
+              <Linkedin size={24} className="text-black cursor-pointer hover:text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Section: Edit Profile Button */}
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[16px] font-medium hover:bg-blue-800 transition">
+          <Pencil size={16} /> Edit Profile
+        </button>
       </div>
 
 {/* Nav Section */}
