@@ -15,17 +15,17 @@ const suggestedSkills = [
 
 const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
   const [skillInput, setSkillInput] = useState(""); // Track input text
-  const [selectedSkills, setSelectedSkills] = useState([]); // Skills in the input field
+  const [selectedSkills, setSelectedSkills] = useState([]); // Skills list
 
   useEffect(() => {
     if (!isOpen) {
-      setSkillInput(""); // Reset text input when modal closes
+      setSkillInput(""); // Reset input when modal closes
     }
   }, [isOpen]);
 
   const toggleSkill = (skill) => {
     if (!selectedSkills.includes(skill)) {
-      setSelectedSkills([...selectedSkills, skill]); // Add skill if not in the list
+      setSelectedSkills([...selectedSkills, skill]); // Add skill
     }
   };
 
@@ -35,14 +35,14 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && skillInput.trim() !== "") {
-      setSelectedSkills([...selectedSkills, skillInput.trim()]); // Add typed skill
-      setSkillInput(""); // Clear input field for next input
+      setSelectedSkills([...selectedSkills, skillInput.trim()]); // Add input
+      setSkillInput(""); // Clear input field
     }
   };
 
   const handleSave = () => {
-    onSave(selectedSkills); // Save all selected skills
-    setSelectedSkills([]); // Clear skills after saving
+    onSave(selectedSkills); // Save skills
+    setSelectedSkills([]); // Clear selected skills
     setSkillInput(""); // Reset input field
     onClose(); // Close modal
   };
@@ -50,67 +50,57 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
   if (!isOpen) return null; // Hide modal when not open
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center z-50">
-      {/* Background Overlay - Slight Gray Transparency */}
+    <div className="fixed inset-0 flex justify-center items-center z-50 p-3">
+      {/* Background Overlay */}
       <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
 
       {/* Modal Box */}
       <div
-        className="bg-white border border-gray-300 p-6 relative z-10"
-        style={{
-          width: "650px",
-          height: "434px",
-          borderRadius: "20px",
-          boxShadow: "0px 4px 4px 0px #00000040",
-        }}
+        className="bg-white border border-gray-300 p-4 relative z-10 flex flex-col gap-3 w-full max-w-[90%] sm:max-w-[500px] md:max-w-[600px] rounded-xl shadow-lg"
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-lg font-semibold">Add skills and interests</h2>
-          <XCircle size={24} className="cursor-pointer text-red-500" onClick={onClose} />
+          <h2 className="text-base sm:text-lg font-semibold">Add Skills and Interests</h2>
+          <XCircle size={20} className="cursor-pointer text-red-500" onClick={onClose} />
         </div>
 
-        {/* New Header Above Input Field */}
-        <h3 className="text-gray-700 font-medium mt-4 mb-1">Skills and Interests</h3>
-
-        {/* Input Field */}
-        <div className="mt-2">
+        {/* Skill Input Section */}
+        <div className="flex flex-col gap-1">
+          <h3 className="text-gray-700 font-medium text-sm sm:text-base">Skills and Interests</h3>
           <input
             type="text"
             value={skillInput}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown} // Detect Enter key
-            className="w-full border border-gray-400 p-4 rounded-2xl text-lg"
+            className="w-full border border-gray-400 px-3 py-2 rounded-lg text-sm sm:text-base"
             placeholder="Enter skills..."
-            style={{ height: "50px" }}
           />
+
+          {/* Selected Skills List */}
+          <div className="flex flex-wrap gap-2">
+            {selectedSkills.map((skill, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 border border-blue-700 text-blue-700 rounded-full text-xs sm:text-sm"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
 
-        {/* Display Selected Skills */}
-        <div className="flex flex-wrap gap-2 mt-2">
-          {selectedSkills.map((skill, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 border border-blue-700 text-blue-700 rounded-full text-sm"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
-
-        {/* Suggested Skills */}
-        <div className="mt-5">
-          <h3 className="text-gray-600 mb-2">Suggestions</h3>
-          <div className="grid grid-cols-3 gap-2">
+        {/* Suggested Skills Section */}
+        <div className="flex flex-col gap-2">
+          <h3 className="text-gray-600 text-sm sm:text-base">Suggestions</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {suggestedSkills.map((skill, index) => (
               <button
                 key={index}
-                className={`px-3 border rounded-full text-sm transition flex items-center justify-center ${
+                className={`px-2 py-1 border rounded-full text-xs sm:text-sm flex items-center justify-center ${
                   selectedSkills.includes(skill)
                     ? "bg-blue-700 text-white"
                     : "border-blue-700 text-blue-700 hover:bg-blue-50"
                 }`}
-                style={{ height: "40px" }}
                 onClick={() => toggleSkill(skill)}
               >
                 {skill}
@@ -120,9 +110,9 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
         </div>
 
         {/* Save Button */}
-        <div className="mt-6 flex justify-end">
+        <div className="flex justify-end">
           <button
-            className="px-4 py-2 bg-blue-700 text-white rounded-full text-sm font-medium hover:bg-blue-800 transition"
+            className="px-4 py-2 bg-blue-700 text-white rounded-full text-xs sm:text-sm font-medium hover:bg-blue-800 transition"
             onClick={handleSave}
           >
             Save
