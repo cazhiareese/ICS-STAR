@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { PlusCircle, XCircle } from "lucide-react";
 import SectionHeader from "../../../components/sectionheader";
-import AddScholarshipModal from "../scholarshipmodal";
+import AddScholarshipModal from "../components/scholarshipmodal";
 
 const ScholarshipsSection = ({ editMode, scholarships, removeScholarship, addScholarship }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);

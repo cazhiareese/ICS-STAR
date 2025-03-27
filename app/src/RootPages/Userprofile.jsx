@@ -3,7 +3,7 @@ import { MapPin, Phone, IdCard, GraduationCap, Camera, Facebook, Github, Linkedi
 import prince from '../assets/prince boy.jpg';
 import SectionHeader from '../components/sectionheader';
 import ProfileSection from './Profile/profilesection';
-import UserProfileTabs from './Profile/userprofiletabs';
+import UserProfileTabs from './Profile/components/userprofiletabs';
 import PersonalInfoSection from './Profile/About/personalinfosection';
 import SkillsInterestsSection from './Profile/About/skillsinterestsection';
 import AffiliationsSection from './Profile/About/affiliationssection';

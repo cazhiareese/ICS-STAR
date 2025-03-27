@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { PlusCircle, XCircle } from "lucide-react";
 import SectionHeader from "../../../components/sectionheader";
-import AddAffiliationsModal from "../affiliationmodal";
+import AddAffiliationsModal from "../components/affiliationmodal";
 
 const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAffiliation }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);

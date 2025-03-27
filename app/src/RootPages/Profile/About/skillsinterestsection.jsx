@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { XCircle } from "lucide-react";
 import SectionHeader from "../../../components/sectionheader";
-import AddSkillsModal from "../skillmodal";
+import AddSkillsModal from "../components/skillmodal";
 
 const SkillsInterestsSection = ({ editMode, skills, removeSkill, addSkills }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
