@@ -33,14 +33,22 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50">
       {/* Background Overlay - Slight Gray Transparency */}
-      <div className="absolute inset-0 bg-gray-500 opacity-50 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gray-500 opacity-10 pointer-events-none"></div>
 
       {/* Modal Box */}
-      <div className="bg-white shadow-lg border border-gray-300 rounded-lg p-6 w-[400px] relative z-10">
+      <div
+        className="bg-white border border-gray-300 p-6 relative z-10"
+        style={{
+          width: "650px",
+          height: "434px",
+          borderRadius: "20px",
+          boxShadow: "0px 4px 4px 0px #00000040",
+        }}
+      >
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
           <h2 className="text-lg font-semibold">Add skills and interests</h2>
-          <XCircle size={20} className="cursor-pointer text-red-500" onClick={onClose} />
+          <XCircle size={24} className="cursor-pointer text-red-500" onClick={onClose} />
         </div>
 
         {/* Input Field */}
