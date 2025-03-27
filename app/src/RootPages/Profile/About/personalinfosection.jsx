@@ -7,7 +7,8 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
     <div className="w-full max-w-[1100px] mt-6">
       <SectionHeader title="PERSONAL INFORMATION" />
 
-      <div className="flex flex-wrap justify-between items-center mt-4 text-gray-700 text-[16px]">
+      {/* Responsive Grid Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 text-gray-700 text-[16px]">
         {/* Location */}
         <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
           <div className="flex items-center gap-2">
@@ -19,7 +20,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.location}
               onChange={(e) => handleChange(e, "location")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-full"
             />
           ) : (
             <span className="text-blue-700 font-medium">{userDetails.location}</span>
@@ -37,7 +38,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.mobile}
               onChange={(e) => handleChange(e, "mobile")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-full"
             />
           ) : (
             <span className="text-blue-700 font-medium">{userDetails.mobile}</span>
@@ -55,7 +56,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.studentNumber}
               onChange={(e) => handleChange(e, "studentNumber")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-full"
             />
           ) : (
             <span className="text-blue-700 font-medium">{userDetails.studentNumber}</span>
@@ -73,7 +74,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.graduatingClass}
               onChange={(e) => handleChange(e, "graduatingClass")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-full"
             />
           ) : (
             <span className="text-blue-700 font-medium">{userDetails.graduatingClass}</span>
