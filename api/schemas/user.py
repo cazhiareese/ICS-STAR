@@ -45,6 +45,7 @@ class UserOut(BaseModel):
     graduation_year: Optional[int] = None
     graduation_semester: Optional[str] = None
     employment_status: Optional[str] = None
+    industry: Optional[str] = None
     job_title: Optional[str] = None
     work_location: Optional[str] = None
     work_mode: Optional[str] = None
@@ -53,6 +54,7 @@ class UserOut(BaseModel):
     salary_grade: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    
 
     class Config:
         from_attributes = True

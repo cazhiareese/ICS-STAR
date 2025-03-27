@@ -53,6 +53,7 @@ class User(Base):
    graduation_year = Column(Integer)
    graduation_semester = Column(String(20))
    employment_status = Column(String(50))
+   industry = Column(String(100))
    job_title = Column(String(100))
    work_location = Column(String(100))
    work_mode = Column(String(50))
