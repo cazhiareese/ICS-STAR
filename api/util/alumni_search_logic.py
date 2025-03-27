@@ -24,14 +24,13 @@ def logic_search_alumni(
     city: Optional[str] = None,
     skill: Optional[str] = None
 ) -> List[Dict]:
-    # Start with base query for alumni
+    # Initial query which will get all alumni users
     query = db.query(User).filter(User.user_type == UserTypeEnum.alumni)
 
-    # If name is provided, add name filtering
+    # Append appropriate filters to the initial query
     if name:
         query = query.filter(or_(User.first_name.ilike(f"%{name}%"), User.last_name.ilike(f"%{name}%")))
 
-    # Optional filters
     if graduation_year:
         query = query.filter(User.graduation_year == graduation_year)
     
@@ -44,10 +43,10 @@ def logic_search_alumni(
     if skill:
         query = query.join(UserSkill, User.user_id == UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{skill}%"))
 
-    # Execute query
+    # Execute the final query
     results = query.all()
     
-    # If no results, return empty list
+    # If no results, return empty list to flag 404
     if not results:
         return []
     
