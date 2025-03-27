@@ -1,0 +1,45 @@
+import React from "react";
+import { PlusCircle, XCircle } from "lucide-react";
+import SectionHeader from "../../../components/sectionheader";
+
+const ScholarshipsSection = ({ editMode, scholarships, removeScholarship }) => {
+  return (
+    <div className="w-full max-w-[1100px] mt-6">
+      <SectionHeader title="SCHOLARSHIPS" />
+
+      <div className="flex justify-between items-center mt-4">
+        {/* Scholarship List */}
+        <div className="w-full">
+          {scholarships.map((scholarship, index) => (
+            <div key={index}>
+              <div className="flex items-center justify-between py-2">
+                {/* Scholarship Name */}
+                <p className="text-blue-700 font-medium">{scholarship}</p>
+
+                {/* Remove Icon (Only in Edit Mode) */}
+                {editMode && (
+                  <XCircle
+                    size={16}
+                    className="text-red-500 cursor-pointer hover:text-red-600 transition"
+                    onClick={() => removeScholarship(index)}
+                  />
+                )}
+              </div>
+
+              {/* Divider after every scholarship */}
+              <div className="w-full border-b border-gray-300"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Add Scholarships Button */}
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition">
+          <PlusCircle size={16} />
+          Add scholarships
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ScholarshipsSection;
