@@ -5,6 +5,7 @@ import SectionHeader from '../components/sectionheader';
 import ProfileSection from './Profile/profilesection';
 import UserProfileTabs from './Profile/userprofiletabs';
 import PersonalInfoSection from './Profile/About/personalinfosection';
+import SkillsInterestsSection from './Profile/About/skillsinterestsection';
 
 const alumniUsers = [
     { user_id: 1, first_name: "John", last_name: "Doe", mobile_number: "09123456789", age: 30, gender: "M", city: "Los Baños", state: "Laguna", country: "Philippines", marital_status: "Single", image: "profile_images/john_doe.jpg", password: "hashed_password_here", email: "johndoe@example.com", verification_file: "verification_docs/john_doe.pdf", user_type: "alumni", student_number: "2015-12345", graduation_year: 2019, graduation_semester: "2nd Semester", employment_status: "Employed", job_title: "Software Engineer", work_location: "Makati City, Philippines", work_mode: "Hybrid", employer_class: "Private", tenured_status: "Yes", salary_grade: "SG 12", is_banned: false },  
@@ -61,36 +62,7 @@ function UserProfile() {
       {activeTab === "About" && (
         <>
           <PersonalInfoSection editMode={editMode} userDetails={userDetails} handleChange={handleChange} />    
-    <div className="w-full max-w-[1100px] mt-6">
-      <SectionHeader title="SKILLS AND INTERESTS" />
-
-      <div className="flex justify-between items-center mt-4">
-        {/* Skills List */}
-        <div className="flex flex-wrap gap-3">
-  {skills.map((skill, index) => (
-    <div key={index} className="relative inline-block">
-      <span className="px-4 py-2 border border-blue-700 text-blue-700 rounded-full font-medium text-[16px] hover:bg-blue-50 transition">
-        {skill}
-      </span>
-      {editMode && (
-        <XCircle
-          size={18}
-          className="absolute -top-2 -right-2 text-red-500 cursor-pointer bg-white rounded-full"
-          onClick={() => removeSkill(index)}
-        />
-      )}
-    </div>
-  ))}
-</div>
-
-
-        {/* Add Skills Button */}
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition">
-          <PlusCircle size={16} />
-          Add skills/interests
-        </button>
-      </div>
-    </div>
+          <SkillsInterestsSection editMode={editMode} skills={skills} removeSkill={removeSkill} />
     <div className="w-full max-w-[1100px] mt-6">
       <SectionHeader title="AFFILIATIONS" />
 
