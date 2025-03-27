@@ -1,12 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import log_route, auth
+from routers import log_route, auth, userinfo
 
 
 app = FastAPI()
 app.include_router(log_route.router)
-app.include_router(auth.router)
-
+app.include_router(userinfo.router)
 app.include_router(auth.router)
 
 @app.get("/")
