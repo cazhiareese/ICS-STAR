@@ -15,6 +15,15 @@ const ischolarships = ["DOST Scholarship", "UPLB SLAS"];
 
 function UserProfile() {
     const [editMode, setEditMode] = useState(false);
+
+    const [userDetails, setUserDetails] = useState({
+      location: `${signedinuser.city}, ${signedinuser.state}`,
+      mobile: signedinuser.mobile_number,
+      studentNumber: signedinuser.student_number,
+      graduatingClass: `${signedinuser.graduation_year} - ${signedinuser.graduation_semester}`,
+    });
+
+
     const [skills, setSkills] = useState(iskills);
     const [affiliations, setAffiliations] = useState(iaffiliations);
     const [scholarships, setScholarships] = useState(ischolarships);
@@ -22,6 +31,10 @@ function UserProfile() {
     const removeSkill = (index) => setSkills(skills.filter((_, i) => i !== index));
     const removeAffiliation = (index) => setAffiliations(affiliations.filter((_, i) => i !== index));
     const removeScholarship = (index) => setScholarships(scholarships.filter((_, i) => i !== index));
+
+    const handleChange = (e, field) => {
+      setUserDetails({ ...userDetails, [field]: e.target.value });
+    };
 
     return (
 <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
