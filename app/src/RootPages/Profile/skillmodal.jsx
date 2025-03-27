@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { XCircle } from "lucide-react";
 
 const suggestedSkills = [
@@ -14,33 +14,37 @@ const suggestedSkills = [
 ];
 
 const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
-  const [selectedSkills, setSelectedSkills] = useState([]);
   const [skillInput, setSkillInput] = useState(""); // Track input text
+  const [selectedSkills, setSelectedSkills] = useState([]); // Skills in the input field
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSkillInput(""); // Reset text input when modal closes
+    }
+  }, [isOpen]);
 
   const toggleSkill = (skill) => {
-    setSelectedSkills((prev) =>
-      prev.includes(skill)
-        ? prev.filter((s) => s !== skill) // Remove if already selected
-        : [...prev, skill] // Add if not selected
-    );
+    if (!selectedSkills.includes(skill)) {
+      setSelectedSkills([...selectedSkills, skill]); // Add skill if not in the list
+    }
   };
 
-  const handleSave = () => {
-    onSave(selectedSkills);
-    onClose(); // Close modal after saving
-  };
-
-  // Handle input change
   const handleInputChange = (e) => {
     setSkillInput(e.target.value);
   };
 
-  // Add new skill when Enter is pressed
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && skillInput.trim() !== "") {
-      setSelectedSkills([...selectedSkills, skillInput.trim()]); // Add new skill
-      setSkillInput(""); // Clear input field
+      setSelectedSkills([...selectedSkills, skillInput.trim()]); // Add typed skill
+      setSkillInput(""); // Clear input field for next input
     }
+  };
+
+  const handleSave = () => {
+    onSave(selectedSkills); // Save all selected skills
+    setSelectedSkills([]); // Clear skills after saving
+    setSkillInput(""); // Reset input field
+    onClose(); // Close modal
   };
 
   if (!isOpen) return null; // Hide modal when not open
@@ -67,7 +71,7 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
         </div>
 
         {/* New Header Above Input Field */}
-        <h3 className="text-gray-700 font-medium mt-4 mb-1">Skill and Interests</h3>
+        <h3 className="text-gray-700 font-medium mt-4 mb-1">Skills and Interests</h3>
 
         {/* Input Field */}
         <div className="mt-2">
@@ -82,6 +86,18 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
           />
         </div>
 
+        {/* Display Selected Skills */}
+        <div className="flex flex-wrap gap-2 mt-2">
+          {selectedSkills.map((skill, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 border border-blue-700 text-blue-700 rounded-full text-sm"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+
         {/* Suggested Skills */}
         <div className="mt-5">
           <h3 className="text-gray-600 mb-2">Suggestions</h3>
@@ -94,7 +110,7 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
                     ? "bg-blue-700 text-white"
                     : "border-blue-700 text-blue-700 hover:bg-blue-50"
                 }`}
-                style={{ height: "40px" }} // Set button height to 40px
+                style={{ height: "40px" }}
                 onClick={() => toggleSkill(skill)}
               >
                 {skill}
