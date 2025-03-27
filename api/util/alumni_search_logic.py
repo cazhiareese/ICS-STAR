@@ -5,6 +5,17 @@ from config import config
 from config.database import get_db
 from typing import Optional, List, Dict
 
+# Search for alumni with optional filters
+#
+# Arguments: 
+# db: Session - database session
+# name: Optional[str] - name of alumni
+# graduation_year: Optional[int] - graduation year of alumni
+# job_title: Optional[str] - job title of alumni
+# city: Optional[str] - city of alumni
+# skill: Optional[str] - skill of alumni
+#
+# Returns: a list of dictionaries containing alumni information
 def logic_search_alumni(
     db: Session, 
     name: Optional[str] = None, 
