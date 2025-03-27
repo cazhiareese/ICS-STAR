@@ -10,6 +10,7 @@ from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, 
 from config.database import get_db
 from models.usermodel import User, UserTypeEnum
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
