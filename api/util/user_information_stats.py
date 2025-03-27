@@ -144,7 +144,7 @@ def get_user_grouped_industry(db: Session):
         if alum_ind is None:
             raise HTTPException(status_code=404, detail=f"No alum from this {ind}")
         
-        # alum_ind_dict = {loc: [UserOut.model_validate(user) for user in alum_ind]}
+        # alum_ind_dict = {ind: [UserOut.model_validate(user) for user in alum_ind]}
         
         alum_ind_dict = {ind: [user[0] for user in alum_ind]}
 
@@ -167,7 +167,7 @@ def get_user_grouped_job_title(db: Session):
         if alum_job is None:
             raise HTTPException(status_code=404, detail=f"No alum from this {job}")
         
-        # alum_job_dict = {loc: [UserOut.model_validate(user) for user in alum_job]}
+        # alum_job_dict = {job: [UserOut.model_validate(user) for user in alum_job]}
         
         alum_job_dict = {job: [user[0] for user in alum_job]}
 
