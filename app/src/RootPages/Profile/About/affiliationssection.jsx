@@ -8,7 +8,9 @@ const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAff
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
-      <SectionHeader title="AFFILIATIONS" />
+      <SectionHeader title="AFFILIATIONS"
+              buttonText="Add affiliations"
+              onButtonClick={() => setIsModalOpen(true)} />
 
       <div className="flex justify-between items-center mt-4">
         {/* Affiliation List (Two-column layout) */}
@@ -32,14 +34,7 @@ const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAff
           ))}
         </div>
 
-        {/* Add Affiliations Button */}
-        <button
-          className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <PlusCircle size={16} />
-          Add affiliations
-        </button>
+
       </div>
 
       {/* Add Affiliations Modal */}
