@@ -28,6 +28,10 @@ function UserProfile() {
     const addAffiliation = (newAffiliation) => {
       setAffiliations([...affiliations, newAffiliation]);
     };
+    const addScholarship = (newScholarship) => {
+      setScholarships([...scholarships, newScholarship]);
+    };
+    
     
 
     const [userDetails, setUserDetails] = useState({
@@ -68,7 +72,7 @@ function UserProfile() {
           <PersonalInfoSection editMode={editMode} userDetails={userDetails} handleChange={handleChange} />    
           <SkillsInterestsSection editMode={editMode} skills={skills} removeSkill={removeSkill} addSkills={addSkills} />
           <AffiliationsSection editMode={editMode} affiliations={affiliations} removeAffiliation={removeAffiliation} addAffiliation={addAffiliation} />
-          <ScholarshipsSection editMode={editMode} scholarships={scholarships} removeScholarship={removeScholarship} />
+          <ScholarshipsSection editMode={editMode} scholarships={scholarships} removeScholarship={removeScholarship}   addScholarship={addScholarship}/>
     </>)}
         </div>
     );
