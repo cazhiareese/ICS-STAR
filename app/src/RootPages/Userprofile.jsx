@@ -4,6 +4,7 @@ import prince from '../assets/prince boy.jpg';
 import SectionHeader from '../components/sectionheader';
 import ProfileSection from './Profile/profilesection';
 import UserProfileTabs from './Profile/userprofiletabs';
+import PersonalInfoSection from './Profile/About/personalinfosection';
 
 const alumniUsers = [
     { user_id: 1, first_name: "John", last_name: "Doe", mobile_number: "09123456789", age: 30, gender: "M", city: "Los Baños", state: "Laguna", country: "Philippines", marital_status: "Single", image: "profile_images/john_doe.jpg", password: "hashed_password_here", email: "johndoe@example.com", verification_file: "verification_docs/john_doe.pdf", user_type: "alumni", student_number: "2015-12345", graduation_year: 2019, graduation_semester: "2nd Semester", employment_status: "Employed", job_title: "Software Engineer", work_location: "Makati City, Philippines", work_mode: "Hybrid", employer_class: "Private", tenured_status: "Yes", salary_grade: "SG 12", is_banned: false },  
@@ -59,83 +60,7 @@ function UserProfile() {
             {/* Conditional Rendering Based on Tab Selection */}
       {activeTab === "About" && (
         <>
-            <div className="w-full max-w-[1100px] mt-6">
-      <SectionHeader title="PERSONAL INFORMATION" />
-
-      <div className="flex flex-wrap justify-between items-center mt-4 text-gray-700 text-[16px]">
-        {/* Location */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-          <div className="flex items-center gap-2">
-            <MapPin size={20} className="text-gray-600" />
-            <span>Location</span>
-          </div>
-          {editMode ? (
-              <input
-                type="text"
-                value={userDetails.location}
-                onChange={(e) => handleChange(e, "location")}
-                className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
-              />
-            ) : (
-              <span className="text-blue-700 font-medium">{userDetails.location}</span>
-            )}
-        </div>
-
-        {/* Mobile Number */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-          <div className="flex items-center gap-2">
-            <Phone size={20} className="text-gray-600" />
-            <span>Mobile Number</span>
-          </div>
-          {editMode ? (
-              <input
-                type="text"
-                value={userDetails.mobile}
-                onChange={(e) => handleChange(e, "mobile")}
-                className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
-              />
-            ) : (
-              <span className="text-blue-700 font-medium">{userDetails.mobile}</span>
-            )}
-        </div>
-
-        {/* Student Number */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-          <div className="flex items-center gap-2">
-            <IdCard size={20} className="text-gray-600" />
-            <span>Student Number</span>
-          </div>
-          {editMode ? (
-              <input
-                type="text"
-                value={userDetails.studentNumber}
-                onChange={(e) => handleChange(e, "studentNumber")}
-                className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
-              />
-            ) : (
-              <span className="text-blue-700 font-medium">{userDetails.studentNumber}</span>
-            )}
-        </div>
-
-        {/* Graduating Class */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-          <div className="flex items-center gap-2">
-            <GraduationCap size={20} className="text-gray-600" />
-            <span>Graduating Class</span>
-          </div>
-          {editMode ? (
-              <input
-                type="text"
-                value={userDetails.graduatingClass}
-                onChange={(e) => handleChange(e, "graduatingClass")}
-                className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
-              />
-            ) : (
-              <span className="text-blue-700 font-medium">{userDetails.graduatingClass}</span>
-            )}
-        </div>
-      </div>
-    </div>
+          <PersonalInfoSection editMode={editMode} userDetails={userDetails} handleChange={handleChange} />    
     <div className="w-full max-w-[1100px] mt-6">
       <SectionHeader title="SKILLS AND INTERESTS" />
 
