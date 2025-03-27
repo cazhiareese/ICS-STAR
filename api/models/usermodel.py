@@ -86,6 +86,7 @@ class UserAffiliation(Base):
    __tablename__ = 'user_affiliation'
    user_id = Column(UUID(as_uuid=True), ForeignKey('users.user_id'), primary_key=True)
    affiliation = Column(String(100), primary_key=True)
+   role = Column(String(100))
    created_at = Column(DateTime(timezone=True), server_default=func.now())
    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
   
