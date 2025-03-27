@@ -15,5 +15,7 @@ async def upload_profile_picture(
     user: User = Depends(get_current_user)
 ):
     file_path = await upload_profile(file, user, db)
+    if file_path.error:
+        raise HTTPException(status_code=500, detail="Error uploading file")
 
     return {"message": "Profile picture uploaded successfully"}
