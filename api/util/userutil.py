@@ -36,6 +36,9 @@ async def register_user(
 ):
     if db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
+    
+    if db.query(User).filter(User.student_number == student_number).first():
+        raise HTTPException(status_code=400, detail="Student number already exists")
 
     if verification_file:
         file_content = await verification_file.read()
