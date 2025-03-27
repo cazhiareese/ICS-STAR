@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from models.usermodel import User, UserTypeEnum 
 from config import config
@@ -17,12 +18,7 @@ def logic_search_alumni(
     
     # Name search (case-insensitive, matches first or last name)
     if name:
-        query = query.filter(
-            or_(
-                User.first_name.ilike(f"%{name}%"), 
-                User.last_name.ilike(f"%{name}%")
-            )
-        )
+        query = query.filter(or_(User.first_name.ilike(f"%{name}%"), User.last_name.ilike(f"%{name}%")))
     
     # Additional optional filters
     if graduation_year:

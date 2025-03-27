@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from util.alumni_search import logic_search_alumni
+from util.alumni_search_logic import logic_search_alumni
 from typing import Optional, List, Dict
 from config.database import get_db
 
