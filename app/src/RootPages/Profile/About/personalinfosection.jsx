@@ -8,9 +8,9 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
       <SectionHeader title="PERSONAL INFORMATION" />
 
       {/* Responsive Grid Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 text-gray-700 text-[16px]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-gray-700 text-[16px]">
         {/* Location */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+        <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
             <MapPin size={20} className="text-gray-600" />
             <span>Location</span>
@@ -28,7 +28,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
         </div>
 
         {/* Mobile Number */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+        <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
             <Phone size={20} className="text-gray-600" />
             <span>Mobile Number</span>
@@ -46,7 +46,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
         </div>
 
         {/* Student Number */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+        <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
             <IdCard size={20} className="text-gray-600" />
             <span>Student Number</span>
@@ -64,7 +64,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
         </div>
 
         {/* Graduating Class */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+        <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
             <GraduationCap size={20} className="text-gray-600" />
             <span>Graduating Class</span>
