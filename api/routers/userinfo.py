@@ -36,3 +36,22 @@ async def add_scholarships(
     db.commit()
     
     return {"message": "scholarships added successfully"}
+
+@router.post("/add-affiliations")
+async def add_affiliations(
+    affiliations: List[str] = Query(...),
+    roles: List[str] = Query(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if len(affiliations) != len(roles):
+        raise HTTPException(status_code=400, detail="Invalid input")
+
+    new_affiliations = [
+        UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role) for affiliation, role in zip(affiliations, roles)
+    ]
+    
+    db.add_all(new_affiliations)
+    db.commit()
+    
+    return {"message": "affiliations added successfully"}
