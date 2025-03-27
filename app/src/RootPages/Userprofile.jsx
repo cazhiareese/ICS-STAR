@@ -6,6 +6,8 @@ import ProfileSection from './Profile/profilesection';
 import UserProfileTabs from './Profile/userprofiletabs';
 import PersonalInfoSection from './Profile/About/personalinfosection';
 import SkillsInterestsSection from './Profile/About/skillsinterestsection';
+import AffiliationsSection from './Profile/About/affiliationssection';
+import ScholarshipsSection from './Profile/About/scholarshipsection';
 
 const alumniUsers = [
     { user_id: 1, first_name: "John", last_name: "Doe", mobile_number: "09123456789", age: 30, gender: "M", city: "Los Baños", state: "Laguna", country: "Philippines", marital_status: "Single", image: "profile_images/john_doe.jpg", password: "hashed_password_here", email: "johndoe@example.com", verification_file: "verification_docs/john_doe.pdf", user_type: "alumni", student_number: "2015-12345", graduation_year: 2019, graduation_semester: "2nd Semester", employment_status: "Employed", job_title: "Software Engineer", work_location: "Makati City, Philippines", work_mode: "Hybrid", employer_class: "Private", tenured_status: "Yes", salary_grade: "SG 12", is_banned: false },  
@@ -20,6 +22,9 @@ const ischolarships = ["DOST Scholarship", "UPLB SLAS"];
 function UserProfile() {
     const [editMode, setEditMode] = useState(false);
     const [activeTab, setActiveTab] = useState("About"); 
+    const addSkills = (newSkills) => {
+      setSkills([...skills, ...newSkills]);
+    };
 
     const [userDetails, setUserDetails] = useState({
       firstName: signedinuser.first_name,
@@ -45,15 +50,10 @@ function UserProfile() {
     };
 
     return (
-<div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
+      <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
 
             {/* Profile Section */}
-            <ProfileSection 
-        editMode={editMode} 
-        userDetails={userDetails} 
-        setEditMode={setEditMode} 
-        handleChange={handleChange} 
-      />
+            <ProfileSection editMode={editMode} userDetails={userDetails} setEditMode={setEditMode} handleChange={handleChange} />
       {/* Navigation Tabs */}
       <UserProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -62,7 +62,7 @@ function UserProfile() {
       {activeTab === "About" && (
         <>
           <PersonalInfoSection editMode={editMode} userDetails={userDetails} handleChange={handleChange} />    
-          <SkillsInterestsSection editMode={editMode} skills={skills} removeSkill={removeSkill} />
+          <SkillsInterestsSection editMode={editMode} skills={skills} removeSkill={removeSkill} addSkills={addSkills} />
           <AffiliationsSection editMode={editMode} affiliations={affiliations} removeAffiliation={removeAffiliation} />
           <ScholarshipsSection editMode={editMode} scholarships={scholarships} removeScholarship={removeScholarship} />
     </>)}
