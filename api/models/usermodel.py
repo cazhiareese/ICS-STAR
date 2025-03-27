@@ -69,6 +69,8 @@ class User(Base):
    scholarships = relationship("UserScholarship", back_populates="user")
    affiliations = relationship("UserAffiliation", back_populates="user")
    logs = relationship("Log", back_populates="user")
+   reports = relationship("Report", back_populates="reporter")
+   account_reports = relationship("Report", back_populates="reported_user")
 
 
 class UserSkill(Base):

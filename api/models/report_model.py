@@ -21,7 +21,7 @@ class Report(Base):
     reporter_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False)
     reported_user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=True)
 
-    # TO DO: Add ForeignKey to Post model when created
+    # TODO: Add ForeignKey to Post model when created
     reported_post_id = Column(UUID(as_uuid=True), nullable=True)
 
 
@@ -32,6 +32,7 @@ class Report(Base):
 
     reporter = relationship("User", foreign_keys=[reporter_id])
     reported_user = relationship("User", foreign_keys=[reported_user_id])
+    # reported_post = relationship("Post", foreign_keys=[reported_post_id]) #TODO: Add relationship to Post model when created
 
     attachments = relationship("ReportAttachment", back_populates="report")
 
