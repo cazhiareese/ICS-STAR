@@ -140,6 +140,7 @@ function UserProfile() {
         <XCircle
           size={18}
           className="absolute -top-2 -right-2 text-red-500 cursor-pointer bg-white rounded-full"
+          onClick={() => removeSkill(index)}
         />
       )}
     </div>
@@ -169,6 +170,7 @@ function UserProfile() {
             <XCircle
               size={16}
               className="text-red-500 cursor-pointer hover:text-red-600 transition"
+              onClick={() => removeAffiliation(index)}
             />
           )}
         </div>
@@ -203,6 +205,7 @@ function UserProfile() {
             <XCircle
               size={16}
               className="text-red-500 cursor-pointer hover:text-red-600 transition"
+              onClick={() => removeScholarship(index)}
             />
           )}
         </div>
