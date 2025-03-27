@@ -75,7 +75,8 @@ async def update_employment(
     employment_status: str = Form(...),
     company_name: str = Form(...),
     job_title: str = Form(...),
-    work_location: str = Form(...),
+    country: str = Form(...),
+    city: str = Form(...),
     work_mode: str = Form(...),
     employer_class: str = Form(...),
     tenured_status: str = Form(...),
@@ -90,10 +91,11 @@ async def update_employment(
     user.employment_status = employment_status
     user.company_name = company_name
     user.job_title = job_title
-    user.work_location = work_location
+    user.work_location = f"{city}, {country}"
     user.work_mode = work_mode
     user.employer_class = employer_class
     user.tenured_status = tenured_status
     user.salary_grade = salary_grade
     db.commit()
+    db.refresh(user)
     return {"message": "employment details updated successfully"}
