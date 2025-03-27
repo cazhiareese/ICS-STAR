@@ -3,6 +3,7 @@ import { MapPin, Phone, IdCard, GraduationCap, Camera, Facebook, Github, Linkedi
 import prince from '../assets/prince boy.jpg';
 import SectionHeader from '../components/sectionheader';
 import ProfileSection from './Profile/profilesection';
+import UserProfileTabs from './Profile/userprofiletabs';
 
 const alumniUsers = [
     { user_id: 1, first_name: "John", last_name: "Doe", mobile_number: "09123456789", age: 30, gender: "M", city: "Los Baños", state: "Laguna", country: "Philippines", marital_status: "Single", image: "profile_images/john_doe.jpg", password: "hashed_password_here", email: "johndoe@example.com", verification_file: "verification_docs/john_doe.pdf", user_type: "alumni", student_number: "2015-12345", graduation_year: 2019, graduation_semester: "2nd Semester", employment_status: "Employed", job_title: "Software Engineer", work_location: "Makati City, Philippines", work_mode: "Hybrid", employer_class: "Private", tenured_status: "Yes", salary_grade: "SG 12", is_banned: false },  
@@ -51,16 +52,13 @@ function UserProfile() {
         setEditMode={setEditMode} 
         handleChange={handleChange} 
       />
-
-            {/* Nav Section */}
-            <div className="w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-whitey p-2 flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-7 mt-4 px-6">
-                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">About</span>
-                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Work</span>
-                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Job Posted</span>
-                <span className="font-satoshi text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] text-gray-700 cursor-pointer hover:text-blue-600 transition">Donation History</span>
-            </div>
+      {/* Navigation Tabs */}
+      <UserProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
             {/* Information Sections */}
+            {/* Conditional Rendering Based on Tab Selection */}
+      {activeTab === "About" && (
+        <>
             <div className="w-full max-w-[1100px] mt-6">
       <SectionHeader title="PERSONAL INFORMATION" />
 
@@ -237,6 +235,7 @@ function UserProfile() {
 </div>
 
     </div>
+    </>)}
         </div>
     );
 }
