@@ -129,3 +129,48 @@ def get_user_filter_batch(db: Session, batch: str, type: str):
     return[user[0] for user in user_batch]
 
 
+def get_user_grouped_industry(db: Session):
+    industries = db.query(User.industry).distinct().where(User.industry.is_not(None), User.user_type != 'admin').all()
+    if industries is None:
+            raise HTTPException(status_code=404, detail="No locations found")
+    industry_list = [ind[0] for ind in industries]
+
+    alum_with_ind = []
+
+    for ind in industry_list:
+        alum_ind = db.query(User.user_id, User.user_type).filter(User.industry== ind, User.user_type=='alumni').all()
+
+
+        if alum_ind is None:
+            raise HTTPException(status_code=404, detail=f"No alum from this {ind}")
+        
+        # alum_ind_dict = {loc: [UserOut.model_validate(user) for user in alum_ind]}
+        
+        alum_ind_dict = {ind: [user[0] for user in alum_ind]}
+
+        alum_with_ind.append(alum_ind_dict)
+
+    return alum_with_ind
+
+def get_user_grouped_job_title(db: Session):
+    jobs = db.query(User.job_title).distinct().where(User.job_title.is_not(None), User.user_type != 'admin').all()
+    if jobs is None:
+            raise HTTPException(status_code=404, detail="No locations found")
+    job_list = [ind[0] for ind in jobs]
+
+    alum_with_job = []
+
+    for job in job_list:
+        alum_job = db.query(User.user_id, User.user_type).filter(User.job_title== job, User.user_type=='alumni').all()
+
+
+        if alum_job is None:
+            raise HTTPException(status_code=404, detail=f"No alum from this {job}")
+        
+        # alum_job_dict = {loc: [UserOut.model_validate(user) for user in alum_job]}
+        
+        alum_job_dict = {job: [user[0] for user in alum_job]}
+
+        alum_with_job.append(alum_job_dict)
+
+    return alum_with_job
