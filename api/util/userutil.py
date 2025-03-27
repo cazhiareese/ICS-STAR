@@ -72,7 +72,29 @@ async def register_user(
     db.commit()
     db.refresh(new_user)
 
-    return new_user
+    return {"message": "Account created successfully"}
+
+async def upload_profile(profile_picture, user, db):
+    file_content = await profile_picture.read()
+
+    if len(file_content) > MAX_FILE_SIZE or profile_picture.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Invalid verification file")
+
+    profile_picture_ext = profile_picture.filename.split(".")[-1]
+    profile_picture_name = f"profile_pictures/{uuid.uuid4()}.{profile_picture_ext}"
+
+    try:
+        supabase_client.storage.from_("128storage").upload(profile_picture_name, file_content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Upload Error: {str(e)}")
+
+    profile_picture_url = f"{STORAGE_STRING}{profile_picture_name}"
+    user.image = profile_picture_url
+
+    db.commit()
+    db.refresh(user)
+
+    return profile_picture_url
 
 def get_user(db, email: str):
     db = SessionLocal()
