@@ -14,18 +14,19 @@ const suggestedSkills = [
 ];
 
 const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
-  const [skillInput, setSkillInput] = useState(""); // Track input text
-  const [selectedSkills, setSelectedSkills] = useState([]); // Skills list
+  const [skillInput, setSkillInput] = useState("");
+  const [selectedSkills, setSelectedSkills] = useState([]);
 
   useEffect(() => {
     if (!isOpen) {
-      setSkillInput(""); // Reset input when modal closes
+      setSkillInput("");
+      setSelectedSkills([]);
     }
   }, [isOpen]);
 
   const toggleSkill = (skill) => {
     if (!selectedSkills.includes(skill)) {
-      setSelectedSkills([...selectedSkills, skill]); // Add skill
+      setSelectedSkills([...selectedSkills, skill]);
     }
   };
 
@@ -35,84 +36,91 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && skillInput.trim() !== "") {
-      setSelectedSkills([...selectedSkills, skillInput.trim()]); // Add input
-      setSkillInput(""); // Clear input field
+      setSelectedSkills([...selectedSkills, skillInput.trim()]);
+      setSkillInput("");
     }
   };
 
   const handleSave = () => {
-    onSave(selectedSkills); // Save skills
-    setSelectedSkills([]); // Clear selected skills
-    setSkillInput(""); // Reset input field
-    onClose(); // Close modal
+    onSave(selectedSkills);
+    setSelectedSkills([]);
+    setSkillInput("");
+    onClose();
   };
 
-  if (!isOpen) return null; // Hide modal when not open
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center z-50 p-3">
+    <div className="fixed inset-0 flex justify-center items-center z-50 px-4 sm:px-0">
       {/* Background Overlay */}
       <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
 
-      {/* Modal Box */}
+      {/* Modal Container */}
       <div
-        className="bg-white border border-gray-300 p-4 relative z-10 flex flex-col gap-3 w-full max-w-[90%] sm:max-w-[500px] md:max-w-[600px] rounded-xl shadow-lg"
+        className="bg-white border border-gray-300 p-6 relative z-10 flex flex-col 
+        w-full max-w-[650px] rounded-2xl shadow-lg 
+        sm:w-11/12 max-h-screen"
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-base sm:text-lg font-semibold">Add Skills and Interests</h2>
-          <XCircle size={20} className="cursor-pointer text-red-500" onClick={onClose} />
+          <h2 className="text-lg font-semibold sm:text-base">Add Skills and Interests</h2>
+          <XCircle size={24} className="cursor-pointer text-red-500" onClick={onClose} />
         </div>
 
-        {/* Skill Input Section */}
-        <div className="flex flex-col gap-1">
-          <h3 className="text-gray-700 font-medium text-sm sm:text-base">Skills and Interests</h3>
-          <input
-            type="text"
-            value={skillInput}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown} // Detect Enter key
-            className="w-full border border-gray-400 px-3 py-2 rounded-lg text-sm sm:text-base"
-            placeholder="Enter skills..."
-          />
+        {/* Content Wrapper (Flex Height) */}
+        <div className="flex flex-col gap-4 flex-grow overflow-y-auto">
+          {/* Skill Input Section */}
+          <div className="flex flex-col gap-2 mt-4">
+            <h3 className="text-gray-700 font-medium">Skills and Interests</h3>
+            <input
+              type="text"
+              value={skillInput}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              className="w-full border border-gray-400 px-4 py-3 rounded-2xl text-lg sm:text-sm"
+              placeholder="Enter skills..."
+              style={{ height: "50px" }}
+            />
 
-          {/* Selected Skills List */}
-          <div className="flex flex-wrap gap-2">
-            {selectedSkills.map((skill, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 border border-blue-700 text-blue-700 rounded-full text-xs sm:text-sm"
-              >
-                {skill}
-              </span>
-            ))}
+            {/* Selected Skills */}
+            <div className="flex flex-wrap gap-2">
+              {selectedSkills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="px-4 py-2 border border-blue-700 text-blue-700 rounded-full text-sm sm:text-xs"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Suggested Skills Section */}
-        <div className="flex flex-col gap-2">
-          <h3 className="text-gray-600 text-sm sm:text-base">Suggestions</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {suggestedSkills.map((skill, index) => (
-              <button
-                key={index}
-                className={`px-2 py-1 border rounded-full text-xs sm:text-sm flex items-center justify-center ${
-                  selectedSkills.includes(skill)
-                    ? "bg-blue-700 text-white"
-                    : "border-blue-700 text-blue-700 hover:bg-blue-50"
-                }`}
-                onClick={() => toggleSkill(skill)}
-              >
-                {skill}
-              </button>
-            ))}
+          {/* Suggested Skills */}
+          <div className="flex flex-col gap-2">
+            <h3 className="text-gray-600">Suggestions</h3>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-3">
+              {suggestedSkills.map((skill, index) => (
+                <button
+                  key={index}
+                  className={`px-3 py-2 border rounded-full font-medium flex items-center justify-center 
+                  transition ${
+                    selectedSkills.includes(skill)
+                      ? "bg-blue-700 text-white"
+                      : "border-blue-700 text-blue-700 hover:bg-blue-50"
+                  }sm:text-xs px-3 py-2 sm:px-2 sm:py-1`}
+                  onClick={() => toggleSkill(skill)}
+                >
+                  {skill}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Save Button */}
-        <div className="flex justify-end">
+        <div className="mt-4 flex justify-end">
           <button
-            className="px-4 py-2 bg-blue-700 text-white rounded-full text-xs sm:text-sm font-medium hover:bg-blue-800 transition"
+            className="px-5 py-3 bg-blue-700 text-white rounded-full text-sm font-medium hover:bg-blue-800 transition"
             onClick={handleSave}
           >
             Save
