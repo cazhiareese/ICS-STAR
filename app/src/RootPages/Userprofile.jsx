@@ -99,9 +99,16 @@ function UserProfile() {
             <MapPin size={20} className="text-gray-600" />
             <span>Location</span>
           </div>
-          <span className="text-blue-700 font-medium">
-            {signedinuser.city}, {signedinuser.state}
-          </span>
+          {editMode ? (
+              <input
+                type="text"
+                value={userDetails.location}
+                onChange={(e) => handleChange(e, "location")}
+                className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              />
+            ) : (
+              <span className="text-blue-700 font-medium">{userDetails.location}</span>
+            )}
         </div>
 
         {/* Mobile Number */}
@@ -110,9 +117,16 @@ function UserProfile() {
             <Phone size={20} className="text-gray-600" />
             <span>Mobile Number</span>
           </div>
-          <span className="text-blue-700 font-medium">
-            {signedinuser.mobile_number}
-          </span>
+          {editMode ? (
+              <input
+                type="text"
+                value={userDetails.mobile}
+                onChange={(e) => handleChange(e, "mobile")}
+                className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              />
+            ) : (
+              <span className="text-blue-700 font-medium">{userDetails.mobile}</span>
+            )}
         </div>
 
         {/* Student Number */}
@@ -121,9 +135,16 @@ function UserProfile() {
             <IdCard size={20} className="text-gray-600" />
             <span>Student Number</span>
           </div>
-          <span className="text-blue-700 font-medium">
-            {signedinuser.student_number}
-          </span>
+          {editMode ? (
+              <input
+                type="text"
+                value={userDetails.studentNumber}
+                onChange={(e) => handleChange(e, "studentNumber")}
+                className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              />
+            ) : (
+              <span className="text-blue-700 font-medium">{userDetails.studentNumber}</span>
+            )}
         </div>
 
         {/* Graduating Class */}
@@ -132,9 +153,16 @@ function UserProfile() {
             <GraduationCap size={20} className="text-gray-600" />
             <span>Graduating Class</span>
           </div>
-          <span className="text-blue-700 font-medium">
-            {signedinuser.graduation_year} - {signedinuser.graduation_semester}
-          </span>
+          {editMode ? (
+              <input
+                type="text"
+                value={userDetails.graduatingClass}
+                onChange={(e) => handleChange(e, "graduatingClass")}
+                className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              />
+            ) : (
+              <span className="text-blue-700 font-medium">{userDetails.graduatingClass}</span>
+            )}
         </div>
       </div>
     </div>
