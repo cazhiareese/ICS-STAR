@@ -5,7 +5,7 @@ from typing import List
 
 from util.userutil import upload_profile, get_current_user
 
-from models.usermodel import User, UserScholarship, UserAffiliation
+from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill
 
 router = APIRouter()
 
@@ -55,3 +55,16 @@ async def add_affiliations(
     db.commit()
     
     return {"message": "affiliations added successfully"}
+
+@router.post("/add-skills")
+async def add_skills(
+    skills: List[str] = Query(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
+    
+    db.add_all(new_skills)
+    db.commit()
+    
+    return {"message": "skills added successfully"}
