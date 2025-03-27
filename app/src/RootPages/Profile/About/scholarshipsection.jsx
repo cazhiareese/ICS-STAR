@@ -8,7 +8,9 @@ const ScholarshipsSection = ({ editMode, scholarships, removeScholarship, addSch
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
-      <SectionHeader title="SCHOLARSHIPS" />
+      <SectionHeader title="SCHOLARSHIPS" 
+              buttonText="Add scholarships"
+              onButtonClick={() => setIsModalOpen(true)}/>
 
       <div className="flex justify-between items-center mt-4">
         {/* Scholarship List */}
@@ -35,14 +37,6 @@ const ScholarshipsSection = ({ editMode, scholarships, removeScholarship, addSch
           ))}
         </div>
 
-        {/* Add Scholarships Button */}
-        <button
-          className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <PlusCircle size={16} />
-          Add scholarship
-        </button>
       </div>
 
       {/* Add Scholarships Modal */}
