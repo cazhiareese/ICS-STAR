@@ -16,6 +16,7 @@ const ischolarships = ["DOST Scholarship", "UPLB SLAS"];
 
 function UserProfile() {
     const [editMode, setEditMode] = useState(false);
+    const [activeTab, setActiveTab] = useState("About"); 
 
     const [userDetails, setUserDetails] = useState({
       firstName: signedinuser.first_name,
