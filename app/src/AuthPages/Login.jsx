@@ -120,10 +120,6 @@ function LoginPage() {
         
     }, [codeError]);
 
-    const handleLogin = (userType) => {
-        sessionStorage.setItem("User", JSON.stringify({ type: userType }));
-        navigate(`/${userType}`);
-      };
 
   return (
     <div className="flex items-center justify-center h-screen overflow-hidden">

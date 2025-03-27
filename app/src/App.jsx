@@ -6,7 +6,7 @@ import SignupPage from "./AuthPages/Signup";
 import StudentLanding from "./RootPages/StudentPages/studentdashboard";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
-
+import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
 // Admin imports
 import AdminRoot from "./RootPages/AdminPages/adminroot";
 import AdminDashboard from "./RootPages/AdminPages/admindashboard";
@@ -22,7 +22,11 @@ function App() {
       {/* Login Pages (No Navbar) */}
       <Route path="/" element={<LoginPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/signup" element={
+        <AppProvider>
+          <SignupPage />
+        </AppProvider>
+      } />
 
       {/* Routes that include the Navbar */}
       <Route path="/" element={<Root />}>
