@@ -1,19 +1,104 @@
 from datetime import datetime, timedelta, timezone
 import jwt
-from fastapi import Depends, FastAPI, HTTPException, status
+import uuid
+import supabase
+from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from config.config import SECRET_KEY, ALGORITHM
-from config.database import get_db, SessionLocal
-from models.usermodel import User
+from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING
+from config.database import get_db
+from models.usermodel import User, UserTypeEnum
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
+MAX_FILE_SIZE = 10 * 1024 * 1024
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+async def register_user(
+    first_name: str,
+    last_name: str,
+    email: str,
+    password: str,
+    student_number: str,
+    user_type: UserTypeEnum,
+    verification_file: UploadFile = File(None),
+    graduation_year: str = None,
+    graduation_semester: str = None,
+    db: Session = Depends(get_db)
+):
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    if db.query(User).filter(User.student_number == student_number).first():
+        raise HTTPException(status_code=400, detail="Student number already exists")
+
+    if verification_file:
+        file_content = await verification_file.read()
+        if len(file_content) > MAX_FILE_SIZE or verification_file.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
+            raise HTTPException(status_code=400, detail="Invalid verification file")
+
+        verification_ext = verification_file.filename.split(".")[-1]
+        verification_name = f"verification_files/{uuid.uuid4()}.{verification_ext}"
+        try:
+            supabase_client.storage.from_("128storage").upload(verification_name, file_content)
+        except Exception as e:
+            print("Upload Error:", e)
+        verification_url = f"{STORAGE_STRING}{verification_name}"
+    else:
+        verification_url = None
+        
+    hashed_password = hash_password(password)
+    graduation_year = int(graduation_year) if graduation_year else None
+    
+    new_user = User(
+        user_id=uuid.uuid4(),
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        password=hashed_password,
+        student_number=student_number,
+        graduation_year=graduation_year,
+        graduation_semester=graduation_semester,
+        verification_file=verification_url,
+        user_type=user_type
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return {"message": "Account created successfully"}
+
+async def upload_profile(profile_picture, user, db):
+    file_content = await profile_picture.read()
+
+    if len(file_content) > MAX_FILE_SIZE or profile_picture.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Invalid verification file")
+
+    profile_picture_ext = profile_picture.filename.split(".")[-1]
+    profile_picture_name = f"profile_pictures/{uuid.uuid4()}.{profile_picture_ext}"
+
+    try:
+        supabase_client.storage.from_("128storage").upload(profile_picture_name, file_content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Upload Error: {str(e)}")
+
+    profile_picture_url = f"{STORAGE_STRING}{profile_picture_name}"
+    user.image = profile_picture_url
+
+    db.commit()
+    db.refresh(user)
+
+    return profile_picture_url
 
 def get_user(db, email: str):
     db = SessionLocal()

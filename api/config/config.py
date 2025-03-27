@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 from dotenv import load_dotenv
 from sqlalchemy.pool import NullPool
+import supabase
 
 load_dotenv()
 DATABASE_URL = os.getenv('DB_STRING')
@@ -20,3 +21,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+STORAGE_URL = os.getenv("STORAGE_URL")
+STORAGE_STRING = os.getenv("STORAGE_STRING")
+STORAGE_API_KEY = os.getenv("STORAGE_API_KEY")
+supabase_client = supabase.create_client(STORAGE_URL, STORAGE_API_KEY)

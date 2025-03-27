@@ -4,7 +4,8 @@ uvicorn==0.34.0
 
 # Database dependencies (PostgreSQL )
 sqlalchemy==2.0.39  
-psycopg2-binary==2.9.10 
+psycopg2-binary==2.9.10
+supabase==2.14.0
 
 # Auth
 python-dotenv==1.0.1
