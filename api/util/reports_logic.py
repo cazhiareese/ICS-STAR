@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from models.log import Log
 from models.usermodel import User 
@@ -40,10 +41,8 @@ def logic_30_days_report(db: Session):
 #
 # Returns: a tuple of dictionaries containing visit counts and unique users by batch (null/no batch are included)
 def logic_batch_visits(db: Session):
-    # Get all logs with user batch information
-    logs_with_batch = db.query(Log, User.graduation_year).join(
-        User, Log.user_id == User.user_id
-    ).all()
+    # Get all logs with user batch information by getting first 4 characters of student number (batch)
+    logs_with_batch = db.query(Log, func.substring(User.student_number, 1, 4)).join(User, Log.user_id == User.user_id).all()
     
     # Initialize dictionaries to store visit counts and unique users
     batch_visits = {}
