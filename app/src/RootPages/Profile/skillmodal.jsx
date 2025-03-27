@@ -15,6 +15,7 @@ const suggestedSkills = [
 
 const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [skillInput, setSkillInput] = useState(""); // Track input text
 
   const toggleSkill = (skill) => {
     setSelectedSkills((prev) =>
@@ -27,6 +28,19 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
   const handleSave = () => {
     onSave(selectedSkills);
     onClose(); // Close modal after saving
+  };
+
+  // Handle input change
+  const handleInputChange = (e) => {
+    setSkillInput(e.target.value);
+  };
+
+  // Add new skill when Enter is pressed
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && skillInput.trim() !== "") {
+      setSelectedSkills([...selectedSkills, skillInput.trim()]); // Add new skill
+      setSkillInput(""); // Clear input field
+    }
   };
 
   if (!isOpen) return null; // Hide modal when not open
@@ -57,38 +71,37 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
 
         {/* Input Field */}
         <div className="mt-2">
-  <input
-    type="text"
-    value={selectedSkills.join(", ")}
-    className="w-full border-disabled border p-4 rounded-2xl text-lg"
-    placeholder="Enter skills..."
-    readOnly
-    style={{ height: "50px" }} // Set height to 75px
-  />
-</div>
+          <input
+            type="text"
+            value={skillInput}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown} // Detect Enter key
+            className="w-full border border-gray-400 p-4 rounded-2xl text-lg"
+            placeholder="Enter skills..."
+            style={{ height: "50px" }}
+          />
+        </div>
 
-
-{/* Suggested Skills */}
-<div className="mt-5">
-  <h3 className="text-gray-600 mb-2">Suggestions</h3>
-  <div className="grid grid-cols-3 gap-2">
-    {suggestedSkills.map((skill, index) => (
-      <button
-        key={index}
-        className={`px-3 border rounded-full text-sm transition flex items-center justify-center ${
-          selectedSkills.includes(skill)
-            ? "bg-blue-700 text-white"
-            : "border-blue-700 text-blue-700 hover:bg-blue-50"
-        }`}
-        style={{ height: "40px" }} // Set button height to 40px
-        onClick={() => toggleSkill(skill)}
-      >
-        {skill}
-      </button>
-    ))}
-  </div>
-</div>
-
+        {/* Suggested Skills */}
+        <div className="mt-5">
+          <h3 className="text-gray-600 mb-2">Suggestions</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {suggestedSkills.map((skill, index) => (
+              <button
+                key={index}
+                className={`px-3 border rounded-full text-sm transition flex items-center justify-center ${
+                  selectedSkills.includes(skill)
+                    ? "bg-blue-700 text-white"
+                    : "border-blue-700 text-blue-700 hover:bg-blue-50"
+                }`}
+                style={{ height: "40px" }} // Set button height to 40px
+                onClick={() => toggleSkill(skill)}
+              >
+                {skill}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Save Button */}
         <div className="mt-6 flex justify-end">
