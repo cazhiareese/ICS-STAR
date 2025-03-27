@@ -17,6 +17,9 @@ function UserProfile() {
     const [editMode, setEditMode] = useState(false);
 
     const [userDetails, setUserDetails] = useState({
+      firstName: signedinuser.first_name,
+      lastName: signedinuser.last_name,
+      email: signedinuser.email,
       location: `${signedinuser.city}, ${signedinuser.state}`,
       mobile: signedinuser.mobile_number,
       studentNumber: signedinuser.student_number,
@@ -58,12 +61,37 @@ function UserProfile() {
 
                     {/* Name and Email */}
                     <div className="flex flex-col items-center sm:items-start gap-2 text-center sm:text-left">
-                        <h2 className="font-satoshi-black text-[24px] sm:text-[32px] leading-[22px] tracking-[-0.02em] text-primary">
-                            {signedinuser.first_name} {signedinuser.last_name}
-                        </h2>
-                        <p className="font-satoshi-medium text-[18px] sm:text-[24px] leading-[22px] tracking-[-0.02em] text-black">
-                            {signedinuser.email}
-                        </p>
+                    {editMode ? (
+              <>
+                <input
+                  type="text"
+                  value={userDetails.firstName}
+                  onChange={(e) => handleChange(e, "firstName")}
+                  className="text-[24px] sm:text-[32px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-md px-2 py-1 text-center sm:text-left"
+                />
+                <input
+                  type="text"
+                  value={userDetails.lastName}
+                  onChange={(e) => handleChange(e, "lastName")}
+                  className="text-[24px] sm:text-[32px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-md px-2 py-1 text-center sm:text-left"
+                />
+                <input
+                  type="email"
+                  value={userDetails.email}
+                  onChange={(e) => handleChange(e, "email")}
+                  className="text-[18px] sm:text-[24px] font-satoshi-medium text-black bg-white border border-gray-300 rounded-md px-2 py-1 text-center sm:text-left"
+                />
+              </>
+            ) : (
+              <>
+                <h2 className="font-satoshi-black text-[24px] sm:text-[32px] leading-[22px] tracking-[-0.02em] text-primary">
+                  {userDetails.firstName} {userDetails.lastName}
+                </h2>
+                <p className="font-satoshi-medium text-[18px] sm:text-[24px] leading-[22px] tracking-[-0.02em] text-black">
+                  {userDetails.email}
+                </p>
+              </>
+            )}
 
                         {/* Social Icons */}
                         <div className="flex gap-4">
