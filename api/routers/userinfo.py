@@ -68,3 +68,32 @@ async def add_skills(
     db.commit()
     
     return {"message": "skills added successfully"}
+
+@router.put("/update-employment")
+async def update_employment(
+    industry: str = Form(...),
+    employment_status: str = Form(...),
+    company_name: str = Form(...),
+    job_title: str = Form(...),
+    work_location: str = Form(...),
+    work_mode: str = Form(...),
+    employer_class: str = Form(...),
+    tenured_status: str = Form(...),
+    salary_grade: str = Form(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if user.user_type.value == "student":
+        raise HTTPException(status_code=400, detail="For alumni only")
+    
+    user.industry = industry
+    user.employment_status = employment_status
+    user.company_name = company_name
+    user.job_title = job_title
+    user.work_location = work_location
+    user.work_mode = work_mode
+    user.employer_class = employer_class
+    user.tenured_status = tenured_status
+    user.salary_grade = salary_grade
+    db.commit()
+    return {"message": "employment details updated successfully"}
