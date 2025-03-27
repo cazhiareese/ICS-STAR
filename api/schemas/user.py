@@ -44,6 +44,7 @@ class UserOut(BaseModel):
     standing: Optional[UserStandingEnum] = None
     graduation_year: Optional[int] = None
     graduation_semester: Optional[str] = None
+    industry: Optional[str] = None
     employment_status: Optional[str] = None
     job_title: Optional[str] = None
     work_location: Optional[str] = None
