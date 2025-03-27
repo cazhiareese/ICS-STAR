@@ -1,3 +1,3 @@
-from models.usermodel import User
-from models.report_model import Report, ReportAttachment
-from models.log import Log
+from .usermodel import User
+from .report_model import Report, ReportAttachment
+from .log import Log
