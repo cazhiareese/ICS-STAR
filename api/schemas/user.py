@@ -27,12 +27,12 @@ class UserOut(BaseModel):
     first_name: str
     last_name: str
     email: str
-    mobile_number: str
-    age: int
-    gender: GenderEnum
-    city: str
-    state: str
-    country: str
+    mobile_number: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[GenderEnum] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
     marital_status: Optional[str] = None
     image: Optional[str] = None
     verification_file: Optional[str] = None
@@ -44,6 +44,7 @@ class UserOut(BaseModel):
     standing: Optional[UserStandingEnum] = None
     graduation_year: Optional[int] = None
     graduation_semester: Optional[str] = None
+    industry: Optional[str] = None
     employment_status: Optional[str] = None
     industry: Optional[str] = None
     job_title: Optional[str] = None

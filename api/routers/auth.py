@@ -1,18 +1,36 @@
 from datetime import timedelta
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import Depends, APIRouter, HTTPException, status, Form, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Annotated
 from config.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
+from schemas.user import UserOut
 
-from util.userutil import get_current_active_user, require_student, require_alum, require_admin, authenticate_user, create_access_token
+from util.userutil import register_user, get_current_active_user, require_student, require_alum, require_admin, authenticate_user, create_access_token
 from util.reports_logic import logic_login_log, logic_logout_log
 
 from schemas.user import UserOut
 from models.usermodel import User
 
 router = APIRouter()
+
+@router.post("/register/", response_model=UserOut)
+async def register(
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    student_number: str = Form(...),
+    user_type: str = Form(...),
+    verification_file: UploadFile = File(...),
+    graduation_year: str = Form(None),
+    graduation_semester: str = Form(None),
+    db: Session = Depends(get_db),
+):
+    return await register_user(
+        first_name, last_name, email, password, student_number, user_type, verification_file, graduation_year, graduation_semester, db
+    )
 
 @router.post("/token")
 async def login_for_access_token(
