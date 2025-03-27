@@ -1,11 +1,10 @@
 from sqlalchemy import create_engine, Column, String, UUID, DateTime, Boolean, Integer, Enum, ForeignKey, func
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.pool import NullPool
 import uuid
 from enum import Enum as PyEnum
+from config.config import Base
 
-Base = declarative_base()
 
 # Enums
 class GenderEnum(PyEnum):
@@ -69,7 +68,8 @@ class User(Base):
    scholarships = relationship("UserScholarship", back_populates="user")
    affiliations = relationship("UserAffiliation", back_populates="user")
    logs = relationship("Log", back_populates="user")
-
+   reports = relationship("Report", foreign_keys="[Report.reporter_id]", back_populates="reporter", lazy="joined")
+   account_reports = relationship("Report", foreign_keys="[Report.reported_user_id]", back_populates="reported_user", lazy="joined")
 
 class UserSkill(Base):
    __tablename__ = 'user_skill'

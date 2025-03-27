@@ -1,8 +1,7 @@
 from sqlalchemy import Column, UUID, DateTime, Boolean, ForeignKey, func
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from config.config import Base
 
-from .usermodel import Base
 
 class Log(Base):
     __tablename__ = 'log'
