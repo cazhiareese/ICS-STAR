@@ -13,7 +13,7 @@ function SectionHeader({ title, buttonText, onButtonClick }) {
         {/* Button (Responsive: Full on Desktop, Icon Only on Mobile) */}
         {onButtonClick && (
           <button
-            className="flex items-center gap-2 px-1 py-1 sm:px-3 sm:py-1.8 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition"
+            className="flex items-center gap-2 px-1 py-1 sm:px-3 sm:py-1.8 bg-primary text-white rounded-full text-[14px] font-medium hover:bg-hover transition"
             onClick={onButtonClick}
           >
             <PlusCircle size={20} />
@@ -25,7 +25,7 @@ function SectionHeader({ title, buttonText, onButtonClick }) {
       </div>
 
       {/* Divider (Ensure Proper Spacing) */}
-      <div className="w-full border-t border-gray-300 mt-1"></div>
+      <div className="w-full border-t border-disabled mt-1"></div>
     </div>
   );
 }
