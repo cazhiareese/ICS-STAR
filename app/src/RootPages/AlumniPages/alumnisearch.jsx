@@ -5,8 +5,10 @@ import SearchBar from '../../components/searchbar'
 function AlumniSearch() {
   return (
     <div className='flex flex-col'>
-        {/* Search box */}
-        <SearchBar/>
+        {/* Search bar */}
+        <div className='flex flex-col w-full mt-28 shadow-md pb-8 items-center rounded-2xl'>
+            <SearchBar/>
+        </div>
     </div>
   )
 }
