@@ -28,7 +28,7 @@ async def read_unverified_users(db: Session = Depends(get_db)):
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the user registration
 @router.put("/admin/confirm/{user_id}", dependencies=[Depends(isAdmin)])
-async def confirm_user(db: Session = Depends(get_db), user_id: int = None):
+async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
     user = db.query(User).filter(User.user_id == user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
