@@ -5,6 +5,7 @@ import prince from "../../assets/prince boy.jpg";
 
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [showModal, setShowModal] = useState(false);
+  const [originalEmail, setOriginalEmail] = useState(userDetails.email);
 
   const handleSave = () => {
     setShowModal(false);
@@ -93,6 +94,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
         isOpen={showModal}
         onConfirm={handleSave}
         onCancel={() => setShowModal(false)}
+        emailChanged={userDetails.email !== originalEmail}
       />
     </div>
   );
