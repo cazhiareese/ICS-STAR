@@ -5,10 +5,11 @@
     align-items: center; /* Centers items vertically */
     gap: 12px;
     padding: 12px;
-    width: 350px;
+    width: 250px;
     max-width: 300px; /* Adjust width if necessary */
     margin: 0 auto; /* Centers the entire grid in the parent */
     text-align: center; /* Ensures text alignment */
+    max-width: 250px; 
   }
 
   
@@ -20,6 +21,7 @@
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Optional: Adds a subtle shadow */
     padding: 10px; /* Adds some spacing inside */
     border: none;
+    z-index: 9999 !important; 
 }
 
 
