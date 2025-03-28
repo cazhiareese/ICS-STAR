@@ -21,7 +21,7 @@ const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAff
               <div className="flex items-center gap-2">
                 <p className="text-primary font-satoshi-bold text-[20px]">{affiliation.affiliation}</p>
                 {editMode && (
-                  <div className="bg-red-600  rounded-full flex items-center justify-center hover:bg-red-800">
+                  <div className="bg-error  rounded-full flex items-center justify-center hover:bg-red-800">
                   <XCircle
                     size={16}
                     className="text-white cursor-pointer hover:text-white transition"

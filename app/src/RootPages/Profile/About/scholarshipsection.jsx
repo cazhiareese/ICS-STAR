@@ -19,20 +19,22 @@ const ScholarshipsSection = ({ editMode, scholarships, removeScholarship, addSch
             <div key={index}>
               <div className="flex items-center justify-between py-2">
                 {/* Scholarship Name */}
-                <p className="text-blue-700 font-medium">{scholarship}</p>
+                <p className="text-primary font-satoshi-bold text-[20px]">{scholarship}</p>
 
                 {/* Remove Icon (Only in Edit Mode) */}
                 {editMode && (
+                  <div className="bg-error rounded-full flex items-center justify-center hover:bg-red-800">
                   <XCircle
                     size={16}
-                    className="text-red-500 cursor-pointer hover:text-red-600 transition"
+                    className="text-white cursor-pointer hover:text-white transition"
                     onClick={() => removeScholarship(index)}
                   />
+                  </div>
                 )}
               </div>
 
               {/* Divider after every scholarship */}
-              <div className="w-full border-b border-gray-300"></div>
+              <div className="w-full border-b border-disabled"></div>
             </div>
           ))}
         </div>
