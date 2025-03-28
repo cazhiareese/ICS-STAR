@@ -10,19 +10,21 @@ function SectionHeader({ title, buttonText, onButtonClick }) {
           {title}
         </h2>
 
-        {/* Button (Optional) */}
-        {buttonText && onButtonClick && (
+        {/* Button (Responsive: Full on Desktop, Icon Only on Mobile) */}
+        {onButtonClick && (
           <button
-            className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition"
+            className="flex items-center gap-2 px-4 py-2 sm:px-3 sm:py-1.8 bg-blue-700 text-white rounded-full text-[14px] font-medium hover:bg-blue-800 transition"
             onClick={onButtonClick}
           >
-            <PlusCircle size={16} />
-            {buttonText}
+            <PlusCircle size={20} />
+
+            {/* Show Button Text Only on Larger Screens */}
+            <span className="hidden sm:inline">{buttonText}</span>
           </button>
         )}
       </div>
 
-      {/* Divider (Make Sure It's Closer) */}
+      {/* Divider (Ensure Proper Spacing) */}
       <div className="w-full border-t border-gray-300 mt-1"></div>
     </div>
   );
