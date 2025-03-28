@@ -32,37 +32,37 @@ const AddScholarshipModal = ({ isOpen, onClose, onSave }) => {
       <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
 
       {/* Modal Container */}
-      <div className="bg-white border border-gray-300 p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
+      <div className="bg-white border border-disabled p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-lg font-semibold sm:text-base">Add scholarship</h2>
-          <XCircle size={24} className="cursor-pointer text-red-500" onClick={onClose} />
+          <h2 className="text-lg font-satoshi-bold sm:text-[24px]">Add scholarship</h2>
+          <XCircle size={24} className="cursor-pointer text-white bg-error rounded-full hover:bg-red-800" onClick={onClose} />
         </div>
 
         {/* Input Field */}
         <div className="flex flex-col gap-4 mt-4">
           {/* Scholarship Name */}
           <div className="flex flex-col">
-            <label className="text-gray-700 font-medium">
-              Name of scholarship <span className="text-red-500">*</span>
+            <label className="text-black font-satoshi-medium">
+              Name of scholarship <span className="text-error">*</span>
             </label>
             <input
               type="text"
               value={scholarshipInput}
               onChange={(e) => setScholarshipInput(e.target.value)}
-              className={`w-full border px-4 py-3 rounded-2xl text-lg sm:text-sm ${
-                error ? "border-red-500" : "border-gray-400"
+              className={`w-full border-2 px-4 py-3 rounded-2xl text-lg font-satoshi-medium sm:text-sm ${
+                error ? "border-error" : "border-gray-400"
               }`}
               placeholder="Enter scholarship name..."
             />
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+            {error && <p className="text-error text-sm mt-1">{error}</p>}
           </div>
         </div>
 
         {/* Save Button */}
         <div className="mt-6 flex justify-end">
           <button
-            className="px-5 py-3 bg-blue-700 text-white rounded-full text-sm font-medium hover:bg-blue-800 transition"
+            className="px-5 py-3 bg-primary  text-white rounded-full text-sm font-satoshi hover:bg-hover transition"
             onClick={handleSave}
           >
             Save
