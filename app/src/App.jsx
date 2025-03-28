@@ -15,6 +15,7 @@ import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
+import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
 
 function App() {
   return (
@@ -27,8 +28,9 @@ function App() {
       {/* Routes that include the Navbar */}
       <Route path="/" element={<Root />}>
         <Route path="student" element={<StudentLanding />} />
-        <Route path="alumni" element={<AlumniLanding />} />
-
+        <Route path="alumni" element={<AlumniLanding />}/> 
+        <Route path="alumnisearch" element={<AlumniSearch />} />
+        
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>
           {/* Redirect to dashboard as default */}
