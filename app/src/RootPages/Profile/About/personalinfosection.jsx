@@ -8,11 +8,11 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
       <SectionHeader title="PERSONAL INFORMATION" />
 
       {/* Responsive Grid Layout */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-gray-700 text-[16px]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-black text-[16px] font-satoshi-medium">
         {/* Location */}
         <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
-            <MapPin size={20} className="text-gray-600" />
+            <MapPin size={20} className="text-black" />
             <span>Location</span>
           </div>
           {editMode ? (
@@ -20,17 +20,17 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.location}
               onChange={(e) => handleChange(e, "location")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-[12px] px-2 py-1 w-full"
+              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-blue-700 font-medium">{userDetails.location}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.location}</span>
           )}
         </div>
 
         {/* Mobile Number */}
         <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
-            <Phone size={20} className="text-gray-600" />
+            <Phone size={20} className="text-black" />
             <span>Mobile Number</span>
           </div>
           {editMode ? (
@@ -38,17 +38,17 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.mobile}
               onChange={(e) => handleChange(e, "mobile")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-[12px] px-2 py-1 w-full"
+              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-blue-700 font-medium">{userDetails.mobile}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.mobile}</span>
           )}
         </div>
 
         {/* Student Number */}
         <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
-            <IdCard size={20} className="text-gray-600" />
+            <IdCard size={20} className="text-black" />
             <span>Student Number</span>
           </div>
           {editMode ? (
@@ -56,17 +56,17 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.studentNumber}
               onChange={(e) => handleChange(e, "studentNumber")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-[12px] px-2 py-1 w-full"
+              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-blue-700 font-medium">{userDetails.studentNumber}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.studentNumber}</span>
           )}
         </div>
 
         {/* Graduating Class */}
         <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
-            <GraduationCap size={20} className="text-gray-600" />
+            <GraduationCap size={20} className="text-black" />
             <span>Graduating Class</span>
           </div>
           {editMode ? (
@@ -74,10 +74,10 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.graduatingClass}
               onChange={(e) => handleChange(e, "graduatingClass")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-[12px] px-2 py-1 w-full"
+              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-blue-700 font-medium">{userDetails.graduatingClass}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.graduatingClass}</span>
           )}
         </div>
       </div>
