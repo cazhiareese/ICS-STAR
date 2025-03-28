@@ -4,6 +4,7 @@ from schemas.user import UserOut
 from config.database import get_db
 from util.userutil import require_admin
 from models.usermodel import User
+from uuid import UUID
 
 router = APIRouter()
 
@@ -47,7 +48,7 @@ async def read_graduating_students(db: Session = Depends(get_db)):
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the transition
 @router.put("/admin/transition/{user_id}", dependencies=[Depends(isAdmin)])
-async def transition_student(db: Session = Depends(get_db), user_id: int = None):
+async def transition_student(db: Session = Depends(get_db), user_id: UUID = None):
     student = db.query(User).filter(User.user_id == user_id).first()
     if student is None:
         raise HTTPException(status_code=404, detail="User not found")
