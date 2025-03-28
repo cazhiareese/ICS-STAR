@@ -14,7 +14,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   };
 
   return (
-    <div className="relative w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
+    <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
       
       {/* Edit / Save Profile Button */}
       <button
@@ -26,7 +26,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
           }
         }}
         className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto 
-        bg-blue-700 text-white hover:bg-blue-800"
+        bg-primary text-white hover:bg-hover"
       >
         {editMode ? (
           <Check size={18} className="text-white pointer-events-none" />
@@ -56,19 +56,19 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
                 type="text"
                 value={userDetails.firstName}
                 onChange={(e) => handleChange(e, "firstName")}
-                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-gray-300 rounded-[12px] px-2 py-1"
+                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
               <input
                 type="text"
                 value={userDetails.lastName}
                 onChange={(e) => handleChange(e, "lastName")}
-                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-gray-300 rounded-[12px] px-2 py-1"
+                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
               <input
                 type="email"
                 value={userDetails.email}
                 onChange={(e) => handleChange(e, "email")}
-                className="w-full text-[16px] sm:text-[20px] text-black bg-white border border-gray-300 rounded-[12px] px-2 py-1"
+                className="w-full text-[16px] sm:text-[20px] text-black bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
             </>
           ) : (
@@ -82,9 +82,9 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
 
           {/* Social Icons */}
           <div className="flex gap-3 mt-1">
-            <Facebook size={22} className="text-black cursor-pointer hover:text-blue-600" />
-            <Github size={22} className="text-black cursor-pointer hover:text-blue-600" />
-            <Linkedin size={22} className="text-black cursor-pointer hover:text-blue-600" />
+            <Facebook size={22} className="text-black cursor-pointer hover:text-hover" />
+            <Github size={22} className="text-black cursor-pointer hover:text-hover" />
+            <Linkedin size={22} className="text-black cursor-pointer hover:text-hover" />
           </div>
         </div>
       </div>
