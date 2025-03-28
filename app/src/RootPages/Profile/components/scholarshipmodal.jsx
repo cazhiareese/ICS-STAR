@@ -3,19 +3,25 @@ import { XCircle } from "lucide-react";
 
 const AddScholarshipModal = ({ isOpen, onClose, onSave }) => {
   const [scholarshipInput, setScholarshipInput] = useState("");
+  const [error, setError] = useState(""); // Track error state
 
   useEffect(() => {
     if (!isOpen) {
       setScholarshipInput("");
+      setError(""); // Reset error message when modal is closed
     }
   }, [isOpen]);
 
   const handleSave = () => {
-    if (scholarshipInput.trim()) {
-      onSave(scholarshipInput);
-      setScholarshipInput("");
-      onClose();
+    if (!scholarshipInput.trim()) {
+      setError("This field is required."); // Show error if input is empty
+      return;
     }
+
+    onSave(scholarshipInput);
+    setScholarshipInput("");
+    setError(""); // Clear error on successful save
+    onClose();
   };
 
   if (!isOpen) return null; // Hide modal when not open
@@ -44,9 +50,12 @@ const AddScholarshipModal = ({ isOpen, onClose, onSave }) => {
               type="text"
               value={scholarshipInput}
               onChange={(e) => setScholarshipInput(e.target.value)}
-              className="w-full border border-gray-400 px-4 py-3 rounded-2xl text-lg sm:text-sm"
+              className={`w-full border px-4 py-3 rounded-2xl text-lg sm:text-sm ${
+                error ? "border-red-500" : "border-gray-400"
+              }`}
               placeholder="Enter scholarship name..."
             />
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           </div>
         </div>
 
