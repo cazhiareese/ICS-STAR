@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PlusCircle, XCircle } from "lucide-react";
-import SectionHeader from "../../../components/sectionheader";
+import SectionHeader from "../components/sectionheader";
 import AddAffiliationsModal from "../components/affiliationmodal";
 
 const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAffiliation }) => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { MapPin, Phone, IdCard, GraduationCap } from "lucide-react";
-import SectionHeader from "../../../components/sectionheader";
+import SectionHeader from "../components/sectionheader";
 
 const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
   return (

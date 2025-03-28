@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { MapPin, Phone, IdCard, GraduationCap, Camera, Facebook, Github, Linkedin, Pencil, PlusCircle, XCircle } from "lucide-react";
 import prince from '../assets/prince boy.jpg';
-import SectionHeader from '../components/sectionheader';
+import SectionHeader from './Profile/components/sectionheader';
 import ProfileSection from './Profile/profilesection';
 import UserProfileTabs from './Profile/components/userprofiletabs';
 import PersonalInfoSection from './Profile/About/personalinfosection';
