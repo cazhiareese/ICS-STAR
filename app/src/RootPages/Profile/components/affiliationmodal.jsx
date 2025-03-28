@@ -4,16 +4,25 @@ import { XCircle } from "lucide-react";
 const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
   const [affiliationInput, setAffiliationInput] = useState("");
   const [positionInput, setPositionInput] = useState("");
+  const [errors, setErrors] = useState({ affiliation: "", position: "" });
 
   useEffect(() => {
     if (!isOpen) {
       setAffiliationInput("");
       setPositionInput("");
+      setErrors({ affiliation: "", position: "" }); // Reset errors
     }
   }, [isOpen]);
 
   const handleSave = () => {
-    if (affiliationInput.trim() && positionInput.trim()) {
+    let newErrors = { affiliation: "", position: "" };
+
+    if (!affiliationInput.trim()) newErrors.affiliation = "This field is required.";
+    if (!positionInput.trim()) newErrors.position = "This field is required.";
+
+    setErrors(newErrors);
+
+    if (!newErrors.affiliation && !newErrors.position) {
       onSave({ affiliation: affiliationInput, role: positionInput });
       setAffiliationInput("");
       setPositionInput("");
@@ -47,9 +56,12 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
               type="text"
               value={affiliationInput}
               onChange={(e) => setAffiliationInput(e.target.value)}
-              className="w-full border border-gray-400 px-4 py-3 rounded-2xl text-lg sm:text-sm"
+              className={`w-full border px-4 py-3 rounded-2xl text-lg sm:text-sm ${
+                errors.affiliation ? "border-red-500" : "border-gray-400"
+              }`}
               placeholder="Enter organization name..."
             />
+            {errors.affiliation && <p className="text-red-500 text-sm mt-1">{errors.affiliation}</p>}
           </div>
 
           {/* Position */}
@@ -61,9 +73,12 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
               type="text"
               value={positionInput}
               onChange={(e) => setPositionInput(e.target.value)}
-              className="w-full border border-gray-400 px-4 py-3 rounded-2xl text-lg sm:text-sm"
+              className={`w-full border px-4 py-3 rounded-2xl text-lg sm:text-sm ${
+                errors.position ? "border-red-500" : "border-gray-400"
+              }`}
               placeholder="Enter your position..."
             />
+            {errors.position && <p className="text-red-500 text-sm mt-1">{errors.position}</p>}
           </div>
         </div>
 
