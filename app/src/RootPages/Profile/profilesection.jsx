@@ -13,7 +13,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   };
 
   return (
-    <div className="relative w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-white p-6 flex flex-col sm:flex-row items-center sm:justify-between">
+    <div className="relative w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
       
       {/* Edit / Save Profile Button */}
       <button
