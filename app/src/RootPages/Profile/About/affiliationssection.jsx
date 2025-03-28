@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PlusCircle, XCircle } from "lucide-react";
+import { PlusCircle, XCircle,X } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddAffiliationsModal from "../components/affiliationmodal";
 
@@ -19,17 +19,19 @@ const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAff
             <div key={index} className="flex flex-col">
               {/* Affiliation Name & Remove Icon */}
               <div className="flex items-center gap-2">
-                <p className="text-blue-700 font-medium">{affiliation.affiliation}</p>
+                <p className="text-primary font-satoshi-bold text-[20px]">{affiliation.affiliation}</p>
                 {editMode && (
+                  <div className="bg-red-600  rounded-full flex items-center justify-center hover:bg-red-800">
                   <XCircle
                     size={16}
-                    className="text-red-500 cursor-pointer hover:text-red-600 transition"
+                    className="text-white cursor-pointer hover:text-white transition"
                     onClick={() => removeAffiliation(index)}
                   />
+                </div>
                 )}
               </div>
               {/* Role Below */}
-              <p className="text-gray-600">{affiliation.role}</p>
+              <p className="text-black font-satoshi-medium">{affiliation.role}</p>
             </div>
           ))}
         </div>
