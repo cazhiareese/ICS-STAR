@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import log_route, auth, userinfo, admin_user_stats, reporting, admin_account_management
+from routers import log_route, auth, userinfo, admin_user_stats, reporting, admin_account_management, alumni_search_route
 
 
 app = FastAPI()
@@ -10,6 +10,7 @@ app.include_router(reporting.router)
 app.include_router(admin_account_management.router)
 app.include_router(admin_user_stats.router)
 app.include_router(userinfo.router)
+app.include_router(alumni_search_route.router)
 
 
 @app.get("/")
