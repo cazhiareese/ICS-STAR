@@ -25,7 +25,7 @@ const SkillsInterestsSection = ({ editMode, skills, removeSkill, addSkills }) =>
             {editMode && (
               <XCircle
                 size={18}
-                className="absolute -top-2 -right-2 text-red-500 cursor-pointer bg-white rounded-full"
+                className="absolute -top-2 -right-2 text-white cursor-pointer bg-error rounded-full hover:bg-red-800"
                 onClick={() => removeSkill(index)}
               />
             )}
