@@ -20,7 +20,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.location}
               onChange={(e) => handleChange(e, "location")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-full"
+              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
             <span className="text-blue-700 font-medium">{userDetails.location}</span>
@@ -38,7 +38,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.mobile}
               onChange={(e) => handleChange(e, "mobile")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-full"
+              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
             <span className="text-blue-700 font-medium">{userDetails.mobile}</span>
@@ -56,7 +56,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.studentNumber}
               onChange={(e) => handleChange(e, "studentNumber")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-full"
+              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
             <span className="text-blue-700 font-medium">{userDetails.studentNumber}</span>
@@ -74,7 +74,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.graduatingClass}
               onChange={(e) => handleChange(e, "graduatingClass")}
-              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-full"
+              className="text-blue-700 font-medium bg-white border border-gray-300 rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
             <span className="text-blue-700 font-medium">{userDetails.graduatingClass}</span>

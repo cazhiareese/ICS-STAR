@@ -56,19 +56,19 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
                 type="text"
                 value={userDetails.firstName}
                 onChange={(e) => handleChange(e, "firstName")}
-                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-gray-300 rounded-md px-2 py-1"
+                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-gray-300 rounded-[12px] px-2 py-1"
               />
               <input
                 type="text"
                 value={userDetails.lastName}
                 onChange={(e) => handleChange(e, "lastName")}
-                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-gray-300 rounded-md px-2 py-1"
+                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-gray-300 rounded-[12px] px-2 py-1"
               />
               <input
                 type="email"
                 value={userDetails.email}
                 onChange={(e) => handleChange(e, "email")}
-                className="w-full text-[16px] sm:text-[20px] text-black bg-white border border-gray-300 rounded-md px-2 py-1"
+                className="w-full text-[16px] sm:text-[20px] text-black bg-white border border-gray-300 rounded-[12px] px-2 py-1"
               />
             </>
           ) : (
