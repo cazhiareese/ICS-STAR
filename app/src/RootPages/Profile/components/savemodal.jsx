@@ -6,16 +6,20 @@ function SaveConfirmationModal({ isOpen, onConfirm, onCancel }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 px-4 sm:px-0">
-              <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
+      {/* Background Overlay with Lower Opacity */}
+      <div className="absolute inset-0 bg-gray-500 opacity-40"></div>
+
       {/* Modal Container */}
       <div
-        className="bg-white p-6 rounded-2xl relative shadow-lg text-center w-[350px] sm:w-[400px] md:w-[450px] border"
+        className="bg-white w-[450px] h-[250px] p-6 relative rounded-2xl border border-gray-300 shadow-lg flex flex-col justify-center items-center"
       >
-        {/* Confirmation Text */}
-        <p className="text-lg font-medium text-gray-900">Are you sure you want to save your changes?</p>
+        {/* Confirmation Text (Now 24px with Newline) */}
+        <p className="text-2xl font-medium text-gray-900 text-center">
+          Are you sure you want to save <br /> your changes?
+        </p>
 
         {/* Action Buttons */}
-        <div className="mt-4 flex justify-center gap-4">
+        <div className="mt-6 flex justify-center gap-4">
           <button
             onClick={onCancel}
             className="px-5 py-2 bg-red-600 text-white rounded-full text-sm font-medium hover:bg-red-700 flex items-center gap-2 transition"
