@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { Camera, Facebook, Github, Linkedin, Pencil, Check } from "lucide-react";
+import SaveConfirmationModal from "./components/savemodal";
 import prince from "../../assets/prince boy.jpg";
 
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
+  const [showModal, setShowModal] = useState(false);
+
+  const handleSave = () => {
+    setShowModal(false);
+    setEditMode(false);
+    // Save logic can be added here
+  };
+
   return (
     <div className="relative w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-white p-6 flex flex-col sm:flex-row items-center sm:justify-between">
       
-      {/* Edit / Save Profile Button - Clickable Anywhere */}
+      {/* Edit / Save Profile Button */}
       <button
-        onClick={() => setEditMode(!editMode)}
+        onClick={() => {
+          if (editMode) {
+            setShowModal(true); // Show modal when saving
+          } else {
+            setEditMode(true);
+          }
+        }}
         className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto 
         bg-blue-700 text-white hover:bg-blue-800"
       >
@@ -22,13 +37,11 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
         </span>
       </button>
 
-      {/* Profile Section - Responsive */}
+      {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
         {/* Profile Image */}
         <div className="relative w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
           <img src={prince} alt="Profile" className="w-full h-full object-cover" />
-          
-          {/* Camera Icon Overlay */}
           <div className="absolute bottom-1 right-1 bg-white p-[6px] rounded-full shadow-md cursor-pointer">
             <Camera size={16} className="text-gray-600" />
           </div>
@@ -66,7 +79,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
             </>
           )}
 
-          {/* Social Icons - Left-aligned */}
+          {/* Social Icons */}
           <div className="flex gap-3 mt-1">
             <Facebook size={22} className="text-black cursor-pointer hover:text-blue-600" />
             <Github size={22} className="text-black cursor-pointer hover:text-blue-600" />
@@ -74,6 +87,13 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
           </div>
         </div>
       </div>
+
+      {/* Modal Component */}
+      <SaveConfirmationModal
+        isOpen={showModal}
+        onConfirm={handleSave}
+        onCancel={() => setShowModal(false)}
+      />
     </div>
   );
 }
