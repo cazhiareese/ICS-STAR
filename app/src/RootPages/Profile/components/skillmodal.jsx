@@ -57,27 +57,27 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
 
       {/* Modal Container */}
       <div
-        className="bg-white border border-gray-300 p-6 relative z-10 flex flex-col 
+        className="bg-white border border-disabled p-6 relative z-10 flex flex-col 
         w-full max-w-[650px] rounded-2xl shadow-lg 
         sm:w-11/12 max-h-screen"
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-lg font-semibold sm:text-base">Add Skills and Interests</h2>
-          <XCircle size={24} className="cursor-pointer text-red-500" onClick={onClose} />
+          <h2 className="text-[24px] font-satoshi-bold  text-black sm:text-base ">Add Skills and Interests</h2>
+          <XCircle size={24} className="cursor-pointer text-white bg-error rounded-full hover:bg-red-800" onClick={onClose} />
         </div>
 
         {/* Content Wrapper (Flex Height) */}
         <div className="flex flex-col gap-4 flex-grow overflow-y-auto">
           {/* Skill Input Section */}
           <div className="flex flex-col gap-2 mt-4">
-            <h3 className="text-gray-700 font-medium">Skills and Interests</h3>
+            <h3 className="text-black font-satoshi-medium ">Skills and Interests</h3>
             <input
               type="text"
               value={skillInput}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              className="w-full border border-gray-400 px-4 py-3 rounded-2xl text-lg sm:text-sm"
+              className="w-full border-2 border-disabled px-4 py-3 rounded-2xl text-lg sm:text-sm"
               placeholder="Enter skills..."
               style={{ height: "50px" }}
             />
@@ -87,7 +87,7 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
               {selectedSkills.map((skill, index) => (
                 <span
                   key={index}
-                  className="px-4 py-2 border border-blue-700 text-blue-700 rounded-full text-sm sm:text-xs"
+                  className="px-4 py-2 border-2 border-primary text-primary font-satoshi-medium rounded-full text-sm sm:text-xs"
                 >
                   {skill}
                 </span>
@@ -97,7 +97,7 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
 
           {/* Suggested Skills */}
           <div className="flex flex-col gap-2">
-            <h3 className="text-gray-600">Suggestions</h3>
+            <h3 className="text-black font-satoshi-medium">Suggestions</h3>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-3">
               {suggestedSkills.map((skill, index) => (
                 <button
@@ -105,8 +105,8 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
                   className={`px-3 py-2 border rounded-full font-medium flex items-center justify-center 
                   transition ${
                     selectedSkills.includes(skill)
-                      ? "bg-blue-700 text-white"
-                      : "border-blue-700 text-blue-700 hover:bg-blue-50"
+                      ? "bg-primary text-white hover:bg-hover"
+                      : "border-primary text-primary hover:bg-hover hover:text-white transition"
                   }sm:text-xs px-3 py-2 sm:px-2 sm:py-1`}
                   onClick={() => toggleSkill(skill)}
                 >
@@ -120,7 +120,7 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
         {/* Save Button */}
         <div className="mt-4 flex justify-end">
           <button
-            className="px-5 py-3 bg-blue-700 text-white rounded-full text-sm font-medium hover:bg-blue-800 transition"
+            className="px-5 py-3 bg-primary text-white rounded-full text-sm font-medium hover:bg-hover transition"
             onClick={handleSave}
           >
             Save

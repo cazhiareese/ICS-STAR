@@ -38,11 +38,11 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
       <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
 
       {/* Modal Container */}
-      <div className="bg-white border border-gray-300 p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
+      <div className="bg-white border border-disabled p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
           <h2 className="text-lg font-semibold sm:text-base">Add affiliations</h2>
-          <XCircle size={24} className="cursor-pointer text-red-500" onClick={onClose} />
+          <XCircle size={24} className="cursor-pointer text-error" onClick={onClose} />
         </div>
 
         {/* Input Fields */}
