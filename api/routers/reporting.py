@@ -5,6 +5,7 @@ from models.report_model import Report, ReportAttachment
 from config.database import get_db
 from fastapi import APIRouter, Depends, HTTPException
 from util.userutil import get_current_active_user
+from uuid import UUID
 
 router = APIRouter()
 
@@ -22,7 +23,7 @@ async def read_reports(db: Session = Depends(get_db)):
 # Arguments: db - SQLAlchemy session, report_id - the report ID
 # Returns: the report with the specified ID
 @router.get("/reports/{report_id}", response_model=ReportOut)
-async def read_report(report_id: int, db: Session = Depends(get_db)):
+async def read_report(report_id: UUID, db: Session = Depends(get_db)):
     report = db.query(Report).filter(Report.report_id == report_id).first()
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
@@ -55,7 +56,7 @@ async def read_user_reports(db: Session = Depends(get_db)):
 # Arguments: db - SQLAlchemy session, report_id - the report ID
 # Returns: a list of all attachments for the report
 @router.get("/reports/{report_id}/attachments", response_model=list[ReportAttachmentOut])
-async def read_attachments(report_id: int, db: Session = Depends(get_db)):
+async def read_attachments(report_id: UUID, db: Session = Depends(get_db)):
     attachments = db.query(ReportAttachment).filter(ReportAttachment.report_id == report_id).all()
     if attachments is None:
         raise HTTPException(status_code=404, detail="No attachments found")
