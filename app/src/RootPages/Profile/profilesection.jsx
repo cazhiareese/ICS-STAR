@@ -1,19 +1,24 @@
 import React from "react";
-import { Camera, Facebook, Github, Linkedin, Pencil } from "lucide-react";
+import { Camera, Facebook, Github, Linkedin, Pencil, Check } from "lucide-react";
 import prince from "../../assets/prince boy.jpg";
 
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   return (
     <div className="relative w-full max-w-[1100px] border border-gray-300 rounded-[10px] bg-white p-6 flex flex-col sm:flex-row items-center sm:justify-between">
       
-      {/* Edit Profile Button - Clickable Anywhere */}
+      {/* Edit / Save Profile Button - Clickable Anywhere */}
       <button
         onClick={() => setEditMode(!editMode)}
-        className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 bg-blue-700 text-white rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium hover:bg-blue-800 transition cursor-pointer w-auto h-auto"
+        className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto 
+        bg-blue-700 text-white hover:bg-blue-800"
       >
-        <Pencil size={18} className="pointer-events-none" />
+        {editMode ? (
+          <Check size={18} className="text-white pointer-events-none" />
+        ) : (
+          <Pencil size={18} className="pointer-events-none" />
+        )}
         <span className="hidden sm:inline pointer-events-none">
-          {editMode ? "Done Editing" : "Edit Profile"}
+          {editMode ? "Save Profile" : "Edit Profile"}
         </span>
       </button>
 
