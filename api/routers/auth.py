@@ -47,7 +47,7 @@ async def login_for_access_token(
 
     
     # Once verified, add new login log
-    logic_login_log(db, user.user_id)
+    logic_login_log(db, str(user.user_id))
 
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)

@@ -12,7 +12,7 @@ router = APIRouter()
 # Arguments: current_user - the current user
 # Returns: True if user is an admin, False otherwise
 def isAdmin(current_user: User = Depends(require_admin)):
-    if current_user.user_type != "admin":
+    if current_user.user_type.value != "admin":
         raise HTTPException(status_code=403, detail="You do not have permission to access this resource")
     return True
 
