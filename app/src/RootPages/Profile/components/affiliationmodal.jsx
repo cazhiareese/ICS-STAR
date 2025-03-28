@@ -41,51 +41,51 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
       <div className="bg-white border border-disabled p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-lg font-semibold sm:text-base">Add affiliations</h2>
-          <XCircle size={24} className="cursor-pointer text-error" onClick={onClose} />
+          <h2 className="text-lg font-satoshi-bold sm:text-[24px]">Add affiliations</h2>
+          <XCircle size={24} className="cursor-pointer  text-white bg-error rounded-full hover:bg-red-800" onClick={onClose} />
         </div>
 
         {/* Input Fields */}
         <div className="flex flex-col gap-4 mt-4">
           {/* Affiliation Name */}
           <div className="flex flex-col">
-            <label className="text-gray-700 font-medium">
-              Name of organization <span className="text-red-500">*</span>
+            <label className="text-black font-satoshi-medium">
+              Name of organization <span className="text-error">*</span>
             </label>
             <input
               type="text"
               value={affiliationInput}
               onChange={(e) => setAffiliationInput(e.target.value)}
-              className={`w-full border px-4 py-3 rounded-2xl text-lg sm:text-sm ${
-                errors.affiliation ? "border-red-500" : "border-gray-400"
+              className={`w-full border-2 px-4 py-3 rounded-2xl font-satoshi-medium text-lg sm:text-sm ${
+                errors.affiliation ? "border-error" : "border-disabled"
               }`}
               placeholder="Enter organization name..."
             />
-            {errors.affiliation && <p className="text-red-500 text-sm mt-1">{errors.affiliation}</p>}
+            {errors.affiliation && <p className="text-error text-sm mt-1">{errors.affiliation}</p>}
           </div>
 
           {/* Position */}
           <div className="flex flex-col">
-            <label className="text-gray-700 font-medium">
-              Position <span className="text-red-500">*</span>
+            <label className="text-black font-satoshi-medium">
+              Position <span className="text-error">*</span>
             </label>
             <input
               type="text"
               value={positionInput}
               onChange={(e) => setPositionInput(e.target.value)}
-              className={`w-full border px-4 py-3 rounded-2xl text-lg sm:text-sm ${
-                errors.position ? "border-red-500" : "border-gray-400"
+              className={`w-full border-2 px-4 py-3 rounded-2xl font-satoshi-medium text-lg sm:text-sm ${
+                errors.position ? "border-error" : "border-disabled"
               }`}
               placeholder="Enter your position..."
             />
-            {errors.position && <p className="text-red-500 text-sm mt-1">{errors.position}</p>}
+            {errors.position && <p className="text-error text-sm mt-1">{errors.position}</p>}
           </div>
         </div>
 
         {/* Save Button */}
         <div className="mt-6 flex justify-end">
           <button
-            className="px-5 py-3 bg-blue-700 text-white rounded-full text-sm font-medium hover:bg-blue-800 transition"
+            className="px-5 py-3 bg-primary text-white rounded-full text-sm font-satoshi-medium hover:bg-hover transition"
             onClick={handleSave}
           >
             Save

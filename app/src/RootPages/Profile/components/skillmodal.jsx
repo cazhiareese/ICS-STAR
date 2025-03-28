@@ -63,7 +63,7 @@ const AddSkillsModal = ({ isOpen, onClose, onSave }) => {
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-[24px] font-satoshi-bold  text-black sm:text-base ">Add Skills and Interests</h2>
+          <h2 className="text-lg font-satoshi-bold  text-black sm:text-[24px] ">Add Skills and Interests</h2>
           <XCircle size={24} className="cursor-pointer text-white bg-error rounded-full hover:bg-red-800" onClick={onClose} />
         </div>
 
