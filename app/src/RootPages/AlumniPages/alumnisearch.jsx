@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import SearchBar from "../../components/searchbar";
 import AlumniCareerFilter from "../../components/careerfilter";
 import AlumniAffiliationFilter from "../../components/alumaffiliation";
+import AlumniSkillsFilter from "../../components/skillsfilter";
+import AlumniIndustryFilter from "../../components/industryFilter";
+import AlumniLocationFilter from "../../components/locationfilter";
 import { X, ChevronDown, Calendar, Search } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import "./datepicker.css";
@@ -16,29 +19,21 @@ function AlumniSearch() {
   const [isGraduateExpanded, setIsGraduateExpanded] = useState(false);
   const [isCareerExpanded, setIsCareerExpanded] = useState(false);
   const [isAffiliationExpanded, setIsAffiliationExpanded] = useState(false);
+  const [isSkillsExpanded, setIsSkillsExpanded] = useState(false);
+  const [isIndustryExpanded, setIsIndustryExpanded] = useState(false);
+  const [isLocationExpanded, setIsLocationExpanded] = useState(false);
 
   const [careerList, setCareerList] = useState([]); // State for career list
+  const [affiliationList, setAffiliationList] = useState([]); // State for affiliation list
+  const [skillsList, setSkillsList] = useState([]); // State for skills list
+  const [industryList, setIndustryList] = useState([]); 
+  const [location, setLocation] = useState(""); 
+
   const [careerInput, setCareerInput] = useState(""); // State for storing current input
-
-  const [affiliationList, setAffiliationList] = useState([]); // State for career list
   const [affiliationInput, setAffiliationInput] = useState(""); // State for storing current input
-
-  const [careerSearchInput, setCareerSearchInput] = useState("");
-  const [affiliationSearchInput, setAffiliationSearchInput] = useState("");
-
-  
-
-
-  
-
-  const affiliations = [
-    "Young Software Engineers' Society",
-    "Computer Science Society",
-    "Alliance of Computer SCience Student",
-    "Mathematical Society",
-    "El Gamma Penumbra"
-  ]
-
+  const [skillsInput, setSkillsInput] = useState(""); // State for storing current input
+  const [industryInput, setIndustryInput] = useState("");
+  const [locationInput, setLocationInput] = useState("");
   
   return (
     <div className="flex flex-col">
@@ -159,6 +154,33 @@ function AlumniSearch() {
             setAffiliationInput={setAffiliationInput}
             affiliationList={affiliationList}
             setAffiliationList={setAffiliationList}
+          />
+
+          <AlumniSkillsFilter
+            isSkillsExpanded={isSkillsExpanded}
+            setIsSkillsExpanded={setIsSkillsExpanded}
+            skillsInput={skillsInput}
+            setSkillsInput={setSkillsInput}
+            skillsList={skillsList}
+            setSkillsList={setSkillsList}
+          />
+
+          <AlumniLocationFilter
+            isLocationExpanded={isLocationExpanded}
+            setIsLocationExpanded={setIsLocationExpanded}
+            locationInput={locationInput}
+            setLocationInput={setLocationInput}
+            location={location}
+            setLocation={setLocation}
+          />
+
+          <AlumniIndustryFilter
+            isIndustryExpanded={isIndustryExpanded}
+            setIsIndustryExpanded={setIsIndustryExpanded}
+            industryInput={industryInput}
+            setIndustryInput={setIndustryInput}
+            industryList={industryList}
+            setIndustryList={setIndustryList}
           />
         </div>
 
