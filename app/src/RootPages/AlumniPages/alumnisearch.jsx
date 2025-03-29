@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import SearchBar from "../../components/searchbar";
 import AlumniCareerFilter from "../../components/careerfilter";
+import AlumniAffiliationFilter from "../../components/alumaffiliation";
 import { X, ChevronDown, Calendar, Search } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import "./datepicker.css";
@@ -149,6 +150,15 @@ function AlumniSearch() {
             setCareerInput={setCareerInput}
             careerList={careerList}
             setCareerList={setCareerList}
+          />
+
+          <AlumniAffiliationFilter
+            isAffiliationExpanded={isAffiliationExpanded}
+            setIsAffiliationExpanded={setIsAffiliationExpanded}
+            affiliationInput={affiliationInput}
+            setAffiliationInput={setAffiliationInput}
+            affiliationList={affiliationList}
+            setAffiliationList={setAffiliationList}
           />
         </div>
 
