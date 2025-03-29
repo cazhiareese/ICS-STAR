@@ -72,7 +72,7 @@ const AlumniCareerFilter = ({
         animate={{ height: isCareerExpanded ? "auto" : 0, opacity: isCareerExpanded ? 1 : 0 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
+        <div className="px-5 flex items-center justify-center flex-row gap-2">
           <div className="relative w-full justify-center items-center flex">
             <input
               type="search"
@@ -89,15 +89,25 @@ const AlumniCareerFilter = ({
         </div>
 
         {/* Career Tags */}
-        <div className="flex flex-row flex-wrap pl-10 mb-4 gap-2 items-center">
-          {careerList.map((career, index) => (
-            <div key={index} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
-              <h1 className="text-white font-satoshi-light truncate text-sm">{career}</h1>
-              <button onClick={() => removeCareer(index)}>
-                <X className="text-white ml-2" size={20} />
-              </button>
-            </div>
-          ))}
+        {careerList.length > 0 && (
+          <div className="flex flex-row flex-wrap mt-5 pl-10 mb-4 gap-2 items-center">
+            {careerList.map((career, index) => (
+              <div key={index} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                <h1 className="text-white font-satoshi-light truncate text-sm">{career}</h1>
+                <button onClick={() => removeCareer(index)}>
+                  <X className="text-white ml-2" size={20} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+
+        <div className="flex flex-row px-12 pb-3 pt-5">
+          <h1 className="flex-1 text-gray-400">Suggestions</h1>
+          <button>
+            <h1 className="underline text-primary">See all</h1>
+          </button>
         </div>
 
         {/* Job Suggestions */}
