@@ -12,8 +12,8 @@ import YearPicker from "../../components/datepicker";
 import { motion } from "framer-motion";
 
 function AlumniSearch() {
-  const [selectedBatchYear, setSelectedBatchYear] = useState(null); // Separate state for Batch Year
-  const [selectedGraduationYear, setSelectedGraduationYear] = useState(null); // Separate state for Graduation Year
+  const [selectedBatchYear, setSelectedBatchYear] = useState(""); // Separate state for Batch Year
+  const [selectedGraduationYear, setSelectedGraduationYear] = useState(""); // Separate state for Graduation Year
   
   const [isBatchExpanded, setIsBatchExpanded] = useState(false);
   const [isGraduateExpanded, setIsGraduateExpanded] = useState(false);
@@ -34,6 +34,48 @@ function AlumniSearch() {
   const [skillsInput, setSkillsInput] = useState(""); // State for storing current input
   const [industryInput, setIndustryInput] = useState("");
   const [locationInput, setLocationInput] = useState("");
+
+  const removeSkill = (index) => {
+    // Create a new array excluding the career at the given index
+    const updatedSkillList = skillsList.filter((_, i) => i !== index);
+    
+    // Update the state with the new list
+    setSkillsList(updatedSkillList);
+  };
+
+  const removeCareer = (index) => {
+    // Create a new array excluding the career at the given index
+    const updatedCareerList = careerList.filter((_, i) => i !== index);
+    
+    // Update the state with the new list
+    setCareerList(updatedCareerList);
+  };
+
+  const removeAffiliation = (index) => {
+    // Create a new array excluding the Affiliation at the given index
+    const updatedAffiliationList = affiliationList.filter((_, i) => i !== index);
+    
+    // Update the state with the new list
+    setAffiliationList(updatedAffiliationList);
+  };
+
+  const removeIndustry = (index) => {
+    // Create a new array excluding the Industry at the given index
+    const updatedIndustryList = industryList.filter((_, i) => i !== index);
+    
+    // Update the state with the new list
+    setIndustryList(updatedIndustryList);
+  };
+
+  const resetAllFilters = () => {
+    setSelectedBatchYear("");
+    setSelectedGraduationYear("");
+    setSkillsList([]);
+    setCareerList([]);
+    setAffiliationList([]);
+    setIndustryList([]);
+    setLocation([]);
+  }
   
   return (
     <div className="flex flex-col">
@@ -48,7 +90,7 @@ function AlumniSearch() {
         <div className="w-1/3 flex flex-col pr-6 border-r-2 border-gray-300">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
-            <button className="mr-6 underline font-satoshi-medium mt-4 cursor-pointer hover:text-primary">
+            <button className="mr-6 underline font-satoshi-medium mt-4 cursor-pointer hover:text-primary" onClick={resetAllFilters}>
               Reset All
             </button>
             <button className="mt-4 cursor-pointer hover:text-primary">
@@ -186,12 +228,69 @@ function AlumniSearch() {
 
         {/* Alumni Cards */}
         <div className="w-2/3 flex flex-col pl-10">
-          {/* Render career list here */}
-          <ul>
-            {careerList.map((career, index) => (
-              <li key={index}>{career}</li>
-            ))}
-          </ul>
+          {/* career filters */}
+          {(careerList.length > 0 || skillsList.length > 0 || affiliationList.length > 0 || industryList.length > 0 || location != "" 
+          || selectedBatchYear != "" || selectedGraduationYear != "" ) && (
+            <div className="flex flex-row flex-wrap mt-5 pl-10 mb-4 gap-2 items-center">
+              {(selectedBatchYear !== "") && <div className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                <h1 className="text-white font-satoshi-light truncate text-sm">Batch {selectedBatchYear}</h1>
+                <button onClick={() => setSelectedBatchYear("")}>
+                  <X className="text-white ml-2" size={20} />
+                </button>
+              </div>}
+
+              {(selectedGraduationYear !== "") && (<div className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                <h1 className="text-white font-satoshi-light truncate text-sm">Graduated in {selectedBatchYear}</h1>
+                <button onClick={() => setSelectedGraduationYear("")}>
+                  <X className="text-white ml-2" size={20} />
+                </button>
+              </div>)}
+              
+              {careerList.map((career, index) => (
+                <div key={`career-${index}`} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate text-sm">{career}</h1>
+                  <button onClick={() => removeCareer(index)}>
+                    <X className="text-white ml-2" size={20} />
+                  </button>
+                </div>
+              ))}
+
+              {affiliationList.map((Affiliation, index) => (
+                <div key={index} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate text-sm">{Affiliation}</h1>
+                  <button onClick={() => removeAffiliation(index)}>
+                    <X className="text-white ml-2" size={20} />
+                  </button>
+                </div>
+              ))}
+
+              {skillsList.map((skill, index) => (
+                <div key={`skill-${index}`} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate text-sm">{skill}</h1>
+                  <button onClick={() => removeSkill(index)}>
+                    <X className="text-white ml-2" size={20} />
+                  </button>
+                </div>
+              ))}
+
+              {(location !== "") && <div className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                <h1 className="text-white font-satoshi-light truncate text-sm">{location}</h1>
+                <button onClick={() => setLocation("")}>
+                  <X className="text-white ml-2" size={20} />
+                </button>
+              </div>}
+
+              {industryList.map((Industry, index) => (
+                <div key={index} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate text-sm">{Industry}</h1>
+                  <button onClick={() => removeIndustry(index)}>
+                    <X className="text-white ml-2" size={20} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
         </div>
 
       </div>

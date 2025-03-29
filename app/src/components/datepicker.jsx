@@ -3,11 +3,12 @@ import DatePicker from "react-datepicker";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 
-const YearPicker = ({ selectedYear, setSelectedYear }) => {
+const YearPicker = ({ selectedYear, setSelectedYear}) => {
   
   // Function to handle the year change
   const handleYearChange = (date) => {
-    setSelectedYear(date);
+    const yearString = date.getFullYear().toString();
+    setSelectedYear(yearString);
   };
 
   return (
