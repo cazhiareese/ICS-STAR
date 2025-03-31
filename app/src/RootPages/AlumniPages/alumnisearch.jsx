@@ -108,9 +108,9 @@ function AlumniSearch() {
       </div>
 
       {/* Filter Bar and Alumni Cards */}
-      <div className="flex flex-row pl-10 pt-10">
+      <div className="flex flex-row md:pl-10 pt-10 items-center md:justify-left justify-center">
         {/* Filter Bar */}
-        <div className="w-1/3 flex flex-col pr-6 border-r-2 border-gray-300">
+        <div className="w-1/3 hidden md:flex flex-col pr-6 border-r-2 border-gray-300 ">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
             <button className="mr-6 underline font-satoshi-medium mt-4 cursor-pointer hover:text-primary" onClick={resetAllFilters}>
@@ -249,8 +249,10 @@ function AlumniSearch() {
           />
         </div>
 
-        {/* Alumni Cards */}
-        <div className="w-2/3 flex flex-col pl-10">
+        
+
+        
+        <div className="w-2/3 flex flex-col md:pl-10">
           {/* career filters */}
           {(careerList.length > 0 || skillsList.length > 0 || affiliationList.length > 0 || industryList.length > 0 || location != "" 
           || selectedBatchYear != "" || selectedGraduationYear != "" ) && (
@@ -316,6 +318,9 @@ function AlumniSearch() {
               
             </div>
           )}
+
+          <h1 className="text-3xl font-satoshi-medium text-gray-500 pl-10 py-5">{alumniList.length} Search Results</h1>
+
           {/* Mapping of alumni cards */}
           <div className="flex flex-row flex-wrap gap-5 items-center justify-center">
             {alumniList.map((alumni, index) => (

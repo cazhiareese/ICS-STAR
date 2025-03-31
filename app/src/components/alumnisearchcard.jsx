@@ -10,7 +10,7 @@ function AlumniSearchCard({
     email
   }) {
   return (
-    <div className='flex flex-col shadow-md w-5/12 items-center rounded-2xl py-10'>
+    <div className='flex flex-col shadow-lg md:w-5/12 w-full items-center rounded-2xl py-10'>
         <img src="https://via.placeholder.com/150" alt="Avatar" class="w-32 h-32 rounded-full border-2 border-gray-300 shadow-md"/>
         <h1 className='text-2xl font-satoshi-bold pt-5'>{full_name}</h1>
         <h2 className='text-md font-satoshi-medium pt-2'>{email}</h2>
