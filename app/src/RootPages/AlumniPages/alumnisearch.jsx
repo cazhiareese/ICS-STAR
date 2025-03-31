@@ -5,6 +5,7 @@ import AlumniAffiliationFilter from "../../components/alumaffiliation";
 import AlumniSkillsFilter from "../../components/skillsfilter";
 import AlumniIndustryFilter from "../../components/industryFilter";
 import AlumniLocationFilter from "../../components/locationfilter";
+import AlumniSearchCard from "../../components/alumnisearchcard";
 import { X, ChevronDown, Calendar, Search } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import "./datepicker.css";
@@ -34,6 +35,21 @@ function AlumniSearch() {
   const [skillsInput, setSkillsInput] = useState(""); // State for storing current input
   const [industryInput, setIndustryInput] = useState("");
   const [locationInput, setLocationInput] = useState("");
+
+
+  //Dummy data
+  const alumni = 
+  {
+    full_name: "Kiefer Tayawa",
+    graduation_year: 2022,
+    job_title: "Software Engineer",
+    skills: [
+      "Machine Learning",
+      "Python Programming"
+    ],
+    location: "Cebu",
+    email: "kiper@gmail.com"
+  }
 
   const removeSkill = (index) => {
     // Create a new array excluding the career at the given index
@@ -288,8 +304,21 @@ function AlumniSearch() {
                   </button>
                 </div>
               ))}
+
+              
+              
             </div>
           )}
+          {/* Alumni Cards */}
+          <AlumniSearchCard
+                full_name = {alumni.full_name}
+                graduation_year = {alumni.graduation_year}
+                job_title = {alumni.job_title}
+                skills = {alumni.skills}
+                location = {alumni.location}
+                email = {alumni.email}
+
+              />
 
         </div>
 
