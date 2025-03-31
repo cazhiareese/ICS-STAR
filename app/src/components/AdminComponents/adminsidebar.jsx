@@ -38,7 +38,7 @@ function Sidebar({ sidebarItems }) {
             <SidebarItem
               title={item.title}
               icon={item.icon}
-              isSelected={location.pathname === `/admin/${item.path}`}
+              isSelected={location.pathname.startsWith(`/admin/${item.path}`)}
               />
           </Link>
         ))}

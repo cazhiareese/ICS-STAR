@@ -8,13 +8,15 @@ import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 
 // Admin imports
-import AdminRoot from "./RootPages/AdminPages/adminroot";
+import AdminRoot from "./RootPages/AdminPages/Layouts/adminroot";
 import AdminDashboard from "./RootPages/AdminPages/admindashboard";
 import AdminRecords from "./RootPages/AdminPages/adminrecords";
 import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
+import AdminUserReports from "./RootPages/AdminPages/adminengagementstats";
+import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
 
 function App() {
   return (
@@ -31,10 +33,11 @@ function App() {
 
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>
-          {/* Redirect to dashboard as default */}
-          <Route index element={<Navigate to="dashboard" />} /> 
-
-          <Route path="dashboard" element={<AdminDashboard />} />
+        <Route index element={<Navigate to="dashboard" />} />
+          <Route path="dashboard" element={<AdminDashboardLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="user-reports" element={<AdminUserReports />} />
+          </Route>
           <Route path="records" element={<AdminRecords />} />
           <Route path="events" element={<AdminEvents />} />
           <Route path="newsletter" element={<AdminNewsletter />} />
