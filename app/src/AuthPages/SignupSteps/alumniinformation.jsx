@@ -17,6 +17,10 @@ function AlumnInfo(){
     const { setCurrentSection} = useAppContext();
 
 
+    const [studentNumberError, setStudentNumberError] = useState(false)
+    const [termGraduated, setTermGraduated] = useState(false)
+
+
     const [error, setError]= useState(false)
 
     // For Year
@@ -87,14 +91,22 @@ function AlumnInfo(){
     const checkRequirements = () =>{
         if (userData.value && (userData.academicYear && userData.academicYear!="AY ") &&userData.selectedYear &&userData.selectedTerm){
              setCurrentSection("3")
-            //  console.log("1"+userData.academicYear+"1")
+
+            
+           
+            
         } else{
             setError(true)
+            if ((userData.academicYear && userData.academicYear!="AY ")  || userData.selectedTerm !="") setTermGraduated(false); else setTermGraduated(true)
+            
+            if (userData.selectedYear && userData.value) setStudentNumberError(false); else setStudentNumberError(true)
+    
         }
     }
     
+    
     return(
-        <div className="flex flex-col w-full items-center ">
+        <div className="flex flex-col w-full items-center overflow-auto">
              <div className = "flex flex-row z-10 space-x-8 mt-20">
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(1)}></button>
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(2)}></button>
@@ -114,7 +126,7 @@ function AlumnInfo(){
                     <select 
                         value={userData.selectedYear} 
                         onChange={(e) => updateUserData("selectedYear", e.target.value)}
-                        className="border rounded-lg h-10 w-[45%] text-center"
+                        className={`border rounded-lg h-10 w-[45%] text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
                     >
                         <option value="" disabled>Select a year</option>
                         {years.map((year) => (
@@ -125,7 +137,7 @@ function AlumnInfo(){
                     <input type="number" 
                            value={userData.value} 
                            onChange={handleSNChange} 
-                           placeholder="Enter up to 5 digits" className="w-[45%] border-1 rounded-lg h-10 text-center"
+                           placeholder={"Enter up to 5 digits"} className={`w-[45%] border-1 rounded-lg h-10 text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
                     />
 
                 </div>
@@ -136,7 +148,7 @@ function AlumnInfo(){
                     <select 
                         value={userData.selectedTerm} 
                         onChange={(e) => updateUserData("selectedTerm", e.target.value)}
-                        className="border rounded-lg h-10 w-[45%] text-center"
+                        className={`border rounded-lg h-10 w-[45%] text-center  ${termGraduated==false ? 'border-black':'border-red-600'}`}
                     >
                         <option value="" disabled>Select a Term</option>
                         <option value="1stSem">First Semester</option>
@@ -144,13 +156,13 @@ function AlumnInfo(){
                         
                     </select>
                     <label>-</label>
-                    <div className="flex items-center border rounded-lg px-4 py-2 w-[45%] shadow-sm">
+                    <div className={`flex items-center border rounded-lg px-4 py-2 w-[45%] shadow-sm ${termGraduated==false ? 'border-black':'border-red-600'}`}>
                         <input
                             type="text"
                             value={userData.academicYear} 
                             onChange={handleInputChange}
                             placeholder="AY YYYY - YYYY"
-                            className="outline-none w-full text-gray-700 placeholder-gray-400"
+                            className={`outline-none w-full text-gray-700 placeholder-gray-400`}
                         />
                     </div>
                 </div>

@@ -109,7 +109,7 @@ function SignupMain() {
                         <button className = "w-15 h-15 "/> 
                     </div> */}
 
-                    <div className="-mt-12 flex-1 w-full ">
+                    <div className="-mt-12 flex-1 flex w-full overflow-auto">
                         {userType === "Student" 
                             ? (StudentComponents[currentSection] || <div>Invalid Section</div>) 
                             : (AlumniComponents[currentSection] || <div>Invalid Section</div>)

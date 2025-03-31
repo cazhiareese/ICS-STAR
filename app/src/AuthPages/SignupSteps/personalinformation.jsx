@@ -1,7 +1,7 @@
 import "../../index.css";
 import Step1 from "../../assets/SignupAssets/step1.png"
 import { useAppContext } from "../AuthContext/signupcontext.jsx"
-import {useState } from "react";
+import {useState, useEffect } from "react";
 function PersonalInformation(){
     const { userData, updateUserData, setUserData } = useAppContext();
     const { setCurrentSection} = useAppContext();
@@ -11,10 +11,23 @@ function PersonalInformation(){
     const [passMismatch, setPassMismatch] = useState(false)
     const [confirmPassword, setConfirmPassword] = useState("")
     
+    const [firstNameError, setFirstNameError] = useState(false)
+    const [lastNameError, setLastNameError] = useState(false)
+    const [emailError, setEmailError] = useState(false)
+    const [passwordError, setPasswordError] = useState(false)
+
+
     const checkFields = () => {
-        if (userData.firstName == "" || userData.lastName== "" || userData.email=="" || userData.password==""){
+        if (userData.firstName == "" || userData.lastName== "" || (userData.email=="" || validateEmail(userData.email) == false) || userData.password==""){
             setError(false)
+            if (userData.firstName == "") setFirstNameError(true); else setFirstNameError(false)
+            if (userData.lastName == "") setLastNameError(true); else setLastNameError(false)
+            if (userData.email == "" || validateEmail(userData.email) == false) setEmailError(true), console.log(userData.email); else setEmailError(false)
+            if (userData.password == "") setPasswordError(true); else setPasswordError(false)
             
+        } else if (passMismatch==true){
+            console.log("Password Mismatch")
+            console.log(validateEmail(userData.email))
         } else {
             setCurrentSection("2")
             
@@ -24,19 +37,21 @@ function PersonalInformation(){
     const updateConfirmPassword = (e) => {
         const value = e.target.value; 
         setConfirmPassword(value); // Update state with new input value
-        
-        
-        
     };
 
-    // const checkPassword = () =>{
-        
-    //     if (confirmPassword !== userData.password) {
-    //         setPassMismatch(true)
-    //     } else {
-    //         setPassMismatch(false)
-    //     }
-    // }
+    const validateEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
+
+
+    useEffect(() => {
+        if (confirmPassword !== userData.password) {
+            setPassMismatch(true)
+        } else {
+            setPassMismatch(false)
+        }
+    },[confirmPassword, userData.password])
     return(
         <div className="flex flex-col w-full items-center ">
             <div className = "flex flex-row z-10 space-x-8 mt-20">
@@ -59,7 +74,7 @@ function PersonalInformation(){
                         <label className="2xl font-satoshi-regular pb-2">First Name <label className="text-red-700">*</label></label>
                         <input type="text" 
                                 value={userData.firstName} 
-                                className="w-[100%] md:w-[95%] mb-5 md:mb-0 border-1 rounded-lg h-full"
+                                className={`w-[100%] md:w-[95%] mb-5 md:mb-0 border-1 rounded-lg h-full ${firstNameError==false ? 'border-black':'border-red-600'}`}
                                 onChange={(e) => updateUserData("firstName", e.target.value)}
                         />
 
@@ -68,7 +83,7 @@ function PersonalInformation(){
                         <label className="2xl font-satoshi-regular pb-2">Last Name <label className="text-red-700">*</label></label>
                         <input type="text" 
                                 value={userData.lastName} 
-                                className="w-[100%] border-1 rounded-lg h-full"
+                                className={`w-[100%] border-1 rounded-lg h-full ${lastNameError==false ? 'border-black':'border-red-600'}`}
                                 onChange={(e) => updateUserData("lastName", e.target.value)}
                         />
                     
@@ -79,7 +94,7 @@ function PersonalInformation(){
                         <input type="name" 
                                value={userData.email} 
                                onChange={(e) => updateUserData("email", e.target.value)}
-                               className="w-[100%] border-1 rounded-lg h-10"
+                               className={`w-[100%] border-1 rounded-lg h-10 ${emailError==false ? 'border-black':'border-red-600'}`}
                         />
                 </div>
                 <div className="flex flex-col font-satoshi-regular ">
@@ -87,7 +102,7 @@ function PersonalInformation(){
                         <input type="password" 
                                value={userData.password} 
                                onChange={(e) => {updateUserData("password", e.target.value); checkPassword()}}
-                               className="w-[100%] border-1 rounded-lg h-10"
+                               className={`w-[100%] border-1 rounded-lg h-10 ${passwordError==false ? 'border-black':'border-red-600'}`}
                         />
                 </div>
                 <div className="flex flex-col font-satoshi-regular ">
@@ -96,7 +111,7 @@ function PersonalInformation(){
                         <label className={`text-red-600 text-sm font-satoshi-light-italic ${passMismatch ? '': 'hidden'}`} >Passwords do not match</label>
                 </div>
                 <div className={`row-span-2 items-center flex mt-0 -pb-10 text-red-400 ${error ? 'hidden': 'block'}`}>
-                    <label>Please answer all fields above</label>
+                    <label>Please answer all fields above correctly</label>
 
                 </div>
                 <div className="grid grid-cols-2 h-18 items-center justify-center pt-10">

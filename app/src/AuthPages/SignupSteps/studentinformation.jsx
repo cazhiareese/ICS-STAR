@@ -18,7 +18,7 @@ function StudentInformation(){
 
     
     const [error, setError]= useState(false)
-
+    const [studentNumberError, setStudentNumberError] = useState(false)
     // For Dropbox
 
     const handleDrop = (event) => {
@@ -74,6 +74,8 @@ function StudentInformation(){
             //  console.log("1"+userData.academicYear+"1")
         } else{
             setError(true)
+
+            if (userData.selectedYear && userData.value) setStudentNumberError(false); else setStudentNumberError(true)
         }
     }
     
@@ -98,7 +100,7 @@ function StudentInformation(){
                     <select 
                         value={userData.selectedYear} 
                         onChange={(e) => updateUserData("selectedYear", e.target.value)}
-                        className="border rounded-lg h-10 w-[45%] text-center"
+                        className={`border rounded-lg h-10 w-[45%] text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
                     >
                         <option value="" disabled>Select a year</option>
                         {years.map((year) => (
@@ -109,7 +111,7 @@ function StudentInformation(){
                     <input type="number" 
                            value={userData.value} 
                            onChange={handleSNChange} 
-                           placeholder="Enter up to 5 digits" className="w-[45%] border-1 rounded-lg h-10 text-center"
+                           placeholder="Enter up to 5 digits" className={`w-[45%] border-1 rounded-lg h-10 text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
                     />
 
                 </div>
