@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchBar from "../../components/searchbar";
 import AlumniCareerFilter from "../../components/careerfilter";
 import AlumniAffiliationFilter from "../../components/alumaffiliation";
@@ -36,7 +36,8 @@ function AlumniSearch() {
   const [industryInput, setIndustryInput] = useState("");
   const [locationInput, setLocationInput] = useState("");
 
-
+  const [alumniList, setAlumniList] = useState([]);
+  
   //Dummy data
   const alumni = 
   {
@@ -50,6 +51,12 @@ function AlumniSearch() {
     location: "Cebu",
     email: "kiper@gmail.com"
   }
+
+  useEffect(() => {
+    setAlumniList([alumni, alumni, alumni]);
+  }, []);
+
+  
 
   const removeSkill = (index) => {
     // Create a new array excluding the career at the given index
@@ -309,16 +316,22 @@ function AlumniSearch() {
               
             </div>
           )}
-          {/* Alumni Cards */}
-          <AlumniSearchCard
-                full_name = {alumni.full_name}
-                graduation_year = {alumni.graduation_year}
-                job_title = {alumni.job_title}
-                skills = {alumni.skills}
-                location = {alumni.location}
-                email = {alumni.email}
-
+          {/* Mapping of alumni cards */}
+          <div className="flex flex-row flex-wrap gap-5 items-center justify-center">
+            {alumniList.map((alumni, index) => (
+              <AlumniSearchCard
+                key={index}
+                full_name={alumni.full_name}
+                graduation_year={alumni.graduation_year}
+                job_title={alumni.job_title}
+                skills={alumni.skills}
+                location={alumni.location}
+                email={alumni.email}
               />
+            ))}
+          </div>
+
+            
 
         </div>
 
