@@ -251,6 +251,8 @@ def get_active_by_batch(db: Session, order: str):
     .order_by(desc(order))
     .all()
     )
+    if not result:
+        raise HTTPException(status_code=404, detail="No users found for this batch")
 
     # Convert each row to a dictionary
     result_dicts = [row._asdict() for row in result]
@@ -289,6 +291,9 @@ def get_batch_employment_status(db: Session, batch:str):
         ).where(User.user_type == 'alumni', func.split_part(User.student_number, '-', 1)== batch).group_by(User.employment_status).all()
     )
 
+    if not employment:
+        raise HTTPException(status_code=404, detail="No alumni with employment status")
+
     employment_dicts = [row._asdict() for row in employment]
 
     employment_status_batch = []
@@ -311,7 +316,7 @@ def get_top_job_batch(db: Session, batch:str):
         User.job_title.is_not(None),
         func.split_part(User.student_number, '-', 1) == batch
     )
-    .scalar()  # Returns single value
+    .scalar()  
     ) 
     
     top_jobs = (
@@ -319,12 +324,15 @@ def get_top_job_batch(db: Session, batch:str):
             User.job_title,
             func.count().label("job_count")
         )
-        .filter(User.job_title.isnot(None))  # Exclude NULL job titles
+        .filter(User.job_title.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
         .group_by(User.job_title)
-        .order_by(func.count().desc())  # Order by count descending
-        .limit(5)  # Get top 5
+        .order_by(func.count().desc())
+        .limit(5)  
         .all()
     )
+
+    if not top_jobs:
+        raise HTTPException(status_code=404, detail="No top jobs")
 
     top_jobs_dict = [row._asdict() for row in top_jobs]
 
@@ -338,6 +346,50 @@ def get_top_job_batch(db: Session, batch:str):
         })
     
     return batch_top_jobs
+
+
+def get_top_industries_batch(db: Session, batch:str):
+    total_employed= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.user_type == 'alumni',
+        User.industry.is_not(None),
+        func.split_part(User.student_number, '-', 1) == batch
+    )
+    .scalar() 
+    ) 
+    
+    top_industries = (
+        db.query(
+            User.industry,
+            func.count().label("industry_count")
+        )
+        .filter(User.industry.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
+        .group_by(User.industry)
+        .order_by(func.count().desc())  
+        .limit(5) 
+        .all()
+    )
+
+    if not top_industries:
+        raise HTTPException(status_code=404, detail="No top industries")
+
+    top_industries_dict = [row._asdict() for row in top_industries]
+
+    batch_top_industries = []
+
+    for ind in top_industries_dict:
+        batch_top_industries.append({
+            "industry": ind["industry"],
+            "count": ind["industry_count"],
+            "percentage": round((ind["industry_count"]/total_employed)*100,2)
+        })
+    
+    return batch_top_industries
+
+
         
         
 

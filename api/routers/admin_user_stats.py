@@ -4,7 +4,7 @@ from schemas.user import UserOut
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
-from util.user_information_stats import get_batch_employment_status, get_top_job_batch, get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_all_alumni, get_active_by_batch
+from util.user_information_stats import get_batch_employment_status, get_top_industries_batch, get_top_job_batch, get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_all_alumni, get_active_by_batch
 
 
 router = APIRouter()
@@ -92,3 +92,11 @@ async def get_batch_top_jobs(db:Session=Depends(get_db), batch:str=""):
     top_jobs = get_top_job_batch(db, batch)
 
     return{"message":"success", "data":top_jobs}
+
+
+@router.get("/admin/stats/get_batch_top_industries")
+async def get_batch_top_industries(db:Session=Depends(get_db), batch:str=""):
+    top_industries =  get_top_industries_batch(db, batch)
+
+    return{"message":"success", "data":top_industries}
+
