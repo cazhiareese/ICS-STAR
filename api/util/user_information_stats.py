@@ -324,7 +324,7 @@ def get_top_job_batch(db: Session, batch:str):
             User.job_title,
             func.count().label("job_count")
         )
-        .filter(User.job_title.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
+        .filter(User.user_type == 'alumni', User.job_title.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
         .group_by(User.job_title)
         .order_by(func.count().desc())
         .limit(5)  
@@ -366,7 +366,7 @@ def get_top_industries_batch(db: Session, batch:str):
             User.industry,
             func.count().label("industry_count")
         )
-        .filter(User.industry.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
+        .filter(User.user_type == 'alumni', User.industry.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
         .group_by(User.industry)
         .order_by(func.count().desc())  
         .limit(5) 
@@ -406,7 +406,7 @@ def get_top_country_batch(db: Session, batch:str):
             User.country,
             func.count().label("count")
         )
-        .filter(User.country.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
+        .filter(User.user_type == 'alumni', User.country.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
         .group_by(User.country)
         .order_by(func.count().desc())  
         .limit(5) 
@@ -430,7 +430,126 @@ def get_top_country_batch(db: Session, batch:str):
     return batch_top_countries
 
 
-        
+def get_top_job_country(db: Session, country:str):
+    total_employed= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.user_type == 'alumni',
+        User.job_title.is_not(None),
+        User.country == country
+    )
+    .scalar()  
+    ) 
+    
+    top_jobs = (
+        db.query(
+            User.job_title,
+            func.count().label("job_count")
+        )
+        .filter(User.user_type == 'alumni', User.job_title.isnot(None), User.country == country)  
+        .group_by(User.job_title)
+        .order_by(func.count().desc())
+        .limit(5)  
+        .all()
+    )
+
+    if not top_jobs:
+        raise HTTPException(status_code=404, detail="No top jobs")
+
+    top_jobs_dict = [row._asdict() for row in top_jobs]
+
+    batch_top_jobs = []
+
+    for job in top_jobs_dict:
+        batch_top_jobs.append({
+            "job_title": job["job_title"],
+            "count": job["job_count"],
+            "percentage": round((job["job_count"]/total_employed)*100,2)
+        })
+    
+    return batch_top_jobs
+
+
+def get_top_industries_country(db: Session, country:str):
+    total_employed= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.user_type == 'alumni',
+        User.industry.is_not(None),
+        User.country == country
+    )
+    .scalar() 
+    ) 
+    
+    top_industries = (
+        db.query(
+            User.industry,
+            func.count().label("industry_count")
+        )
+        .filter(User.user_type == 'alumni', User.industry.isnot(None), User.country == country)  
+        .group_by(User.industry)
+        .order_by(func.count().desc())  
+        .limit(5) 
+        .all()
+    )
+
+    if not top_industries:
+        raise HTTPException(status_code=404, detail="No top industries")
+
+    top_industries_dict = [row._asdict() for row in top_industries]
+
+    batch_top_industries = []
+
+    for ind in top_industries_dict:
+        batch_top_industries.append({
+            "industry": ind["industry"],
+            "count": ind["industry_count"],
+            "percentage": round((ind["industry_count"]/total_employed)*100,2)
+        })
+    
+    return batch_top_industries
+
+
+def get_cities_country(db:Session, country:str):
+    total_in_country= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.user_type == 'alumni',
+        User.city.is_not(None),
+        User.country == country
+    )
+    .scalar() 
+    )
+
+
+    grouped_city= (
+        db.query(User.city, func.count().label("count"))
+        .filter(User.user_type == 'alumni', User.country == country, User.city.is_not(None))
+        .group_by(User.city).all()
+    )
+
+    if not grouped_city:
+        raise HTTPException(status_code=404, detail="No top cities")
+    
+    cities_dicts = [row._asdict() for row in grouped_city]
+
+    cities_country = []
+    for city in cities_dicts:
+       cities_country.append({"city": city["city"],
+            "count" : city["count"],
+            "percentage": round((city["count"]/total_in_country) * 100,2)
+        })
+       
+    return cities_country
+    
+
+
         
 
 
