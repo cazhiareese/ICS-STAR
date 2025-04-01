@@ -7,17 +7,25 @@ function AdminRecords() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(48)
   const [viewStyle, setViewStye] = useState('List')
+  const [maxRows, setMaxRows] = useState(12)
 
 
   const users = [
-    { name: "Kiefer Tayawa", batch: "2022", location: "Manila, PH", job: "Full-Stack Developer", lastUpdate: "14/10", status: "Inactive" },
+    { name: "Kiefer Tayawa", batch: "2022", location: "Manila, PH", job: "Full-Stack Developer", lastUpdate: "1/4/10", status: "Inactive" },
     { name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "5/6/25", status: "" },
     { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/9/09", status: "" },
     { name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "1/2/34", status: "Inactive" },
     { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
   ];
   return (
-    <div className='flex flex-col p-6'>
+    <div className='flex flex-col p-6 h-screen'>
       {/* Records, search, view pending */}
       <div className='flex justify-between mb-8'>
         {/* Records header */}
@@ -34,7 +42,7 @@ function AdminRecords() {
         </div>
       </div>
       {/* Alumni or student */}
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between ml-5'>
         <div>
           {/* Alumni button */}
           <button className={`px-12 py-3 cursor-pointer border-b-3  ${userType === 'Alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('Alumni')}>
@@ -83,7 +91,7 @@ function AdminRecords() {
         </div>
       </div>
       {/* Table */}
-      <div className='border border-gray-400 rounded-xl p-6'>
+      <div className='border border-gray-400 rounded-xl p-6 flex-1'>
 
       <table className="w-full">
         {/* Table Header */}
@@ -102,27 +110,25 @@ function AdminRecords() {
         {/* Table Body */}
         <tbody className='font-satoshi-regular text-md'>
           {users.map((user, index) => (
-            <tr key={index} className="hover:bg-gray-100">
+            <tr key={index} className="hover:bg-gray-100 cursor-pointer" onClick={() => {}}>
               {/* Name Column */}
               <td>
                 {/* <div className="w-8 h-8 bg-gray-300 rounded-full"></div> */}
               </td>
-              <td className="py-3 px-4 flex items-center gap-2">
-                <span className="">{user.name}</span>
-              </td>
-
-              {/* Other Columns */}
+              {/* User Name */}
+              <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold"> {user.name} </td>
+              {/* User Batch*/}
               <td className="py-3 px-4">{user.batch}</td>
-              <td className="py-3 px-4">
-                 {user.location}
-              </td>
+              {/* User Location */}
+              <td className="py-3 px-4">{user.location}</td>
+              {/* User Job */}
               <td className="py-3 px-4">{user.job}</td>
-              <td className="py-3 px-4 flex items-center gap-2">
-                {user.lastUpdate}
-              </td>
+              {/* User last update */}
+              <td className="py-3 px-4">{user.lastUpdate}</td>
+              {/* User Status */}
               <td>
                 {user.status && (
-                  <span className="bg-gray-300 px-3 py-1 rounded-2xl text-gray-700">
+                  <span className="bg-gray-200 px-4 py-1 rounded-2xl text-black font-satoshi-bold text-sm">
                     {user.status}
                   </span>
                 )}
