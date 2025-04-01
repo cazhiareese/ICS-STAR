@@ -30,9 +30,10 @@ function WorkSection({ userDetails }) {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <h3 className="text-[23px] text-primary font-satoshi-black">{userDetails.job_title}</h3>
-            {userDetails.work_mode.toLowerCase() === "remote" && (
-              <span className="bg-blue-800 text-white text-xs px-2 py-1 rounded-full">Remote</span>
-            )}
+
+            <span className="bg-blue-800 text-white w-[81px] h-[26px] text-[14px] px-2 py-1 rounded-full flex items-center justify-center font-satoshi-medium">{userDetails.work_mode}</span>
+
+           
           </div>
           <p className="text-primary text-[18px] font-satoshi-medium">Nov 2022 - Present</p>
         </div>
