@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react"; // Import icons
 import SectionHeader from "../components/sectionheader"; // Adjust the path based on your project structure
 
 function WorkSection({ userDetails }) {
@@ -15,7 +16,7 @@ function WorkSection({ userDetails }) {
     4: "₱36,400 to ₱63,699",
     5: "₱63,700 to ₱109,199",
     6: "₱109,200 to ₱181,999",
-    7: "At least ₱182,000 and up"
+    7: "At least ₱182,000 and up",
   };
 
   return (
@@ -43,10 +44,11 @@ function WorkSection({ userDetails }) {
         <div className="flex justify-between items-center">
           <p className="text-black font-satoshi-medium text-[20px]">{userDetails.work_location}</p>
           <button
-            className="text-black text-[16px] font-satoshi-medium hover:underline flex items-center"
+            className="text-black text-[16px] font-satoshi-medium hover:underline flex items-center gap-1"
             onClick={handleToggleMore}
           >
-            {showMore ? "View Less ▲" : "View More ▼"}
+            {showMore ? "View Less" : "View More"}
+            {showMore ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
         </div>
 
