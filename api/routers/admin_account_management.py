@@ -63,3 +63,13 @@ async def transition_student(db: Session = Depends(get_db), user_id: UUID = None
 async def read_students(db: Session = Depends(get_db)):
     students = db.query(User).filter(User.user_type == "student").all()
     return [UserOut.model_validate(student) for student in students]
+
+# Get user's verification file
+# Arguments: db - SQLAlchemy session, user_id - the user ID
+# Returns: the verification file of the user
+@router.get("/admin/verification-file/{user_id}", dependencies=[Depends(isAdmin)])
+async def read_verification_file(db: Session = Depends(get_db), user_id: UUID = None):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"verification_file": user.verification_file}
