@@ -133,7 +133,7 @@ const AlumniLocationFilter = ({
         {/* Buttons for skip and next for mobile*/}
         <div className="flex lg:hidden justify-between px-5 pb-3">
           <button
-            onClick={() => {setLocation([]); 
+            onClick={() => {setLocation(""); 
               setIsIndustryExpanded(true);
               setIsLocationExpanded(false);}}
             className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"

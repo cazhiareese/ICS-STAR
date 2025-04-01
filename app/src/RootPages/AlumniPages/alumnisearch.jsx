@@ -112,9 +112,9 @@ function AlumniSearch() {
     <div className="flex flex-col ">
       <motion.div
         className="fixed bottom-0 left-0 w-full bg-gray-200 z-50 p-5 shadow-lg rounded-t-2xl lg:hidden overflow-y-auto"
-        style={{ maxHeight: "90vh", height: "auto" }}
+        style={{ maxHeight: "100vh", height: "100%" }}
         initial={{ y: "100vh" }}
-        animate={{ y: isFilterOpen ? "-10vh" : "100vh" }}
+        animate={{ y: isFilterOpen ? "0vh" : "100vh" }}
         exit={{ y: "100vh" }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
@@ -310,8 +310,7 @@ function AlumniSearch() {
 
         <div className="flex lg:hidden justify-between px-5 pb-3 mt-20">
           <button
-            onClick={() => {resetAllFilters; 
-              setIsFilterOpen(false)}}
+            onClick={resetAllFilters}
             className="text-black px-4 py-2 font-satoshi-medium cursor-pointer rounded-2xl bg-white shadow-2xl"
           >
             Clear All
