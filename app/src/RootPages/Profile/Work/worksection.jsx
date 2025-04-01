@@ -7,6 +7,16 @@ function WorkSection({ userDetails }) {
   const handleToggleMore = () => {
     setShowMore(!showMore);
   };
+  
+  const salaryRanges = {
+    1: "Less than ₱9,100",
+    2: "₱9,100 to ₱18,199",
+    3: "₱18,200 to ₱36,399",
+    4: "₱36,400 to ₱63,699",
+    5: "₱63,700 to ₱109,199",
+    6: "₱109,200 to ₱181,999",
+    7: "At least ₱182,000 and up"
+  };
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
