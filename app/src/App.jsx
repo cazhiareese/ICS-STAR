@@ -15,7 +15,7 @@ import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
-import AdminUserReports from "./RootPages/AdminPages/Dashboard/adminengagementstats";
+import AdminUserInformationReport from "./RootPages/AdminPages/Dashboard/adminuserinformationreport";
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
 import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayout";
 import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
@@ -38,7 +38,7 @@ function App() {
         <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<AdminDashboardLayout />}>
             <Route index element={<AdminDashboard />} />
-            <Route path="user-reports" element={<AdminUserReports />} />
+            <Route path="user-reports" element={<AdminUserInformationReport />} />
           </Route>
           <Route path="records" element={<AdminRecordsLayout />} >
             <Route index element={<AdminRecords/>}/>

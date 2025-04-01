@@ -2,7 +2,7 @@ import React from 'react'
 import { MoveLeft } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 
-function AdminUserReports() {
+function AdminUserInformationReport() {
   const navigate = useNavigate();
 
   const cardDesign = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
@@ -29,4 +29,4 @@ function AdminUserReports() {
   )
 }
 
-export default AdminUserReports
+export default AdminUserInformationReport
