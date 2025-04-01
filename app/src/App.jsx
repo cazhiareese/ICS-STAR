@@ -9,15 +9,16 @@ import Root from "./RootPages/Root";
 
 // Admin imports
 import AdminRoot from "./RootPages/AdminPages/Layouts/adminroot";
-import AdminDashboard from "./RootPages/AdminPages/admindashboard";
-import AdminRecords from "./RootPages/AdminPages/adminrecords";
+import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
+import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
 import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
-import AdminUserReports from "./RootPages/AdminPages/adminengagementstats";
+import AdminUserReports from "./RootPages/AdminPages/Dashboard/adminengagementstats";
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
 import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayout";
+import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
 
 function App() {
   return (
@@ -41,7 +42,7 @@ function App() {
           </Route>
           <Route path="records" element={<AdminRecordsLayout />} >
             <Route index element={<AdminRecords/>}/>
-            {/* <Route path="pending-verifications"/> */}
+            <Route path=":userid" element={<AdminUserDetails/>}/>
           </Route>
           <Route path="events" element={<AdminEvents />} />
           <Route path="newsletter" element={<AdminNewsletter />} />

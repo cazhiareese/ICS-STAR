@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { BadgeCheck, Filter, List, LayoutGrid, MoveLeft, MoveRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 function AdminRecords() {
+  const navigate = useNavigate()
 
   const [userType, setUserType] = useState('Alumni')
   const [page, setPage] = useState(1)
@@ -10,19 +12,20 @@ function AdminRecords() {
   const [maxRows, setMaxRows] = useState(12)
 
   const users = [
-    { name: "Kiefer Tayawa", batch: "2022", location: "Manila, PH", job: "Full-Stack Developer", lastUpdate: "1/4/10", status: "Inactive" },
-    { name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "5/6/25", status: "" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/9/09", status: "" },
-    { name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "1/2/34", status: "Inactive" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { id: "1", name: "Kiefer Tayawa", batch: "2022", location: "Manila, PH", job: "Full-Stack Developer", lastUpdate: "1/4/10", status: "Inactive" },
+    { id: "2", name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "5/6/25", status: "" },
+    { id: "3", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/9/09", status: "" },
+    { id: "4", name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "1/2/34", status: "Inactive" },
+    { id: "5", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { id: "6", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { id: "7", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { id: "8", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { id: "9", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { id: "10", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { id: "11", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
+    { id: "12", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" }
   ];
+  
   return (
     <div className='flex flex-col p-6 h-screen'>
       {/* Records, search, view pending */}
@@ -109,7 +112,11 @@ function AdminRecords() {
         {/* Table Body */}
         <tbody className='font-satoshi-regular text-md'>
           {users.map((user, index) => (
-            <tr key={index} className="hover:bg-gray-100 cursor-pointer" onClick={() => {}}>
+            <tr 
+              key={index} 
+              className="hover:bg-gray-100 cursor-pointer" 
+              onClick={() => {navigate(`/admin/records/${user.id}`)}}
+            >
               {/* Name Column */}
               <td>
                 {/* <div className="w-8 h-8 bg-gray-300 rounded-full"></div> */}
