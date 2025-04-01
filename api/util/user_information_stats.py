@@ -246,7 +246,7 @@ def get_active_by_batch(db: Session, order: str):
                 else_=0
             )
         ).label("inactive_users")
-    )
+    ).where(User.student_number.is_not(None))
     .group_by("batch")
     .order_by(desc(order))
     .all()
@@ -261,9 +261,9 @@ def get_active_by_batch(db: Session, order: str):
             "batch": res["batch"],
             "total_users": res["total_users"],
             "active_users":res["active_users"],
-            "active_users_percentage": (res["active_users"]/res["total_users"])*100,
+            "active_users_percentage": round((res["active_users"]/res["total_users"])*100,2),
             "inactive_users":res["inactive_users"],
-            "inactive_users_percentage": (res["inactive_users"]/res["total_users"])*100,
+            "inactive_users_percentage": round((res["inactive_users"]/res["total_users"])*100,2),
         })
 
     return results_analyzed
@@ -276,6 +276,7 @@ def get_batch_employment_status(db: Session, batch:str):
     )
     .where(
         User.user_type == 'alumni',
+        User.employment_status.is_not(None),
         func.split_part(User.student_number, '-', 1) == batch
     )
     .scalar()  # Returns single value
@@ -290,14 +291,53 @@ def get_batch_employment_status(db: Session, batch:str):
 
     employment_dicts = [row._asdict() for row in employment]
 
-    employment_status_batch = {}
+    employment_status_batch = []
     for emp in employment_dicts:
-        employment_status_batch[emp["employment_status"]] = {
+       employment_status_batch.append({"status": emp["employment_status"],
             "count" : emp["total_alumni"],
-            "percentage": (emp["total_alumni"]/total_alumni_sum) * 100
-        }
+            "percentage": round((emp["total_alumni"]/total_alumni_sum) * 100,2)
+        })
     
     return employment_status_batch
+
+
+def get_top_job_batch(db: Session, batch:str):
+    total_employed= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.user_type == 'alumni',
+        User.job_title.is_not(None),
+        func.split_part(User.student_number, '-', 1) == batch
+    )
+    .scalar()  # Returns single value
+    ) 
+    
+    top_jobs = (
+        db.query(
+            User.job_title,
+            func.count().label("job_count")
+        )
+        .filter(User.job_title.isnot(None))  # Exclude NULL job titles
+        .group_by(User.job_title)
+        .order_by(func.count().desc())  # Order by count descending
+        .limit(5)  # Get top 5
+        .all()
+    )
+
+    top_jobs_dict = [row._asdict() for row in top_jobs]
+
+    batch_top_jobs = []
+
+    for job in top_jobs_dict:
+        batch_top_jobs.append({
+            "job_title": job["job_title"],
+            "count": job["job_count"],
+            "percentage": round((job["job_count"]/total_employed)*100,2)
+        })
+    
+    return batch_top_jobs
         
         
 
