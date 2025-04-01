@@ -8,6 +8,7 @@ import PersonalInfoSection from './Profile/About/personalinfosection';
 import SkillsInterestsSection from './Profile/About/skillsinterestsection';
 import AffiliationsSection from './Profile/About/affiliationssection';
 import ScholarshipsSection from './Profile/About/scholarshipsection';
+import WorkSection from './Profile/Work/worksection';
 
 const alumniUsers = [
     { user_id: 1, first_name: "John", last_name: "Doe", mobile_number: "09123456789", age: 30, gender: "M", city: "Los Baños", state: "Laguna", country: "Philippines", marital_status: "Single", image: "profile_images/john_doe.jpg", password: "hashed_password_here", email: "johndoe@example.com", verification_file: "verification_docs/john_doe.pdf", user_type: "alumni", student_number: "2015-12345", graduation_year: 2019, graduation_semester: "2nd Semester", employment_status: "Employed", job_title: "Software Engineer", work_location: "Makati City, Philippines", work_mode: "Hybrid", employer_class: "Private", tenured_status: "Yes", salary_grade: "SG 12", is_banned: false },  
@@ -74,6 +75,7 @@ function UserProfile() {
           <AffiliationsSection editMode={editMode} affiliations={affiliations} removeAffiliation={removeAffiliation} addAffiliation={addAffiliation} />
           <ScholarshipsSection editMode={editMode} scholarships={scholarships} removeScholarship={removeScholarship}   addScholarship={addScholarship}/>
     </>)}
+    {activeTab === "Work" && <WorkSection />}
         </div>
     );
 }
