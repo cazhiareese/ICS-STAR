@@ -85,7 +85,7 @@ function UserProfile() {
           <AffiliationsSection editMode={editMode} affiliations={affiliations} removeAffiliation={removeAffiliation} addAffiliation={addAffiliation} />
           <ScholarshipsSection editMode={editMode} scholarships={scholarships} removeScholarship={removeScholarship}   addScholarship={addScholarship}/>
     </>)}
-    {activeTab === "Work" && <WorkSection />}
+    {activeTab === "Work" && <WorkSection userDetails={userDetails} />}
         </div>
     );
 }
