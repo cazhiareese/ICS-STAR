@@ -6,7 +6,7 @@ from models.usermodel import User
 from schemas.user import UserOut
 
 
-def get_user_filtered_city (db: Session):
+def get_user_filtered_city (db: Session, verbose: bool):
     # [location : {alumni: [{}], student: [{}]}]
     cities = db.query(User.city).distinct().where(User.city.is_not(None), User.user_type != 'admin').all()
 
@@ -28,16 +28,20 @@ def get_user_filtered_city (db: Session):
         
         # alum_loc_dict = {loc: [UserOut.model_validate(user) for user in alum_loc]}
         # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
-        
-        alum_loc_dict = {loc: [user[0] for user in alum_loc]}
-        stud_loc_dict = {loc: [user[0] for user in stud_loc]}
+        if verbose:
+            alum_loc_dict = {loc: [user[0] for user in alum_loc]}
+            stud_loc_dict = {loc: [user[0] for user in stud_loc]}
+        else:
+            alum_loc_dict = {loc: len(alum_loc)}
+            stud_loc_dict = {loc: len(stud_loc)}
+
         alum_with_loc.append(alum_loc_dict)
         stud_with_loc.append(stud_loc_dict)
 
     
     return {'students': stud_with_loc, 'alumni': alum_with_loc}
 
-def get_user_filtered_state (db: Session):
+def get_user_filtered_state (db: Session, verbose:bool):
     states = db.query(User.state).distinct().where(User.state.is_not(None), User.user_type != 'admin').all()
 
     if states is None:
@@ -60,15 +64,19 @@ def get_user_filtered_state (db: Session):
         # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
 
         
-        alum_loc_dict = {loc: [user[0] for user in alum_loc]}
-        stud_loc_dict = {loc: [user[0] for user in stud_loc]}
+        if verbose:
+            alum_loc_dict = {loc: [user[0] for user in alum_loc]}
+            stud_loc_dict = {loc: [user[0] for user in stud_loc]}
+        else:
+            alum_loc_dict = {loc: len(alum_loc)}
+            stud_loc_dict = {loc: len(stud_loc)}
         alum_with_loc.append(alum_loc_dict)
         stud_with_loc.append(stud_loc_dict)
 
     
     return {'students': stud_with_loc, 'alumni': alum_with_loc}
 
-def get_user_filtered_country (db: Session):
+def get_user_filtered_country (db: Session, verbose:bool):
 
     countries = db.query(User.country).distinct().where(User.country.is_not(None), User.user_type != 'admin').all()
 
@@ -91,8 +99,12 @@ def get_user_filtered_country (db: Session):
         # alum_loc_dict = {loc: [UserOut.model_validate(user) for user in alum_loc]}
         # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
         
-        alum_loc_dict = {loc: [user[0] for user in alum_loc]}
-        stud_loc_dict = {loc: [user[0] for user in stud_loc]}
+        if verbose:
+            alum_loc_dict = {loc: [user[0] for user in alum_loc]}
+            stud_loc_dict = {loc: [user[0] for user in stud_loc]}
+        else:
+            alum_loc_dict = {loc: len(alum_loc)}
+            stud_loc_dict = {loc: len(stud_loc)}
         alum_with_loc.append(alum_loc_dict)
         stud_with_loc.append(stud_loc_dict)
 
@@ -100,7 +112,7 @@ def get_user_filtered_country (db: Session):
     return {'students': stud_with_loc, 'alumni': alum_with_loc}
 
 
-def get_user_all_batch (db: Session):
+def get_user_all_batch (db: Session,verbose:bool):
     batches = db.query(func.split_part(User.student_number, '-', 1)).distinct().filter(User.student_number.is_not(None), User.user_type != 'admin').all()
 
     if batches is None:
@@ -114,8 +126,12 @@ def get_user_all_batch (db: Session):
         alumni_batch = db.query(User.user_id).filter(User.student_number.like(f"{batch}-%"), User.user_type == 'alumni').all()
         student_batch = db.query(User.user_id).filter(User.student_number.like(f"{batch}-%"), User.user_type == 'student').all()
 
-        alum_batch_dict = {batch: [user[0] for user in alumni_batch]}
-        stud_batch_dict = {batch: [user[0] for user in student_batch]}
+        if verbose:
+            alum_batch_dict = {batch: [user[0] for user in alumni_batch]}
+            stud_batch_dict = {batch: [user[0] for user in student_batch]}
+        else:
+            alum_batch_dict = {batch: len(alumni_batch)}
+            stud_batch_dict = {batch: len(student_batch)}
 
         alum_batch_list.append(alum_batch_dict)
         stud_batch_list.append(stud_batch_dict)
@@ -129,7 +145,7 @@ def get_user_filter_batch(db: Session, batch: str, type: str):
     return[user[0] for user in user_batch]
 
 
-def get_user_grouped_industry(db: Session):
+def get_user_grouped_industry(db: Session, verbose:bool):
     industries = db.query(User.industry).distinct().where(User.industry.is_not(None), User.user_type != 'admin').all()
     if industries is None:
             raise HTTPException(status_code=404, detail="No locations found")
@@ -145,14 +161,16 @@ def get_user_grouped_industry(db: Session):
             raise HTTPException(status_code=404, detail=f"No alum from this {ind}")
         
         # alum_ind_dict = {ind: [UserOut.model_validate(user) for user in alum_ind]}
-        
-        alum_ind_dict = {ind: [user[0] for user in alum_ind]}
+        if verbose:
+            alum_ind_dict = {ind: [user[0] for user in alum_ind]}
+        else:
+            alum_ind_dict = {ind: len(alum_ind)}
 
         alum_with_ind.append(alum_ind_dict)
 
     return alum_with_ind
 
-def get_user_grouped_job_title(db: Session):
+def get_user_grouped_job_title(db: Session, verbose:bool):
     jobs = db.query(User.job_title).distinct().where(User.job_title.is_not(None), User.user_type != 'admin').all()
     if jobs is None:
             raise HTTPException(status_code=404, detail="No locations found")
@@ -168,9 +186,12 @@ def get_user_grouped_job_title(db: Session):
             raise HTTPException(status_code=404, detail=f"No alum from this {job}")
         
         # alum_job_dict = {job: [UserOut.model_validate(user) for user in alum_job]}
-        
-        alum_job_dict = {job: [user[0] for user in alum_job]}
+        if verbose:
+            alum_job_dict = {job: [user[0] for user in alum_job]}
+        else:
+            alum_job_dict = {job: len(alum_job)}
 
         alum_with_job.append(alum_job_dict)
 
     return alum_with_job
+
