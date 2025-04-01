@@ -42,7 +42,7 @@ const SearchBar = () => {
         : [];
 
     return (
-        <div className="md:w-full w-4/5 max-w-lg relative">
+        <div className="md:w-full w-3/5 max-w-lg relative">
             {/* Search Textbox */}
             <div className="flex flex-row items-center relative h-14">
                 <input
@@ -52,7 +52,7 @@ const SearchBar = () => {
                     onChange={handleChange}
                     value={searchInput}
                 />
-                <button className="absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-1/6 cursor-pointer">
+                <button className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
                     <Search size={20} />
                 </button>
             </div>

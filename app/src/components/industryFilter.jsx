@@ -42,7 +42,7 @@ const AlumniIndustryFilter = ({
 
     
 
-    <div className="flex flex-col shadow mt-5 rounded-lg">
+    <div className="flex flex-col shadow mt-5 rounded-lg bg-white lg:bg-transparent">
       <div className="flex flex-row px-5 py-3" onClick={() => setIsIndustryExpanded(!isIndustryExpanded)}>
         <motion.h1
           className="flex-1/2 font-satoshi-medium"
