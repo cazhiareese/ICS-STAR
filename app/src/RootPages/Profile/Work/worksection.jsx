@@ -131,15 +131,22 @@ function WorkSection({ userDetails, handleChange }) {
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Employer Class:</span>
               {isEditing ? (
-                <input
-                  type="text"
-                  value={userDetails.employer_class}
-                  onChange={(e) => handleChange(e, "employer_class")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1"
-                />
-              ) : (
-                <span className="text-primary font-satoshi-bold">{userDetails.employer_class}</span>
-              )}
+                    <select
+                      value={userDetails.employer_class}
+                      onChange={(e) => handleChange(e, "employer_class")}
+                      className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                    >
+                      {employerClasses.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                      ))}
+                    </select>
+                    ) : (
+                    <span className="text-primary font-satoshi-bold">
+                      {userDetails.employer_class || "Not Available"}
+                    </span>
+                    )}
             </div>
 
          
