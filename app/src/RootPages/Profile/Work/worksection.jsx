@@ -6,6 +6,7 @@ function WorkSection({ userDetails, handleChange }) {
   const [showMore, setShowMore] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  const workModes = ["Remote", "Onsite", "Hybrid"];
   const handleToggleMore = () => {
     setShowMore(!showMore);
   };
@@ -49,9 +50,25 @@ function WorkSection({ userDetails, handleChange }) {
               <h3 className=" text-[23px] text-primary font-satoshi-black">{userDetails.job_title}</h3>
             )}
 
-            <span className="bg-blue-800 text-white w-[81px] h-[26px] text-[14px] px-2 py-1 rounded-full flex items-center justify-center font-satoshi-medium">
-              {userDetails.work_mode}
-            </span>
+{isEditing ? (
+              <div className="flex gap-2">
+                {workModes.map((mode) => (
+                  <button
+                    key={mode}
+                    className={`text-white w-[81px] h-[26px] text-[14px] px-2 py-1 rounded-full flex items-center justify-center font-satoshi-medium transition-all ${
+                      userDetails.work_mode === mode ? "bg-primary" : "bg-hover"
+                    }`}
+                    onClick={() => handleChange({ target: { value: mode } }, "work_mode")}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <span className="bg-blue-800 text-white w-[81px] h-[26px] text-[14px] px-2 py-1 rounded-full flex items-center justify-center font-satoshi-medium">
+                {userDetails.work_mode}
+              </span>
+            )}
           </div>
 
           {isEditing ? (
