@@ -4,7 +4,7 @@ from schemas.user import UserOut
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
-from util.user_information_stats import get_batch_employment_status, get_cities_country, get_top_country_batch, get_top_industries_batch, get_top_industries_country, get_top_job_batch, get_top_job_country, get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_all_alumni, get_active_by_batch
+from util.user_information_stats import get_alumni_batch_filter, get_alumni_country_filter, get_alumni_industry_filter, get_batch_employment_status, get_cities_country, get_top_country_batch, get_top_industries_batch, get_top_industries_country, get_top_job_batch, get_top_job_country, get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_all_alumni, get_active_by_batch
 
 
 router = APIRouter()
@@ -123,3 +123,25 @@ async def get_country_cities(db:Session=Depends(get_db), country:str=""):
     cities = get_cities_country(db, country)
 
     return{"message":"success", "data":cities}
+
+
+##ADD ORDER BY
+@router.get("/admin/stats/alumni_batch_filter")
+async def get_alumni_batch(db: Session = Depends(get_db), batch: str=""):
+    alumni_batch = get_alumni_batch_filter(db, batch)
+
+    return{"message":"success", "data":alumni_batch}
+
+@router.get("/admin/stats/alumni_industry_filter")
+async def get_alumni_industry(db: Session = Depends(get_db), industry: str=""):
+    alumni_industry = get_alumni_industry_filter(db, industry)
+
+    return{"message":"success", "data":alumni_industry}
+
+@router.get("/admin/stats/alumni_country_filter")
+async def get_alumni_country(db: Session = Depends(get_db), country: str=""):
+    alumni_country = get_alumni_country_filter(db, country)
+
+    return{"message":"success", "data":alumni_country}
+
+
