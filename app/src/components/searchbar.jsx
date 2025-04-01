@@ -42,7 +42,7 @@ const SearchBar = () => {
         : [];
 
     return (
-        <div className="w-full max-w-lg relative">
+        <div className="md:w-full w-4/5 max-w-lg relative">
             {/* Search Textbox */}
             <div className="flex flex-row items-center relative h-14">
                 <input

@@ -6,11 +6,13 @@ import AlumniSkillsFilter from "../../components/skillsfilter";
 import AlumniIndustryFilter from "../../components/industryFilter";
 import AlumniLocationFilter from "../../components/locationfilter";
 import AlumniSearchCard from "../../components/alumnisearchcard";
-import { X, ChevronDown, Calendar, Search } from "lucide-react";
+import { X, ChevronDown, Calendar, Search, Filter } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import "./datepicker.css";
 import YearPicker from "../../components/datepicker";
 import { motion } from "framer-motion";
+
+
 
 function AlumniSearch() {
   const [selectedBatchYear, setSelectedBatchYear] = useState(""); // Separate state for Batch Year
@@ -49,7 +51,8 @@ function AlumniSearch() {
       "Python Programming"
     ],
     location: "Cebu",
-    email: "kiper@gmail.com"
+    email: "kiper@gmail.com",
+    image: "https://i.pinimg.com/originals/09/f3/3e/09f33ecb3753807c45c29a3155aa1773.jpg"
   }
 
   useEffect(() => {
@@ -103,14 +106,22 @@ function AlumniSearch() {
   return (
     <div className="flex flex-col">
       {/* Search bar */}
-      <div className="flex flex-col w-full mt-28 shadow-md pb-8 items-center rounded-full">
-        <SearchBar />
+      <div className="flex flex-col w-full mt-28 shadow-md pb-8 items-center rounded-full ">
+        <div className="flex flex-row gap-5 w-full items-center justify-center">
+          <SearchBar />
+          
+          <button className="flex flex-center h-14 cursor-pointer rounded-2xl outline-gray-300 outline-2 bg-gray-100 text-primary w-12 justify-center items-center text-center md:hidden">
+              <Filter size={20} />
+          </button>
+          
+          
+        </div>
       </div>
 
       {/* Filter Bar and Alumni Cards */}
-      <div className="flex flex-row md:pl-10 pt-10 items-center md:justify-left justify-center">
+      <div className="flex flex-row pt-10 md:justify-left justify-center">
         {/* Filter Bar */}
-        <div className="w-1/3 hidden md:flex flex-col pr-6 border-r-2 border-gray-300 ">
+        <div className=" hidden md:flex flex-col pr-6 border-r-2 border-gray-300 w-1/4">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
             <button className="mr-6 underline font-satoshi-medium mt-4 cursor-pointer hover:text-primary" onClick={resetAllFilters}>
@@ -129,7 +140,7 @@ function AlumniSearch() {
                 initial={{ fontWeight: 500, fontSize: "1.00rem" }}
                 animate={{
                   fontWeight: isBatchExpanded ? 600 : 500, // Bold when expanded
-                  fontSize: isBatchExpanded ? "1.25rem" : "1.00rem", // lg: 1.25rem, sm: 0.875rem
+                  fontSize: isBatchExpanded ? "1.50rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
                 }}
                 transition={{ duration: 0.2 }}
               >
@@ -170,7 +181,7 @@ function AlumniSearch() {
                 initial={{ fontWeight: 500, fontSize: "1.00rem" }}
                 animate={{
                   fontWeight: isGraduateExpanded ? 600 : 500, // Bold when expanded
-                  fontSize: isGraduateExpanded ? "1.25rem" : "1.00rem", // lg: 1.25rem, sm: 0.875rem
+                  fontSize: isGraduateExpanded ? "1.50rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
                 }}
                 transition={{ duration: 0.2 }}
               >
@@ -257,23 +268,23 @@ function AlumniSearch() {
           {(careerList.length > 0 || skillsList.length > 0 || affiliationList.length > 0 || industryList.length > 0 || location != "" 
           || selectedBatchYear != "" || selectedGraduationYear != "" ) && (
             <div className="flex flex-row flex-wrap mt-5 pl-10 mb-4 gap-2 items-center">
-              {(selectedBatchYear !== "") && <div className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
-                <h1 className="text-white font-satoshi-light truncate text-sm">Batch {selectedBatchYear}</h1>
+              {(selectedBatchYear !== "") && <div className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
+                <h1 className="text-white font-satoshi-light truncate text-md">Batch {selectedBatchYear}</h1>
                 <button onClick={() => setSelectedBatchYear("")}>
                   <X className="text-white ml-2" size={20} />
                 </button>
               </div>}
 
-              {(selectedGraduationYear !== "") && (<div className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
-                <h1 className="text-white font-satoshi-light truncate text-sm">Graduated in {selectedBatchYear}</h1>
+              {(selectedGraduationYear !== "") && (<div className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
+                <h1 className="text-white font-satoshi-light truncate text-md">Graduated in {selectedBatchYear}</h1>
                 <button onClick={() => setSelectedGraduationYear("")}>
                   <X className="text-white ml-2" size={20} />
                 </button>
               </div>)}
               
               {careerList.map((career, index) => (
-                <div key={`career-${index}`} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
-                  <h1 className="text-white font-satoshi-light truncate text-sm">{career}</h1>
+                <div key={`career-${index}`} className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate text-md">{career}</h1>
                   <button onClick={() => removeCareer(index)}>
                     <X className="text-white ml-2" size={20} />
                   </button>
@@ -281,8 +292,8 @@ function AlumniSearch() {
               ))}
 
               {affiliationList.map((Affiliation, index) => (
-                <div key={index} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
-                  <h1 className="text-white font-satoshi-light truncate text-sm">{Affiliation}</h1>
+                <div key={index} className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate text-md">{Affiliation}</h1>
                   <button onClick={() => removeAffiliation(index)}>
                     <X className="text-white ml-2" size={20} />
                   </button>
@@ -290,24 +301,24 @@ function AlumniSearch() {
               ))}
 
               {skillsList.map((skill, index) => (
-                <div key={`skill-${index}`} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
-                  <h1 className="text-white font-satoshi-light truncate text-sm">{skill}</h1>
+                <div key={`skill-${index}`} className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate text-md">{skill}</h1>
                   <button onClick={() => removeSkill(index)}>
                     <X className="text-white ml-2" size={20} />
                   </button>
                 </div>
               ))}
 
-              {(location !== "") && <div className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
-                <h1 className="text-white font-satoshi-light truncate text-sm">{location}</h1>
+              {(location !== "") && <div className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
+                <h1 className="text-white font-satoshi-light truncate text-md">{location}</h1>
                 <button onClick={() => setLocation("")}>
                   <X className="text-white ml-2" size={20} />
                 </button>
               </div>}
 
               {industryList.map((Industry, index) => (
-                <div key={index} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
-                  <h1 className="text-white font-satoshi-light truncate text-sm">{Industry}</h1>
+                <div key={index} className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate text-md">{Industry}</h1>
                   <button onClick={() => removeIndustry(index)}>
                     <X className="text-white ml-2" size={20} />
                   </button>
@@ -332,6 +343,7 @@ function AlumniSearch() {
                 skills={alumni.skills}
                 location={alumni.location}
                 email={alumni.email}
+                image={alumni.image}
               />
             ))}
           </div>

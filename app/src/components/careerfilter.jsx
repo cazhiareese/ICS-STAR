@@ -49,7 +49,7 @@ const AlumniCareerFilter = ({
           initial={{ fontWeight: 500, fontSize: "1.00rem" }}
           animate={{
             fontWeight: isCareerExpanded ? 600 : 500, // Bold when expanded
-            fontSize: isCareerExpanded ? "1.25rem" : "1.00rem", // lg: 1.25rem, sm: 0.875rem
+            fontSize: isCareerExpanded ? "1.50rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
           }}
           transition={{ duration: 0.2 }}
         >

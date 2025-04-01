@@ -48,7 +48,7 @@ const AlumniAffiliationFilter = ({
           initial={{ fontWeight: 500, fontSize: "1.00rem" }}
           animate={{
             fontWeight: isAffiliationExpanded ? 600 : 500, // Bold when expanded
-            fontSize: isAffiliationExpanded ? "1.25rem" : "1.00rem", // lg: 1.25rem, sm: 0.875rem
+            fontSize: isAffiliationExpanded ? "1.50rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
           }}
           transition={{ duration: 0.2 }}
         >
