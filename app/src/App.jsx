@@ -19,6 +19,7 @@ import AdminUserInformationReport from "./RootPages/AdminPages/Dashboard/adminus
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
 import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayout";
 import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
+import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendingverifications";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path="records" element={<AdminRecordsLayout />} >
             <Route index element={<AdminRecords/>}/>
             <Route path=":userid" element={<AdminUserDetails/>}/>
+            <Route path="pending-verifications" element={<AdminPendingVerifications/>}/>
           </Route>
           <Route path="events" element={<AdminEvents />} />
           <Route path="newsletter" element={<AdminNewsletter />} />

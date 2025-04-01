@@ -37,7 +37,7 @@ function AdminRecords() {
           {/* Search */}
           <div className='border-2 border-primary w-xs h-full'></div>
           {/* View Pending Verifications */}
-          <button className='bg-primary rounded-3xl px-5 py-1 flex items-center gap-2 text-sm'> 
+          <button className='bg-primary rounded-3xl px-5 py-1 flex items-center gap-2 text-sm cursor-pointer' onClick={() => {navigate('/admin/records/pending-verifications')}}> 
             <BadgeCheck className='text-white'/>
             <p className='text-white'>View Pending Verifications </p>
           </button>
