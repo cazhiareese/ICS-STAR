@@ -25,7 +25,7 @@ function AlumniSearch() {
   const [isSkillsExpanded, setIsSkillsExpanded] = useState(false);
   const [isIndustryExpanded, setIsIndustryExpanded] = useState(false);
   const [isLocationExpanded, setIsLocationExpanded] = useState(false);
-
+  
   const [careerList, setCareerList] = useState([]); // State for career list
   const [affiliationList, setAffiliationList] = useState([]); // State for affiliation list
   const [skillsList, setSkillsList] = useState([]); // State for skills list
@@ -310,7 +310,17 @@ function AlumniSearch() {
 
         <div className="flex lg:hidden justify-between px-5 pb-3 mt-20">
           <button
-            onClick={resetAllFilters}
+            onClick={() => {
+              resetAllFilters();
+              setIsBatchExpanded(false);
+              setIsGraduateExpanded(false);
+              setIsCareerExpanded(false);
+              setIsAffiliationExpanded(false);
+              setIsSkillsExpanded(false);
+              setIsIndustryExpanded(false);
+              setIsLocationExpanded(false);
+          
+            }} 
             className="text-black px-4 py-2 font-satoshi-medium cursor-pointer rounded-2xl bg-white shadow-2xl"
           >
             Clear All
@@ -318,6 +328,14 @@ function AlumniSearch() {
 
           <button onClick={() => {
             setIsFilterOpen(false);
+            setIsBatchExpanded(false);
+            setIsGraduateExpanded(false);
+            setIsCareerExpanded(false);
+            setIsAffiliationExpanded(false);
+            setIsSkillsExpanded(false);
+            setIsIndustryExpanded(false);
+            setIsLocationExpanded(false);
+        
           }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer shadow-2xl">
             Confirm
           </button>
