@@ -55,6 +55,7 @@ function AdminPendingVerifications() {
           <h1 className='text-primary font-satoshi-bold text-5xl '> Records </h1>
           <p className='font-satoshi-light text-lg text-gray-500'>/ Pending Verifications</p>
         </div>
+        {/* Search bar */}
         <div className='relative flex items-center justify-end'>
           <input
               type="text"
