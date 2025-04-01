@@ -7,6 +7,13 @@ function WorkSection({ userDetails, handleChange }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const workModes = ["Remote", "Onsite", "Hybrid"];
+  //const employerclass = ["Private", "Public", "Non-Government", "Self-Employed"];
+  const employerClasses = ["Government", "NGO","Private Sector"];
+  const tenuredStatuses = ["Permanent", "Temporary", "Contractual", "Probationary"];
+
+
+
+
   const handleToggleMore = () => {
     setShowMore(!showMore);
   };
@@ -157,7 +164,7 @@ function WorkSection({ userDetails, handleChange }) {
                 <select
                   value={userDetails.salary_grade}
                   onChange={(e) => handleChange(e, "salary_grade")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1 "
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
                 >
                   {Object.entries(salaryRanges).map(([key, value]) => (
                     <option key={key} value={key}>
