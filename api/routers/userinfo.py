@@ -252,21 +252,21 @@ async def get_profile_picture(
 # Remove a skill from the user's profile
 # Arguments: db - SQLAlchemy session, skill_id - the skill ID
 # Returns: a message confirming the removal
-@router.delete("/remove-skill/{skill_id}")
+@router.delete("/remove-skill/{skill}")
 async def remove_skill(
-    skill_id: int,
+    skill: str,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    skill = db.query(UserSkill).filter(UserSkill.id == skill_id, UserSkill.user_id == user.user_id).first()
+    skill_entry = db.query(UserSkill).filter(UserSkill.user_id == user.user_id, UserSkill.skill == skill).first()
     
-    if not skill:
+    if not skill_entry:
         raise HTTPException(status_code=404, detail="Skill not found")
     
-    db.delete(skill)
+    db.delete(skill_entry)
     db.commit()
     
     return {"message": "Skill removed successfully"}
@@ -274,21 +274,21 @@ async def remove_skill(
 # Remove a scholarship from the user's profile
 # Arguments: db - SQLAlchemy session, scholarship_id - the scholarship ID
 # Returns: a message confirming the removal
-@router.delete("/remove-scholarship/{scholarship_id}")
+@router.delete("/remove-scholarship/{scholarship}")
 async def remove_scholarship(
-    scholarship_id: int,
+    scholarship: str,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    scholarship = db.query(UserScholarship).filter(UserScholarship.id == scholarship_id, UserScholarship.user_id == user.user_id).first()
+    scholarship_entry = db.query(UserScholarship).filter(UserScholarship.user_id == user.user_id, UserScholarship.scholarship == scholarship).first()
     
-    if not scholarship:
+    if not scholarship_entry:
         raise HTTPException(status_code=404, detail="Scholarship not found")
     
-    db.delete(scholarship)
+    db.delete(scholarship_entry)
     db.commit()
     
     return {"message": "Scholarship removed successfully"}
@@ -296,21 +296,21 @@ async def remove_scholarship(
 # Remove an affiliation from the user's profile
 # Arguments: db - SQLAlchemy session, affiliation_id - the affiliation ID
 # Returns: a message confirming the removal
-@router.delete("/remove-affiliation/{affiliation_id}")
+@router.delete("/remove-affiliation/{affiliation}")
 async def remove_affiliation(
-    affiliation_id: int,
+    affiliation: str,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    affiliation = db.query(UserAffiliation).filter(UserAffiliation.id == affiliation_id, UserAffiliation.user_id == user.user_id).first()
+    affiliation_entry = db.query(UserAffiliation).filter(UserAffiliation.user_id == user.user_id, UserAffiliation.affiliation == affiliation).first()
     
-    if not affiliation:
+    if not affiliation_entry:
         raise HTTPException(status_code=404, detail="Affiliation not found")
     
-    db.delete(affiliation)
+    db.delete(affiliation_entry)
     db.commit()
     
     return {"message": "Affiliation removed successfully"}
