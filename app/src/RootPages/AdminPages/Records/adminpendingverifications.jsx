@@ -42,7 +42,7 @@ function AdminPendingVerifications() {
       ];
 
   return (
-    <div className='flex flex-col p-6 h-screen'>
+    <div className='flex flex-col lg:p-6 h-screen'>
       <div className='flex gap-2 mb-3'>
         <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
           <MoveLeft className='text-primary'/> 
@@ -50,34 +50,39 @@ function AdminPendingVerifications() {
         </button>
       </div>
       {/* Records header */}
-      <div className='flex justify-between mb-8'>
-        <div className="flex items-baseline gap-2">
+      <div className='justify-between mt-2 lg:mb-8 flex relative'>
+        {/* Records header */}
+        <div className="items-baseline gap-2 hidden lg:flex">
           <h1 className='text-primary font-satoshi-bold text-5xl '> Records </h1>
           <p className='font-satoshi-light text-lg text-gray-500'>/ Pending Verifications</p>
         </div>
-        {/* Search bar */}
-        <div className='relative flex items-center justify-end'>
-          <input
+        {/* Search and view pending */}
+        <div className='flex flex-row gap-5 lg:w-auto w-full px-3 lg:px-0'>
+          {/* Search */}
+          <div className='relative flex items-center justify-end flex-1'>
+            <input
               type="text"
               placeholder="Search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              className={`w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
-          />
-          <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
+              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+            />
+            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
+          </div>
         </div>
       </div>
+
       {/* Alumni or student */}
-      <div className='flex items-center justify-between ml-5'>
-        <div>
+      <div className='flex items-center justify-between lg:ml-5 lg:flex-row flex-col gap-2 lg:gap-0'>
+        <div className='lg:w-auto w-full'>
           {/* Alumni button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3  ${userType === 'Alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('Alumni')}>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'Alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('Alumni')}>
             <p className='text-black font-satoshi-medium text-md'> Alumni </p>
           </button>
           {/* Student button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 ${userType === 'Student' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('Student')}>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'Student' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('Student')}>
             <p className='text-black font-satoshi-medium text-md'> Student </p>
           </button>
         </div>
@@ -104,8 +109,8 @@ function AdminPendingVerifications() {
           </button>
         </div>
           {/* Page */}
-          <button className='flex items-center gap-2 cursor-pointer text-md font-satoshi-regular'>
-            <MoveLeft/>
+          <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
+            <MoveLeft className='cursor-pointer' onClick={() => {}}/>
               <p> Page </p>
               <input
                 type="text"
@@ -114,12 +119,12 @@ function AdminPendingVerifications() {
                 className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
               />
             <p>of {totalPages}</p>
-            <MoveRight/>
-          </button>
+            <MoveRight className='cursor-pointer' onClick={() => {}}/>
+          </div>
         </div>
       </div>
-      {/* Table */}
-      <div className='border border-gray-400 rounded-xl p-6 flex-1'>
+      {/* Table for desktop */}
+      <div className='border border-gray-400 rounded-xl p-6 flex-1 lg:block hidden'>
         <table className="w-full">
           {/* Table Header */}
           <thead>
@@ -160,6 +165,26 @@ function AdminPendingVerifications() {
             ))}
           </tbody>
         </table>
+      </div>
+      {/* Table for mobile */}
+      <div className='flex flex-col lg:hidden'>
+        {/* User Card */}
+        {pendingUsers.map((user) => (
+          <div key={user.id} className='flex w-full p-3'>
+            {/* Image placeholder */}
+            <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+            <div className='flex justify-between flex-1'>
+              <div className='flex flex-col ml-3'>
+                <h2 className='font-satoshi-bold text-md'> {user.name} </h2>
+                <p className='font-satoshi-light text-sm'> {user.email} </p>
+              </div>
+              <div className='flex flex-col text-right'>
+                <p className='font-satoshi-regular text-md '> Date of Registration</p>
+                <p className='font-satoshi-bold'> {user.registration_date}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
