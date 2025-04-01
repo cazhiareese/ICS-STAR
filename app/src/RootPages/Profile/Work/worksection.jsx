@@ -33,7 +33,7 @@ function WorkSection({ userDetails }) {
               <span className="bg-blue-800 text-white text-xs px-2 py-1 rounded-full">Remote</span>
             )}
           </div>
-          <p className="text-blue-800 text-sm">{userDetails.work_start_date} - Present</p>
+          <p className="text-primary text-[18px] font-satoshi-medium">Nov 2022 - Present</p>
         </div>
 
         {/* Second Row: Company Name */}
@@ -43,7 +43,7 @@ function WorkSection({ userDetails }) {
         <div className="flex justify-between items-center">
           <p className="text-black font-satoshi-medium text-[20px]">{userDetails.work_location}</p>
           <button
-            className="text-black text-sm hover:underline flex items-center"
+            className="text-black text-[16px] font-satoshi-medium hover:underline flex items-center"
             onClick={handleToggleMore}
           >
             {showMore ? "View Less ▲" : "View More ▼"}
