@@ -17,6 +17,7 @@ import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
 import AdminUserReports from "./RootPages/AdminPages/adminengagementstats";
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
+import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayout";
 
 function App() {
   return (
@@ -38,7 +39,10 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="user-reports" element={<AdminUserReports />} />
           </Route>
-          <Route path="records" element={<AdminRecords />} />
+          <Route path="records" element={<AdminRecordsLayout />} >
+            <Route index element={<AdminRecords/>}/>
+            {/* <Route path="pending-verifications"/> */}
+          </Route>
           <Route path="events" element={<AdminEvents />} />
           <Route path="newsletter" element={<AdminNewsletter />} />
           <Route path="career" element={<AdminCareer />} />
