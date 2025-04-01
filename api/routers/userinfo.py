@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List
 
-from util.userutil import upload_profile, get_current_user
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password
 
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill
 
@@ -228,10 +228,14 @@ async def update_password(
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    if not user.verify_password(old_password):
+    if not verify_password(old_password, user.password):
         raise HTTPException(status_code=400, detail="Old password is incorrect")
     
-    user.password = new_password
+    if old_password == new_password:
+        raise HTTPException(status_code=400, detail="New password cannot be the same as old password")
+
+    user.password = hash_password(new_password)
+
     db.commit()
     
     return {"message": "Password updated successfully"}
