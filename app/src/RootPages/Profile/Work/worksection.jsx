@@ -142,28 +142,35 @@ function WorkSection({ userDetails, handleChange }) {
               )}
             </div>
 
-            {/* Tenured Status */}
-            <div className="flex flex-col items-start text-left">
-              <span className="font-satoshi-medium">Tenured Status:</span>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={userDetails.tenured_status}
-                  onChange={(e) => handleChange(e, "tenured_status")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1"
-                />
-              ) : (
-                <span className="text-primary font-satoshi-bold">{userDetails.tenured_status}</span>
-              )}
-            </div>
+         
+                  <div className="flex flex-col items-start text-left">
+                    <span className="font-satoshi-medium">Tenured Status:</span>
+                    {isEditing ? (
+                    <select
+                      value={userDetails.tenured_status}
+                      onChange={(e) => handleChange(e, "tenured_status")}
+                      className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                    >
+                      {tenuredStatuses.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                      ))}
+                    </select>
+                    ) : (
+                    <span className="text-primary font-satoshi-bold">
+                      {userDetails.tenured_status || "Not Available"}
+                    </span>
+                    )}
+                  </div>
 
-            {/* Salary Range (Instead of Salary Grade) */}
+                  {/* Salary Range (Instead of Salary Grade) */}
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Salary Range:</span>
               {isEditing ? (
                 <select
-                  value={userDetails.salary_grade}
-                  onChange={(e) => handleChange(e, "salary_grade")}
+                  value={userDetails.tenured_status}
+                  onChange={(e) => handleChange(e, "tenured_status")}
                   className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
                 >
                   {Object.entries(salaryRanges).map(([key, value]) => (
@@ -174,7 +181,7 @@ function WorkSection({ userDetails, handleChange }) {
                 </select>
               ) : (
                 <span className="text-primary font-satoshi-bold">
-                  {salaryRanges[userDetails.salary_grade] || "Not Available"}
+                  {salaryRanges[userDetails.tenured_status] || "Not Available"}
                 </span>
               )}
             </div>
