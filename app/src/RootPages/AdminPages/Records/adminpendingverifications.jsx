@@ -16,7 +16,7 @@ function AdminPendingVerifications() {
 
     const pendingUsers = [
         {
-          name: "Kiefer Tzyawa",
+          name: "Kiefer Tayawa",
           email: "a@gmail.com",
           student_number: "1234-56789",
           graduating_class: "2022 - 1st Semester",
@@ -68,8 +68,8 @@ function AdminPendingVerifications() {
           <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
         </div>
       </div>
-            {/* Alumni or student */}
-            <div className='flex items-center justify-between ml-5'>
+      {/* Alumni or student */}
+      <div className='flex items-center justify-between ml-5'>
         <div>
           {/* Alumni button */}
           <button className={`px-12 py-3 cursor-pointer border-b-3  ${userType === 'Alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('Alumni')}>
@@ -116,6 +116,49 @@ function AdminPendingVerifications() {
             <MoveRight/>
           </button>
         </div>
+      </div>
+      {/* Table */}
+      <div className='border border-gray-400 rounded-xl p-6 flex-1'>
+        <table className="w-full">
+          {/* Table Header */}
+          <thead>
+            <tr className="text-left text-xs text-primary font-satoshi-regular">
+              <th className="py-2 px-4"></th>
+              <th className="py-2 px-4">NAME</th>
+              <th className="py-2 px-4">EMAIL</th>
+              <th className="py-2 px-4">STUDENT NUMBER</th>
+              <th className="py-2 px-4">GRADUATING CLASS</th>
+              <th className="py-2 px-4">DATE OF REGISTRATION</th>
+            </tr>
+          </thead>
+
+          {/* Table Body */}
+          <tbody className='font-satoshi-regular text-md'>
+            {pendingUsers.map((user, index) => (
+              <tr 
+                key={index} 
+                className="hover:bg-gray-100 cursor-pointer" 
+                onClick={() => {navigate(`/admin/records/${user.id}`)}}
+              >
+                {/* User image */}
+                <td>
+                  {/* <div className="w-8 h-8 bg-gray-300 rounded-full"></div> */}
+                </td>
+                {/* User Name */}
+                <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold"> {user.name} </td>
+                {/* User Email*/}
+                <td className="py-3 px-4">{user.email}</td>
+                {/* User Student Number */}
+                <td className="py-3 px-4">{user.student_number}</td>
+                {/* User Graduating Class*/}
+                <td className="py-3 px-4">{user.graduating_class}</td>
+                {/* User Date Registration */}
+                <td className="py-3 px-4">{user.registration_date}</td>
+                {/* User Status */}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
