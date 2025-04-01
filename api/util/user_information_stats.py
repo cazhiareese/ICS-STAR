@@ -389,6 +389,46 @@ def get_top_industries_batch(db: Session, batch:str):
     
     return batch_top_industries
 
+def get_top_country_batch(db: Session, batch:str):
+    total_in_country= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.country.is_not(None),
+        func.split_part(User.student_number, '-', 1) == batch
+    )
+    .scalar() 
+    ) 
+    
+    top_countries = (
+        db.query(
+            User.country,
+            func.count().label("count")
+        )
+        .filter(User.country.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
+        .group_by(User.country)
+        .order_by(func.count().desc())  
+        .limit(5) 
+        .all()
+    )
+
+    if not top_countries:
+        raise HTTPException(status_code=404, detail="No top countries")
+
+    top_countries_dict = [row._asdict() for row in top_countries]
+
+    batch_top_countries = []
+
+    for country in top_countries_dict:
+        batch_top_countries.append({
+            "country": country["country"],
+            "count": country["count"],
+            "percentage": round((country["count"]/total_in_country)*100,2)
+        })
+    
+    return batch_top_countries
+
 
         
         
