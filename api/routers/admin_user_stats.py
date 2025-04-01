@@ -4,9 +4,10 @@ from schemas.user import UserOut
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
-from util.user_information_stats import get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_all_alumni
-router = APIRouter()
+from util.user_information_stats import get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_all_alumni, get_active_by_batch
 
+
+router = APIRouter()
 #Get alumni and students per city (for admin users only)
 #Arguments: db session
 #Returns: List of dictionaries classified if alumni or student, cities with list of user_ids
@@ -72,3 +73,9 @@ async def get_all_alumni_route(db: Session = Depends(get_db)):
     all_alumni = get_all_alumni(db)
 
     return{"message": "success", "data": all_alumni}
+
+@router.get("/admin/stats/get_active_by_batch")
+async def get_active_batch(db: Session= Depends(get_db), order:str="total_users"):
+    active_batch = get_active_by_batch(db, order)
+
+    return{"message": "success", "data": active_batch}

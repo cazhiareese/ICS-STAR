@@ -1,10 +1,10 @@
-from operator import is_not
-from fastapi import Depends, FastAPI, HTTPException, status
+
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
 from models.usermodel import User
 from models.report_model import Report
-from schemas.user import UserOut
+from sqlalchemy import func, case, text, desc
+from datetime import datetime, timedelta
 
 
 def get_user_filtered_city (db: Session, verbose: bool):
@@ -226,5 +226,57 @@ def get_all_alumni(db: Session):
         alum_list.append(al)
 
     return alum_list
+
+
+def get_active_by_batch(db: Session, order: str):
+    one_year_ago = datetime.now() - timedelta(days=365)
+    result = (
+    db.query(
+        func.left(User.student_number, 4).label("batch"),
+        func.count().label("total_users"),
+        func.sum(
+            case(
+                (User.updated_at >= one_year_ago, 1),
+                else_=0
+            )
+        ).label("active_users"),
+        func.sum(
+            case(
+                (User.updated_at < one_year_ago, 1),
+                else_=0
+            )
+        ).label("inactive_users")
+    )
+    .group_by("batch")
+    .order_by(desc(order))
+    .all()
+    )
+
+    # Convert each row to a dictionary
+    result_dicts = [row._asdict() for row in result]
+
+    results_analyzed = []
+    for res in result_dicts:
+        results_analyzed.append({
+            "batch": res["batch"],
+            "total_users": res["total_users"],
+            "active_users":res["active_users"],
+            "active_users_percentage": (res["active_users"]/res["total_users"])*100,
+            "inactive_users":res["inactive_users"],
+            "inactive_users_percentage": (res["inactive_users"]/res["total_users"])*100,
+        })
+
+    return results_analyzed
+
+def get_batch_employment_status(db: Session, batch:str):
+    jobs = db.query(User.job_title).distinct().where(User.job_title.is_not(None), User.user_type != 'admin').all()
+    employ_status = (
+        db.query(
+            User.employment_status
+        ).distinct().where(User.employment_status.is_not(None), User.user_type != 'admin').all()
+        )
+
+
+
 
 
