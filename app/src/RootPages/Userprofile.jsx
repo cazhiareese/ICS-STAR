@@ -15,7 +15,7 @@ const alumniUsers = [
     { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: "profile_images/jane_smith.jpg", password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "Freelance UX Designer", work_location: "Remote", work_mode: "Remote", employer_class: "Freelancer", tenured_status: "No", salary_grade: "N/A", is_banned: false }  
   ];
   
-const signedinuser = { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: '../assets/prince boy.jpg', password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "Freelance UX Designer", work_location: "Remote", work_mode: "Remote", employer_class: "Freelancer", tenured_status: "No", salary_grade: "N/A", is_banned: false }
+const signedinuser = { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: '../assets/prince boy.jpg', password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "Freelance UX Designer", work_location: "Remote", work_mode: "Remote", employer_class: "Freelancer", tenured_status: "No", salary_grade: "N/A", is_banned: false, company_name: "AZEUS" }
 const iskills = ["Artificial Intelligence", "Cybersecurity", "Web Development"];
 const iaffiliations = [{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },];
 const ischolarships = ["DOST Scholarship", "UPLB SLAS"];
@@ -36,14 +36,24 @@ function UserProfile() {
     
 
     const [userDetails, setUserDetails] = useState({
-      firstName: signedinuser.first_name,
-      lastName: signedinuser.last_name,
+      first_name: signedinuser.first_name,
+      last_name: signedinuser.last_name,
       email: signedinuser.email,
       location: `${signedinuser.city}, ${signedinuser.state}`,
-      mobile: signedinuser.mobile_number,
-      studentNumber: signedinuser.student_number,
+      mobile_number: signedinuser.mobile_number,
+      student_number: signedinuser.student_number,
       graduatingClass: `${signedinuser.graduation_year} - ${signedinuser.graduation_semester}`,
+      
+      // Added fields
+      job_title: signedinuser.job_title,
+      company_name: signedinuser.company_name,
+      work_location: signedinuser.work_location,
+      work_mode: signedinuser.work_mode,
+      employer_class: signedinuser.employer_class,
+      tenured_status: signedinuser.tenured_status,
+      salary_grade: signedinuser.salary_grade,
     });
+    
 
 
     const [skills, setSkills] = useState(iskills);
