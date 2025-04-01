@@ -18,7 +18,7 @@ function WorkSection({ userDetails }) {
         {/* First Row: Job Title & Date */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-bold text-primary">{userDetails.job_title}</h3>
+            <h3 className="text-[23px] font-satoshi-medium text-primary font-satoshi-bold">{userDetails.job_title}</h3>
             {userDetails.work_mode.toLowerCase() === "remote" && (
               <span className="bg-blue-800 text-white text-xs px-2 py-1 rounded-full">Remote</span>
             )}
@@ -27,13 +27,13 @@ function WorkSection({ userDetails }) {
         </div>
 
         {/* Second Row: Company Name */}
-        <p className="text-gray-700">{userDetails.company_name}</p>
+        <p className="text-gray-700 text-[20px]">{userDetails.company_name}</p>
 
         {/* Third Row: Work Location & Button */}
         <div className="flex justify-between items-center mt-1">
-          <p className="text-gray-600">{userDetails.work_location}</p>
+          <p className="text-black font-satoshi-medium text-[20px]">{userDetails.work_location}</p>
           <button
-            className="text-gray-600 text-sm hover:underline flex items-center"
+            className="text-black text-sm hover:underline flex items-center"
             onClick={handleToggleMore}
           >
             {showMore ? "View Less ▲" : "View More ▼"}
@@ -42,23 +42,23 @@ function WorkSection({ userDetails }) {
 
         {/* Expandable Details */}
         {showMore && (
-          <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-4 text-black text-[16px] font-satoshi-medium">
+          <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-4 text-black text-[20px] font-satoshi-medium">
             {/* Employer Class */}
             <div className="flex flex-col items-start text-left">
-              <span className="font-bold">Employer Class:</span>
-              <span className="text-primary">{userDetails.employer_class}</span>
+              <span className="font-satoshi-medium">Employer Class:</span>
+              <span className="text-primary font-satoshi-bold">{userDetails.employer_class}</span>
             </div>
 
             {/* Tenured Status */}
             <div className="flex flex-col items-start text-left">
-              <span className="font-bold">Tenured Status:</span>
-              <span className="text-primary">{userDetails.tenured_status}</span>
+              <span className="font-satoshi-medium">Tenured Status:</span>
+              <span className="text-primary font-satoshi-bold">{userDetails.tenured_status}</span>
             </div>
 
             {/* Salary Grade */}
             <div className="flex flex-col items-start text-left">
-              <span className="font-bold">Salary Grade:</span>
-              <span className="text-primary">{userDetails.salary_grade}</span>
+              <span className="font-satoshi-medium">Salary Grade:</span>
+              <span className="text-primary font-satoshi-bold">{userDetails.salary_grade}</span>
             </div>
           </div>
         )}
