@@ -4,7 +4,7 @@ from schemas.user import UserOut
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
-from util.user_information_stats import get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title
+from util.user_information_stats import get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_all_alumni
 router = APIRouter()
 
 #Get alumni and students per city (for admin users only)
@@ -66,3 +66,9 @@ async def get_grouped_industry(db: Session = Depends(get_db), verbose: bool=True
 
     return {"message": "success", "data": user_grouped_job_title}
 
+
+@router.get("/admin/all_alumni")
+async def get_all_alumni_route(db: Session = Depends(get_db)):
+    all_alumni = get_all_alumni(db)
+
+    return{"message": "success", "data": all_alumni}

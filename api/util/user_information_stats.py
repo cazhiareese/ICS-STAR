@@ -3,6 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 from models.usermodel import User
+from models.report_model import Report
 from schemas.user import UserOut
 
 
@@ -194,4 +195,36 @@ def get_user_grouped_job_title(db: Session, verbose:bool):
         alum_with_job.append(alum_job_dict)
 
     return alum_with_job
+
+def get_all_alumni(db: Session):
+    alumni = db.query(
+        User.user_id, User.first_name, User.last_name, 
+        User.student_number, User.city, User.state, User.country, 
+        User.job_title, User.updated_at
+    ).filter(User.user_type == 'alumni').all()
+
+    if not alumni:
+        raise HTTPException(status_code=404, detail="No alumni found")
+
+    alum_list = []
+    for alum in alumni:
+        # select * from reports where user_id = alum[0];
+        report_check = db.query(Report.report_id).filter(Report.reported_user_id == alum[0]).all()
+
+        check = True
+        if len(report_check) == 0:
+            check = False
+        al = {
+            "user_id": alum[0],
+            "name": f"{alum[1]} {alum[2]}",
+            "batch": alum[3].split("-")[0] if alum[3] else None,
+            "location_base": ", ".join(filter(None, [alum[4], alum[5], alum[6]])),
+            "job_title": alum[7],
+            "updated_at": alum[8],
+            "is_reported":check
+        }
+        alum_list.append(al)
+
+    return alum_list
+
 
