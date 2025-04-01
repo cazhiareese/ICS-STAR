@@ -15,9 +15,10 @@ async def upload_profile_picture(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
     file_path = await upload_profile(file, user, db)
-    if file_path.error:
-        raise HTTPException(status_code=500, detail="Error uploading file")
 
     return {"message": "Profile picture uploaded successfully"}
 
@@ -27,6 +28,9 @@ async def add_scholarships(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
     new_scholarships = [
         UserScholarship(user_id=user.user_id, scholarship=scholarship)
         for scholarship in scholarships
@@ -44,6 +48,9 @@ async def add_affiliations(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
     if len(affiliations) != len(roles):
         raise HTTPException(status_code=400, detail="Invalid input")
 
@@ -62,6 +69,9 @@ async def add_skills(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
     new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
     
     db.add_all(new_skills)
@@ -84,6 +94,9 @@ async def update_employment(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
     if user.user_type.value == "student":
         raise HTTPException(status_code=400, detail="For alumni only")
     
