@@ -7,7 +7,7 @@ function WorkSection({ userDetails }) {
   const handleToggleMore = () => {
     setShowMore(!showMore);
   };
-  
+
   const salaryRanges = {
     1: "Less than ₱9,100",
     2: "₱9,100 to ₱18,199",
@@ -28,7 +28,7 @@ function WorkSection({ userDetails }) {
         {/* First Row: Job Title & Date */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <h3 className="text-[23px]  text-primary font-satoshi-black">{userDetails.job_title}</h3>
+            <h3 className="text-[23px] text-primary font-satoshi-black">{userDetails.job_title}</h3>
             {userDetails.work_mode.toLowerCase() === "remote" && (
               <span className="bg-blue-800 text-white text-xs px-2 py-1 rounded-full">Remote</span>
             )}
@@ -37,7 +37,7 @@ function WorkSection({ userDetails }) {
         </div>
 
         {/* Second Row: Company Name */}
-        <p className="text-black text-[20px] font-satoshi-medium ">{userDetails.company_name}</p>
+        <p className="text-black text-[20px] font-satoshi-medium">{userDetails.company_name}</p>
 
         {/* Third Row: Work Location & Button */}
         <div className="flex justify-between items-center">
@@ -65,10 +65,12 @@ function WorkSection({ userDetails }) {
               <span className="text-primary font-satoshi-bold">{userDetails.tenured_status}</span>
             </div>
 
-            {/* Salary Grade */}
+            {/* Salary Range (Instead of Salary Grade) */}
             <div className="flex flex-col items-start text-left">
-              <span className="font-satoshi-medium">Salary Grade:</span>
-              <span className="text-primary font-satoshi-bold">{userDetails.salary_grade}</span>
+              <span className="font-satoshi-medium">Salary Range:</span>
+              <span className="text-primary font-satoshi-bold">
+                {salaryRanges[userDetails.salary_grade] || "Not Available"}
+              </span>
             </div>
           </div>
         )}
