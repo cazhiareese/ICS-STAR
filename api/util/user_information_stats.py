@@ -197,31 +197,48 @@ def get_user_grouped_job_title(db: Session, verbose:bool):
     return alum_with_job
 
 def get_all_alumni(db: Session):
+
+    one_year_ago = datetime.now() - timedelta(days=365)
     alumni = db.query(
-        User.user_id, User.first_name, User.last_name, 
-        User.student_number, User.city, User.state, User.country, 
-        User.job_title, User.updated_at
-    ).filter(User.user_type == 'alumni').all()
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        func.split_part(User.student_number, '-', 1).label("batch"),
+        User.city,
+        User.state,
+        User.country,
+        User.job_title,
+        func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_updated'), 
+        case(
+            (User.updated_at < one_year_ago, True),
+            else_=False
+        ).label('is_inactive')
+    ).filter(
+        User.user_type == 'alumni',
+    ).all()
 
     if not alumni:
         raise HTTPException(status_code=404, detail="No alumni found")
 
+    alums_dict = [row._asdict() for row in alumni]
     alum_list = []
-    for alum in alumni:
+    
+    for alum in alums_dict:
         # select * from reports where user_id = alum[0];
-        report_check = db.query(Report.report_id).filter(Report.reported_user_id == alum[0]).all()
+        report_check = db.query(Report.report_id).filter(Report.reported_user_id == alum["user_id"]).all()
 
         check = True
         if len(report_check) == 0:
             check = False
         al = {
-            "user_id": alum[0],
-            "name": f"{alum[1]} {alum[2]}",
-            "batch": alum[3].split("-")[0] if alum[3] else None,
-            "location_base": ", ".join(filter(None, [alum[4], alum[5], alum[6]])),
-            "job_title": alum[7],
-            "updated_at": alum[8],
-            "is_reported":check
+            "user_id": alum["user_id"],
+            "name": f"{alum['first_name']} {alum['last_name']}",
+            "batch": alum["batch"],
+            "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
+            "job_title": alum["job_title"],
+            "last_updated": alum["last_updated"],
+            "is_reported":check,
+            "is_inactive": alum["is_inactive"]
         }
         alum_list.append(al)
 
@@ -547,6 +564,10 @@ def get_cities_country(db:Session, country:str):
         })
        
     return cities_country
+
+
+
+
     
 
 

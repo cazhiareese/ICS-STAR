@@ -123,4 +123,3 @@ async def get_country_cities(db:Session=Depends(get_db), country:str=""):
     cities = get_cities_country(db, country)
 
     return{"message":"success", "data":cities}
-
