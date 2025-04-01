@@ -36,12 +36,12 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
           {editMode ? (
             <input
               type="text"
-              value={userDetails.mobile}
-              onChange={(e) => handleChange(e, "mobile")}
+              value={userDetails.mobile_number}
+              onChange={(e) => handleChange(e, "mobile_number")}
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-primary font-satoshi-bold">{userDetails.mobile}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.mobile_number}</span>
           )}
         </div>
 
@@ -54,12 +54,12 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
           {editMode ? (
             <input
               type="text"
-              value={userDetails.studentNumber}
-              onChange={(e) => handleChange(e, "studentNumber")}
+              value={userDetails.student_number}
+              onChange={(e) => handleChange(e, "student_number")}
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-primary font-satoshi-bold">{userDetails.studentNumber}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.student_number}</span>
           )}
         </div>
 
