@@ -8,6 +8,7 @@ const AlumniLocationFilter = ({
   setLocationInput,
   location,
   setLocation,
+  setIsIndustryExpanded
 }) => {
 
     const locations = [
@@ -133,6 +134,7 @@ const AlumniLocationFilter = ({
         <div className="flex lg:hidden justify-between px-5 pb-3">
           <button
             onClick={() => {setLocation([]); 
+              setIsIndustryExpanded(true);
               setIsLocationExpanded(false);}}
             className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
           >
@@ -140,6 +142,7 @@ const AlumniLocationFilter = ({
           </button>
 
           <button onClick={() => {
+            setIsIndustryExpanded(true);
             setIsLocationExpanded(false);
           }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
             Next

@@ -112,12 +112,14 @@ function AlumniSearch() {
     <div className="flex flex-col ">
       <motion.div
         className="fixed bottom-0 left-0 w-full bg-gray-200 z-50 p-5 shadow-lg rounded-t-2xl lg:hidden overflow-y-auto"
-        style={{ maxHeight: "100vh" }} // Limits max expansion while allowing downward growth
-        initial={{ y: "100%" }}
-        animate={{ y: isFilterOpen ? 0 : "100%" }}
-        exit={{ y: "100%" }} // Ensures smooth exit transition
+        style={{ maxHeight: "90vh", height: "auto" }}
+        initial={{ y: "100vh" }}
+        animate={{ y: isFilterOpen ? "-10vh" : "100vh" }}
+        exit={{ y: "100vh" }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
+
+
        <div className=" flex lg:hidden flex-col w-full pt-3">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
@@ -301,6 +303,25 @@ function AlumniSearch() {
             industryList={industryList}
             setIndustryList={setIndustryList}
           />
+
+
+          
+        </div>
+
+        <div className="flex lg:hidden justify-between px-5 pb-3 mt-20">
+          <button
+            onClick={() => {resetAllFilters; 
+              setIsFilterOpen(false)}}
+            className="text-black px-4 py-2 font-satoshi-medium cursor-pointer rounded-2xl bg-white shadow-2xl"
+          >
+            Clear All
+          </button>
+
+          <button onClick={() => {
+            setIsFilterOpen(false);
+          }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer shadow-2xl">
+            Confirm
+          </button>
         </div>
       </motion.div>
       {/* Search bar */}

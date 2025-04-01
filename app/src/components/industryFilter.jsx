@@ -140,6 +140,23 @@ const AlumniIndustryFilter = ({
             ))
           )}
         </ul>
+
+        {/* Buttons for skip and next for mobile*/}
+        <div className="flex lg:hidden justify-between px-5 pb-3">
+          <button
+            onClick={() => {setIndustryList([]); 
+              setIsIndustryExpanded(false);}}
+            className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
+          >
+            Skip
+          </button>
+
+          <button onClick={() => {
+            setIsIndustryExpanded(false);
+          }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
+            Next
+          </button>
+        </div>
       </motion.div>
     </div>
   );
