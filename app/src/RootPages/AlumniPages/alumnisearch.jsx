@@ -165,7 +165,31 @@ function AlumniSearch() {
                   setSelectedYear={setSelectedBatchYear}
                 />
               </div>
+
+                {/* Buttons for skip and next for mobile*/}
+                <div onClick={() => {
+                  setIsGraduateExpanded(true);
+                  setIsBatchExpanded(false);
+                }} className="flex lg:hidden justify-between px-5 pb-3">
+                <button
+                  onClick={() => {setSelectedBatchYear(""); 
+                    setIsGraduateExpanded(true);
+                    setIsBatchExpanded(false);}}
+                  className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
+                >
+                  Skip
+                </button>
+
+                <button onClick={() => {
+                  setIsGraduateExpanded(true);
+                  setIsBatchExpanded(false);
+                }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
+                  Next
+                </button>
+              </div>
             </motion.div>
+
+             
           </div>
 
           {/* Alumni Graduate Filter */}
@@ -206,6 +230,25 @@ function AlumniSearch() {
                   setSelectedYear={setSelectedGraduationYear}
                 />
               </div>
+
+              {/* Buttons for skip and next for mobile*/}
+              <div className="flex lg:hidden justify-between px-5 pb-3">
+                <button
+                  onClick={() => {setSelectedGraduationYear(""); 
+                    setIsCareerExpanded(true);
+                    setIsGraduateExpanded(false);}}
+                  className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
+                >
+                  Skip
+                </button>
+
+                <button onClick={() => {
+                  setIsCareerExpanded(true);
+                  setIsGraduateExpanded(false);
+                }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
+                  Next
+                </button>
+              </div>
             </motion.div>
           </div>
 
@@ -216,6 +259,7 @@ function AlumniSearch() {
             setCareerInput={setCareerInput}
             careerList={careerList}
             setCareerList={setCareerList}
+            setIsAffiliationExpanded={setIsAffiliationExpanded}
           />
 
           <AlumniAffiliationFilter
@@ -225,6 +269,8 @@ function AlumniSearch() {
             setAffiliationInput={setAffiliationInput}
             affiliationList={affiliationList}
             setAffiliationList={setAffiliationList}
+            setIsSkillsExpanded={setIsSkillsExpanded}
+
           />
 
           <AlumniSkillsFilter
@@ -234,6 +280,7 @@ function AlumniSearch() {
             setSkillsInput={setSkillsInput}
             skillsList={skillsList}
             setSkillsList={setSkillsList}
+            setIsLocationExpanded={setIsLocationExpanded}
           />
 
           <AlumniLocationFilter
@@ -243,6 +290,7 @@ function AlumniSearch() {
             setLocationInput={setLocationInput}
             location={location}
             setLocation={setLocation}
+            setIsIndustryExpanded={setIsIndustryExpanded}
           />
 
           <AlumniIndustryFilter
