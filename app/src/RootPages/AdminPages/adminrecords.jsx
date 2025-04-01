@@ -68,11 +68,16 @@ function AdminRecords() {
           </button>
         </div>
           {/* Page */}
-          <button className='flex items-center gap-3 cursor-pointer'>
+          <button className='flex items-center gap-2 cursor-pointer text-md font-satoshi-regular'>
             <MoveLeft/>
-              <p className='text-md'>
-                Page <span className='font-satoshi-bold'> {page} </span> of {totalPages}
-              </p>
+              <p> Page </p>
+              <input
+                type="text"
+                value={page}
+                onChange={() => {}}
+                className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
+              />
+            <p>of {totalPages}</p>
             <MoveRight/>
           </button>
         </div>
