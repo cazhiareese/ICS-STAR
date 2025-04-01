@@ -18,7 +18,7 @@ function WorkSection({ userDetails }) {
         {/* First Row: Job Title & Date */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <h3 className="text-[23px] font-satoshi-medium text-primary font-satoshi-bold">{userDetails.job_title}</h3>
+            <h3 className="text-[23px]  text-primary font-satoshi-black">{userDetails.job_title}</h3>
             {userDetails.work_mode.toLowerCase() === "remote" && (
               <span className="bg-blue-800 text-white text-xs px-2 py-1 rounded-full">Remote</span>
             )}
@@ -27,10 +27,10 @@ function WorkSection({ userDetails }) {
         </div>
 
         {/* Second Row: Company Name */}
-        <p className="text-gray-700 text-[20px]">{userDetails.company_name}</p>
+        <p className="text-black text-[20px] font-satoshi-medium ">{userDetails.company_name}</p>
 
         {/* Third Row: Work Location & Button */}
-        <div className="flex justify-between items-center mt-1">
+        <div className="flex justify-between items-center">
           <p className="text-black font-satoshi-medium text-[20px]">{userDetails.work_location}</p>
           <button
             className="text-black text-sm hover:underline flex items-center"
