@@ -4,9 +4,14 @@ import SectionHeader from "../components/sectionheader"; // Adjust the path base
 
 function WorkSection({ userDetails, handleChange }) {
   const [showMore, setShowMore] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleToggleMore = () => {
     setShowMore(!showMore);
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
   };
 
   const salaryRanges = {
@@ -22,28 +27,70 @@ function WorkSection({ userDetails, handleChange }) {
   return (
     <div className="w-full max-w-[1100px] mt-6">
       {/* Section Header */}
-      <SectionHeader title="Current Work" buttonText="Edit Work" onButtonClick={() => console.log("Edit Work Clicked")} />
+      <SectionHeader 
+        title="Current Work" 
+        buttonText={isEditing ? "Save" : "Edit Work"} 
+        onButtonClick={handleEditToggle} 
+      />
 
       {/* Work Experience Card */}
       <div className="w-full py-2">
         {/* First Row: Job Title & Date */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <h3 className="text-[23px] text-primary font-satoshi-black">{userDetails.job_title}</h3>
+            {isEditing ? (
+              <input
+                type="text"
+                value={userDetails.job_title}
+                onChange={(e) => handleChange(e, "job_title")}
+                className="w-[250px] h-[30px] py-1 text-[23px]  font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 "
+              />
+            ) : (
+              <h3 className=" text-[23px] text-primary font-satoshi-black">{userDetails.job_title}</h3>
+            )}
 
-            <span className="bg-blue-800 text-white w-[81px] h-[26px] text-[14px] px-2 py-1 rounded-full flex items-center justify-center font-satoshi-medium">{userDetails.work_mode}</span>
-
-           
+            <span className="bg-blue-800 text-white w-[81px] h-[26px] text-[14px] px-2 py-1 rounded-full flex items-center justify-center font-satoshi-medium">
+              {userDetails.work_mode}
+            </span>
           </div>
-          <p className="text-primary text-[18px] font-satoshi-medium">Nov 2022 - Present</p>
+
+          {isEditing ? (
+            <input
+              type="text"
+              value={userDetails.work_start_date}
+              onChange={(e) => handleChange(e, "work_start_date")}
+              className="text-primary text-[18px] font-satoshi-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+            />
+          ) : (
+            <p className="text-primary text-[18px] font-satoshi-medium">2022 - Present</p>
+          )}
         </div>
 
         {/* Second Row: Company Name */}
-        <p className="text-black text-[20px] font-satoshi-medium">{userDetails.company_name}</p>
+        {isEditing ? (
+          <input
+            type="text"
+            value={userDetails.company_name}
+            onChange={(e) => handleChange(e, "company_name")}
+            className="w-[250px] h-[30px] py-1 text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 "
+          />
+        ) : (
+          <p className="text-black text-[20px] font-satoshi-medium">{userDetails.company_name}</p>
+        )}
 
         {/* Third Row: Work Location & Button */}
         <div className="flex justify-between items-center">
-          <p className="text-black font-satoshi-medium text-[20px]">{userDetails.work_location}</p>
+          {isEditing ? (
+            <input
+              type="text"
+              value={userDetails.work_location}
+              onChange={(e) => handleChange(e, "work_location")}
+              className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1 "
+            />
+          ) : (
+            <p className="text-black font-satoshi-medium text-[20px]">{userDetails.work_location}</p>
+          )}
+
           <button
             className="text-black text-[16px] font-satoshi-medium hover:underline flex items-center gap-1"
             onClick={handleToggleMore}
@@ -59,21 +106,53 @@ function WorkSection({ userDetails, handleChange }) {
             {/* Employer Class */}
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Employer Class:</span>
-              <span className="text-primary font-satoshi-bold">{userDetails.employer_class}</span>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={userDetails.employer_class}
+                  onChange={(e) => handleChange(e, "employer_class")}
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1"
+                />
+              ) : (
+                <span className="text-primary font-satoshi-bold">{userDetails.employer_class}</span>
+              )}
             </div>
 
             {/* Tenured Status */}
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Tenured Status:</span>
-              <span className="text-primary font-satoshi-bold">{userDetails.tenured_status}</span>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={userDetails.tenured_status}
+                  onChange={(e) => handleChange(e, "tenured_status")}
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1"
+                />
+              ) : (
+                <span className="text-primary font-satoshi-bold">{userDetails.tenured_status}</span>
+              )}
             </div>
 
             {/* Salary Range (Instead of Salary Grade) */}
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Salary Range:</span>
-              <span className="text-primary font-satoshi-bold">
-                {salaryRanges[userDetails.salary_grade] || "Not Available"}
-              </span>
+              {isEditing ? (
+                <select
+                  value={userDetails.salary_grade}
+                  onChange={(e) => handleChange(e, "salary_grade")}
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1 "
+                >
+                  {Object.entries(salaryRanges).map(([key, value]) => (
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span className="text-primary font-satoshi-bold">
+                  {salaryRanges[userDetails.salary_grade] || "Not Available"}
+                </span>
+              )}
             </div>
           </div>
         )}
