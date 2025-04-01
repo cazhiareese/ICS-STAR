@@ -54,14 +54,14 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
             <>
               <input
                 type="text"
-                value={userDetails.firstName}
-                onChange={(e) => handleChange(e, "firstName")}
+                value={userDetails.first_name}
+                onChange={(e) => handleChange(e, "first_name}")}
                 className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
               <input
                 type="text"
-                value={userDetails.lastName}
-                onChange={(e) => handleChange(e, "lastName")}
+                value={userDetails.last_name}
+                onChange={(e) => handleChange(e, "last_name")}
                 className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
               <input
@@ -74,7 +74,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
           ) : (
             <>
               <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
-                {userDetails.firstName} {userDetails.lastName}
+                {userDetails.first_name} {userDetails.last_name}
               </h2>
               <p className="text-[16px] sm:text-[20px] text-black">{userDetails.email}</p>
             </>
