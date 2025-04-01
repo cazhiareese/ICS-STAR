@@ -1,10 +1,21 @@
 import React from "react";
+import SectionHeader from "../components/sectionheader"; // Adjust the path based on your project structure
 
 function WorkSection() {
+  const handleEditWork = () => {
+    console.log("Edit Work Clicked");
+  };
+
   return (
-    <div className="p-6 border border-gray-300 rounded-lg bg-white">
-      <h2 className="text-2xl font-bold text-gray-900">Hello</h2>
-    </div>
+<>
+<div className="w-full max-w-[1100px] mt-6">
+      {/* Section Header */}
+      <SectionHeader title="Current Work" buttonText="Edit Work" onButtonClick={handleEditWork} />
+
+      {/* Content */}
+
+      </div>
+    </>
   );
 }
 
