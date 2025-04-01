@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import SectionHeader from "../components/sectionheader"; // Adjust the path based on your project structure
 
 function WorkSection({ userDetails }) {
-  const handleEditWork = () => {
-    console.log("Edit Work Clicked");
+  const [showMore, setShowMore] = useState(false);
+
+  const handleToggleMore = () => {
+    setShowMore(!showMore);
   };
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
       {/* Section Header */}
-      <SectionHeader title="Current Work" buttonText="Edit Work" onButtonClick={handleEditWork} />
+      <SectionHeader title="Current Work" buttonText="Edit Work" onButtonClick={() => console.log("Edit Work Clicked")} />
 
       {/* Work Experience Card */}
       <div className="w-full py-2">
@@ -21,7 +23,7 @@ function WorkSection({ userDetails }) {
               <span className="bg-blue-800 text-white text-xs px-2 py-1 rounded-full">Remote</span>
             )}
           </div>
-          <p className="text-blue-800 text-sm">2022 - Present</p>
+          <p className="text-blue-800 text-sm">{userDetails.work_start_date} - Present</p>
         </div>
 
         {/* Second Row: Company Name */}
@@ -32,11 +34,34 @@ function WorkSection({ userDetails }) {
           <p className="text-gray-600">{userDetails.work_location}</p>
           <button
             className="text-gray-600 text-sm hover:underline flex items-center"
-            onClick={handleEditWork}
+            onClick={handleToggleMore}
           >
-            View More ▼
+            {showMore ? "View Less ▲" : "View More ▼"}
           </button>
         </div>
+
+        {/* Expandable Details */}
+        {showMore && (
+          <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-4 text-black text-[16px] font-satoshi-medium">
+            {/* Employer Class */}
+            <div className="flex flex-col items-start text-left">
+              <span className="font-bold">Employer Class:</span>
+              <span className="text-primary">{userDetails.employer_class}</span>
+            </div>
+
+            {/* Tenured Status */}
+            <div className="flex flex-col items-start text-left">
+              <span className="font-bold">Tenured Status:</span>
+              <span className="text-primary">{userDetails.tenured_status}</span>
+            </div>
+
+            {/* Salary Grade */}
+            <div className="flex flex-col items-start text-left">
+              <span className="font-bold">Salary Grade:</span>
+              <span className="text-primary">{userDetails.salary_grade}</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
