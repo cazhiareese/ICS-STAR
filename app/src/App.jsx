@@ -20,6 +20,7 @@ import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardl
 import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayout";
 import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
 import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendingverifications";
+import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminverificationconfirmation";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route index element={<AdminRecords/>}/>
             <Route path=":userid" element={<AdminUserDetails/>}/>
             <Route path="pending-verifications" element={<AdminPendingVerifications/>}/>
+            <Route path="verification-confirmation/:id" element={<AdminVerificationConfirmation/>}/>
           </Route>
           <Route path="events" element={<AdminEvents />} />
           <Route path="newsletter" element={<AdminNewsletter />} />
