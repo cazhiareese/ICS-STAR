@@ -9,7 +9,6 @@ function AdminRecords() {
   const [viewStyle, setViewStye] = useState('List')
   const [maxRows, setMaxRows] = useState(12)
 
-
   const users = [
     { name: "Kiefer Tayawa", batch: "2022", location: "Manila, PH", job: "Full-Stack Developer", lastUpdate: "1/4/10", status: "Inactive" },
     { name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "5/6/25", status: "" },
@@ -54,7 +53,7 @@ function AdminRecords() {
           </button>
         </div>
         {/* Sort by */}
-        <div className='h-full flex gap-2'>
+        <div className='flex gap-2'>
           <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer'>
             <p className='text-black font-satoshi-light text-sm'> Sort by <span className='font-satoshi-medium text-primary'>Name</span></p>
           </button>
