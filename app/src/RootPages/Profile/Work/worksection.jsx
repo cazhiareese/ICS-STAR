@@ -12,22 +12,24 @@ function WorkSection({ userDetails }) {
       <SectionHeader title="Current Work" buttonText="Edit Work" onButtonClick={handleEditWork} />
 
       {/* Work Experience Card */}
-      <div className="flex justify-between items-center w-full p-4 border border-gray-300 rounded-lg shadow-sm bg-white mt-4">
-        {/* Left Side: Job Details */}
-        <div>
+      <div className="w-full py-2">
+        {/* First Row: Job Title & Date */}
+        <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-bold text-primary">{userDetails.job_title}</h3>
             {userDetails.work_mode.toLowerCase() === "remote" && (
               <span className="bg-blue-800 text-white text-xs px-2 py-1 rounded-full">Remote</span>
             )}
           </div>
-          <p className="text-gray-700">{userDetails.company_name}</p>
-          <p className="text-gray-600">{userDetails.work_location}</p>
+          <p className="text-blue-800 text-sm">2022 - Present</p>
         </div>
 
-        {/* Right Side: Duration & Edit Button */}
-        <div className="flex items-center gap-4">
-          <p className="text-blue-800 text-sm">Nov 2022 - Present</p>
+        {/* Second Row: Company Name */}
+        <p className="text-gray-700">{userDetails.company_name}</p>
+
+        {/* Third Row: Work Location & Button */}
+        <div className="flex justify-between items-center mt-1">
+          <p className="text-gray-600">{userDetails.work_location}</p>
           <button
             className="text-gray-600 text-sm hover:underline flex items-center"
             onClick={handleEditWork}
