@@ -232,7 +232,7 @@ def get_active_by_batch(db: Session, order: str):
     one_year_ago = datetime.now() - timedelta(days=365)
     result = (
     db.query(
-        func.left(User.student_number, 4).label("batch"),
+        func.split_part(User.student_number, '-', 1).label("batch"),
         func.count().label("total_users"),
         func.sum(
             case(
@@ -269,12 +269,38 @@ def get_active_by_batch(db: Session, order: str):
     return results_analyzed
 
 def get_batch_employment_status(db: Session, batch:str):
-    jobs = db.query(User.job_title).distinct().where(User.job_title.is_not(None), User.user_type != 'admin').all()
-    employ_status = (
+
+    total_alumni_sum = (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.user_type == 'alumni',
+        func.split_part(User.student_number, '-', 1) == batch
+    )
+    .scalar()  # Returns single value
+    ) 
+
+    employment = (
         db.query(
-            User.employment_status
-        ).distinct().where(User.employment_status.is_not(None), User.user_type != 'admin').all()
-        )
+            User.employment_status.label("employment_status"),
+            func.count().label("total_alumni")
+        ).where(User.user_type == 'alumni', func.split_part(User.student_number, '-', 1)== batch).group_by(User.employment_status).all()
+    )
+
+    employment_dicts = [row._asdict() for row in employment]
+
+    employment_status_batch = {}
+    for emp in employment_dicts:
+        employment_status_batch[emp["employment_status"]] = {
+            "count" : emp["total_alumni"],
+            "percentage": (emp["total_alumni"]/total_alumni_sum) * 100
+        }
+    
+    return employment_status_batch
+        
+        
+
 
 
 
