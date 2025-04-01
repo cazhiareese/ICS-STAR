@@ -15,7 +15,7 @@ from models.usermodel import User
 
 router = APIRouter()
 
-@router.post("/register/", response_model=UserOut)
+@router.post("/register/")
 async def register(
     first_name: str = Form(...),
     last_name: str = Form(...),
