@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import Sidebar from "../../components/AdminComponents/adminsidebar";
+import Sidebar from "../../../components/AdminComponents/adminsidebar";
 
 import { Home, FileText, Calendar, Newspaper, BriefcaseBusiness, Heart } from "lucide-react";
 
@@ -15,12 +15,12 @@ function AdminRoot() {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row">
+    <div className="flex flex-col lg:flex-row h-screen">
         {/* Sidebar */}
         <Sidebar sidebarItems={sidebarItems} />
         {/* Content */}
-        <div className="flex-grow">
-            <Outlet/>
+        <div className="w-full overflow-auto">
+          <Outlet/>
         </div>
     </div>
   );
