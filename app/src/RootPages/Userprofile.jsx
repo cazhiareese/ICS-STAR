@@ -27,9 +27,6 @@ function UserProfile() {
     const [affiliations, setAffiliations] = useState([]);
     const [scholarships, setScholarships] = useState([]);
 
-    const addAffiliation = (newAffiliation) => {
-      setAffiliations([...affiliations, newAffiliation]);
-    };
     const addScholarship = (newScholarship) => {
       setScholarships([...scholarships, newScholarship]);
     };
@@ -134,6 +131,82 @@ function UserProfile() {
     }
 };
 
+const removeSkill = async (skillToRemove) => {
+  try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+          setError("User not authenticated");
+          return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      // Send DELETE request to remove the skill
+      const response = await fetch(`${API_BASE_URL}/remove-skill/${encodeURIComponent(skillToRemove)}`, {
+          method: "DELETE",
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error("Failed to remove skill");
+      }
+
+      const result = await response.json();
+      console.log(result.message); // "Skill removed successfully"
+
+      // Update the UI by filtering out the removed skill
+      setSkills(skills.filter(skill => skill !== skillToRemove));
+  } catch (err) {
+      setError("Failed to remove skill");
+  }
+};
+
+const addAffiliation = async (newAffiliation) => {
+  try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+          setError("User not authenticated");
+          return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      // Ensure newAffiliation is an object with 'affiliation' and 'role'
+      if (!newAffiliation.affiliation || !newAffiliation.role) {
+          setError("Invalid affiliation format");
+          return;
+      }
+
+      // Convert affiliations & roles into query parameters
+      const queryParams = new URLSearchParams();
+      queryParams.append("affiliations", newAffiliation.affiliation);
+      queryParams.append("roles", newAffiliation.role);
+
+      const response = await fetch(`${API_BASE_URL}/add-affiliations?${queryParams.toString()}`, {
+          method: "POST",
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error("Failed to add affiliation");
+      }
+
+      const result = await response.json();
+      console.log(result.message); // "affiliations added successfully"
+
+      // Update UI only after a successful API call
+      setAffiliations([...affiliations, newAffiliation]);
+  } catch (err) {
+      setError("Failed to add affiliation");
+  }
+};
+
+
+
   
 
 
@@ -141,7 +214,6 @@ function UserProfile() {
 
 
 
-    const removeSkill = (index) => setSkills(skills.filter((_, i) => i !== index));
     const removeAffiliation = (index) => setAffiliations(affiliations.filter((_, i) => i !== index));
     const removeScholarship = (index) => setScholarships(scholarships.filter((_, i) => i !== index));
 
