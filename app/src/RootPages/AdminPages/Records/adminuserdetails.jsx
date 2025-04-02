@@ -44,15 +44,15 @@ function AdminUserDetails() {
   ]
   const scholarships = ["DOST Scholarship", "UPLB SLAS"]
   return (
-    <div className='p-6 overflow-auto h-screen'>
+    <div className='p-6 overflow-auto max-h-screen'>
       {/* Back */}
       <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
         <MoveLeft className='text-primary'/> 
         <p className='text-primary font-satoshi-medium text-lg'>Back</p>
       </button>
       {/* Records and confirmation button*/}
-      <div className='flex justify-between items-center mb-5'>
-        <h1 className='text-primary font-satoshi-bold text-3xl'>Records</h1>
+      <div className='flex lg:justify-between justify-end items-center mb-5'>
+        <h1 className='text-primary font-satoshi-bold text-3xl hidden lg:block'>Records</h1>
         <button className='flex items-center bg-success text-white text-md font-satoshi-regular gap-2 rounded-3xl px-4 py-2 cursor-pointer' onClick={() => {makeAlumni()}}>
           <Check className='' size={20}/>
           <p> Make Alumni</p>
@@ -62,17 +62,17 @@ function AdminUserDetails() {
       <div className='flex flex-row border border-gray-300 rounded-xl w-full p-6 mb-6'>
         <div className='border border-black rounded-full h-30 w-30'></div>
         <div className='flex flex-col justify-center ml-8'>
-          <h2 className='font-satoshi-bold text-3xl'>Kiefer Tayawa</h2>
+          <h2 className='font-satoshi-bold text-2xl'>Kiefer Tayawa</h2>
           <p className='font-satoshi-light'>kltayawa@up.edu.ph</p>
         </div>
-        <button className='flex flex-row gap-2 ml-auto text-error font-satoshi-medium' onClick={() => {setIsOpen(true)}}>
-          <p>View Report Logs</p>
+        <button className='hidden lg:flex flex-row gap-2 ml-auto text-error font-satoshi-medium' onClick={() => {setIsOpen(true)}}>
+          <p className='hidden lg:block'>View Report Logs</p>
           <ShieldAlert/>
         </button>
       </div>
       {/* Personal information */}
       <h2 className='font-satoshi-medium text-xl'> PERSONAL INFORMATION</h2>
-      <div className='border-t border-gray-300 flex flex-row justify-between text-lg py-5 w-full mb-5'>
+      <div className='border-t border-gray-300 grid gap-y-5 grid-cols-2 lg:flex flex-row justify-between text-lg py-5 w-full mb-5'>
       {/* Personal information cards */}
         {/* Location */}
         <div className='flex flex-col'>
@@ -109,10 +109,10 @@ function AdminUserDetails() {
       </div>
       {/* SKILLS AND INTERESTS */}
       <h2 className='font-satoshi-medium text-xl'> SKILLS AND INTERESTS</h2>
-      <div className='border-t border-gray-300 flex flex-row gap-3 py-5 mb-5'>
+      <div className='border-t border-gray-300 flex flex-row flex-wrap gap-3 py-5 mb-5'>
         {skills.map((skill, index) => (
           <div key={index} className="rounded-4xl p-2 border-2 w-fit border-black">
-            <p className='font-satoshi-medium'> {skill} </p>
+            <p className='font-satoshi-medium lg:text-md text-sm whitespace-nowrap'> {skill} </p>
           </div>
         ))}
       </div>
