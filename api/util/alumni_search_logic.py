@@ -38,7 +38,21 @@ def logic_search_alumni(
         query = query.filter(User.graduation_year == graduation_year)
     
     if job_title:
-        query = query.filter(User.job_title.ilike(f"%{job_title}%"))
+        # Split the job title string by comma and strip whitespace
+        job_title_list = [j.strip() for j in job_title.split(',') if j.strip()]
+
+        if job_title_list:
+            if len(job_title_list) > 1:
+                subquery = db.query(User.user_id).filter(User.job_title.ilike(f"%{job_title_list[0]}%")).subquery()
+                
+                for j in job_title_list[1:]:
+                    job_title_subquery = db.query(User.user_id).filter(User.job_title.ilike(f"%{j}%")).subquery()
+                    
+                    subquery = db.query(subquery.c.user_id).filter(subquery.c.user_id.in_(db.query(job_title_subquery.c.user_id))).subquery()
+                
+                query = query.filter(User.user_id.in_(db.query(subquery.c.user_id)))
+            else:
+                query = query.filter(User.job_title.ilike(f"%{job_title_list[0]}%"))
     
     if city:
         query = query.filter(User.city.ilike(f"%{city}%"))
