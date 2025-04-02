@@ -76,7 +76,7 @@ async def add_skills(
     
     db.add_all(new_skills)
     db.commit()
-    
+    primt(new_skills)
     return {"message": "skills added successfully"}
 
 @router.put("/update-employment")
