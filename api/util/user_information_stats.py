@@ -914,7 +914,6 @@ def get_alumni_filter(
                 subquery = db.query(subquery.c.user_id).filter(subquery.c.user_id.in_(db.query(affiliation_subquery.c.user_id))).subquery()
             
             query = query.filter(User.user_id.in_(db.query(subquery.c.user_id)))
-    
 
     if order_by:
         for order in order_by:
