@@ -22,7 +22,8 @@ def logic_search_alumni(
     graduation_year: Optional[int] = None,
     job_title: Optional[str] = None,
     city: Optional[str] = None,
-    skill: Optional[str] = None
+    skill: Optional[str] = None,
+    industry: Optional[str] = None
 ) -> List[Dict]:
     # Initial query which will get all alumni users
     query = db.query(User).filter(User.user_type == UserTypeEnum.alumni)
@@ -43,6 +44,9 @@ def logic_search_alumni(
     if skill:
         query = query.join(UserSkill, User.user_id == UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{skill}%"))
 
+    if industry:
+        query = query.filter(User.industry.ilike(f"%{industry}%"))
+
     # Execute the final query
     results = query.all()
     
@@ -61,6 +65,7 @@ def logic_search_alumni(
             "full_name": f"{user.first_name} {user.last_name}",
             "graduation_year": user.graduation_year,
             "job_title": user.job_title,
+            "industry": user.industry,
             "skills": skills_list,
             "location": user.city,
             "email": user.email,

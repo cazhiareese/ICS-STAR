@@ -70,3 +70,23 @@ def get_name_suggestions(db: Session, query_text: str, limit: int = 8) -> List[s
     
     # Return full names
     return [f"{user.first_name} {user.last_name}" for user in users]
+
+# Get suggestions for industries based on partial input in the text field
+# 
+# Arguments:
+# db: Session - database session
+# query_text: str - partial input in the text field
+# limit: int - maximum number of suggestions to return
+# 
+# Returns: a list of industry suggestions
+def get_industry_suggestions(db: Session, query_text: str, limit: int = 4) -> List[str]:
+    results = db.query(distinct(User.industry))\
+                .filter(User.user_type == UserTypeEnum.alumni)\
+                .filter(User.industry.ilike(f"%{query_text}%"))\
+                .filter(User.industry.isnot(None))\
+                .order_by(User.industry)\
+                .limit(limit)\
+                .all()
+    
+
+    return [result[0] for result in results]
