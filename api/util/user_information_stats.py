@@ -1,9 +1,11 @@
 
+from typing import Dict, List, Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from models.usermodel import User
+from util.alumni_search_logic import logic_search_alumni
+from models.usermodel import User, UserAffiliation, UserSkill, UserTypeEnum
 from models.report_model import Report
-from sqlalchemy import func, case, text, desc
+from sqlalchemy import func, case, or_, text, desc,asc
 from datetime import datetime, timedelta
 
 
@@ -566,10 +568,10 @@ def get_cities_country(db:Session, country:str):
     return cities_country
 
 
-def get_alumni_batch_filter(db: Session, batch: str):
+def get_alumni_batch_filter(db: Session, batch: str, order_by:list[str]):
 
     one_year_ago = datetime.now() - timedelta(days=365)
-    alumni = db.query(
+    query = db.query(
         User.user_id,
         User.first_name, 
         User.last_name,
@@ -587,6 +589,31 @@ def get_alumni_batch_filter(db: Session, batch: str):
         User.user_type == 'alumni',
         func.split_part(User.student_number, '-', 1)== batch
     ).all()
+
+    if order_by:
+        for order in order_by:
+            order_parts = order.split('_')
+            order_field = order_parts[0]
+            order_direction = order_parts[1] if len(order_parts) > 1 else 'asc'
+            
+            if order_field == 'batch':
+                order_column = func.split_part(User.student_number, '-', 1)
+            elif order_field == 'last_name':
+                order_column = User.last_name
+            elif order_field == 'last_updated':
+                order_column = User.updated_at
+            else:
+                continue  # skip invalid fields
+            
+            if order_direction.lower() == 'desc':
+                query = query.order_by(desc(order_column))
+            else:
+                query = query.order_by(asc(order_column))
+    else:
+        # Default ordering if none specified
+        query = query.order_by(asc(User.last_name))
+    
+    alumni = query.all()
 
     if not alumni:
         raise HTTPException(status_code=404, detail="No alumni found")
@@ -616,10 +643,10 @@ def get_alumni_batch_filter(db: Session, batch: str):
     return alum_list
 
 
-def get_alumni_industry_filter(db: Session, industry: str):
+def get_alumni_industry_filter(db: Session, industry: str, order_by:list[str]):
 
     one_year_ago = datetime.now() - timedelta(days=365)
-    alumni = db.query(
+    query = db.query(
         User.user_id,
         User.first_name, 
         User.last_name,
@@ -637,6 +664,31 @@ def get_alumni_industry_filter(db: Session, industry: str):
         User.user_type == 'alumni',
         User.industry == industry
     ).all()
+
+    if order_by:
+        for order in order_by:
+            order_parts = order.split('_')
+            order_field = order_parts[0]
+            order_direction = order_parts[1] if len(order_parts) > 1 else 'asc'
+            
+            if order_field == 'batch':
+                order_column = func.split_part(User.student_number, '-', 1)
+            elif order_field == 'last_name':
+                order_column = User.last_name
+            elif order_field == 'last_updated':
+                order_column = User.updated_at
+            else:
+                continue  # skip invalid fields
+            
+            if order_direction.lower() == 'desc':
+                query = query.order_by(desc(order_column))
+            else:
+                query = query.order_by(asc(order_column))
+    else:
+        # Default ordering if none specified
+        query = query.order_by(asc(User.last_name))
+    
+    alumni = query.all()
 
     if not alumni:
         raise HTTPException(status_code=404, detail="No alumni found")
@@ -665,10 +717,11 @@ def get_alumni_industry_filter(db: Session, industry: str):
 
     return alum_list  
 
-def get_alumni_country_filter(db: Session, country: str):
+def get_alumni_country_filter(db: Session, country: str, order_by:list[str]):
 
     one_year_ago = datetime.now() - timedelta(days=365)
-    alumni = db.query(
+    
+    query = db.query(
         User.user_id,
         User.first_name, 
         User.last_name,
@@ -685,7 +738,33 @@ def get_alumni_country_filter(db: Session, country: str):
     ).filter(
         User.user_type == 'alumni',
         User.country == country
-    ).all()
+    )
+    
+    # Handle ordering
+    if order_by:
+        for order in order_by:
+            order_parts = order.split('_')
+            order_field = order_parts[0]
+            order_direction = order_parts[1] if len(order_parts) > 1 else 'asc'
+            
+            if order_field == 'batch':
+                order_column = func.split_part(User.student_number, '-', 1)
+            elif order_field == 'last_name':
+                order_column = User.last_name
+            elif order_field == 'last_updated':
+                order_column = User.updated_at
+            else:
+                continue  # skip invalid fields
+            
+            if order_direction.lower() == 'desc':
+                query = query.order_by(desc(order_column))
+            else:
+                query = query.order_by(asc(order_column))
+    else:
+        # Default ordering if none specified
+        query = query.order_by(asc(User.last_name))
+    
+    alumni = query.all()
 
     if not alumni:
         raise HTTPException(status_code=404, detail="No alumni found")
@@ -713,12 +792,3 @@ def get_alumni_country_filter(db: Session, country: str):
         alum_list.append(al)
 
     return alum_list
-
-
-        
-
-
-
-
-
-
