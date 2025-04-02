@@ -26,9 +26,7 @@ function UserProfile() {
     const [skills, setSkills] = useState([]);
     const [affiliations, setAffiliations] = useState([]);
     const [scholarships, setScholarships] = useState([]);
-    const addSkills = (newSkills) => {
-      setSkills([...skills, ...newSkills]);
-    };
+
     const addAffiliation = (newAffiliation) => {
       setAffiliations([...affiliations, newAffiliation]);
     };
@@ -100,6 +98,42 @@ function UserProfile() {
   
       fetchProfile();
   }, []);
+
+  const addSkills = async (newSkills) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setError("User not authenticated");
+            return;
+        }
+
+        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+        // Convert skills array into a query string format
+        const queryParams = new URLSearchParams();
+        newSkills.forEach(skill => queryParams.append("skills", skill));
+
+        const response = await fetch(`${API_BASE_URL}/add-skills?${queryParams.toString()}`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to add skills");
+        }
+
+        const result = await response.json();
+        console.log(result.message); // "skills added successfully"
+
+        // Update state only after successful API call
+        setSkills([...skills, ...newSkills]);
+    } catch (err) {
+        setError("Failed to add skills");
+    }
+};
+
   
 
 
