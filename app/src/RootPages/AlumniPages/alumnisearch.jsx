@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./datepicker.css";
 import YearPicker from "../../components/datepicker";
 import { motion } from "framer-motion";
+import axios from 'axios';
 
 
 
@@ -64,6 +65,58 @@ function AlumniSearch() {
     setAlumniList([alumni, alumni, alumni]);
   }, []);
 
+  const search = () => {
+      let filters = {}; // Initialize filter object
+
+      if (selectedBatchYear != "") {
+          filters.batch_year = selectedBatchYear;
+      }
+      if (selectedGraduationYear !== "") {
+          filters.graduation_year = selectedGraduationYear;
+      }
+      if (Array.isArray(careerList) && careerList.length > 0) {
+          filters.careers = careerList;
+      }
+      if (Array.isArray(affiliationList) && affiliationList.length > 0) {
+          filters.affiliations = affiliationList;
+      }
+      if (Array.isArray(skillsList) && skillsList.length > 0) {
+          filters.skill = skillsList;
+      }
+      if (Array.isArray(industryList) && industryList.length > 0) {
+          filters.industries = industryList;
+      }
+      if (location !== "") {
+          filters.city = location;
+      }
+
+      // Pass filters to buildSearchUrl and make API call
+      let apiUrl = buildSearchUrl(filters);
+      console.log(apiUrl);
+      return apiUrl;
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+        let searchAPIURL = search();  // Get API URL based on the filters
+        try {
+            const response = await axios.get(searchAPIURL);  
+            console.log(response.data);
+        } catch (error) {
+            console.error("Error fetching alumni data:", error);
+        }
+    };
+
+    fetchData();  // Fetch data when component mounts or dependencies change
+
+}, [selectedBatchYear, selectedGraduationYear, careerList, affiliationList, skillsList, industryList, location]); 
+
+  function buildSearchUrl(filters) {
+      let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
+      let queryParams = new URLSearchParams(filters).toString();
+      return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
+  }
+
   
 
   const removeSkill = (index) => {
@@ -107,11 +160,13 @@ function AlumniSearch() {
     setIndustryList([]);
     setLocation([]);
   }
+
+ 
   
   return (
     <div className="flex flex-col ">
       <motion.div
-        className="fixed bottom-0 left-0 w-full bg-gray-200 z-50 p-5 shadow-lg rounded-t-2xl lg:hidden overflow-y-auto"
+        className="fixed bottom-0 left-0 w-full bg-gray-100 z-50 p-5 shadow-lg rounded-t-2xl lg:hidden overflow-y-auto"
         style={{ maxHeight: "100vh", height: "100%" }}
         initial={{ y: "100vh" }}
         animate={{ y: isFilterOpen ? "0vh" : "100vh" }}
@@ -161,7 +216,7 @@ function AlumniSearch() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
               <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
-                <Calendar className="text-primary" />
+                <Calendar className="text-primary hidden md:block" />
                 <YearPicker
                   selectedYear={selectedBatchYear} // Using separate state for Batch Year
                   setSelectedYear={setSelectedBatchYear}
@@ -226,7 +281,7 @@ function AlumniSearch() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
               <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
-                <Calendar className="text-primary" />
+                <Calendar className="text-primary hidden md:block" />
                 <YearPicker
                   selectedYear={selectedGraduationYear} 
                   setSelectedYear={setSelectedGraduationYear}
@@ -319,7 +374,6 @@ function AlumniSearch() {
               setIsSkillsExpanded(false);
               setIsIndustryExpanded(false);
               setIsLocationExpanded(false);
-          
             }} 
             className="text-black px-4 py-2 font-satoshi-medium cursor-pointer rounded-2xl bg-white shadow-2xl"
           >
@@ -344,7 +398,15 @@ function AlumniSearch() {
       {/* Search bar */}
       <div className="flex flex-col w-full mt-28 shadow-md pb-8 items-center rounded-full ">
         <div className="flex flex-row gap-5 w-full items-center justify-center">
-          <SearchBar />
+          <SearchBar 
+            selectedBatchYear={selectedBatchYear}
+            selectedGraduationYear={selectedGraduationYear}
+            careerList={careerList}
+            affiliationList={affiliationList}
+            skillsList={skillsList}
+            industryList={industryList}
+            location={location}
+          />
           
           <button onClick={toggleFilter} className="flex flex-center h-14 cursor-pointer rounded-2xl outline-gray-300 outline-2 bg-gray-100 text-primary w-12 justify-center items-center text-center lg:hidden">
               <Filter size={20} />
@@ -566,7 +628,7 @@ function AlumniSearch() {
             </div>
           )}
 
-          <h1 className="text-3xl font-satoshi-medium text-gray-500 pl-10 py-5">{alumniList.length} Search Results</h1>
+          <h1 className="md:text-3xl text-2xl font-satoshi-medium text-gray-500 pl-10 py-6 lg:text-left text-center">{alumniList.length} Search Results</h1>
 
           {/* Mapping of alumni cards */}
           <div className="flex flex-row flex-wrap gap-24 items-center justify-center">
