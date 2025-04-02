@@ -15,7 +15,7 @@ from models.usermodel import User
 
 router = APIRouter()
 
-@router.post("/register/")
+@router.post("/register")
 async def register(
     first_name: str = Form(...),
     last_name: str = Form(...),
@@ -23,7 +23,7 @@ async def register(
     password: str = Form(...),
     student_number: str = Form(...),
     user_type: str = Form(...),
-    verification_file: UploadFile = File(...),
+    verification_file: UploadFile = File(None),
     graduation_year: str = Form(None),
     graduation_semester: str = Form(None),
     db: Session = Depends(get_db),
