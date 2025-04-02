@@ -13,10 +13,11 @@ def search_alumni(
     job_title: Optional[str] = None,
     city: Optional[str] = None,
     skill: Optional[str] = None,
+    industry: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     
-    results = logic_search_alumni(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill)
+    results = logic_search_alumni(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry)
     
     # Raise 404 if no results found
     if not results:
