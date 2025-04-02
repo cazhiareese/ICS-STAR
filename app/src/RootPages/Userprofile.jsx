@@ -194,6 +194,39 @@ const removeAffiliation = async (affiliationToRemove) => {
   }
 };
 
+const removeScholarship = async (scholarshipToRemove) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("User not authenticated");
+      return;
+    }
+
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    // Send DELETE request to remove the scholarship
+    const response = await fetch(`${API_BASE_URL}/remove-scholarship/?scholarship=${encodeURIComponent(scholarshipToRemove)}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to remove scholarship");
+    }
+
+    const result = await response.json();
+    console.log(result.message); // "Scholarship removed successfully"
+
+    // Update the UI by filtering out the removed scholarship
+    setScholarships(scholarships.filter(scholarship => scholarship !== scholarshipToRemove));
+  } catch (err) {
+    setError("Failed to remove scholarship");
+  }
+};
+
+
 
 
 const addAffiliation = async (newAffiliation) => {
@@ -272,8 +305,6 @@ const addScholarship = async (newScholarship) => {
       setError("Failed to add scholarship");
   }
 };
-
-    const removeScholarship = (index) => setScholarships(scholarships.filter((_, i) => i !== index));
 
     const handleChange = (e, field) => {
       setUserDetails({ ...userDetails, [field]: e.target.value });
