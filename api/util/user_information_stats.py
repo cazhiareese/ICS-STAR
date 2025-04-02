@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from util.alumni_search_logic import logic_search_alumni
 from models.usermodel import User, UserAffiliation, UserSkill, UserTypeEnum
 from models.report_model import Report
-from sqlalchemy import func, case, text, desc,asc
+from sqlalchemy import func, case, or_, text, desc,asc
 from datetime import datetime, timedelta
 
 
@@ -792,32 +792,3 @@ def get_alumni_country_filter(db: Session, country: str, order_by:list[str]):
         alum_list.append(al)
 
     return alum_list
-
-def get_alumni_filter(
-    db: Session, 
-    name: Optional[str] = None, 
-    graduation_year: Optional[int] = None,
-    job_title: Optional[str] = None,
-    city: Optional[str] = None,
-    skill: Optional[str] = None,
-    industry: Optional[str] = None,
-    batch: Optional[str] = None,
-    affiliation: Optional[str] = None,
-    order_by: Optional[List[str]] = None,
-) -> List[Dict]:
-    
-
-    results = logic_search_alumni(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation)
-
-    for alum in results:
-        report_check = db.query(Report.report_id).filter(Report.reported_user_id == alum["user_id"]).all()
-    return
-
-
-        
-
-
-
-
-
-
