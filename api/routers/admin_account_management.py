@@ -19,7 +19,7 @@ def isAdmin(current_user: User = Depends(require_admin)):
 # Get all unverified users
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified users
-@router.get("/admin/unverified", dependencies=[Depends(isAdmin)], response_model=list[UserOut])
+@router.get("/admin/unverified", dependencies=None, response_model=list[UserOut])
 async def read_unverified_users(db: Session = Depends(get_db)):
     users = db.query(User).filter(User.is_verified == False).all()
     return [UserOut.model_validate(user) for user in users]
@@ -27,7 +27,7 @@ async def read_unverified_users(db: Session = Depends(get_db)):
 # Verify and confirm user registration
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the user registration
-@router.put("/admin/confirm/{user_id}", dependencies=[Depends(isAdmin)])
+@router.put("/admin/confirm/{user_id}", dependencies=None)
 async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
     user = db.query(User).filter(User.user_id == user_id).first()
     if user is None:
@@ -39,7 +39,7 @@ async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
 # Get all graduating students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all graduating students
-@router.get("/admin/graduating", dependencies=[Depends(isAdmin)], response_model=list[UserOut])
+@router.get("/admin/graduating", dependencies=None, response_model=list[UserOut])
 async def read_graduating_students(db: Session = Depends(get_db)):
     students = db.query(User).filter(User.user_type == "student", User.standing == 'graduating').all()
     return [UserOut.model_validate(student) for student in students]
@@ -47,7 +47,7 @@ async def read_graduating_students(db: Session = Depends(get_db)):
 # Transition graduating students to alumni
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the transition
-@router.put("/admin/transition/{user_id}", dependencies=[Depends(isAdmin)])
+@router.put("/admin/transition/{user_id}", dependencies=None)
 async def transition_student(db: Session = Depends(get_db), user_id: UUID = None):
     student = db.query(User).filter(User.user_id == user_id).first()
     if student is None:
@@ -59,7 +59,7 @@ async def transition_student(db: Session = Depends(get_db), user_id: UUID = None
 # Get all students (not transitioned students)
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all students
-@router.get("/admin/students", dependencies=[Depends(isAdmin)], response_model=list[UserOut])
+@router.get("/admin/students", dependencies=None, response_model=list[UserOut])
 async def read_students(db: Session = Depends(get_db)):
     students = db.query(User).filter(User.user_type == "student").all()
     return [UserOut.model_validate(student) for student in students]
@@ -67,7 +67,7 @@ async def read_students(db: Session = Depends(get_db)):
 # Get user's verification file
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: the verification file of the user
-@router.get("/admin/verification-file/{user_id}", dependencies=[Depends(isAdmin)])
+@router.get("/admin/verification-file/{user_id}", dependencies=None)
 async def read_verification_file(db: Session = Depends(get_db), user_id: UUID = None):
     user = db.query(User).filter(User.user_id == user_id).first()
     if user is None:
