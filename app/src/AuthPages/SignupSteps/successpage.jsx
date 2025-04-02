@@ -52,6 +52,11 @@ function Success(){
             
             if (response.ok) {
                 alert("Registration Successful!");
+                if (userType=="alumni"){
+                    navigate("/alumni");
+                } else {
+                    navigate("/student");
+                }
             } else {
                 alert(data.detail || "Registration failed!");
                 console.error("Response Status:", response.status);
