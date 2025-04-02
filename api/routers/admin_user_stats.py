@@ -125,22 +125,22 @@ async def get_country_cities(db:Session=Depends(get_db), country:str=""):
     return{"message":"success", "data":cities}
 
 
-##ADD ORDER BY
+##ADD ORDER BY- pwede input ay 'name', 'batch', 'last_updated'
 @router.get("/admin/stats/alumni_batch_filter")
-async def get_alumni_batch(db: Session = Depends(get_db), batch: str=""):
-    alumni_batch = get_alumni_batch_filter(db, batch)
+async def get_alumni_batch(db: Session = Depends(get_db), batch: str="", order_by: str=""):
+    alumni_batch = get_alumni_batch_filter(db, batch,order_by)
 
     return{"message":"success", "data":alumni_batch}
 
 @router.get("/admin/stats/alumni_industry_filter")
-async def get_alumni_industry(db: Session = Depends(get_db), industry: str=""):
-    alumni_industry = get_alumni_industry_filter(db, industry)
+async def get_alumni_industry(db: Session = Depends(get_db), industry: str="", order_by: str=""):
+    alumni_industry = get_alumni_industry_filter(db, industry, order_by)
 
     return{"message":"success", "data":alumni_industry}
 
 @router.get("/admin/stats/alumni_country_filter")
-async def get_alumni_country(db: Session = Depends(get_db), country: str=""):
-    alumni_country = get_alumni_country_filter(db, country)
+async def get_alumni_country(db: Session = Depends(get_db), country: str="", order_by: str=""):
+    alumni_country = get_alumni_country_filter(db, country, order_by)
 
     return{"message":"success", "data":alumni_country}
 
