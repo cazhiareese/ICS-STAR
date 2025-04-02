@@ -19,7 +19,7 @@ function AdminRoot() {
         {/* Sidebar */}
         <Sidebar sidebarItems={sidebarItems} />
         {/* Content */}
-        <div className="h-full overflow-auto">
+        <div className="w-full overflow-auto">
           <Outlet/>
         </div>
     </div>
