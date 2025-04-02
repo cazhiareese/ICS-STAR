@@ -82,6 +82,7 @@ function UserProfile() {
               console.log(data.skills);
               setScholarships(data.scholarships || []);
               setAffiliations(data.affiliations || []);
+              console.log(data.affiliations);
           } catch (err) {
               setError("Failed to load profile");
           }
@@ -156,6 +157,43 @@ const removeSkill = async (skillToRemove) => {
     setError("Failed to remove skill");
   }
 };
+
+
+const removeAffiliation = async (affiliationToRemove) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("User not authenticated");
+      return;
+    }
+
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    // Make sure you're sending the affiliation name, not the whole object
+    const affiliationName = affiliationToRemove.affiliation || affiliationToRemove;
+
+    // Send DELETE request to remove the affiliation with the query parameter format
+    const response = await fetch(`${API_BASE_URL}/remove-affiliation/?affiliation=${encodeURIComponent(affiliationName)}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to remove affiliation");
+    }
+
+    const result = await response.json();
+    console.log(result.message); // "Affiliation removed successfully"
+
+    // Update the UI by filtering out the removed affiliation
+    setAffiliations(affiliations.filter(affiliation => affiliation.affiliation !== affiliationName));
+  } catch (err) {
+    setError("Failed to remove affiliation");
+  }
+};
+
 
 
 const addAffiliation = async (newAffiliation) => {
@@ -235,9 +273,6 @@ const addScholarship = async (newScholarship) => {
   }
 };
 
-
-
-    const removeAffiliation = (index) => setAffiliations(affiliations.filter((_, i) => i !== index));
     const removeScholarship = (index) => setScholarships(scholarships.filter((_, i) => i !== index));
 
     const handleChange = (e, field) => {
