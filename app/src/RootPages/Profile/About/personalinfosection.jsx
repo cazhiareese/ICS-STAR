@@ -77,7 +77,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               type="text"
               value={userDetails.graduation_year}
               onChange={(e) => handleChange(e, "graduation_year")}
-              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
+              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-[65px]"
             />
           ) : (
             <span className="text-primary font-satoshi-bold">{userDetails.graduation_year}</span>
