@@ -13,7 +13,6 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
     // Save logic can be added here
   };
 
-  const semester = ["1st Semester", "2nd Semester", "Mid Semester"];
 
   return (
     <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">

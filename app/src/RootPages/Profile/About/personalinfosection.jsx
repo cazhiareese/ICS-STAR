@@ -2,6 +2,8 @@ import React from "react";
 import { MapPin, Phone, IdCard, GraduationCap } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 
+const semester = ["1st Semester", "2nd Semester", "Mid Semester"];
+
 const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
   return (
     <div className="w-full max-w-[1100px] mt-6">
@@ -82,12 +84,17 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
           )}
           <span className="text-primary font-satoshi-bold">-</span>
           {editMode ? (
-            <input
-              type="text"
+            <select
               value={userDetails.graduation_semester}
-              onChange={(e) => handleChange(e, "graduatingClass")}
+              onChange={(e) => handleChange(e, "graduation_semester")}
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
-            />
+            >
+              {semester.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
           ) : (
             <span className="text-primary font-satoshi-bold">{userDetails.graduation_semester}</span>
           )}
