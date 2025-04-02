@@ -39,9 +39,15 @@ function UserProfile() {
       first_name: signedinuser.first_name,
       last_name: signedinuser.last_name,
       email: signedinuser.email,
+      // modify the location since you need to edit the city and the state
       location: `${signedinuser.city}, ${signedinuser.state}`,
+      city: signedinuser.city,
+      state: signedinuser.state,
       mobile_number: signedinuser.mobile_number,
       student_number: signedinuser.student_number,
+      //edit the graduation year and the semester separately
+      graduation_year: signedinuser.graduation_year,
+      graduation_semester: signedinuser.graduation_semester,
       graduatingClass: `${signedinuser.graduation_year} - ${signedinuser.graduation_semester}`,
       
       // Added fields
