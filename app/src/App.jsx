@@ -4,25 +4,45 @@ import "./index.css";
 import LoginPage from "./AuthPages/Login";
 import SignupPage from "./AuthPages/Signup";
 import StudentLanding from "./RootPages/StudentPages/studentdashboard";
-import AdminRoot from "./RootPages/AdminPages/adminroot";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
 
+// Admin imports
+import AdminRoot from "./RootPages/AdminPages/adminroot";
+import AdminDashboard from "./RootPages/AdminPages/admindashboard";
+import AdminRecords from "./RootPages/AdminPages/adminrecords";
+import AdminEvents from "./RootPages/AdminPages/adminevents";
+import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
+import AdminCareer from "./RootPages/AdminPages/admincareer";
+import AdminDonations from "./RootPages/AdminPages/admindonations";
+
 function App() {
   return (
     <Routes>
-      {/* Login Page (No Navbar) */}
+      {/* Login Pages (No Navbar) */}
       <Route path="/" element={<LoginPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
 
       {/* Routes that include the Navbar */}
-      <Route path='/' element={<Root />}>
+      <Route path="/" element={<Root />}>
         <Route path="student" element={<StudentLanding />} />
-        <Route path="admin/*" element={<AdminRoot />} />
         <Route path="alumni" element={<AlumniLanding />} />
-        <Route path="profile" element={<UserProfile />} />
+        {/* Admin Routes */}
+        <Route path="admin" element={<AdminRoot />}>
+          {/* Redirect to dashboard as default */}
+          <Route index element={<Navigate to="dashboard" />} /> 
+
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="records" element={<AdminRecords />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="newsletter" element={<AdminNewsletter />} />
+          <Route path="career" element={<AdminCareer />} />
+          <Route path="donations" element={<AdminDonations />} />
+          <Route path="profile" element={<UserProfile />} />
+        </Route>
+
       </Route>
 
       {/* Redirect unknown routes */}
@@ -32,5 +52,3 @@ function App() {
 }
 
 export default App;
-
-
