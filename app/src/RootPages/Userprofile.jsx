@@ -23,6 +23,9 @@ const ischolarships = ["DOST Scholarship", "UPLB SLAS"];
 function UserProfile() {
     const [editMode, setEditMode] = useState(false);
     const [activeTab, setActiveTab] = useState("About"); 
+    const [skills, setSkills] = useState([]);
+    const [affiliations, setAffiliations] = useState([]);
+    const [scholarships, setScholarships] = useState([]);
     const addSkills = (newSkills) => {
       setSkills([...skills, ...newSkills]);
     };
@@ -35,38 +38,35 @@ function UserProfile() {
     const [error, setError] = useState(null);
     const [userDetails, setUserDetails] = useState({});
 
-    
+    //fetch user details from backend
     useEffect(() => {
       const fetchProfile = async () => {
           try {
               const token = localStorage.getItem("token");
-              console.log(token);
-              
-              if(!token){
-                setError("User not authenticated");
-                return;
+              if (!token) {
+                  setError("User not authenticated");
+                  return;
               }
+  
               const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-              const response = await fetch(`${API_BASE_URL}/profile`,{
-                method: "GET",
+              const response = await fetch(`${API_BASE_URL}/profile`, {
+                  method: "GET",
                   headers: {
-                    Authorization: `Bearer ${token}`
+                      Authorization: `Bearer ${token}`
                   },
               });
-
+  
               if (!response.ok) {
+                  if (response.status === 401) {
+                      setError("Unauthorized access. Please log in again.");
+                      return;
+                  }
                   throw new Error("Network response was not ok");
               }
-              if (response.status === 401) {    
-                setError("Unauthorized access. Please log in again.");
-                return;
-              }
-
+  
               const result = await response.json();
-              console.log(result.data.first_name);
-              const data = result.data;
-              console.log(data.first_name);
-
+              const data = result.data; // Correctly access 'data.data'
+  
               setUserDetails({
                   first_name: data.first_name,
                   last_name: data.last_name,
@@ -87,19 +87,25 @@ function UserProfile() {
                   tenured_status: data.tenured_status,
                   salary_grade: data.salary_grade,
               });
+  
+              // Set skills, scholarships, and affiliations
+              setSkills(data.skills || []);
+              console.log(data.skills);
+              setScholarships(data.scholarships || []);
+              setAffiliations(data.affiliations || []);
           } catch (err) {
               setError("Failed to load profile");
-          } 
+          }
       };
+  
       fetchProfile();
   }, []);
+  
 
 
 
 
-    const [skills, setSkills] = useState(iskills);
-    const [affiliations, setAffiliations] = useState(iaffiliations);
-    const [scholarships, setScholarships] = useState(ischolarships);
+
 
     const removeSkill = (index) => setSkills(skills.filter((_, i) => i !== index));
     const removeAffiliation = (index) => setAffiliations(affiliations.filter((_, i) => i !== index));
