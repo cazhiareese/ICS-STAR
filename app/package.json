@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.14",
+    "framer-motion": "^12.6.2",
     "lucide-react": "^0.482.0",
     "react": "^19.0.0",
+    "react-datepicker": "^8.2.1",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.3.0",
     "recharts": "^2.15.1",

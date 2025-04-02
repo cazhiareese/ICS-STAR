@@ -6,6 +6,7 @@ import SignupPage from "./AuthPages/Signup";
 import StudentLanding from "./RootPages/StudentPages/studentdashboard";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
+import UserProfile from "./RootPages/Userprofile";
 
 // Admin imports
 import AdminRoot from "./RootPages/AdminPages/Layouts/adminroot";
@@ -15,12 +16,15 @@ import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
+
 import AdminUserInformationReport from "./RootPages/AdminPages/Dashboard/adminuserinformationreport";
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
 import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayout";
 import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
 import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendingverifications";
 import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminverificationconfirmation";
+import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
+
 
 function App() {
   return (
@@ -33,7 +37,8 @@ function App() {
       {/* Routes that include the Navbar */}
       <Route path="/" element={<Root />}>
         <Route path="student" element={<StudentLanding />} />
-        <Route path="alumni" element={<AlumniLanding />} />
+        <Route path="alumni" element={<AlumniLanding />}/> 
+        <Route path="alumnisearch" element={<AlumniSearch />} />
 
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>
@@ -52,7 +57,9 @@ function App() {
           <Route path="newsletter" element={<AdminNewsletter />} />
           <Route path="career" element={<AdminCareer />} />
           <Route path="donations" element={<AdminDonations />} />
+          <Route path="profile" element={<UserProfile />} />
         </Route>
+
       </Route>
 
       {/* Redirect unknown routes */}
