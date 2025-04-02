@@ -42,7 +42,24 @@ def logic_search_alumni(
         query = query.filter(User.city.ilike(f"%{city}%"))
     
     if skill:
-        query = query.join(UserSkill, User.user_id == UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{skill}%"))
+        # Split the skills string by comma and strip whitespace
+        skills_list = [s.strip() for s in skill.split(',') if s.strip()]
+        
+        if skills_list:
+            if len(skills_list) > 1: # If multiple skills were inputted
+                subquery = db.query(UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{skills_list[0]}%")).subquery()
+                
+                # For each additional skill, filter the users further
+                for s in skills_list[1:]:
+                    skill_subquery = db.query(UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{s}%")).subquery()
+                    
+                    subquery = db.query(subquery.c.user_id).filter(subquery.c.user_id.in_(db.query(skill_subquery.c.user_id))).subquery()
+                
+                # Finally, filter the main query to include only users with all skills
+                query = query.filter(User.user_id.in_(db.query(subquery.c.user_id)))
+            else: # If only one skill was inputted
+                query = query.join(UserSkill, User.user_id == UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{skills_list[0]}%"))
+
 
     if industry:
         query = query.filter(User.industry.ilike(f"%{industry}%"))
