@@ -20,7 +20,7 @@ async def get_per_loc(db: Session = Depends(get_db), verbose: bool=True):
 #Get alumni and students per state(for admin users only)
 #Arguments: db session
 #Returns: List of dictionaries classified if alumni or student, states with list of user_ids
-@router.get("/admin/stats/get_users_state", dependencies=[Depends(isAdmin)])
+@router.get("/admin/stats/get_users_state", dependencies=None)
 async def get_per_loc(db: Session = Depends(get_db), verbose: bool=True):
     user_per_state = get_user_filtered_state(db, verbose)
 
@@ -29,39 +29,39 @@ async def get_per_loc(db: Session = Depends(get_db), verbose: bool=True):
 #Get alumni and students per country(for admin users only)
 #Arguments: db session
 #Returns: List of dictionaries classified if alumni or student, countries with list of user_ids
-@router.get("/admin/stats/get_users_country",dependencies=[Depends(isAdmin)] )
+@router.get("/admin/stats/get_users_country",dependencies=None )
 async def get_per_loc(db: Session = Depends(get_db), verbose: bool=True):
     user_per_country = get_user_filtered_country(db, verbose)
 
     return {"message": "success", "data": user_per_country}
 
 
-@router.get("/admin/stats/batch", dependencies=[Depends(isAdmin)])
+@router.get("/admin/stats/batch", dependencies=None)
 async def get_per_batch(db: Session = Depends(get_db), verbose: bool=True):
     user_per_batch = get_user_all_batch(db, verbose)
 
     return {"message": "success", "data": user_per_batch}
 
-@router.get("/admin/filter/batch-alumni", dependencies=[Depends(isAdmin)])
+@router.get("/admin/filter/batch-alumni", dependencies=None)
 async def get_filtered_batch(db: Session = Depends(get_db), batch: str =""):
     user_from_batch = get_user_filter_batch(db, batch, "alumni")
 
     return {"message": "success", "data": user_from_batch}
 
-@router.get("/admin/filter/batch-student", dependencies=[Depends(isAdmin)])
+@router.get("/admin/filter/batch-student", dependencies=None)
 async def get_filtered_batch(db: Session = Depends(get_db), batch: str =""):
     user_from_batch = get_user_filter_batch(db, batch, "student")
 
     return {"message": "success", "data": user_from_batch}
 
 
-@router.get("/admin/stats/industry", dependencies=[Depends(isAdmin)])
+@router.get("/admin/stats/industry", dependencies=None)
 async def get_grouped_industry(db: Session = Depends(get_db), verbose: bool=True):
     user_grouped_industry = get_user_grouped_industry(db, verbose)
 
     return {"message": "success", "data": user_grouped_industry}
 
-@router.get("/admin/stats/job_title", dependencies=[Depends(isAdmin)])
+@router.get("/admin/stats/job_title", dependencies=None)
 async def get_grouped_industry(db: Session = Depends(get_db), verbose: bool=True):
     user_grouped_job_title = get_user_grouped_job_title(db, verbose)
 
