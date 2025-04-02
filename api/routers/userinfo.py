@@ -256,9 +256,9 @@ async def get_profile_picture(
 # Remove a skill from the user's profile
 # Arguments: db - SQLAlchemy session, skill_id - the skill ID
 # Returns: a message confirming the removal
-@router.delete("/remove-skill/{skill}")
+@router.delete("/remove-skill/")
 async def remove_skill(
-    skill: str,
+    skill: str = Query(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
@@ -278,9 +278,9 @@ async def remove_skill(
 # Remove a scholarship from the user's profile
 # Arguments: db - SQLAlchemy session, scholarship_id - the scholarship ID
 # Returns: a message confirming the removal
-@router.delete("/remove-scholarship/{scholarship}")
+@router.delete("/remove-scholarship/")
 async def remove_scholarship(
-    scholarship: str,
+    scholarship: str = Query(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
@@ -300,9 +300,9 @@ async def remove_scholarship(
 # Remove an affiliation from the user's profile
 # Arguments: db - SQLAlchemy session, affiliation_id - the affiliation ID
 # Returns: a message confirming the removal
-@router.delete("/remove-affiliation/{affiliation}")
+@router.delete("/remove-affiliation/")
 async def remove_affiliation(
-    affiliation: str,
+    affiliation: str = Query(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
