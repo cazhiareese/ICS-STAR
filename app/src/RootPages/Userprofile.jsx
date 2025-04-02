@@ -48,7 +48,6 @@ function UserProfile() {
       //edit the graduation year and the semester separately
       graduation_year: signedinuser.graduation_year,
       graduation_semester: signedinuser.graduation_semester,
-      graduatingClass: `${signedinuser.graduation_year} - ${signedinuser.graduation_semester}`,
       
       // Added fields
       job_title: signedinuser.job_title,
