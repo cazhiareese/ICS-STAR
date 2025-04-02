@@ -63,7 +63,8 @@ def logic_search_alumni(
             "job_title": user.job_title,
             "skills": skills_list,
             "location": user.city,
-            "email": user.email
+            "email": user.email,
+            "picture": user.image
         }
         alumni_list.append(alumni_entry)
     
