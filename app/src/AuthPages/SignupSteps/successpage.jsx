@@ -24,55 +24,46 @@ function Success(){
     const baseURL = "https://ics-star-api.vercel.app/"
 
     const register = async (e) => {
-        
-        
-  
         try {
             const formData = new FormData();
-                formData.append("first_name", userData.firstName);
-                formData.append("last_name", userData.lastName);
-                formData.append("email", userData.email);
-                formData.append("password", userData.password);
-                formData.append("student_number", userData.selectedYear + "-" + userData.value);
-                formData.append("user_type", userType);
-                // formData.append("verification_file", userData.file); 
-
-                formData.append("verification_file", userData.file); 
-                // console.log(userData.userType)
-                if (userType == "Alumni") {
-                    formData.append("graduation_year", userData.academicYear);
-                    formData.append("graduation_semester", userData.selectedTerm);
-                }
-  
+            formData.append("first_name", userData.firstName);
+            formData.append("last_name", userData.lastName);
+            formData.append("email", userData.email);
+            formData.append("password", userData.password);
+            formData.append("student_number", `${userData.selectedYear}-${userData.value}`);
+            formData.append("user_type", userType);
+    
+            // Only append the file if it exists
+            if (userData.file) {
+                formData.append("verification_file", userData.file);
+            }
+    
+            if (userType === "alumni") {
+                formData.append("graduation_year", userData.academicYear.slice(-4));
+                formData.append("graduation_semester", userData.selectedTerm);
+            }
+    
             const response = await fetch(`${baseURL}register`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: formData,
+                body: formData, // Send formData directly
             });
-  
+    
             const data = await response.json();
             
             if (response.ok) {
-                // localStorage.setItem("token", data.access_token);
                 alert("Registration Successful!");
-                // fetchUserData();
             } else {
-                // alert(data.detail || "Registration failed!");
-                alert(formData)
-                
-                console.log("Response Status:", response.status);
-                console.log("Response OK:", response.ok);
-                console.log(response)
-                console.log(formData)
+                alert(data.detail || "Registration failed!");
+                console.error("Response Status:", response.status);
+                console.error("Response OK:", response.ok);
+                console.error(data);
             }
-        
         } catch (error) {
             console.error("Error:", error);
             alert("Something went wrong!");
         }
-      };
+    };
+
     return(
         <div className="flex flex-col w-full items-center pt-40 sm:pt-0 sm:mt-0 mt-10">
             <div className = "flex flex-row z-20 space-x-8 mt-20">

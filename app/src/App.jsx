@@ -24,7 +24,9 @@ function App() {
   return (
     <Routes>
       {/* Login Pages (No Navbar) */}
-      <Route path="/" element={<LoginPage />} />
+      <Route path="" element={<AppProvider>
+          <SignupPage />
+        </AppProvider>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={
         <AppProvider>

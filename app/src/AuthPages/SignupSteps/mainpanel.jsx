@@ -35,11 +35,11 @@ function SignupMain() {
     };
 
     const SetAlumni =()=>{
-        setUserType("Alumni")
+        setUserType("alumni")
         setCurrentSection("1")
     }
     const SetStudent =()=>{
-        setUserType("Student")
+        setUserType("student")
         setCurrentSection("1")
     }
 
