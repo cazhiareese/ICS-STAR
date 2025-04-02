@@ -8,6 +8,9 @@ import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
 
+// Providers
+import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
+import { OnboardingProvider } from "./AuthPages/AuthContext/onboardingcontext";
 // Admin imports
 import AdminRoot from "./RootPages/AdminPages/Layouts/adminroot";
 import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
@@ -16,6 +19,7 @@ import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
+import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
 
 import AdminUserInformationReport from "./RootPages/AdminPages/Dashboard/adminuserinformationreport";
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
@@ -30,9 +34,19 @@ function App() {
   return (
     <Routes>
       {/* Login Pages (No Navbar) */}
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<LoginPage/>}/>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/signup" element={
+        <AppProvider>
+          <SignupPage />
+        </AppProvider>
+      } />
+
+      <Route path="/setup" element={
+        <OnboardingProvider>
+          <OnBoarding />
+        </OnboardingProvider>
+      } />
 
       {/* Routes that include the Navbar */}
       <Route path="/" element={<Root />}>
