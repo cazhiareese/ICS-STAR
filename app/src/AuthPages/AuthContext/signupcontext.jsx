@@ -15,7 +15,8 @@ export function AppProvider({ children }) {
         academicYear: "",
         selectedYear: "",
         selectedTerm: "",
-        image: ""
+        image: "",
+        type: ""
     });
 
     const updateUserData = (field, value) => {

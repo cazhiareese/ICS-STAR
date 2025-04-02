@@ -57,7 +57,7 @@ function AlumnInfo(){
     const processFile = (selectedFile) => {
         if (selectedFile) {
             const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
-            updateUserData("selectedFile", selectedFile)
+            updateUserData("file", selectedFile)
             updateUserData("fileName", selectedFile.name)
             updateUserData("fileSize", selectedFile.size)
             updateUserData("image", "May image na")
@@ -106,7 +106,7 @@ function AlumnInfo(){
     
     
     return(
-        <div className="flex flex-col w-full items-center overflow-auto">
+        <div className="flex flex-col w-full items-center overflow-auto pt-40 sm:pt-0 sm:mt-0 mt-10">
              <div className = "flex flex-row z-10 space-x-8 mt-20">
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(1)}></button>
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(2)}></button>
@@ -151,8 +151,8 @@ function AlumnInfo(){
                         className={`border rounded-lg h-10 w-[45%] text-center  ${termGraduated==false ? 'border-black':'border-red-600'}`}
                     >
                         <option value="" disabled>Select a Term</option>
-                        <option value="1stSem">First Semester</option>
-                        <option value="2ndSem">Second Semester</option>
+                        <option value="1st Semester">First Semester</option>
+                        <option value="2nd Semester">Second Semester</option>
                         
                     </select>
                     <label>-</label>

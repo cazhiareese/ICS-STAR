@@ -53,7 +53,7 @@ function PersonalInformation(){
         }
     },[confirmPassword, userData.password])
     return(
-        <div className="flex flex-col w-full items-center ">
+        <div className="flex flex-col w-full items-center pt-40 sm:pt-0 sm:mt-0 mt-10">
             <div className = "flex flex-row z-10 space-x-8 mt-20">
                         <button className = "w-15 h-15 "></button>
                         <button className = "w-15 h-15 " onClick={checkFields}></button>
@@ -101,7 +101,7 @@ function PersonalInformation(){
                         <label className="2xl font-satoshi-regular pb-2 ">Password <label className="text-red-700">*</label></label>
                         <input type="password" 
                                value={userData.password} 
-                               onChange={(e) => {updateUserData("password", e.target.value); checkPassword()}}
+                               onChange={(e) => {updateUserData("password", e.target.value)}}
                                className={`w-[100%] border-1 rounded-lg h-10 ${passwordError==false ? 'border-black':'border-red-600'}`}
                         />
                 </div>
@@ -114,7 +114,7 @@ function PersonalInformation(){
                     <label>Please answer all fields above correctly</label>
 
                 </div>
-                <div className="grid grid-cols-2 h-18 items-center justify-center pt-10">
+                <div className="grid grid-cols-2 h-18 items-center justify-center sm:pb-0 mb-10">
                     <div className=" text-black items-start">
                         <button
                             className="bg-primary text-white py-3 rounded-2xl text-lg w-4/6 font-bold hover:bg-blue-700 transition mt-0"

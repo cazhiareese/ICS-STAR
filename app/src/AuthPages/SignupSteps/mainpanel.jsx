@@ -50,7 +50,7 @@ function SignupMain() {
             
             
             (
-                <div className="flex flex-col items-center justify-start mt-20 flex-1 bg-white z-10">
+                <div className="flex flex-col items-center sm:justify-start justify-center sm:mt-20 flex-1 bg-white z-10 ">
                     
                     <div className="flex flex-col items-start w-[70%] pt-10 mt-10">
                         <label className="text-3xl font-satoshi-bold">Register As</label>
@@ -99,7 +99,7 @@ function SignupMain() {
             ):
             (
                 
-                <div className="flex flex-col items-center justify-start mt-20 flex-1 bg-white z-10">
+                <div className="flex flex-col items-center justify-start sm:mt-20 sm:flex-1 bg-white sm:z-10">
                     {/* <div className = "flex flex-row z-10 space-x-8">
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(1)}></button>
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(2)}></button>

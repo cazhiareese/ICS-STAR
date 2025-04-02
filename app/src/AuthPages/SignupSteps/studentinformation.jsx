@@ -3,6 +3,7 @@ import Step2 from "../../assets/SignupAssets/step2.png";
 import { CloudUpload, File, X } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
+import FilePicker from "react-file-picker";
 
 function StudentInformation(){
 
@@ -80,7 +81,7 @@ function StudentInformation(){
     }
     
     return(
-        <div className="flex flex-col w-full items-center ">
+        <div className="flex flex-col w-full items-center pt-40 sm:pt-0 sm:mt-0 mt-10">
             <div className = "flex flex-row z-10 space-x-8 mt-20">
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(1)}></button>
                         <button className = "w-15 h-15 "></button>

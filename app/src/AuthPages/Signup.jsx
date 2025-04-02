@@ -13,14 +13,18 @@ function SignupPage() {
     };
 
     return (
-    <div className="flex  flex-row h-screen overflow-hidden">
+    <div className="flex sm:flex-row flex-col h-screen">
 
-        <div className="hidden sm:flex items-center pt-20 flex-col w-1/4 max-w-85 min-w-50 bg-secondary">
-            <img src={Logo} className="w-[80%] max-w-80"/>
-            <img src={Constellation} className="h-300 ml-30 md:ml-80 -rotate-20 md:-rotate-39 overflow-hidden"/>
+        <div className="flex items-center pt-20 flex-col sm:w-1/4 sm:max-w-85 sm:min-w-50 bg-secondary sm:h-screen h-50 sm:mb-0  sm:z-0 z-60 sm:pb-0 pb-10 sm:relative fixed w-full" >
+            <img src={Logo} className="w-[80%] min-w-40 max-w-80 z-20"/>
+            <img src={Constellation} className="hidden w-full ml-50 lg:ml-80 lg:mt-0 mt-30 -rotate-90 sm:-rotate-39 overflow-hidden sm:block"/>
+            <img src={Constellation} className="w-[100%] min-w-40 max-w-80 z-10 rotate-90 -m-130 mr-20 h-[800px] sm:hidden block"/>
         </div>
+        {/* <div className="z-20 flex justify-center items-center flex-1 sm:w-auto w-full mt-40 bg-white"> */}
         <Start/>
-        <div className="absolute h-10 right-15 top-7 inline text-right ">
+        {/* </div> */}
+        
+        <div className=" h-10 right-15 top-7 inline text-right z-70 fixed">
             <label className="">
                 <label className="hidden sm:block">Already have an account?</label><label><button className="text-primary font-satoshi-bold" onClick={goToLogin}>Login here</button></label>
             </label>    
