@@ -31,6 +31,7 @@ function App() {
         <Route path="student" element={<StudentLanding />} />
         <Route path="alumni" element={<AlumniLanding />}/> 
         <Route path="alumnisearch" element={<AlumniSearch />} />
+        <Route path="profile" element={<UserProfile />} />
 
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>
@@ -43,7 +44,6 @@ function App() {
           <Route path="newsletter" element={<AdminNewsletter />} />
           <Route path="career" element={<AdminCareer />} />
           <Route path="donations" element={<AdminDonations />} />
-          <Route path="profile" element={<UserProfile />} />
         </Route>
 
       </Route>
