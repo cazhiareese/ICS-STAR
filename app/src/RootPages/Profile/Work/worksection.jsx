@@ -34,6 +34,8 @@ function WorkSection({ userDetails, handleChange }) {
     7: "At least ₱182,000 and up",
   };
 
+
+
   return (
     <div className="w-full max-w-[1100px] mt-6">
       {/* Section Header */}

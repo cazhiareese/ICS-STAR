@@ -74,7 +74,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             <input
               type="text"
               value={userDetails.graduation_year}
-              onChange={(e) => handleChange(e, "graduatingClass")}
+              onChange={(e) => handleChange(e, "graduation_year")}
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
