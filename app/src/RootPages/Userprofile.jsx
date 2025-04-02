@@ -127,35 +127,36 @@ function UserProfile() {
 
 const removeSkill = async (skillToRemove) => {
   try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-          setError("User not authenticated");
-          return;
-      }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("User not authenticated");
+      return;
+    }
 
-      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-      // Send DELETE request to remove the skill
-      const response = await fetch(`${API_BASE_URL}/remove-skill/${encodeURIComponent(skillToRemove)}`, {
-          method: "DELETE",
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
-      });
+    // Send DELETE request to remove the skill with the query parameter format
+    const response = await fetch(`${API_BASE_URL}/remove-skill/?skill=${encodeURIComponent(skillToRemove)}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      if (!response.ok) {
-          throw new Error("Failed to remove skill");
-      }
+    if (!response.ok) {
+      throw new Error("Failed to remove skill");
+    }
 
-      const result = await response.json();
-      console.log(result.message); // "Skill removed successfully"
+    const result = await response.json();
+    console.log(result.message); // "Skill removed successfully"
 
-      // Update the UI by filtering out the removed skill
-      setSkills(skills.filter(skill => skill !== skillToRemove));
+    // Update the UI by filtering out the removed skill
+    setSkills(skills.filter(skill => skill !== skillToRemove));
   } catch (err) {
-      setError("Failed to remove skill");
+    setError("Failed to remove skill");
   }
 };
+
 
 const addAffiliation = async (newAffiliation) => {
   try {
