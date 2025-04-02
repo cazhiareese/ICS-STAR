@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react"; // Import icons
+import { ChevronDown, ChevronUp, Check } from "lucide-react"; // Import icons
 import SectionHeader from "../components/sectionheader"; // Adjust the path based on your project structure
 
 function WorkSection({ userDetails, handleChange }) {
@@ -37,7 +37,7 @@ function WorkSection({ userDetails, handleChange }) {
       {/* Section Header */}
       <SectionHeader 
         title="Current Work" 
-        buttonText={isEditing ? "Save" : "Edit Work"} 
+        buttonText={isEditing ? "Save Work" : "Edit Work"} 
         onButtonClick={handleEditToggle} 
       />
 
