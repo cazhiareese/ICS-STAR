@@ -8,11 +8,13 @@ function WorkSection({ userDetails, handleChange }) {
 
   const workModes = ["Remote", "Onsite", "Hybrid"];
   //const employerclass = ["Private", "Public", "Non-Government", "Self-Employed"];
-  const employerClasses = ["Government", "NGO","Private Sector"];
-  const tenuredStatuses = ["Permanent", "Temporary", "Contractual", "Probationary"];
-
-
-
+  const employerClasses = ["Government", "NGO", "Private Sector"];
+  const tenuredStatuses = [
+    "Permanent",
+    "Temporary",
+    "Contractual",
+    "Probationary",
+  ];
 
   const handleToggleMore = () => {
     setShowMore(!showMore);
@@ -35,10 +37,10 @@ function WorkSection({ userDetails, handleChange }) {
   return (
     <div className="w-full max-w-[1100px] mt-6">
       {/* Section Header */}
-      <SectionHeader 
-        title="Current Work" 
-        buttonText={isEditing ? "Save Work" : "Edit Work"} 
-        onButtonClick={handleEditToggle} 
+      <SectionHeader
+        title="Current Work"
+        buttonText={isEditing ? "Save Work" : "Edit Work"}
+        onButtonClick={handleEditToggle}
       />
 
       {/* Work Experience Card */}
@@ -54,10 +56,12 @@ function WorkSection({ userDetails, handleChange }) {
                 className="w-[250px] h-[30px] py-1 text-[23px]  font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 "
               />
             ) : (
-              <h3 className=" text-[23px] text-primary font-satoshi-black">{userDetails.job_title}</h3>
+              <h3 className=" text-[23px] text-primary font-satoshi-black">
+                {userDetails.job_title}
+              </h3>
             )}
 
-{isEditing ? (
+            {isEditing ? (
               <div className="flex gap-2">
                 {workModes.map((mode) => (
                   <button
@@ -65,7 +69,9 @@ function WorkSection({ userDetails, handleChange }) {
                     className={`text-white w-[81px] h-[26px] text-[14px] px-2 py-1 rounded-full flex items-center justify-center font-satoshi-medium transition-all ${
                       userDetails.work_mode === mode ? "bg-primary" : "bg-hover"
                     }`}
-                    onClick={() => handleChange({ target: { value: mode } }, "work_mode")}
+                    onClick={() =>
+                      handleChange({ target: { value: mode } }, "work_mode")
+                    }
                   >
                     {mode}
                   </button>
@@ -86,7 +92,9 @@ function WorkSection({ userDetails, handleChange }) {
               className="text-primary text-[18px] font-satoshi-medium bg-white border border-gray-300 rounded-md px-2 py-1"
             />
           ) : (
-            <p className="text-primary text-[18px] font-satoshi-medium">2022 - Present</p>
+            <p className="text-primary text-[18px] font-satoshi-medium">
+              2022 - Present
+            </p>
           )}
         </div>
 
@@ -99,7 +107,9 @@ function WorkSection({ userDetails, handleChange }) {
             className="w-[250px] h-[30px] py-1 text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 "
           />
         ) : (
-          <p className="text-black text-[20px] font-satoshi-medium">{userDetails.company_name}</p>
+          <p className="text-black text-[20px] font-satoshi-medium">
+            {userDetails.company_name}
+          </p>
         )}
 
         {/* Third Row: Work Location & Button */}
@@ -112,7 +122,9 @@ function WorkSection({ userDetails, handleChange }) {
               className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1 "
             />
           ) : (
-            <p className="text-black font-satoshi-medium text-[20px]">{userDetails.work_location}</p>
+            <p className="text-black font-satoshi-medium text-[20px]">
+              {userDetails.work_location}
+            </p>
           )}
 
           <button
@@ -131,47 +143,46 @@ function WorkSection({ userDetails, handleChange }) {
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Employer Class:</span>
               {isEditing ? (
-                    <select
-                      value={userDetails.employer_class}
-                      onChange={(e) => handleChange(e, "employer_class")}
-                      className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
-                    >
-                      {employerClasses.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                      ))}
-                    </select>
-                    ) : (
-                    <span className="text-primary font-satoshi-bold">
-                      {userDetails.employer_class || "Not Available"}
-                    </span>
-                    )}
+                <select
+                  value={userDetails.employer_class}
+                  onChange={(e) => handleChange(e, "employer_class")}
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                >
+                  {employerClasses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span className="text-primary font-satoshi-bold">
+                  {userDetails.employer_class || "Not Available"}
+                </span>
+              )}
             </div>
 
-         
-                  <div className="flex flex-col items-start text-left">
-                    <span className="font-satoshi-medium">Tenured Status:</span>
-                    {isEditing ? (
-                    <select
-                      value={userDetails.tenured_status}
-                      onChange={(e) => handleChange(e, "tenured_status")}
-                      className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
-                    >
-                      {tenuredStatuses.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                      ))}
-                    </select>
-                    ) : (
-                    <span className="text-primary font-satoshi-bold">
-                      {userDetails.tenured_status || "Not Available"}
-                    </span>
-                    )}
-                  </div>
+            <div className="flex flex-col items-start text-left">
+              <span className="font-satoshi-medium">Tenured Status:</span>
+              {isEditing ? (
+                <select
+                  value={userDetails.tenured_status}
+                  onChange={(e) => handleChange(e, "tenured_status")}
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                >
+                  {tenuredStatuses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span className="text-primary font-satoshi-bold">
+                  {userDetails.tenured_status || "Not Available"}
+                </span>
+              )}
+            </div>
 
-                  {/* Salary Range (Instead of Salary Grade) */}
+            {/* Salary Range (Instead of Salary Grade) */}
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Salary Range:</span>
               {isEditing ? (
