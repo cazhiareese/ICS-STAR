@@ -5,8 +5,8 @@ from schemas.user import UserOut
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
-from util.user_information_stats import get_alumni_batch_filter, get_alumni_country_filter, get_alumni_filter, get_alumni_industry_filter, get_batch_employment_status, get_cities_country, get_top_country_batch, get_top_industries_batch, get_top_industries_country, get_top_job_batch, get_top_job_country, get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_all_alumni, get_active_by_batch
-
+from util.user_information_stats import  get_batch_employment_status, get_cities_country, get_top_country_batch, get_top_industries_batch, get_top_industries_country, get_top_job_batch, get_top_job_country, get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_active_by_batch
+from util.admin_alum_list import get_alumni_batch_filter, get_alumni_country_filter, get_alumni_filter, get_alumni_industry_filter, get_all_alumni
 
 router = APIRouter()
 #Get alumni and students per city (for admin users only)
