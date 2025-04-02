@@ -26,10 +26,6 @@ function UserProfile() {
     const [skills, setSkills] = useState([]);
     const [affiliations, setAffiliations] = useState([]);
     const [scholarships, setScholarships] = useState([]);
-
-    const addScholarship = (newScholarship) => {
-      setScholarships([...scholarships, newScholarship]);
-    };
     const [error, setError] = useState(null);
     const [userDetails, setUserDetails] = useState({});
 
@@ -204,6 +200,42 @@ const addAffiliation = async (newAffiliation) => {
       setError("Failed to add affiliation");
   }
 };
+
+const addScholarship = async (newScholarship) => {
+  try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+          setError("User not authenticated");
+          return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      // Convert scholarship into query parameters
+      const queryParams = new URLSearchParams();
+      queryParams.append("scholarships", newScholarship);
+
+      const response = await fetch(`${API_BASE_URL}/add-scholarships?${queryParams.toString()}`, {
+          method: "POST",
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error("Failed to add scholarship");
+      }
+
+      const result = await response.json();
+      console.log(result.message); // "scholarships added successfully"
+
+      // Update UI only after a successful API call
+      setScholarships([...scholarships, newScholarship]);
+  } catch (err) {
+      setError("Failed to add scholarship");
+  }
+};
+
 
 
 
