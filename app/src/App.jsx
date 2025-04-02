@@ -6,6 +6,7 @@ import SignupPage from "./AuthPages/Signup";
 import StudentLanding from "./RootPages/StudentPages/studentdashboard";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
+import UserProfile from "./RootPages/Userprofile";
 
 // Admin imports
 import AdminRoot from "./RootPages/AdminPages/adminroot";
@@ -28,7 +29,6 @@ function App() {
       <Route path="/" element={<Root />}>
         <Route path="student" element={<StudentLanding />} />
         <Route path="alumni" element={<AlumniLanding />} />
-
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>
           {/* Redirect to dashboard as default */}
@@ -40,7 +40,9 @@ function App() {
           <Route path="newsletter" element={<AdminNewsletter />} />
           <Route path="career" element={<AdminCareer />} />
           <Route path="donations" element={<AdminDonations />} />
+          <Route path="profile" element={<UserProfile />} />
         </Route>
+
       </Route>
 
       {/* Redirect unknown routes */}
