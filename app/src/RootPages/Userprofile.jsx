@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { MapPin, Phone, IdCard, GraduationCap, Camera, Facebook, Github, Linkedin, Pencil, PlusCircle, XCircle } from "lucide-react";
 import prince from '../assets/prince boy.jpg';
 import SectionHeader from './Profile/components/sectionheader';
@@ -32,34 +32,69 @@ function UserProfile() {
     const addScholarship = (newScholarship) => {
       setScholarships([...scholarships, newScholarship]);
     };
-    
-    
+    const [error, setError] = useState(null);
+    const [userDetails, setUserDetails] = useState({});
 
-    const [userDetails, setUserDetails] = useState({
-      first_name: signedinuser.first_name,
-      last_name: signedinuser.last_name,
-      email: signedinuser.email,
-      user_type: signedinuser.user_type,
-      // modify the location since you need to edit the city and the state
-      location: `${signedinuser.city}, ${signedinuser.state}`,
-      city: signedinuser.city,
-      state: signedinuser.state,
-      mobile_number: signedinuser.mobile_number,
-      student_number: signedinuser.student_number,
-      //edit the graduation year and the semester separately
-      graduation_year: signedinuser.graduation_year,
-      graduation_semester: signedinuser.graduation_semester,
-      
-      // Added fields
-      job_title: signedinuser.job_title,
-      company_name: signedinuser.company_name,
-      work_location: signedinuser.work_location,
-      work_mode: signedinuser.work_mode,
-      employer_class: signedinuser.employer_class,
-      tenured_status: signedinuser.tenured_status,
-      salary_grade: signedinuser.salary_grade,
-    });
     
+    useEffect(() => {
+      const fetchProfile = async () => {
+          try {
+              const token = localStorage.getItem("token");
+              console.log(token);
+              
+              if(!token){
+                setError("User not authenticated");
+                return;
+              }
+              const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+              const response = await fetch(`${API_BASE_URL}/profile`,{
+                method: "GET",
+                  headers: {
+                    Authorization: `Bearer ${token}`
+                  },
+              });
+
+              if (!response.ok) {
+                  throw new Error("Network response was not ok");
+              }
+              if (response.status === 401) {    
+                setError("Unauthorized access. Please log in again.");
+                return;
+              }
+
+              const result = await response.json();
+              console.log(result.data.first_name);
+              const data = result.data;
+              console.log(data.first_name);
+
+              setUserDetails({
+                  first_name: data.first_name,
+                  last_name: data.last_name,
+                  email: data.email,
+                  user_type: data.user_type,
+                  location: `${data.city}, ${data.state}`,
+                  city: data.city,
+                  state: data.state,
+                  mobile_number: data.mobile_number,
+                  student_number: data.student_number,
+                  graduation_year: data.graduation_year,
+                  graduation_semester: data.graduation_semester,
+                  job_title: data.job_title,
+                  company_name: data.company_name,
+                  work_location: data.work_location,
+                  work_mode: data.work_mode,
+                  employer_class: data.employer_class,
+                  tenured_status: data.tenured_status,
+                  salary_grade: data.salary_grade,
+              });
+          } catch (err) {
+              setError("Failed to load profile");
+          } 
+      };
+      fetchProfile();
+  }, []);
+
+
 
 
     const [skills, setSkills] = useState(iskills);
