@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { MoveLeft, Check, ShieldAlert, MapPin, Phone, IdCard, GraduationCap  } from 'lucide-react';
+import { MoveLeft, Check, ShieldAlert, MapPin, Phone, IdCard, GraduationCap, X  } from 'lucide-react';
 
 function AdminUserDetails() {
   const navigate = useNavigate()
@@ -8,11 +8,24 @@ function AdminUserDetails() {
   useEffect(() => {
       console.log(userid);
   }, [userid])
-  // const [user, setUser] = useState(null);
+
+  const [isOpen, setIsOpen] = useState(false);
 
   function makeAlumni() {
     alert("Made alumni")
   }
+
+  function limitAccountAccess() {
+    alert("Limited account access")
+    setIsOpen(false)
+  }
+
+  const reports = [
+    { date: "03/30/25", time: "15:05:05", remarks: "Inappropriate job posting" },
+    { date: "03/30/25", time: "15:05:05", remarks: "Inappropriate job posting" },
+    { date: "03/30/25", time: "15:05:05", remarks: "Inappropriate job posting" },
+    { date: "03/30/25", time: "15:05:05", remarks: "Inappropriate job posting" },
+  ];
 
   const skills = ['Artificial Intelligence', 'Cybersecurity', 'Web Development']
   const affiliations = [
@@ -52,7 +65,7 @@ function AdminUserDetails() {
           <h2 className='font-satoshi-bold text-3xl'>Kiefer Tayawa</h2>
           <p className='font-satoshi-light'>kltayawa@up.edu.ph</p>
         </div>
-        <button className='flex flex-row gap-2 ml-auto text-error font-satoshi-medium'>
+        <button className='flex flex-row gap-2 ml-auto text-error font-satoshi-medium' onClick={() => {setIsOpen(true)}}>
           <p>View Report Logs</p>
           <ShieldAlert/>
         </button>
@@ -72,7 +85,7 @@ function AdminUserDetails() {
         {/* Mobile Number */}
         <div className='flex flex-col'>
           <div className='flex items-center'>
-            <MapPin/>
+            <Phone/>
             <h3 className='font-satoshi-light ml-1'>Mobile Number</h3>
           </div>
           <h3 className='font-satoshi-medium ml-7'> 09123456789</h3>
@@ -80,7 +93,7 @@ function AdminUserDetails() {
         {/* Student Number */}
         <div className='flex flex-col'>
           <div className='flex items-center'>
-            <MapPin/>
+            <IdCard/>
             <h3 className='font-satoshi-light ml-1'>Student Number</h3>
           </div>
           <h3 className='font-satoshi-medium ml-7'> 1234-56789 </h3>
@@ -88,7 +101,7 @@ function AdminUserDetails() {
         {/* Graduating Class */}
         <div className='flex flex-col'>
           <div className='flex items-center'>
-            <MapPin/>
+            <GraduationCap/>
             <h3 className='font-satoshi-light ml-1'>Graduating Class</h3>
           </div>
           <h3 className='font-satoshi-medium ml-7'> 2022 - 1st Semester</h3>
@@ -122,8 +135,46 @@ function AdminUserDetails() {
           </div>
         ))}
       </div>
+      {/* Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+          <div className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-lg max-w-md h-2/5">
+            {/* Modal Header */}
+            <div className="flex justify-between w-full items-center pb-2">
+              <h2 className="text-2xl font-satoshi-medium">Report Logs</h2>
+              <button className='rounded-full h-fit bg-error p-1 cursor-pointer' onClick={() => setIsOpen(false)}>
+                <X className="w-5 h-5 text-white" />
+              </button>
+            </div>
+
+            {/* Report Table */}
+            <table className="w-full mt-3 table-fixed overflow-auto">
+              <thead>
+                <tr className="text-left text-sm font-satoshi-medium">
+                  <th className='w-1/4'>Date</th>
+                  <th className='w-1/4'>Time</th>
+                  <th className='w-1/2'>Remarks</th>
+                </tr>
+              </thead>
+              <tbody className=''>
+                {reports.map((report, index) => (
+                  <tr key={index} className="font-satoshi-regular">
+                    <td className='py-2'>{report.date}</td>
+                    <td>{report.time}</td>
+                    <td>{report.remarks}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Action Button */}
+            <button className="mt-4 bg-error text-white px-4 py-2 rounded-3xl w-full cursor-pointer" onClick={() => {limitAccountAccess()}}>
+              Limit Account Access
+            </button>
+          </div>
+        </div>
+      )}
     </div>
-    
   )
 }
 
