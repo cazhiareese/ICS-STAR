@@ -112,6 +112,10 @@ def logic_search_alumni(
         # Retrieve skills for specific user (if possible)
         user_skills = db.query(UserSkill).filter(UserSkill.user_id == user.user_id).all()
         skills_list = [skill.skill for skill in user_skills]
+
+        # Retrieve affiliations for specific user (if possible)
+        user_affiliations = db.query(UserAffiliation).filter(UserAffiliation.user_id == user.user_id).all()
+        affiliations_list = [affiliation.affiliation for affiliation in user_affiliations]
         
         alumni_entry = {
             "user_id": str(user.user_id),
@@ -124,7 +128,7 @@ def logic_search_alumni(
             "location": user.city,
             "email": user.email,
             "picture": user.image,
-            "affiliations": [affiliation.affiliation for affiliation in user.affiliations]
+            "affiliations": affiliations_list
         }
         alumni_list.append(alumni_entry)
     
