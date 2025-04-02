@@ -73,7 +73,7 @@ function UserProfile() {
 
             {/* Profile Section */}
             <ProfileSection editMode={editMode} userDetails={userDetails} setEditMode={setEditMode} handleChange={handleChange} />
-      {signedinuser.user_type === "student" && (
+      {signedinuser.user_type === "alumni" && (
         <>
           {/* Navigation Tabs */}
           <UserProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />

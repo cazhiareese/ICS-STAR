@@ -187,8 +187,8 @@ function WorkSection({ userDetails, handleChange }) {
               <span className="font-satoshi-medium">Salary Range:</span>
               {isEditing ? (
                 <select
-                  value={userDetails.tenured_status}
-                  onChange={(e) => handleChange(e, "tenured_status")}
+                  value={userDetails.salary_grade}
+                  onChange={(e) => handleChange(e, "salary_grade")}
                   className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
                 >
                   {Object.entries(salaryRanges).map(([key, value]) => (
@@ -199,7 +199,7 @@ function WorkSection({ userDetails, handleChange }) {
                 </select>
               ) : (
                 <span className="text-primary font-satoshi-bold">
-                  {salaryRanges[userDetails.tenured_status] || "Not Available"}
+                  {salaryRanges[userDetails.salary_grade] || "Not Available"}
                 </span>
               )}
             </div>
