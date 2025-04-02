@@ -30,7 +30,7 @@ function AdminRecords() {
   ];
   
   return (
-    <div className='flex flex-col lg:p-6 h-screen'>
+    <div className='flex flex-col lg:p-6 h-screen max-w-7xl mx-auto'>
       {/* Records, search, view pending */}
       <div className='justify-between mt-2 lg:mb-8 flex relative'>
         {/* Records header */}

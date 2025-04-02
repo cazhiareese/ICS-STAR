@@ -45,7 +45,7 @@ function AdminPendingVerifications() {
       ];
 
   return (
-    <div className='flex flex-col lg:p-6 h-screen'>
+    <div className='flex flex-col lg:p-6 h-screen max-w-7xl mx-auto'>
       <div className='flex gap-2 mb-3'>
         <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
           <MoveLeft className='text-primary'/> 
