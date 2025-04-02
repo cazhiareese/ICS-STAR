@@ -25,7 +25,7 @@ const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAff
                   <XCircle
                     size={16}
                     className="text-white cursor-pointer hover:text-white transition"
-                    onClick={() => removeAffiliation(index)}
+                    onClick={() => removeAffiliation(affiliation)}
                   />
                 </div>
                 )}
