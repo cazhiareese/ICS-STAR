@@ -69,16 +69,29 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             <GraduationCap size={20} className="text-black" />
             <span>Graduating Class</span>
           </div>
+          <div className="flex items-center gap-2">
           {editMode ? (
             <input
               type="text"
-              value={userDetails.graduatingClass}
+              value={userDetails.graduation_year}
               onChange={(e) => handleChange(e, "graduatingClass")}
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-primary font-satoshi-bold">{userDetails.graduatingClass}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.graduation_year}</span>
           )}
+          <span className="text-primary font-satoshi-bold">-</span>
+          {editMode ? (
+            <input
+              type="text"
+              value={userDetails.graduation_semester}
+              onChange={(e) => handleChange(e, "graduatingClass")}
+              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
+            />
+          ) : (
+            <span className="text-primary font-satoshi-bold">{userDetails.graduation_semester}</span>
+          )}
+          </div>
         </div>
       </div>
     </div>
