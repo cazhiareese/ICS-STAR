@@ -64,8 +64,9 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             <span className="text-primary font-satoshi-bold">{userDetails.student_number}</span>
           )}
         </div>
+                {/* Graduating Class */}
+        {userDetails.user_type === "alumni" && (
 
-        {/* Graduating Class */}
         <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
             <GraduationCap size={20} className="text-black" />
@@ -99,7 +100,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             <span className="text-primary font-satoshi-bold">{userDetails.graduation_semester}</span>
           )}
           </div>
-        </div>
+        </div>)}
       </div>
     </div>
   );

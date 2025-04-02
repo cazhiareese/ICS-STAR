@@ -39,6 +39,7 @@ function UserProfile() {
       first_name: signedinuser.first_name,
       last_name: signedinuser.last_name,
       email: signedinuser.email,
+      user_type: signedinuser.user_type,
       // modify the location since you need to edit the city and the state
       location: `${signedinuser.city}, ${signedinuser.state}`,
       city: signedinuser.city,
