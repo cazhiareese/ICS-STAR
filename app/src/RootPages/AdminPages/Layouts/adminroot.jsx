@@ -15,12 +15,12 @@ function AdminRoot() {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row">
+    <div className="flex flex-col lg:flex-row h-screen">
         {/* Sidebar */}
         <Sidebar sidebarItems={sidebarItems} />
         {/* Content */}
-        <div className="flex-grow">
-            <Outlet/>
+        <div className="h-full overflow-auto">
+          <Outlet/>
         </div>
     </div>
   );
