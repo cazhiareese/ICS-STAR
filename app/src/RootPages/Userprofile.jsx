@@ -73,10 +73,14 @@ function UserProfile() {
 
             {/* Profile Section */}
             <ProfileSection editMode={editMode} userDetails={userDetails} setEditMode={setEditMode} handleChange={handleChange} />
-      {/* Navigation Tabs */}
-      <UserProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      {signedinuser.user_type === "student" && (
+        <>
+          {/* Navigation Tabs */}
+          <UserProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-            {/* Information Sections */}
+          {/* Information Sections */}
+        </>
+      )}
             {/* Conditional Rendering Based on Tab Selection */}
       {activeTab === "About" && (
         <>
