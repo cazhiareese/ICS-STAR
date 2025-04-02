@@ -5,12 +5,13 @@ import Navbar from "../components/navbar";
 function Root() {
   const user = {
     id: 123,
-    type: "admin",
+    type: "alumni",
   };
 
   return (
     <div>
-      {user.type !== "admin" && <Navbar user={user} />}
+
+{user.type !== "admin" && (<Navbar user={user} />)}
       <Outlet context={user} />
     </div>
   );
