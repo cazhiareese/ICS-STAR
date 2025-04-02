@@ -2,8 +2,19 @@ import React, { useState } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const SearchBar = () => {
+const SearchBar = 
+({
+    selectedBatchYear,
+    selectedGraduationYear,
+    careerList,
+    affiliationList,
+    skillsList,
+    industryList,
+    location
+  })=> {
     const [searchInput, setSearchInput] = useState("");
+
+    
 
     //Dummy alumni list
     const alumni = [
@@ -35,6 +46,49 @@ const SearchBar = () => {
         setSearchInput(e.target.value);
     };
 
+    const search = () => {
+        let filters = {}; // Initialize filter object
+        if (searchInput != ""){
+            filters.full_name = searchInput;
+        }
+        if (selectedBatchYear != "") {
+            filters.batch_year = selectedBatchYear;
+        }
+        if (selectedGraduationYear !== "") {
+            filters.graduation_year = selectedGraduationYear;
+        }
+        if (Array.isArray(careerList) && careerList.length > 0) {
+            filters.careers = careerList;
+        }
+        if (Array.isArray(affiliationList) && affiliationList.length > 0) {
+            filters.affiliations = affiliationList;
+        }
+        if (Array.isArray(skillsList) && skillsList.length > 0) {
+            filters.skill = skillsList;
+        }
+        if (Array.isArray(industryList) && industryList.length > 0) {
+            filters.industries = industryList;
+        }
+        if (location !== "") {
+            filters.city = location;
+        }
+    
+        // Pass filters to buildSearchUrl and make API call
+        let apiUrl = buildSearchUrl(filters);
+        console.log(apiUrl);
+        return apiUrl;
+    };
+    
+
+    function buildSearchUrl(filters) {
+        let baseUrl = "http://127.0.0.1:8000/alumni/search";
+        let queryParams = new URLSearchParams(filters).toString();
+        return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
+    }
+    
+
+    
+
     const filteredAlumni = searchInput
         ? alumni.filter((alumnus) =>
               alumnus.name.toLowerCase().includes(searchInput.toLowerCase())
@@ -52,7 +106,7 @@ const SearchBar = () => {
                     onChange={handleChange}
                     value={searchInput}
                 />
-                <button className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
+                <button onClick={search} className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
                     <Search size={20} />
                 </button>
             </div>
