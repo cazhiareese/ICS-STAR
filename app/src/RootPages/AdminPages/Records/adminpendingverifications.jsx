@@ -173,7 +173,9 @@ function AdminPendingVerifications() {
       <div className='flex flex-col lg:hidden'>
         {/* User Card */}
         {pendingUsers.map((user) => (
-          <div key={user.id} className='flex w-full p-3' onClick={() => {navigate(`/admin/records/verification-confirmation/${user.id}`)}}>
+          <div key={user.id} 
+          className='flex w-full p-3 hover:bg-gray-100 cursor-pointer'
+          onClick={() => {navigate(`/admin/records/verification-confirmation/${user.id}`)}}>
             {/* Image placeholder */}
             <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
             <div className='flex justify-between flex-1'>
