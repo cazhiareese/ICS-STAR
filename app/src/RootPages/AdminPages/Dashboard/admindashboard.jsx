@@ -4,6 +4,7 @@ import {
   PieChart, Pie, Cell, Tooltip, Legend, 
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid
 } from "recharts";
+import { Link } from "react-router-dom";
 
 
 function AdminDashboard() {
@@ -316,7 +317,11 @@ function AdminDashboard() {
                 <h2 className="font-satoshi-medium text-2xl"> System Engagement</h2>  
                 <p className="font-satoshi-light text-xs">User visit for the last 30 days</p>
               </div>
-              <button className="flex flex-row gap-4 cursor-pointer mt-2"> <p className="font-satoshi-light text-sm">View User Information Reports</p> <MoveRight/></button>      
+              <Link to="/admin/dashboard/user-reports">
+                <button className="flex flex-row gap-4 cursor-pointer mt-2"> 
+                  <p className="font-satoshi-light text-sm">View User Information Reports</p> <MoveRight/>
+                </button>      
+              </Link>
             </div>
             <div className="flex items-center mt-2">
               <ResponsiveContainer width="90%" height={200}>

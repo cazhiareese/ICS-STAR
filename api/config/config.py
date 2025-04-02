@@ -3,6 +3,8 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 from dotenv import load_dotenv
 from sqlalchemy.pool import NullPool
+import supabase
+from models import *  
 
 load_dotenv()
 DATABASE_URL = os.getenv('DB_STRING')
@@ -16,6 +18,12 @@ except Exception as e:
    
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+Base.metadata.create_all(bind=engine)
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+STORAGE_URL = os.getenv("STORAGE_URL")
+STORAGE_STRING = os.getenv("STORAGE_STRING")
+STORAGE_API_KEY = os.getenv("STORAGE_API_KEY")
+supabase_client = supabase.create_client(STORAGE_URL, STORAGE_API_KEY)
