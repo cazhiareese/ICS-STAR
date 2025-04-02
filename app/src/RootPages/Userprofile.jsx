@@ -16,9 +16,7 @@ const alumniUsers = [
   ];
   
 const signedinuser = { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: '../assets/prince boy.jpg', password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "UX Designer", work_location: "Quezon City, PH", work_mode: "Remote", employer_class: "Private Sector", tenured_status: "Permanent", salary_grade: "3", is_banned: false, company_name: "AZEUS" }
-const iskills = ["Artificial Intelligence", "Cybersecurity", "Web Development"];
-const iaffiliations = [{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },];
-const ischolarships = ["DOST Scholarship", "UPLB SLAS"];
+
 
 function UserProfile() {
     const [editMode, setEditMode] = useState(false);
@@ -238,14 +236,6 @@ const addScholarship = async (newScholarship) => {
 
 
 
-
-  
-
-
-
-
-
-
     const removeAffiliation = (index) => setAffiliations(affiliations.filter((_, i) => i !== index));
     const removeScholarship = (index) => setScholarships(scholarships.filter((_, i) => i !== index));
 
@@ -258,7 +248,7 @@ const addScholarship = async (newScholarship) => {
 
             {/* Profile Section */}
             <ProfileSection editMode={editMode} userDetails={userDetails} setEditMode={setEditMode} handleChange={handleChange} />
-      {signedinuser.user_type === "alumni" && (
+      {userDetails.user_type === "alumni" && (
         <>
           {/* Navigation Tabs */}
           <UserProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
