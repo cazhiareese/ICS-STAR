@@ -115,7 +115,10 @@ def logic_search_alumni(
             "location": user.city,
             "email": user.email,
             "picture": user.image,
-            "affiliations": affiliations_list if affiliations_list else None
+            "affiliations": affiliations_list if affiliations_list else None,
+            "facebook": user.facebook,
+            "linkedin": user.linkedin,
+            "github": user.github,
         }
         alumni_list.append(alumni_entry)
     
