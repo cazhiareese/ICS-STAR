@@ -90,6 +90,21 @@ async def read_unverified_students(db: Session = Depends(get_db)):
     
     return unverified_students_list
 
+# Get the number of unverified alumni 
+# Arguments: db - SQLAlchemy session
+# Returns: the count of unverified alumni
+@router.get("/admin/unverified/alumni/count", dependencies=None)
+async def read_unverified_alumni_count(db: Session = Depends(get_db)):
+    unverified_alumni_count = db.query(User).filter(User.user_type == "alumni", User.is_verified == False).count()
+    return {"unverified_alumni_count": unverified_alumni_count}
+
+# Get the number of unverified students
+# Arguments: db - SQLAlchemy session
+# Returns: the count of unverified students
+@router.get("/admin/unverified/students/count", dependencies=None)
+async def read_unverified_students_count(db: Session = Depends(get_db)):
+    unverified_students_count = db.query(User).filter(User.user_type == "student", User.is_verified == False).count()
+    return {"unverified_students_count": unverified_students_count}
 
 # Verify and confirm user registration
 # Arguments: db - SQLAlchemy session, user_id - the user ID
