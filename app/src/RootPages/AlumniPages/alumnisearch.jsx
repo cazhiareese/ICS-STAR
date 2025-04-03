@@ -51,6 +51,8 @@ function AlumniSearch() {
 
   const hasMounted = useRef(false);
 
+  const [loading, setLoading] = useState(false);
+
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -118,6 +120,7 @@ function AlumniSearch() {
 
     const fetchData = async () => {
         let searchAPIURL = search();  // Get API URL based on the filters
+        setLoading(true); 
         try {
             const response = await axios.get(searchAPIURL);
             setAlumniList((prevList) => {
@@ -130,6 +133,9 @@ function AlumniSearch() {
         } catch (error) {
             console.error("Error fetching alumni data:", error);
             setAlumniList([]);
+        }
+        finally {
+          setLoading(false);  // Hide loading modal
         }
     };
 
@@ -207,7 +213,9 @@ function AlumniSearch() {
  
   
   return (
+    
     <div className="flex flex-col ">
+      
       <motion.div
         className="fixed bottom-0 left-0 w-full bg-gray-100 z-50 p-5 shadow-lg rounded-t-2xl lg:hidden overflow-y-auto"
         style={{ maxHeight: "100vh", height: "100%" }}
@@ -673,8 +681,15 @@ function AlumniSearch() {
             </div>
           )}
 
-          <h1 className="md:text-3xl text-2xl font-satoshi-medium text-gray-500 pl-10 py-6 lg:text-left text-center">{alumniList.length} Search Results</h1>
-
+          {/* <h1 className="md:text-3xl text-2xl font-satoshi-medium text-gray-500 pl-10 py-6 lg:text-left text-center">{alumniList.length} Search Results</h1> */}
+          {!loading && (
+              <h1 className="md:text-3xl text-xl font-satoshi-medium text-gray-500 pl-10 py-6 lg:text-left text-center">{alumniList.length} Search Results</h1>
+          )}
+        
+          {loading && (
+              <h1 className="md:text-3xl text-xl font-satoshi-medium text-gray-400 pl-10 py-6 lg:text-left text-center">Searching...</h1>
+          )}
+          
           {/* Mapping of alumni cards */}
           <div className="flex flex-row flex-wrap gap-24 items-center justify-center">
             {alumniList.map((alumni, index) => (
