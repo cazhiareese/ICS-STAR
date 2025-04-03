@@ -1,12 +1,32 @@
-import React from 'react'
+import { React, useEffect, useState } from 'react'
 import { MoveLeft, Check, IdCard, GraduationCap } from 'lucide-react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate , useParams } from 'react-router-dom'
+import axios from 'axios';
 
 function AdminVerificationConfirmation() {
   const navigate = useNavigate()
 
+  const [user, setUser] = useState({})
+
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  const { userid } = useParams();
+
+  useEffect(() => {
+    // Get the details of the user
+    // axios.get(`${API_BASE_URL}`)
+    console.log(userid)
+  })
+
   function verifyUser() {
-    alert('Confirmed verification!')
+    axios.put(`${API_BASE_URL}/admin/confirm/${userid}`)
+    .then(response => {
+      // console.log("Verification /Successful:", response.data);
+      alert(`Confirmed verification of user ${userid} !`)
+      console.log(response)
+    })
+    .catch(error => {
+      console.error("Error verifying user:", error);
+    });  
   }
 
   return (
@@ -36,7 +56,7 @@ function AdminVerificationConfirmation() {
           <div className='bg-primary rounded-full h-30 w-30'></div>
             <div className='flex flex-col justify-between ml-6'>
               <div>
-                <p className='font-satoshi-bold text-3xl'> Kiefer Tayawa </p>
+                <p className='font-satoshi-bold text-3xl'> {userid} </p>
                 <p className='font-satoshi-light'> kltayawa@up.edu.ph</p>
               </div>
             {/* Student number and graduating class */}

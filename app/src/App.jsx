@@ -66,7 +66,7 @@ function App() {
             <Route index element={<AdminRecords/>}/>
             <Route path=":userid" element={<AdminUserDetails/>}/>
             <Route path="pending-verifications" element={<AdminPendingVerifications/>}/>
-            <Route path="verification-confirmation/:id" element={<AdminVerificationConfirmation/>}/>
+            <Route path="verification-confirmation/:userid" element={<AdminVerificationConfirmation/>}/>
           </Route>
           <Route path="events" element={<AdminEvents />} />
           <Route path="newsletter" element={<AdminNewsletter />} />
