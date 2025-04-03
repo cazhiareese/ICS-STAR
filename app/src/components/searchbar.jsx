@@ -69,14 +69,16 @@ const SearchBar =
         if (Array.isArray(industryList) && industryList.length > 0) {
             filters.industry = industryList;
         }
-        if (location !== "") {
+        if (Array.isArray(location) && location.length > 0) {
             filters.city = location;
         }
     
-        // Pass filters to buildSearchUrl and make API call
-        let apiUrl = buildSearchUrl(filters);
-        console.log(apiUrl);
-        return apiUrl;
+        if (Object.keys(filters).length > 0){
+            // Pass filters to buildSearchUrl and make API call
+            let apiUrl = buildSearchUrl(filters);
+            console.log(apiUrl);
+            return apiUrl;
+        }
     };
     
 
@@ -104,6 +106,11 @@ const SearchBar =
                     className="bg-gray-100 font-satoshi-medium text-lg w-full h-full px-4 py-2 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
                     placeholder="Enter Alumni Name"
                     onChange={handleChange}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            search(); // Call your search function
+                        }
+                    }}
                     value={searchInput}
                 />
                 <button onClick={search} className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">

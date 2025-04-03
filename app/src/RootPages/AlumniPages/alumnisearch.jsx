@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef   } from "react";
 import SearchBar from "../../components/searchbar";
 import AlumniCareerFilter from "../../components/careerfilter";
 import AlumniAffiliationFilter from "../../components/alumaffiliation";
@@ -33,6 +33,12 @@ function AlumniSearch() {
   const [industryList, setIndustryList] = useState([]); 
   const [location, setLocation] = useState([]); 
 
+  const memoizedCareerList = useMemo(() => careerList, [careerList]);
+  const memoizedAffiliationList = useMemo(() => affiliationList, [affiliationList]);
+  const memoizedSkillsList = useMemo(() => skillsList, [skillsList]);
+  const memoizedIndustryList = useMemo(() => industryList, [industryList]);
+  const memoizedLocation = useMemo(() => location, [location]);
+
   const [careerInput, setCareerInput] = useState(""); // State for storing current input
   const [affiliationInput, setAffiliationInput] = useState(""); // State for storing current input
   const [skillsInput, setSkillsInput] = useState(""); // State for storing current input
@@ -42,6 +48,9 @@ function AlumniSearch() {
   const [alumniList, setAlumniList] = useState([]);
   
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State for mobile filter toggle
+
+  const hasMounted = useRef(false);
+
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -61,9 +70,11 @@ function AlumniSearch() {
     image: "https://i.pinimg.com/originals/09/f3/3e/09f33ecb3753807c45c29a3155aa1773.jpg"
   }
 
-  useEffect(() => {
-    setAlumniList([alumni, alumni, alumni]);
-  }, []);
+  // useEffect(() => {
+  //   setAlumniList([alumni, alumni, alumni]);
+  // }, [alumniList]);
+
+
 
   const search = () => {
       let filters = {}; // Initialize filter object
@@ -90,28 +101,51 @@ function AlumniSearch() {
           filters.city = location;
       }
 
-      // Pass filters to buildSearchUrl and make API call
-      let apiUrl = buildSearchUrl(filters);
-      console.log(apiUrl);
-      return apiUrl;
+      if (Object.keys(filters).length > 0){
+        // Pass filters to buildSearchUrl and make API call
+        let apiUrl = buildSearchUrl(filters);
+        console.log(apiUrl);
+        return apiUrl;
+      }
+      
   };
 
   useEffect(() => {
+    if (!hasMounted.current) {
+        hasMounted.current = true;
+        return;  // Skip the first render
+    }
+
     const fetchData = async () => {
         let searchAPIURL = search();  // Get API URL based on the filters
         try {
-            const response = await axios.get(searchAPIURL);  
+            const response = await axios.get(searchAPIURL);
+            setAlumniList((prevList) => {
+                if (JSON.stringify(prevList) !== JSON.stringify(response.data)) {
+                    return response.data;
+                }
+                return prevList;
+            });
             console.log(response.data);
         } catch (error) {
             console.error("Error fetching alumni data:", error);
+            setAlumniList([]);
         }
     };
 
-    fetchData();  // Fetch data when component mounts or dependencies change
+    fetchData();  // Fetch data when dependencies change
 
-}, [selectedBatchYear, selectedGraduationYear, careerList, affiliationList, skillsList, industryList, location]); 
+}, [
+    selectedBatchYear, 
+    selectedGraduationYear, 
+    memoizedCareerList, 
+    memoizedAffiliationList, 
+    memoizedSkillsList, 
+    memoizedIndustryList, 
+    memoizedLocation
+]);
 
-  function buildSearchUrl(filters) {
+  const buildSearchUrl = (filters) => {
       let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
       let queryParams = new URLSearchParams(filters).toString();
       return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
@@ -125,6 +159,14 @@ function AlumniSearch() {
     
     // Update the state with the new list
     setSkillsList(updatedSkillList);
+  };
+
+  const removeLocation = (index) => {
+    // Create a new array excluding the career at the given index
+    const updatedLocationList = location.filter((_, i) => i !== index);
+    
+    // Update the state with the new list
+    setLocation(updatedLocationList);
   };
 
   const removeCareer = (index) => {
@@ -159,6 +201,7 @@ function AlumniSearch() {
     setAffiliationList([]);
     setIndustryList([]);
     setLocation([]);
+    setAlumniList([]);
   }
 
  
@@ -563,7 +606,7 @@ function AlumniSearch() {
         
         <div className="w-2/3 flex flex-col md:pl-10">
           {/* career filters */}
-          {(careerList.length > 0 || skillsList.length > 0 || affiliationList.length > 0 || industryList.length > 0 || location != "" 
+          {(careerList.length > 0 || skillsList.length > 0 || affiliationList.length > 0 || industryList.length > 0 || location.length > 0 
           || selectedBatchYear != "" || selectedGraduationYear != "" ) && (
             <div className="flex flex-row flex-wrap mt-5 pl-10 mb-4 gap-2 items-center">
               {(selectedBatchYear !== "") && <div className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
@@ -607,12 +650,14 @@ function AlumniSearch() {
                 </div>
               ))}
 
-              {(location !== "") && <div className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
-                <h1 className="text-white font-satoshi-light truncate md:text-md text-sm max-w-36">{location}</h1>
-                <button onClick={() => setLocation("")}>
-                  <X className="text-white ml-2" size={20} />
-                </button>
-              </div>}
+              {location.map((loc, index) => (
+                <div key={index} className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
+                  <h1 className="text-white font-satoshi-light truncate md:text-md text-sm max-w-36">{loc}</h1>
+                  <button onClick={() => removeLocation(index)}>
+                    <X className="text-white ml-2" size={20} />
+                  </button>
+                </div>
+              ))}   
 
               {industryList.map((Industry, index) => (
                 <div key={index} className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
