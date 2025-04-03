@@ -29,8 +29,11 @@ function App() {
       {/* Routes that include the Navbar */}
       <Route path="/" element={<Root />}>
         <Route path="student" element={<StudentLanding />} />
-        <Route path="alumni" element={<AlumniLanding />}/> 
-        <Route path="alumnisearch" element={<AlumniSearch />} />
+
+        {/* Alumni Routes */}
+        <Route path="alumni" element={<AlumniLanding />}/>
+        <Route path="alumni/search" element={<AlumniSearch />} />
+        
 
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>

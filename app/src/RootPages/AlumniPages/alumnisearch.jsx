@@ -15,6 +15,7 @@ import axios from 'axios';
 
 
 
+
 function AlumniSearch() {
   const [selectedBatchYear, setSelectedBatchYear] = useState(""); // Separate state for Batch Year
   const [selectedGraduationYear, setSelectedGraduationYear] = useState(""); // Separate state for Graduation Year
@@ -480,7 +481,16 @@ function AlumniSearch() {
         <div className=" hidden lg:flex flex-col pr-6 border-r-2 border-gray-300 w-1/4">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
-            <button className="mr-2 underline font-satoshi-medium mt-4 cursor-pointer hover:text-primary" onClick={resetAllFilters}>
+            <button className="mr-2 underline font-satoshi-medium mt-4 cursor-pointer hover:text-primary" onClick={() => {
+              resetAllFilters();
+              setIsBatchExpanded(false);
+              setIsGraduateExpanded(false);
+              setIsCareerExpanded(false);
+              setIsAffiliationExpanded(false);
+              setIsSkillsExpanded(false);
+              setIsIndustryExpanded(false);
+              setIsLocationExpanded(false);
+            }} >
               Reset All
             </button>
             <button className="mt-4 cursor-pointer hover:text-primary">
