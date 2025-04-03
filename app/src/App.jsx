@@ -55,6 +55,11 @@ function App() {
         <Route path="alumnisearch" element={<AlumniSearch />} />
         <Route path="profile" element={<UserProfile />} />
 
+        {/* Alumni Routes */}
+        <Route path="alumni" element={<AlumniLanding />}/>
+        <Route path="alumni/search" element={<AlumniSearch />} />
+        
+
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>
         <Route index element={<Navigate to="dashboard" />} />
