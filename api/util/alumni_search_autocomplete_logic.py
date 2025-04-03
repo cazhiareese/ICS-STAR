@@ -90,3 +90,20 @@ def get_industry_suggestions(db: Session, query_text: str, limit: int = 4) -> Li
     
 
     return [result[0] for result in results]
+
+# Get suggestions for cities based on partial input in the text field
+#
+# Arguments:
+# db: Session - database session
+# query_text: str - partial input in the text field
+# limit: int - maximum number of suggestions to return
+#
+# Returns: a list of city suggestions
+def get_city_suggestions(db: Session, query_text: str, limit: int = 4) -> List[str]:
+    results = db.query(distinct(User.city))\
+                .filter(User.user_type == UserTypeEnum.alumni)\
+                .filter(User.city.ilike(f"%{query_text}%"))\
+                .filter(User.city.isnot(None))\
+                .order_by(User.city)\
+                .limit(limit)\
+                .all()
