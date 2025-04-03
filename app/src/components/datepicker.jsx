@@ -19,7 +19,7 @@ const YearPicker = ({ selectedYear, setSelectedYear}) => {
         onChange={handleYearChange}  // Use the handleYearChange function
         showYearPicker
         dateFormat="yyyy"
-        className="border border-gray-300 rounded-xl px-3 h-10 py-2 w-xs text-left focus:border-primary focus:outline-none focus:ring-0 pl-10 pr-10"
+        className="border border-gray-300 rounded-xl px-3 h-10 py-2 md:w-xs w-3xs text-left focus:border-primary focus:outline-none focus:ring-0 pl-10 pr-10"
         placeholderText="Enter Year"
         calendarClassName="p-4 w-sm"
         renderCustomHeader={({ decreaseYear, increaseYear }) => (

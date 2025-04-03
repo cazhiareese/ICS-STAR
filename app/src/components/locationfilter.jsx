@@ -20,11 +20,18 @@ const AlumniLocationFilter = ({
 
     // Handle the enter key press
   const handleLocationSearch = (e) => {
-    if (e.key === "Enter" && locationInput.trim()) {
-      setLocation([locationInput]); // Add the input to LocationList
-      setLocationInput(""); // Clear the input field after submitting
-      setIsLocationExpanded(false);
+    if (e.key === "Enter" && locationInput.trim()) {     
+      setLocation([...location, locationInput]); // Add the input to careerList
+      setLocationInput(""); 
     }
+  };
+
+  const removeLocation = (index) => {
+    // Create a new array excluding the career at the given index
+    const updatedLocationList = location.filter((_, i) => i !== index);
+    
+    // Update the state with the new list
+    setLocation(updatedLocationList);
   };
 
   
@@ -33,9 +40,6 @@ const AlumniLocationFilter = ({
   const filteredlocations = locations.filter(location => location.toLowerCase().includes(locationInput.toLowerCase()));
 
   return (
-
-    
-
     <div className="flex flex-col shadow mt-5 rounded-lg bg-white lg:bg-transparent">
       <div className="flex flex-row px-5 py-3" onClick={() => setIsLocationExpanded(!isLocationExpanded)}>
         <motion.h1
@@ -82,6 +86,20 @@ const AlumniLocationFilter = ({
           </div>
         </div>
 
+        {/* Career Tags */}
+        {location.length > 0 && (
+          <div className="flex flex-row flex-wrap mt-5 pl-10 mb-4 gap-2 items-center">
+            {location.map((loc, index) => (
+              <div key={index} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
+                <h1 className="text-white font-satoshi-light truncate text-sm">{loc}</h1>
+                <button onClick={() => removeLocation(index)}>
+                  <X className="text-white ml-2" size={20} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
         
 
 
@@ -96,14 +114,13 @@ const AlumniLocationFilter = ({
         <ul>
           {locationInput === "" ? (
             locations.slice(0, 4).map((loc, index) => (
-                location !== loc && ( // Check if location is not already in LocationList
+                !location.includes(loc) && ( // Check if location is not already in LocationList
                     <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                     <button
                         className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer"
                         onClick={() => {
-                            setLocation([loc]); 
-                            setIsLocationExpanded(false); // Close the filter after selecting a location
-                            setLocationInput(loc);
+                            setLocation([...location, loc]); // Add the input to careerList
+                            setLocationInput("");
                         }}
                     >
                         {loc}
@@ -113,14 +130,13 @@ const AlumniLocationFilter = ({
             ))
           ) : (
             filteredlocations.map((loc, index) => (
-                location !== loc && ( // Check if location is not already in LocationList
+              !location.includes(loc) && ( // Check if location is not already in LocationList
                     <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                     <button
                         className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer"
                         onClick={() => {
-                            setLocation([loc]); 
-                            setIsLocationExpanded(false); // Close the filter after selecting a location
-                            setLocationInput(loc);
+                          setLocation([...location, loc]); // Add the input to careerList
+                          setLocationInput("");
                         }}
                     >
                         {loc}
@@ -133,7 +149,7 @@ const AlumniLocationFilter = ({
         {/* Buttons for skip and next for mobile*/}
         <div className="flex lg:hidden justify-between px-5 pb-3">
           <button
-            onClick={() => {setLocation(""); 
+            onClick={() => {setLocation([]); 
               setIsIndustryExpanded(true);
               setIsLocationExpanded(false);}}
             className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
