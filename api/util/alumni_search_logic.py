@@ -46,7 +46,14 @@ def logic_search_alumni(
         query = query.filter(User.graduation_year == graduation_year)
     
     if job_title:
-        query = query.filter(User.job_title.ilike(f"%{job_title}%"))
+        # Split the job title string by comma and strip whitespace
+        #
+        # Then, we find all users with job titles that match any of the inputted titles
+        job_titles_list = [j.strip() for j in job_title.split(',') if j.strip()]
+
+        if job_titles_list:
+            # Create an OR condition for each job title
+            query = query.filter(or_(*[User.job_title.ilike(f"%{j}%") for j in job_titles_list]))
         
     if city:
         query = query.filter(User.city.ilike(f"%{city}%"))
@@ -78,14 +85,9 @@ def logic_search_alumni(
         affiliation_list = [a.strip() for a in affiliation.split(',') if a.strip()]
 
         if affiliation_list:
-            subquery = db.query(User.user_id).join(User.affiliations).filter(UserAffiliation.affiliation.ilike(f"%{affiliation_list[0]}%")).subquery()
-            
-            for a in affiliation_list[1:]:
-                affiliation_subquery = db.query(User.user_id).join(User.affiliations).filter(UserAffiliation.affiliation.ilike(f"%{a}%")).subquery()
-                
-                subquery = db.query(subquery.c.user_id).filter(subquery.c.user_id.in_(db.query(affiliation_subquery.c.user_id))).subquery()
-            
-            query = query.filter(User.user_id.in_(db.query(subquery.c.user_id)))
+            affiliation_subquery = db.query(UserAffiliation.user_id).filter(or_(*[UserAffiliation.affiliation.ilike(f"%{a}%") for a in affiliation_list])).distinct().subquery()
+
+            query = query.filter(User.user_id.in_(db.query(affiliation_subquery.c.user_id)))
 
     # Execute the final query
     results = query.all()
