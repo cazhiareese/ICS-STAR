@@ -24,6 +24,22 @@ async def read_unverified_users(db: Session = Depends(get_db)):
     users = db.query(User).filter(User.is_verified == False).all()
     return [UserOut.model_validate(user) for user in users]
 
+# Get unverified alumni
+# Arguments: db - SQLAlchemy session
+# Returns: a list of all unverified alumni
+@router.get("/admin/unverified-alumni", dependencies=None, response_model=list[UserOut])
+async def read_unverified_alumni(db: Session = Depends(get_db)):
+    users = db.query(User).filter(User.user_type == "alumni", User.is_verified == False).all()
+    return [UserOut.model_validate(user) for user in users]
+
+# Get unverified students
+# Arguments: db - SQLAlchemy session
+# Returns: a list of all unverified students
+@router.get("/admin/unverified-students", dependencies=None, response_model=list[UserOut])
+async def read_unverified_students(db: Session = Depends(get_db)):
+    users = db.query(User).filter(User.user_type == "student", User.is_verified == False).all()
+    return [UserOut.model_validate(user) for user in users]
+
 # Verify and confirm user registration
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the user registration
