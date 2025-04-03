@@ -76,7 +76,7 @@ async def add_skills(
     
     db.add_all(new_skills)
     db.commit()
-    
+    primt(new_skills)
     return {"message": "skills added successfully"}
 
 @router.put("/update-employment")
@@ -152,6 +152,9 @@ async def get_profile(
         "employer_class": user.employer_class,
         "tenured_status": user.tenured_status,
         "salary_grade": user.salary_grade,
+        "facebook": user.facebook,
+        "linkedin": user.linkedin,
+        "github": user.github,
         "created_at": user.created_at,
         "updated_at": user.updated_at,
         "skills": [skill.skill for skill in user.skills],
@@ -160,6 +163,7 @@ async def get_profile(
             {"affiliation": aff.affiliation, "role": aff.role} for aff in user.affiliations
         ],
     }
+    print(profile_details)
     
     return {"message": "success", "data": profile_details}
 
@@ -180,6 +184,7 @@ async def get_profile_by_id(
     if not profile_details:
         raise HTTPException(status_code=404, detail="User not found")
     
+    print(profile_details)
     return {"message": "success", "data": profile_details}
 
 # Update user profile details
@@ -195,6 +200,18 @@ async def update_profile(
     state: str = Form(...),
     country: str = Form(...),
     marital_status: str = Form(...),
+    facebook: str = Form(...),
+    linkedin: str = Form(...),
+    github: str = Form(...),
+    industry: str = Form(...),
+    employment_status: str = Form(...),
+    company_name: str = Form(...),
+    job_title: str = Form(...),
+    work_location: str = Form(...),
+    work_mode: str = Form(...),
+    employer_class: str = Form(...),
+    tenured_status: str = Form(...),
+    salary_grade: str = Form(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
@@ -209,6 +226,18 @@ async def update_profile(
     user.state = state
     user.country = country
     user.marital_status = marital_status
+    user.facebook = facebook
+    user.linkedin = linkedin
+    user.github = github
+    user.industry = industry
+    user.employment_status = employment_status
+    user.company_name = company_name
+    user.job_title = job_title
+    user.work_location = work_location
+    user.work_mode = work_mode
+    user.employer_class = employer_class
+    user.tenured_status = tenured_status
+    user.salary_grade = salary_grade
     
     db.commit()
     db.refresh(user)
@@ -256,9 +285,9 @@ async def get_profile_picture(
 # Remove a skill from the user's profile
 # Arguments: db - SQLAlchemy session, skill_id - the skill ID
 # Returns: a message confirming the removal
-@router.delete("/remove-skill/{skill}")
+@router.delete("/remove-skill/")
 async def remove_skill(
-    skill: str,
+    skill: str = Query(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
@@ -278,9 +307,9 @@ async def remove_skill(
 # Remove a scholarship from the user's profile
 # Arguments: db - SQLAlchemy session, scholarship_id - the scholarship ID
 # Returns: a message confirming the removal
-@router.delete("/remove-scholarship/{scholarship}")
+@router.delete("/remove-scholarship/")
 async def remove_scholarship(
-    scholarship: str,
+    scholarship: str = Query(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
@@ -300,9 +329,9 @@ async def remove_scholarship(
 # Remove an affiliation from the user's profile
 # Arguments: db - SQLAlchemy session, affiliation_id - the affiliation ID
 # Returns: a message confirming the removal
-@router.delete("/remove-affiliation/{affiliation}")
+@router.delete("/remove-affiliation/")
 async def remove_affiliation(
-    affiliation: str,
+    affiliation: str = Query(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):

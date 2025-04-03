@@ -53,6 +53,9 @@ class UserOut(BaseModel):
     employer_class: Optional[str] = None
     tenured_status: Optional[str] = None
     salary_grade: Optional[str] = None
+    facebook: Optional[str] = None
+    linkedin: Optional[str] = None
+    github: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     

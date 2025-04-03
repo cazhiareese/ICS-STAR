@@ -1,9 +1,11 @@
 
+from typing import Dict, List, Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from models.usermodel import User
+from util.alumni_search_logic import logic_search_alumni
+from models.usermodel import User, UserAffiliation, UserSkill, UserTypeEnum
 from models.report_model import Report
-from sqlalchemy import func, case, text, desc
+from sqlalchemy import func, case, or_, text, desc,asc
 from datetime import datetime, timedelta
 
 
@@ -195,55 +197,6 @@ def get_user_grouped_job_title(db: Session, verbose:bool):
         alum_with_job.append(alum_job_dict)
 
     return alum_with_job
-
-def get_all_alumni(db: Session):
-
-    one_year_ago = datetime.now() - timedelta(days=365)
-    alumni = db.query(
-        User.user_id,
-        User.first_name, 
-        User.last_name,
-        func.split_part(User.student_number, '-', 1).label("batch"),
-        User.city,
-        User.state,
-        User.country,
-        User.job_title,
-        func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_updated'), 
-        case(
-            (User.updated_at < one_year_ago, True),
-            else_=False
-        ).label('is_inactive')
-    ).filter(
-        User.user_type == 'alumni',
-    ).all()
-
-    if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
-
-    alums_dict = [row._asdict() for row in alumni]
-    alum_list = []
-    
-    for alum in alums_dict:
-        # select * from reports where user_id = alum[0];
-        report_check = db.query(Report.report_id).filter(Report.reported_user_id == alum["user_id"]).all()
-
-        check = True
-        if len(report_check) == 0:
-            check = False
-        al = {
-            "user_id": alum["user_id"],
-            "name": f"{alum['first_name']} {alum['last_name']}",
-            "batch": alum["batch"],
-            "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
-            "job_title": alum["job_title"],
-            "last_updated": alum["last_updated"],
-            "is_reported":check,
-            "is_inactive": alum["is_inactive"]
-        }
-        alum_list.append(al)
-
-    return alum_list
-
 
 def get_active_by_batch(db: Session, order: str):
     one_year_ago = datetime.now() - timedelta(days=365)
@@ -566,159 +519,5 @@ def get_cities_country(db:Session, country:str):
     return cities_country
 
 
-def get_alumni_batch_filter(db: Session, batch: str):
 
-    one_year_ago = datetime.now() - timedelta(days=365)
-    alumni = db.query(
-        User.user_id,
-        User.first_name, 
-        User.last_name,
-        func.split_part(User.student_number, '-', 1).label("batch"),
-        User.city,
-        User.state,
-        User.country,
-        User.job_title,
-        func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_updated'), 
-        case(
-            (User.updated_at < one_year_ago, True),
-            else_=False
-        ).label('is_inactive')
-    ).filter(
-        User.user_type == 'alumni',
-        func.split_part(User.student_number, '-', 1)== batch
-    ).all()
-
-    if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
-
-    alums_dict = [row._asdict() for row in alumni]
-    alum_list = []
     
-    for alum in alums_dict:
-        # select * from reports where user_id = alum[0];
-        report_check = db.query(Report.report_id).filter(Report.reported_user_id == alum["user_id"]).all()
-
-        check = True
-        if len(report_check) == 0:
-            check = False
-        al = {
-            "user_id": alum["user_id"],
-            "name": f"{alum['first_name']} {alum['last_name']}",
-            "batch": alum["batch"],
-            "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
-            "job_title": alum["job_title"],
-            "last_updated": alum["last_updated"],
-            "is_reported":check,
-            "is_inactive": alum["is_inactive"]
-        }
-        alum_list.append(al)
-
-    return alum_list
-
-
-def get_alumni_industry_filter(db: Session, industry: str):
-
-    one_year_ago = datetime.now() - timedelta(days=365)
-    alumni = db.query(
-        User.user_id,
-        User.first_name, 
-        User.last_name,
-        func.split_part(User.student_number, '-', 1).label("batch"),
-        User.city,
-        User.state,
-        User.country,
-        User.job_title,
-        func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_updated'), 
-        case(
-            (User.updated_at < one_year_ago, True),
-            else_=False
-        ).label('is_inactive')
-    ).filter(
-        User.user_type == 'alumni',
-        User.industry == industry
-    ).all()
-
-    if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
-
-    alums_dict = [row._asdict() for row in alumni]
-    alum_list = []
-    
-    for alum in alums_dict:
-        # select * from reports where user_id = alum[0];
-        report_check = db.query(Report.report_id).filter(Report.reported_user_id == alum["user_id"]).all()
-
-        check = True
-        if len(report_check) == 0:
-            check = False
-        al = {
-            "user_id": alum["user_id"],
-            "name": f"{alum['first_name']} {alum['last_name']}",
-            "batch": alum["batch"],
-            "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
-            "job_title": alum["job_title"],
-            "last_updated": alum["last_updated"],
-            "is_reported":check,
-            "is_inactive": alum["is_inactive"]
-        }
-        alum_list.append(al)
-
-    return alum_list  
-
-def get_alumni_country_filter(db: Session, country: str):
-
-    one_year_ago = datetime.now() - timedelta(days=365)
-    alumni = db.query(
-        User.user_id,
-        User.first_name, 
-        User.last_name,
-        func.split_part(User.student_number, '-', 1).label("batch"),
-        User.city,
-        User.state,
-        User.country,
-        User.job_title,
-        func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_updated'), 
-        case(
-            (User.updated_at < one_year_ago, True),
-            else_=False
-        ).label('is_inactive')
-    ).filter(
-        User.user_type == 'alumni',
-        User.country == country
-    ).all()
-
-    if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
-
-    alums_dict = [row._asdict() for row in alumni]
-    alum_list = []
-    
-    for alum in alums_dict:
-        # select * from reports where user_id = alum[0];
-        report_check = db.query(Report.report_id).filter(Report.reported_user_id == alum["user_id"]).all()
-
-        check = True
-        if len(report_check) == 0:
-            check = False
-        al = {
-            "user_id": alum["user_id"],
-            "name": f"{alum['first_name']} {alum['last_name']}",
-            "batch": alum["batch"],
-            "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
-            "job_title": alum["job_title"],
-            "last_updated": alum["last_updated"],
-            "is_reported":check,
-            "is_inactive": alum["is_inactive"]
-        }
-        alum_list.append(al)
-
-    return alum_list
-
-
-        
-
-
-
-
-
-

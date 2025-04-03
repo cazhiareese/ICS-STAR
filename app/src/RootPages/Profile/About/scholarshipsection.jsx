@@ -27,7 +27,7 @@ const ScholarshipsSection = ({ editMode, scholarships, removeScholarship, addSch
                   <XCircle
                     size={16}
                     className="text-white cursor-pointer hover:text-white transition"
-                    onClick={() => removeScholarship(index)}
+                    onClick={() => removeScholarship(scholarship)}
                   />
                   </div>
                 )}

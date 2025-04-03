@@ -26,7 +26,10 @@ const SkillsInterestsSection = ({ editMode, skills, removeSkill, addSkills }) =>
               <XCircle
                 size={18}
                 className="absolute -top-2 -right-2 text-white cursor-pointer bg-error rounded-full hover:bg-red-800"
-                onClick={() => removeSkill(index)}
+                onClick={() => {
+                  console.log("Skill to remove:", skill, "Type:", typeof skill);
+                  removeSkill(skill);
+                }}
               />
             )}
           </div>

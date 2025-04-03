@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { MapPin, Phone, IdCard, GraduationCap, Camera, Facebook, Github, Linkedin, Pencil, PlusCircle, XCircle } from "lucide-react";
 import prince from '../assets/prince boy.jpg';
 import SectionHeader from './Profile/components/sectionheader';
@@ -16,59 +16,295 @@ const alumniUsers = [
   ];
   
 const signedinuser = { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: '../assets/prince boy.jpg', password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "UX Designer", work_location: "Quezon City, PH", work_mode: "Remote", employer_class: "Private Sector", tenured_status: "Permanent", salary_grade: "3", is_banned: false, company_name: "AZEUS" }
-const iskills = ["Artificial Intelligence", "Cybersecurity", "Web Development"];
-const iaffiliations = [{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },{ affiliation: "Young Software Engineers’ Society", role: "Resident Member" },];
-const ischolarships = ["DOST Scholarship", "UPLB SLAS"];
+
 
 function UserProfile() {
     const [editMode, setEditMode] = useState(false);
     const [activeTab, setActiveTab] = useState("About"); 
-    const addSkills = (newSkills) => {
-      setSkills([...skills, ...newSkills]);
-    };
-    const addAffiliation = (newAffiliation) => {
-      setAffiliations([...affiliations, newAffiliation]);
-    };
-    const addScholarship = (newScholarship) => {
-      setScholarships([...scholarships, newScholarship]);
-    };
-    
-    
+    const [skills, setSkills] = useState([]);
+    const [affiliations, setAffiliations] = useState([]);
+    const [scholarships, setScholarships] = useState([]);
+    const [error, setError] = useState(null);
+    const [userDetails, setUserDetails] = useState({});
 
-    const [userDetails, setUserDetails] = useState({
-      first_name: signedinuser.first_name,
-      last_name: signedinuser.last_name,
-      email: signedinuser.email,
-      user_type: signedinuser.user_type,
-      // modify the location since you need to edit the city and the state
-      location: `${signedinuser.city}, ${signedinuser.state}`,
-      city: signedinuser.city,
-      state: signedinuser.state,
-      mobile_number: signedinuser.mobile_number,
-      student_number: signedinuser.student_number,
-      //edit the graduation year and the semester separately
-      graduation_year: signedinuser.graduation_year,
-      graduation_semester: signedinuser.graduation_semester,
-      
-      // Added fields
-      job_title: signedinuser.job_title,
-      company_name: signedinuser.company_name,
-      work_location: signedinuser.work_location,
-      work_mode: signedinuser.work_mode,
-      employer_class: signedinuser.employer_class,
-      tenured_status: signedinuser.tenured_status,
-      salary_grade: signedinuser.salary_grade,
+    //fetch user details from backend
+    useEffect(() => {
+      const fetchProfile = async () => {
+          try {
+              const token = localStorage.getItem("token");
+              if (!token) {
+                  setError("User not authenticated");
+                  return;
+              }
+  
+              const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+              const response = await fetch(`${API_BASE_URL}/profile`, {
+                  method: "GET",
+                  headers: {
+                      Authorization: `Bearer ${token}`
+                  },
+              });
+  
+              if (!response.ok) {
+                  if (response.status === 401) {
+                      setError("Unauthorized access. Please log in again.");
+                      return;
+                  }
+                  throw new Error("Network response was not ok");
+              }
+  
+              const result = await response.json();
+              const data = result.data; // Correctly access 'data.data'
+  
+              setUserDetails({
+                  first_name: data.first_name,
+                  last_name: data.last_name,
+                  email: data.email,
+                  user_type: data.user_type,
+                  location: `${data.city}, ${data.state}`,
+                  city: data.city,
+                  state: data.state,
+                  mobile_number: data.mobile_number,
+                  student_number: data.student_number,
+                  graduation_year: data.graduation_year,
+                  graduation_semester: data.graduation_semester,
+                  job_title: data.job_title,
+                  company_name: data.company_name,
+                  work_location: data.work_location,
+                  work_mode: data.work_mode,
+                  employer_class: data.employer_class,
+                  tenured_status: data.tenured_status,
+                  salary_grade: data.salary_grade,
+              });
+  
+              // Set skills, scholarships, and affiliations
+              setSkills(data.skills || []);
+              console.log(data.skills);
+              setScholarships(data.scholarships || []);
+              setAffiliations(data.affiliations || []);
+              console.log(data.affiliations);
+          } catch (err) {
+              setError("Failed to load profile");
+          }
+      };
+  
+      fetchProfile();
+  }, []);
+
+  const addSkills = async (newSkills) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setError("User not authenticated");
+            return;
+        }
+
+        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+        // Convert skills array into a query string format
+        const queryParams = new URLSearchParams();
+        newSkills.forEach(skill => queryParams.append("skills", skill));
+
+        const response = await fetch(`${API_BASE_URL}/add-skills?${queryParams.toString()}`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to add skills");
+        }
+
+        const result = await response.json();
+        console.log(result.message); // "skills added successfully"
+
+        // Update state only after successful API call
+        setSkills([...skills, ...newSkills]);
+    } catch (err) {
+        setError("Failed to add skills");
+    }
+};
+
+const removeSkill = async (skillToRemove) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("User not authenticated");
+      return;
+    }
+
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    // Send DELETE request to remove the skill with the query parameter format
+    const response = await fetch(`${API_BASE_URL}/remove-skill/?skill=${encodeURIComponent(skillToRemove)}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-    
+
+    if (!response.ok) {
+      throw new Error("Failed to remove skill");
+    }
+
+    const result = await response.json();
+    console.log(result.message); // "Skill removed successfully"
+
+    // Update the UI by filtering out the removed skill
+    setSkills(skills.filter(skill => skill !== skillToRemove));
+  } catch (err) {
+    setError("Failed to remove skill");
+  }
+};
 
 
-    const [skills, setSkills] = useState(iskills);
-    const [affiliations, setAffiliations] = useState(iaffiliations);
-    const [scholarships, setScholarships] = useState(ischolarships);
+const removeAffiliation = async (affiliationToRemove) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("User not authenticated");
+      return;
+    }
 
-    const removeSkill = (index) => setSkills(skills.filter((_, i) => i !== index));
-    const removeAffiliation = (index) => setAffiliations(affiliations.filter((_, i) => i !== index));
-    const removeScholarship = (index) => setScholarships(scholarships.filter((_, i) => i !== index));
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    // Make sure you're sending the affiliation name, not the whole object
+    const affiliationName = affiliationToRemove.affiliation || affiliationToRemove;
+
+    // Send DELETE request to remove the affiliation with the query parameter format
+    const response = await fetch(`${API_BASE_URL}/remove-affiliation/?affiliation=${encodeURIComponent(affiliationName)}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to remove affiliation");
+    }
+
+    const result = await response.json();
+    console.log(result.message); // "Affiliation removed successfully"
+
+    // Update the UI by filtering out the removed affiliation
+    setAffiliations(affiliations.filter(affiliation => affiliation.affiliation !== affiliationName));
+  } catch (err) {
+    setError("Failed to remove affiliation");
+  }
+};
+
+const removeScholarship = async (scholarshipToRemove) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("User not authenticated");
+      return;
+    }
+
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    // Send DELETE request to remove the scholarship
+    const response = await fetch(`${API_BASE_URL}/remove-scholarship/?scholarship=${encodeURIComponent(scholarshipToRemove)}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to remove scholarship");
+    }
+
+    const result = await response.json();
+    console.log(result.message); // "Scholarship removed successfully"
+
+    // Update the UI by filtering out the removed scholarship
+    setScholarships(scholarships.filter(scholarship => scholarship !== scholarshipToRemove));
+  } catch (err) {
+    setError("Failed to remove scholarship");
+  }
+};
+
+
+
+
+const addAffiliation = async (newAffiliation) => {
+  try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+          setError("User not authenticated");
+          return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      // Ensure newAffiliation is an object with 'affiliation' and 'role'
+      if (!newAffiliation.affiliation || !newAffiliation.role) {
+          setError("Invalid affiliation format");
+          return;
+      }
+
+      // Convert affiliations & roles into query parameters
+      const queryParams = new URLSearchParams();
+      queryParams.append("affiliations", newAffiliation.affiliation);
+      queryParams.append("roles", newAffiliation.role);
+
+      const response = await fetch(`${API_BASE_URL}/add-affiliations?${queryParams.toString()}`, {
+          method: "POST",
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error("Failed to add affiliation");
+      }
+
+      const result = await response.json();
+      console.log(result.message); // "affiliations added successfully"
+
+      // Update UI only after a successful API call
+      setAffiliations([...affiliations, newAffiliation]);
+  } catch (err) {
+      setError("Failed to add affiliation");
+  }
+};
+
+const addScholarship = async (newScholarship) => {
+  try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+          setError("User not authenticated");
+          return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      // Convert scholarship into query parameters
+      const queryParams = new URLSearchParams();
+      queryParams.append("scholarships", newScholarship);
+
+      const response = await fetch(`${API_BASE_URL}/add-scholarships?${queryParams.toString()}`, {
+          method: "POST",
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error("Failed to add scholarship");
+      }
+
+      const result = await response.json();
+      console.log(result.message); // "scholarships added successfully"
+
+      // Update UI only after a successful API call
+      setScholarships([...scholarships, newScholarship]);
+  } catch (err) {
+      setError("Failed to add scholarship");
+  }
+};
 
     const handleChange = (e, field) => {
       setUserDetails({ ...userDetails, [field]: e.target.value });
@@ -79,7 +315,7 @@ function UserProfile() {
 
             {/* Profile Section */}
             <ProfileSection editMode={editMode} userDetails={userDetails} setEditMode={setEditMode} handleChange={handleChange} />
-      {signedinuser.user_type === "alumni" && (
+      {userDetails.user_type === "alumni" && (
         <>
           {/* Navigation Tabs */}
           <UserProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
