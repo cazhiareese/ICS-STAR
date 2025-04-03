@@ -31,7 +31,7 @@ function AlumniSearch() {
   const [affiliationList, setAffiliationList] = useState([]); // State for affiliation list
   const [skillsList, setSkillsList] = useState([]); // State for skills list
   const [industryList, setIndustryList] = useState([]); 
-  const [location, setLocation] = useState(""); 
+  const [location, setLocation] = useState([]); 
 
   const [careerInput, setCareerInput] = useState(""); // State for storing current input
   const [affiliationInput, setAffiliationInput] = useState(""); // State for storing current input
@@ -69,24 +69,24 @@ function AlumniSearch() {
       let filters = {}; // Initialize filter object
 
       if (selectedBatchYear != "") {
-          filters.batch_year = selectedBatchYear;
+          filters.batch = selectedBatchYear;
       }
       if (selectedGraduationYear !== "") {
           filters.graduation_year = selectedGraduationYear;
       }
       if (Array.isArray(careerList) && careerList.length > 0) {
-          filters.careers = careerList;
+          filters.job_title = careerList;
       }
       if (Array.isArray(affiliationList) && affiliationList.length > 0) {
           filters.affiliations = affiliationList;
       }
       if (Array.isArray(skillsList) && skillsList.length > 0) {
-          filters.skill = skillsList;
+          filters.skills = skillsList;
       }
       if (Array.isArray(industryList) && industryList.length > 0) {
-          filters.industries = industryList;
+          filters.industry = industryList;
       }
-      if (location !== "") {
+      if (Array.isArray(location) && location.length > 0) {
           filters.city = location;
       }
 

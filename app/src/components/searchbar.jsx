@@ -52,22 +52,22 @@ const SearchBar =
             filters.full_name = searchInput;
         }
         if (selectedBatchYear != "") {
-            filters.batch_year = selectedBatchYear;
+            filters.batch = selectedBatchYear;
         }
         if (selectedGraduationYear !== "") {
             filters.graduation_year = selectedGraduationYear;
         }
         if (Array.isArray(careerList) && careerList.length > 0) {
-            filters.careers = careerList;
+            filters.job_title = careerList;
         }
         if (Array.isArray(affiliationList) && affiliationList.length > 0) {
             filters.affiliations = affiliationList;
         }
         if (Array.isArray(skillsList) && skillsList.length > 0) {
-            filters.skill = skillsList;
+            filters.skills = skillsList;
         }
         if (Array.isArray(industryList) && industryList.length > 0) {
-            filters.industries = industryList;
+            filters.industry = industryList;
         }
         if (location !== "") {
             filters.city = location;
