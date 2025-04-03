@@ -32,28 +32,22 @@ def logic_search_alumni(
 
     # Append appropriate filters to the initial query
     if name:
-        query = query.filter(or_(User.first_name.ilike(f"%{name}%"), User.last_name.ilike(f"%{name}%")))
+        # We have to also catch if full name was inputted (e.g. "John Doe" or "John Michael Doe")
+        #
+        # Split the name by space and filter for each part
+        name_parts = name.split()
+        if len(name_parts) == 1:
+            query = query.filter(or_(User.first_name.ilike(f"%{name_parts[0]}%"), User.last_name.ilike(f"%{name_parts[0]}%")))
+        else:
+            # Filter for first name and last name separately
+            query = query.filter(or_(User.first_name.ilike(f"%{name_parts[0]}%"), User.last_name.ilike(f"%{name_parts[-1]}%")))
 
     if graduation_year:
         query = query.filter(User.graduation_year == graduation_year)
     
     if job_title:
-        # Split the job title string by comma and strip whitespace
-        job_title_list = [j.strip() for j in job_title.split(',') if j.strip()]
-
-        if job_title_list:
-            if len(job_title_list) > 1:
-                subquery = db.query(User.user_id).filter(User.job_title.ilike(f"%{job_title_list[0]}%")).subquery()
-                
-                for j in job_title_list[1:]:
-                    job_title_subquery = db.query(User.user_id).filter(User.job_title.ilike(f"%{j}%")).subquery()
-                    
-                    subquery = db.query(subquery.c.user_id).filter(subquery.c.user_id.in_(db.query(job_title_subquery.c.user_id))).subquery()
-                
-                query = query.filter(User.user_id.in_(db.query(subquery.c.user_id)))
-            else:
-                query = query.filter(User.job_title.ilike(f"%{job_title_list[0]}%"))
-    
+        query = query.filter(User.job_title.ilike(f"%{job_title}%"))
+        
     if city:
         query = query.filter(User.city.ilike(f"%{city}%"))
     
@@ -62,19 +56,12 @@ def logic_search_alumni(
         skills_list = [s.strip() for s in skill.split(',') if s.strip()]
         
         if skills_list:
-            if len(skills_list) > 1: # If multiple skills were inputted
-                subquery = db.query(UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{skills_list[0]}%")).subquery()
-                
-                # For each additional skill, filter the users further
-                for s in skills_list[1:]:
-                    skill_subquery = db.query(UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{s}%")).subquery()
-                    
-                    subquery = db.query(subquery.c.user_id).filter(subquery.c.user_id.in_(db.query(skill_subquery.c.user_id))).subquery()
-                
-                # Finally, filter the main query to include only users with all skills
-                query = query.filter(User.user_id.in_(db.query(subquery.c.user_id)))
-            else: # If only one skill was inputted
-                query = query.join(UserSkill, User.user_id == UserSkill.user_id).filter(UserSkill.skill.ilike(f"%{skills_list[0]}%"))
+            # Create an OR condition for each skill
+            skill_subquery = db.query(UserSkill.user_id).filter(or_(*[UserSkill.skill.ilike(f"%{s}%") for s in skills_list])).distinct().subquery()
+            
+            # Filter main query to users who have any of the skills
+            query = query.filter(User.user_id.in_(db.query(skill_subquery.c.user_id)))
+
 
 
     if industry:
@@ -124,11 +111,14 @@ def logic_search_alumni(
             "graduation_year": user.graduation_year,
             "job_title": user.job_title,
             "industry": user.industry,
-            "skills": skills_list,
+            "skills": skills_list if skills_list else None,
             "location": user.city,
             "email": user.email,
             "picture": user.image,
-            "affiliations": affiliations_list
+            "affiliations": affiliations_list if affiliations_list else None,
+            "facebook": user.facebook,
+            "linkedin": user.linkedin,
+            "github": user.github,
         }
         alumni_list.append(alumni_entry)
     
