@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from 'axios';
 
 const SearchBar = 
 ({
@@ -10,9 +11,13 @@ const SearchBar =
     affiliationList,
     skillsList,
     industryList,
-    location
+    location,
+    setSearchInput,
+    searchInput,
+    setLoading,
+    setAlumniList
   })=> {
-    const [searchInput, setSearchInput] = useState("");
+    
 
     
 
@@ -49,7 +54,7 @@ const SearchBar =
     const search = () => {
         let filters = {}; // Initialize filter object
         if (searchInput != ""){
-            filters.full_name = searchInput;
+            filters.name = searchInput;
         }
         if (selectedBatchYear != "") {
             filters.batch = selectedBatchYear;
@@ -80,10 +85,31 @@ const SearchBar =
             return apiUrl;
         }
     };
+
+    const fetchData = async () => {
+        let searchAPIURL = search();  // Get API URL based on the filters
+        setLoading(true); 
+        try {
+            const response = await axios.get(searchAPIURL);
+            setAlumniList((prevList) => {
+                if (JSON.stringify(prevList) !== JSON.stringify(response.data)) {
+                    return response.data;
+                }
+                return prevList;
+            });
+            console.log(response.data);
+        } catch (error) {
+            console.error("Error fetching alumni data:", error);
+            setAlumniList([]);
+        }
+        finally {
+          setLoading(false);  // Hide loading modal
+        }
+    };
     
 
     function buildSearchUrl(filters) {
-        let baseUrl = "http://127.0.0.1:8000/alumni/search";
+        let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
         let queryParams = new URLSearchParams(filters).toString();
         return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
     }
@@ -108,12 +134,12 @@ const SearchBar =
                     onChange={handleChange}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            search(); // Call your search function
+                            fetchData(); // Call your search function
                         }
                     }}
                     value={searchInput}
                 />
-                <button onClick={search} className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
+                <button onClick={fetchData} className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
                     <Search size={20} />
                 </button>
             </div>

@@ -32,6 +32,8 @@ function AlumniSearch() {
   const [skillsList, setSkillsList] = useState([]); // State for skills list
   const [industryList, setIndustryList] = useState([]); 
   const [location, setLocation] = useState([]); 
+  const [searchInput, setSearchInput] = useState(""); 
+  
 
   const memoizedCareerList = useMemo(() => careerList, [careerList]);
   const memoizedAffiliationList = useMemo(() => affiliationList, [affiliationList]);
@@ -148,7 +150,8 @@ function AlumniSearch() {
     memoizedAffiliationList, 
     memoizedSkillsList, 
     memoizedIndustryList, 
-    memoizedLocation
+    memoizedLocation,
+
 ]);
 
   const buildSearchUrl = (filters) => {
@@ -457,6 +460,10 @@ function AlumniSearch() {
             skillsList={skillsList}
             industryList={industryList}
             location={location}
+            setSearchInput={setSearchInput}
+            searchInput={searchInput}
+            setLoading={setLoading}
+            setAlumniList={setAlumniList}
           />
           
           <button onClick={toggleFilter} className="flex flex-center h-14 cursor-pointer rounded-2xl outline-gray-300 outline-2 bg-gray-100 text-primary w-12 justify-center items-center text-center lg:hidden">
