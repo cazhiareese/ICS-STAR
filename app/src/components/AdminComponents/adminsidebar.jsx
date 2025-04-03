@@ -26,8 +26,7 @@ function Sidebar({ sidebarItems }) {
       {/* Sidebar - Sliding Drawer */}
       <div
         className={`bg-white fixed min-w-3xs z-50 top-0 h-screen w-3/4 lg:w-2/12 shadow-lg lg:static px-4 pt-4 
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 
-          ${isOpen ? "transition-transform duration-300 ease-in-out" : ""} lg:transition-none`}
+          ${isOpen ? "translate-x-0 transition-transform duration-300 ease-in-out" : "-translate-x-full transition-transform duration-300 ease-in-out"} lg:translate-x-0 lg:transition-none`}
       >
         <div className="mb-10 lg:block">
           <IcsStarLogo />
@@ -39,7 +38,7 @@ function Sidebar({ sidebarItems }) {
             <SidebarItem
               title={item.title}
               icon={item.icon}
-              isSelected={location.pathname === `/admin/${item.path}`}
+              isSelected={location.pathname.startsWith(`/admin/${item.path}`)}
               />
           </Link>
         ))}

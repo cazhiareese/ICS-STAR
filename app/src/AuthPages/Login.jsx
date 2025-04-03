@@ -11,7 +11,7 @@ import { Eye, EyeClosed, CircleX } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
-    const baseURL = import.meta.env.VITE_BACKEND_URL || ""
+    const baseURL = "https://ics-star-api.vercel.app"
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -59,7 +59,7 @@ function LoginPage() {
       } finally {
           setIsLoading(false); 
       }
-  };
+    };
 
     const loginClick = async (e) => {
         e.preventDefault();
@@ -120,10 +120,6 @@ function LoginPage() {
         
     }, [codeError]);
 
-    const handleLogin = (userType) => {
-        sessionStorage.setItem("User", JSON.stringify({ type: userType }));
-        navigate(`/${userType}`);
-      };
 
   return (
     <div className="flex items-center justify-center h-screen overflow-hidden">
