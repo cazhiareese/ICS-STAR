@@ -5,6 +5,7 @@ from config.database import get_db
 from util.userutil import require_admin
 from models.usermodel import User
 from uuid import UUID
+from sqlalchemy import func
 
 router = APIRouter()
 
@@ -27,18 +28,68 @@ async def read_unverified_users(db: Session = Depends(get_db)):
 # Get unverified alumni
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified alumni
-@router.get("/admin/unverified-alumni", dependencies=None, response_model=list[UserOut])
+@router.get("/admin/unverified/alumni", dependencies=None)
 async def read_unverified_alumni(db: Session = Depends(get_db)):
-    users = db.query(User).filter(User.user_type == "alumni", User.is_verified == False).all()
-    return [UserOut.model_validate(user) for user in users]
+    unverified_alum = db.query(
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        User.email,
+        User.student_number,
+        User.graduation_year,
+        func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+    ).filter(
+        User.user_type == "alumni",
+        User.is_verified == False
+    ).all()
+
+    # Convert the result to a list of dictionaries
+    unverified_alum_list = [
+        {
+            "user_id": alum.user_id,
+            "name": f"{alum.first_name} {alum.last_name}",
+            "email": alum.email,
+            "student_number": alum.student_number,
+            "grad_class": alum.graduation_year,
+            "date_of_reg": alum.date_of_reg,
+        } for alum in unverified_alum
+    ]
+
+    
+    return unverified_alum_list
 
 # Get unverified students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified students
-@router.get("/admin/unverified-students", dependencies=None, response_model=list[UserOut])
+@router.get("/admin/unverified/students", dependencies=None)
 async def read_unverified_students(db: Session = Depends(get_db)):
-    users = db.query(User).filter(User.user_type == "student", User.is_verified == False).all()
-    return [UserOut.model_validate(user) for user in users]
+    unverified_students = db.query(
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        User.email,
+        User.student_number,
+        User.graduation_year,
+        func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+    ).filter(
+        User.user_type == "student",
+        User.is_verified == False
+    ).all()
+
+    # Convert the result to a list of dictionaries
+    unverified_students_list = [
+        {
+            "user_id": student.user_id,
+            "name": f"{student.first_name} {student.last_name}",
+            "email": student.email,
+            "student_number": student.student_number,
+            "grad_class": student.graduation_year,
+            "date_of_reg": student.date_of_reg,
+        } for student in unverified_students
+    ]
+    
+    return unverified_students_list
+
 
 # Verify and confirm user registration
 # Arguments: db - SQLAlchemy session, user_id - the user ID
