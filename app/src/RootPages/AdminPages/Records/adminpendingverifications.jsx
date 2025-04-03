@@ -1,11 +1,11 @@
-import {React, useState} from 'react'
+import {React, useState, useEffect} from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Search, MoveLeft, MoveRight, Filter, List, LayoutGrid } from 'lucide-react'
+import axios from 'axios'
 
 function AdminPendingVerifications() {
     const navigate = useNavigate()
 
-    const [userType, setUserType] = useState('Alumni')
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(48)
     const [viewStyle, setViewStye] = useState('List')
@@ -14,35 +14,59 @@ function AdminPendingVerifications() {
     const [query, setQuery] = useState('')
     const [focused, setFocused] = useState(false)
 
-    const pendingUsers = [
-        {
-          id: 1,
-          name: "Kiefer Tayawa",
-          email: "a@gmail.com",
-          student_number: "1234-56789",
-          graduating_class: "2022 - 1st Semester",
-          registration_date: "12/25",
-          avatar: "https://randomuser.me/api/portraits/men/1.jpg"
-        },
-        {
-          id: 2,
-          name: "Alan Turing",
-          email: "a@gmail.com",
-          student_number: "1234-56789",
-          graduating_class: "2022 - 1st Semester",
-          registration_date: "12/25",
-          avatar: "https://randomuser.me/api/portraits/men/2.jpg"
-        },
-        {
-          id: 3,
-          name: "Ada Lovelace",
-          email: "a@gmail.com",
-          student_number: "1234-56789",
-          graduating_class: "2022 - 1st Semester",
-          registration_date: "12/25",
-          avatar: "https://randomuser.me/api/portraits/women/1.jpg"
-        }
-      ];
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    const [userType, setUserType] = useState('alumni')
+    const [pendingUsers, setPendingUsers] = useState([])
+    const [studentUserCount, setStudentUserCount] = useState(0)
+    const [alumniUserCount, setAlumniUserCount] = useState(0)
+
+    const fetchUsers = (type) => {
+      setUserType(type);
+    };
+
+    const fetchUsersCount = () => {
+      // Fetch unverified alumni count
+      axios.get(`${API_BASE_URL}/admin/unverified/alumni/count`)
+      .then(response => {
+        console.log(response.data);
+        setAlumniUserCount(response.data.unverified_alumni_count);
+      })
+      .catch(error => {
+        console.log('Error getting user count')
+      })
+
+      // Fetch unverified students count
+      axios.get(`${API_BASE_URL}/admin/unverified/students/count`)
+      .then(response => {
+        console.log(response.data);
+        setStudentUserCount(response.data.unverified_students_count);
+      })
+      .catch(error => {
+        console.log('Error getting user count')
+      })
+    };
+    
+    useEffect(() => {
+      // Fetch unverified alumni/students on userType change
+      axios.get(`${API_BASE_URL}/admin/unverified/${userType}`)
+        .then(response => {
+          console.log(response.data);
+          setPendingUsers(response.data);
+        })
+        .catch(error => {
+          console.log('Error getting users');
+          setPendingUsers([]);
+        });
+        // Fetch users again
+        fetchUsersCount();
+    }, [userType]);
+    
+    // Initial fetch
+    useEffect(() => {
+      fetchUsers('alumni');
+      fetchUsersCount();
+    }, []);
+
 
   return (
     <div className='flex flex-col lg:p-6 h-screen max-w-7xl mx-auto'>
@@ -81,12 +105,12 @@ function AdminPendingVerifications() {
       <div className='flex items-center justify-between lg:ml-5 lg:flex-row flex-col gap-2 lg:gap-0'>
         <div className='lg:w-auto w-full'>
           {/* Alumni button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'Alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('Alumni')}>
-            <p className='text-black font-satoshi-medium text-md'> Alumni </p>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alumni')}>
+            <p className='text-black font-satoshi-medium text-md'> Alumni ({alumniUserCount}) </p>
           </button>
           {/* Student button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'Student' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('Student')}>
-            <p className='text-black font-satoshi-medium text-md'> Student </p>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'students' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('students')}>
+            <p className='text-black font-satoshi-medium text-md'> Student ({studentUserCount}) </p>
           </button>
         </div>
         {/* Sort by */}
@@ -147,7 +171,7 @@ function AdminPendingVerifications() {
               <tr 
                 key={index} 
                 className="hover:bg-gray-100 cursor-pointer" 
-                onClick={() => {navigate(`/admin/records/verification-confirmation/${user.id}`)}}
+                onClick={() => {navigate(`/admin/records/verification-confirmation/${user.user_id}`)}}
               >
                 {/* User image */}
                 <td>
@@ -160,9 +184,9 @@ function AdminPendingVerifications() {
                 {/* User Student Number */}
                 <td className="py-3 px-4">{user.student_number}</td>
                 {/* User Graduating Class*/}
-                <td className="py-3 px-4">{user.graduating_class}</td>
+                <td className="py-3 px-4">{user.grad_class}</td>
                 {/* User Date Registration */}
-                <td className="py-3 px-4">{user.registration_date}</td>
+                <td className="py-3 px-4">{user.date_of_reg}</td>
                 {/* User Status */}
               </tr>
             ))}
@@ -173,9 +197,9 @@ function AdminPendingVerifications() {
       <div className='flex flex-col lg:hidden'>
         {/* User Card */}
         {pendingUsers.map((user) => (
-          <div key={user.id} 
+          <div key={user.user_id} 
           className='flex w-full p-3 hover:bg-gray-100 cursor-pointer'
-          onClick={() => {navigate(`/admin/records/verification-confirmation/${user.id}`)}}>
+          onClick={() => {navigate(`/admin/records/verification-confirmation/${user.user_id}`)}}>
             {/* Image placeholder */}
             <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
             <div className='flex justify-between flex-1'>

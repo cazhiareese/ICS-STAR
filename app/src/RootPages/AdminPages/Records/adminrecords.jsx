@@ -1,34 +1,44 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BadgeCheck, Filter, List, LayoutGrid, MoveLeft, MoveRight, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios';
 
 function AdminRecords() {
   const navigate = useNavigate()
 
-  const [userType, setUserType] = useState('Alumni')
+  const [userType, setUserType] = useState('alum')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(48)
   const [viewStyle, setViewStye] = useState('List')
   const [maxRows, setMaxRows] = useState(12)
+  const [users, setUsers] = useState([]);
 
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
 
-  const users = [
-    { id: "1", name: "Kiefer Tayawa", batch: "2022", location: "Manila, PH", job: "Full-Stack Developer", lastUpdate: "1/4/10", status: "Inactive" },
-    { id: "2", name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "5/6/25", status: "" },
-    { id: "3", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/9/09", status: "" },
-    { id: "4", name: "Alan Turing", batch: "2021", location: "Wilmslow, Cheshire", job: "Data Science", lastUpdate: "1/2/34", status: "Inactive" },
-    { id: "5", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { id: "6", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { id: "7", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { id: "8", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { id: "9", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { id: "10", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { id: "11", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" },
-    { id: "12", name: "Ada Lovelace", batch: "2022", location: "London, England", job: "Web Development", lastUpdate: "1/24/34", status: "" }
-  ];
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const fetchUsers = (type) => {
+    setUserType(type);
+  };
   
+  useEffect(() => {
+    axios.get(`${API_BASE_URL}/admin/filter/${userType}`)
+      .then(response => {
+        console.log(response.data);
+        setUsers(response.data);
+      })
+      .catch(error => {
+        console.log('Error getting users');
+        setUsers([]);
+      });
+  }, [userType]);
+  
+  // Initial fetch
+  useEffect(() => {
+    fetchUsers('alum');
+  }, []);
+
   return (
     <div className='flex flex-col lg:p-6 h-screen max-w-7xl mx-auto'>
       {/* Records, search, view pending */}
@@ -61,11 +71,11 @@ function AdminRecords() {
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
         <div className='w-full lg:w-auto  min-w-xs'>
           {/* Alumni button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'Alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('Alumni')}>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alum' ? 'border-primary' : 'border-transparent'}`} onClick={() => fetchUsers('alum')}>
             <p className='text-black font-satoshi-medium text-md'> Alumni </p>
           </button>
           {/* Student button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'Student' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('Student')}>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'students' ? ' border-primary' : 'border-transparent'}`} onClick={() => fetchUsers('students')}>
             <p className='text-black font-satoshi-medium text-md'> Student </p>
           </button>
         </div>
@@ -140,11 +150,11 @@ function AdminRecords() {
                 {/* User Batch*/}
                 <td className="py-3 px-4">{user.batch}</td>
                 {/* User Location */}
-                <td className="py-3 px-4">{user.location}</td>
+                <td className="py-3 px-4">{user.location_base}</td>
                 {/* User Job */}
-                <td className="py-3 px-4">{user.job}</td>
+                <td className="py-3 px-4">{user.job_title}</td>
                 {/* User last update */}
-                <td className="py-3 px-4">{user.lastUpdate}</td>
+                <td className="py-3 px-4">{user.last_updated}</td>
                 {/* User Status */}
                 <td>
                   {user.status && (
