@@ -152,6 +152,9 @@ async def get_profile(
         "employer_class": user.employer_class,
         "tenured_status": user.tenured_status,
         "salary_grade": user.salary_grade,
+        "facebook": user.facebook,
+        "linkedin": user.linkedin,
+        "github": user.github,
         "created_at": user.created_at,
         "updated_at": user.updated_at,
         "skills": [skill.skill for skill in user.skills],
@@ -195,6 +198,9 @@ async def update_profile(
     state: str = Form(...),
     country: str = Form(...),
     marital_status: str = Form(...),
+    facebook: str = Form(...),
+    linkedin: str = Form(...),
+    github: str = Form(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
@@ -209,6 +215,9 @@ async def update_profile(
     user.state = state
     user.country = country
     user.marital_status = marital_status
+    user.facebook = facebook
+    user.linkedin = linkedin
+    user.github = github
     
     db.commit()
     db.refresh(user)
