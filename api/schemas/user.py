@@ -21,6 +21,12 @@ class UserStandingEnum(str, Enum):
     junior = "junior"
     senior = "senior"
     graduating = "graduating"
+    
+class UserEmploymentStatus(str, Enum):
+    employed = "employed"
+    self_employed = "self-employed"
+    unemployed = "unemployed"
+    unemployed_no_exp = "unemployed_no_experience"
 
 class UserOut(BaseModel):
     user_id: UUID
