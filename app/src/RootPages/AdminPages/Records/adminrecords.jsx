@@ -14,6 +14,8 @@ function AdminRecords() {
   const [maxRows, setMaxRows] = useState(12)
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false)
+  const [userLoading, setUserLoading] = useState(false)
+  const [openFilter, setOpenFilter] = useState(false)
 
   // For the search
   const [query, setQuery] = useState('')
@@ -21,9 +23,14 @@ function AdminRecords() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  // const fetchUsers = (type) => {
-  //   setUserType(type);
-  // };
+  const [sortOptions, setSortOptions] = useState([
+    { label: "Name", value: "name", selected: false, order: "asc" },
+    { label: "Batch", value: "batch", selected: false, order: "asc" },
+    { label: "Base Location", value: "city", selected: false, order: "asc" },
+    { label: "Job Title", value: "job_title", selected: false, order: "asc" },
+    { label: "Last Update", value: "last_update", selected: false, order: "asc" },
+  ]);
+  
   
   useEffect(() => {
     const fetchData = async () => {
@@ -48,6 +55,29 @@ function AdminRecords() {
     // fetchUsers('alum');
     setUserType('alum')
   }, []);
+
+  const applySort = async () => {
+    const selected = sortOptions
+    .filter(opt => opt.selected)
+    .map(opt => `order_by=${opt.value}_${opt.order}`)
+    .join("&");
+    console.log(selected)
+    
+    setUserLoading(true);
+    setOpenFilter(false);
+      try {
+        const response = await axios.get(`${API_BASE_URL}/admin/filter/${userType}?${selected}`);
+        console.log(response.data);
+        setUsers(response.data);
+      } catch (error) {
+        console.log(error);
+        setUsers([]);
+      } finally {
+        setUserLoading(false);
+      }
+    
+  };
+  
   
   return (
     loading ? (
@@ -96,10 +126,52 @@ function AdminRecords() {
           </div>
           {/* Sort by */}
           <div className='flex gap-2'>
-            <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
-              <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
+            <div className='relative inline-block'>
+              <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1' onClick={() => {setOpenFilter(!openFilter)}}>
+                <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
                 <p className='font-satoshi-medium text-primary block'>Name</p>
-            </button>
+              </button>
+{/* SORTING */}
+              <div className={`absolute mt-2 bg-white rounded-lg shadow-lg p-4 w-64 z-10 ${openFilter ? '' : 'hidden'}`}>
+                <h4 className="font-semibold mb-2">Sort by:</h4>
+                {sortOptions.map((option, idx) => (
+                  <div key={option.value} className="flex justify-between items-center mb-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={option.selected}
+                        onChange={() => {
+                          const newOptions = [...sortOptions];
+                          newOptions[idx].selected = !newOptions[idx].selected;
+                          setSortOptions(newOptions);
+                        }}
+                        className="appearance-none w-4 h-4 mr-2 border-2 border-gray-400 rounded-full checked:bg-primary checked:border-primary focus:outline-none relative transition-all cursor-pointer"
+                      />
+                      {option.label}
+                    </label>
+                    {option.selected && (
+                      <button
+                        onClick={() => {
+                          const newOptions = [...sortOptions];
+                          newOptions[idx].order = newOptions[idx].order === "asc" ? "desc" : "asc";
+                          setSortOptions(newOptions);
+                        }}
+                        className="text-sm text-blue-600 underline"
+                      >
+                        {option.order === "asc" ? "Asc" : "Desc"}
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  className="mt-4 bg-primary text-white px-3 py-1 rounded cursor-pointer w-full"
+                  onClick={applySort}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+{/* SORTING */}
             {/* Filter */}
             <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
               <Filter className='text-primary'/>
@@ -134,6 +206,11 @@ function AdminRecords() {
         </div>
         {/* Table for desktop*/}
         <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
+          {userLoading ? (
+            <div className='flex justify-center items-center w-full h-full'>
+              <CircularLoading/>
+            </div>
+          ) :(
             <table className="w-full">
               {/* Table Header */}
               <thead>
@@ -182,6 +259,7 @@ function AdminRecords() {
                 ))}
               </tbody>
             </table>
+          )}
         </div>
       {/* Table for mobile */}
       <div className='flex flex-col lg:hidden overflow-auto'>
