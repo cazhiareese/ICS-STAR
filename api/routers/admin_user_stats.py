@@ -1,72 +1,16 @@
 from typing import Dict, List, Optional
 from fastapi import Depends, APIRouter, HTTPException, Query, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from schemas.user import UserOut
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
-from util.user_information_stats import  get_batch_employment_status, get_cities_country, get_top_country_batch, get_top_industries_batch, get_top_industries_country, get_top_job_batch, get_top_job_country, get_user_filter_batch, get_user_filtered_city, get_user_filtered_state, get_user_filtered_country, get_user_all_batch, get_user_grouped_industry, get_user_grouped_job_title, get_active_by_batch
-from util.admin_alum_list import get_alumni_batch_filter, get_alumni_country_filter, get_alumni_filter, get_alumni_industry_filter, get_all_alumni
+from util.user_information_stats import  employment_class_util, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, get_active_by_batch, grouped_by_industry, salary_grade_util, tenure_status_util, work_mode_util
+from util.admin_alum_list import get_alumni_list_filter,  get_alumni_filter, get_all_alumni, get_student_filter
 
 router = APIRouter()
-#Get alumni and students per city (for admin users only)
-#Arguments: db session
-#Returns: List of dictionaries classified if alumni or student, cities with list of user_ids
-@router.get("/admin/stats/get_users_city")
-async def get_per_loc(db: Session = Depends(get_db), verbose: bool=True):
-    user_per_city = get_user_filtered_city(db, verbose)
 
-    return {"message": "success", "data": user_per_city}
-
-#Get alumni and students per state(for admin users only)
-#Arguments: db session
-#Returns: List of dictionaries classified if alumni or student, states with list of user_ids
-@router.get("/admin/stats/get_users_state", dependencies=None)
-async def get_per_loc(db: Session = Depends(get_db), verbose: bool=True):
-    user_per_state = get_user_filtered_state(db, verbose)
-
-    return {"message": "success", "data": user_per_state}
-
-#Get alumni and students per country(for admin users only)
-#Arguments: db session
-#Returns: List of dictionaries classified if alumni or student, countries with list of user_ids
-@router.get("/admin/stats/get_users_country",dependencies=None )
-async def get_per_loc(db: Session = Depends(get_db), verbose: bool=True):
-    user_per_country = get_user_filtered_country(db, verbose)
-
-    return {"message": "success", "data": user_per_country}
-
-
-@router.get("/admin/stats/batch", dependencies=None)
-async def get_per_batch(db: Session = Depends(get_db), verbose: bool=True):
-    user_per_batch = get_user_all_batch(db, verbose)
-
-    return {"message": "success", "data": user_per_batch}
-
-@router.get("/admin/filter/batch-alumni", dependencies=None)
-async def get_filtered_batch(db: Session = Depends(get_db), batch: str =""):
-    user_from_batch = get_user_filter_batch(db, batch, "alumni")
-
-    return {"message": "success", "data": user_from_batch}
-
-@router.get("/admin/filter/batch-student", dependencies=None)
-async def get_filtered_batch(db: Session = Depends(get_db), batch: str =""):
-    user_from_batch = get_user_filter_batch(db, batch, "student")
-
-    return {"message": "success", "data": user_from_batch}
-
-
-@router.get("/admin/stats/industry", dependencies=None)
-async def get_grouped_industry(db: Session = Depends(get_db), verbose: bool=True):
-    user_grouped_industry = get_user_grouped_industry(db, verbose)
-
-    return {"message": "success", "data": user_grouped_industry}
-
-@router.get("/admin/stats/job_title", dependencies=None)
-async def get_grouped_industry(db: Session = Depends(get_db), verbose: bool=True):
-    user_grouped_job_title = get_user_grouped_job_title(db, verbose)
-
-    return {"message": "success", "data": user_grouped_job_title}
 
 
 @router.get("/admin/all_alumni")
@@ -83,21 +27,21 @@ async def get_active_batch(db: Session= Depends(get_db), order:str="total_users"
 
 @router.get("/admin/stats/get_batch_employment")
 async def get_batch_employment(db:Session=Depends(get_db), batch:str=""):
-    batch_employ = get_batch_employment_status(db, batch)
+    batch_employ = get_employment_status(db, batch)
 
 
     return{"message": "success", "data": batch_employ}
 
 @router.get("/admin/stats/get_batch_top_jobs")
 async def get_batch_top_jobs(db:Session=Depends(get_db), batch:str=""):
-    top_jobs = get_top_job_batch(db, batch)
+    top_jobs = get_job_util(db, batch=batch, industry=None, country=None)
 
     return{"message":"success", "data":top_jobs}
 
 
 @router.get("/admin/stats/get_batch_top_industries")
 async def get_batch_top_industries(db:Session=Depends(get_db), batch:str=""):
-    top_industries =  get_top_industries_batch(db, batch)
+    top_industries =  grouped_by_industry(db, batch=batch, country =None)
 
     return{"message":"success", "data":top_industries}
 
@@ -109,13 +53,19 @@ async def get_batch_top_countries(db:Session=Depends(get_db), batch:str=""):
 
 @router.get("/admin/stats/get_country_top_jobs")
 async def get_country_top_jobs(db:Session=Depends(get_db), country:str=""):
-    top_jobs = get_top_job_country(db, country)
+    top_jobs = get_job_util(db, batch=None, industry=None, country=country)
+
+    return{"message":"success", "data":top_jobs}
+
+@router.get("/admin/stats/get_industry_jobs")
+async def get_country_top_jobs(db:Session=Depends(get_db), industry:str=""):
+    top_jobs = get_job_util(db, batch=None, industry=industry, country=None)
 
     return{"message":"success", "data":top_jobs}
 
 @router.get("/admin/stats/get_country_top_industries")
 async def get_country_top_industries(db:Session=Depends(get_db), country:str=""):
-    top_industries = get_top_industries_country(db, country)
+    top_industries = grouped_by_industry(db, batch=None, country =country)
 
     return{"message":"success", "data":top_industries}
 
@@ -129,24 +79,24 @@ async def get_country_cities(db:Session=Depends(get_db), country:str=""):
 ##ADD ORDER BY- pwede input ay 'name', 'batch', 'last_updated'
 @router.get("/admin/stats/alumni_batch_filter")
 async def get_alumni_batch(db: Session = Depends(get_db), batch: str="", order_by: list[str]=Query([])):
-    alumni_batch = get_alumni_batch_filter(db, batch,order_by)
+    alumni_batch = get_alumni_list_filter(db, batch=batch, industry = None, country=None, order_by= order_by)
 
     return{"message":"success", "data":alumni_batch}
 
 @router.get("/admin/stats/alumni_industry_filter")
 async def get_alumni_industry(db: Session = Depends(get_db), industry: str="", order_by: list[str]=Query([])):
-    alumni_industry = get_alumni_industry_filter(db, industry, order_by)
+    alumni_industry = get_alumni_list_filter(db, batch=None, industry = industry, country=None, order_by= order_by)
 
     return{"message":"success", "data":alumni_industry}
 
 @router.get("/admin/stats/alumni_country_filter")
 async def get_alumni_country(db: Session = Depends(get_db), country: str="",order_by: list[str]=Query([])):
-    alumni_country = get_alumni_country_filter(db, country, order_by)
+    alumni_country = get_alumni_list_filter(db, batch=None, industry = None, country=country, order_by= order_by)
 
     return{"message":"success", "data":alumni_country}
 
-@router.get("/admin/filter/alum", response_model=List[Dict])
-def search_alumni(
+@router.get("/admin/filter/alum")
+async def search_alumni(
     name: Optional[str] = None,
     graduation_year: Optional[int] = None,
     job_title: Optional[str] = None,
@@ -159,7 +109,24 @@ def search_alumni(
     db: Session = Depends(get_db)
 ):
     
-    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation, order_by=order_by)
+    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation, order_by=order_by, needs_verified=True)
+    
+    # Raise 404 if no results found
+    if not results:
+        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
+    
+    return results
+
+@router.get("/admin/filter/unverified/alum")
+async def search_alumni_unverified(
+    name: Optional[str] = None,
+    graduation_year: Optional[int] = None,
+    batch: Optional[str] = None,
+    order_by: list[str]=Query([]),
+    db: Session = Depends(get_db)
+):
+    
+    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=None, city=None, skill=None, industry=None, batch=batch, affiliation=None, order_by=order_by, needs_verified=False)
     
     # Raise 404 if no results found
     if not results:
@@ -168,3 +135,102 @@ def search_alumni(
     return results
 
 
+@router.get("/admin/filter/student")
+async def search_student(
+    name: Optional[str] = None,
+    batch: Optional[str] = None,
+    affiliation: Optional[str] = None,
+    order_by: list[str]=Query([]),
+    standing: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_student_filter(db, name=name, batch=batch, standing=standing, affiliation=affiliation, order_by=order_by, needs_verified=True)
+    
+    # Raise 404 if no results found
+    if not results:
+        raise HTTPException(status_code=404, detail="No student found matching the search criteria")
+    
+    return results
+
+@router.get("/admin/filter/unverified/student")
+async def search_student(
+    name: Optional[str] = None,
+    batch: Optional[str] = None,
+    order_by: list[str]=Query([]),
+    db: Session = Depends(get_db)
+):
+    
+    results = get_student_filter(db, name=name, batch=batch, standing=None, affiliation=None, order_by=order_by, needs_verified=False)
+    
+    # Raise 404 if no results found
+    if not results:
+        raise HTTPException(status_code=404, detail="No alumni student matching the search criteria")
+    
+    return results
+
+@router.get("/admin/unverified/count")
+async def count_unverified(db: Session = Depends(get_db)):
+
+    count_unverified =  (
+        db.query(
+            func.count()
+        ).where(
+            User.is_verified == False,
+        ).scalar()
+    )
+
+
+    if count_unverified is None:
+        raise HTTPException(status_code=404, detail="Cannot count unverified users")
+    
+    return {"message": "success","count": count_unverified}
+
+
+@router.get("/admin/stats/employment_status")
+async def get_employment(db:Session=Depends(get_db)):
+    batch_employ = get_employment_status(db, batch= None)
+
+
+    return{"message": "success", "data": batch_employ}
+
+@router.get("/admin/stats/employment_class")
+async def get_employment_class(db:Session=Depends(get_db)):
+    batch_employ_class = employment_class_util(db, industry= None)
+
+
+    return{"message": "success", "data": batch_employ_class}
+
+@router.get("/admin/stats/industry/employment_class")
+async def get_employment_class(db:Session=Depends(get_db), industry:str = None):
+    batch_employ_class = employment_class_util(db, industry= industry)
+
+
+    return{"message": "success", "data": batch_employ_class}
+
+
+@router.get("/admin/stats/industry/count")
+async def get_industry_count(db:Session=Depends(get_db)):
+    industry_count = grouped_by_industry(db, batch=None, country =None)
+    return{"message": "success", "data": industry_count}
+
+@router.get("/admin/stats/industry/salary_grade")
+async def get_salary_count(db:Session=Depends(get_db), industry:str=None):
+    industry_count = salary_grade_util(db, industry = industry)
+    return{"message": "success", "data": industry_count}
+
+
+@router.get("/admin/stats/industry/tenured_status")
+async def get_tenure_count(db:Session=Depends(get_db), industry:str=None):
+    tenure_count = tenure_status_util(db, industry = industry)
+    return{"message": "success", "data": tenure_count}
+
+@router.get("/admin/stats/industry/work_type")
+async def get_worktype_count(db:Session=Depends(get_db), industry:str=None):
+    work_mode = work_mode_util(db, industry = industry)
+    return{"message": "success", "data": work_mode}
+
+@router.get("/admin/stats/salary_grade")
+async def get_worktype_count(db:Session=Depends(get_db)):
+    sal_grade = salary_grade_util(db, industry = None)
+    return{"message": "success", "data": sal_grade}
