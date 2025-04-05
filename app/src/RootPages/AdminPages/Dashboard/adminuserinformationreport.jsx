@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import { MoveLeft, MoveRight } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import {PieChart, Pie, Cell, ResponsiveContainer} from 'recharts'
+import {PieChart, Pie, Cell, ResponsiveContainer, Legend} from 'recharts'
+import { BarChart, Bar, XAxis, Tooltip, LabelList } from 'recharts';
+import { YAxis } from "recharts";
+
 
 function AdminUserInformationReport() {
   const navigate = useNavigate();
@@ -13,20 +16,66 @@ function AdminUserInformationReport() {
   const [batchPage, setBatchPage] = useState(1)
   const [totalBatchPages, setTotalBatchPages] = useState(20)
 
-  const alumniData = [
+  const [batchData, setBatchData] = useState([
+      { batch: 2022, count: 172, active: 80, inactive: 22 },
+      { batch: 2019, count: 102, active: 80, inactive: 22 },
+      { batch: 2018, count: 101, active: 80, inactive: 22 },
+      { batch: 2022, count: 99, active: 80, inactive: 22 },
+      { batch: 2022, count: 99, active: 80, inactive: 22 },
+    ])
+
+  const [industryData, setIndustryData] = useState([
+    { name: "Agriculture, Forestry, and Fishing", value: 2 },
+    { name: "Construction", value: 3 },
+    { name: "Finance, Insurance, and Real Estate", value: 4 },
+    { name: "Manufacturing", value: 5 },
+    { name: "Mining", value: 6 },
+    { name: "Public Administration", value: 7 },
+    { name: "Retail Trade", value: 8 },
+    { name: "Services", value: 9 },
+    { name: "Transportation", value: 11 },
+    { name: "Wholesale Trade", value: 10 },
+    { name: "Other", value: 12 },
+  ])
+  const [employmentStatusData, setEmploymentStatusData] = useState([
+    { name: "Employed", value: 60 },
+    { name: "Unemployed", value: 20 },
+    { name: "Self-Employed", value: 5 },
+    { name: "Self-Employed", value: 5 },
+    { name: "Student", value: 10 }
+  ]) 
+  
+  const [employerClassificationData, setEmployerClassificationData] = useState([
+      { name: "Private", value: 50 },
+      { name: "Government", value: 30 },
+      { name: "NGO", value: 10 },
+      { name: "Freelancer", value: 10 }
+    ])
+
+  const [alumniData, setAlumniData] = useState([
     { name: "Active", value: activePercentage },
     { name: "Inactive", value: inactivePercentage },
-  ];
+  ])
 
-  const batchData = [
-    { batch: 2022, count: 172, active: 80, inactive: 22 },
-    { batch: 2019, count: 102, active: 80, inactive: 22 },
-    { batch: 2018, count: 101, active: 80, inactive: 22 },
-    { batch: 2022, count: 99, active: 80, inactive: 22 },
-    { batch: 2022, count: 99, active: 80, inactive: 22 },
-  ];
+  const [salaryGradeData, setSalaryGradeData] = useState([
+    { name: "Less than ₱9,100", value: 10 },
+    { name: "₱9,100 - ₱18,200", value: 15 },
+    { name: "₱18,200 - ₱36,399", value: 30 },
+    { name: "₱36,399 - ₱63,699", value: 5 },
+    { name: "₱63,700 - ₱109,199", value: 12 },
+    { name: "₱109,200 to ₱181,999", value: 31 },
+    { name: "More than ₱181,999", value: 2 },
+  ])
 
-  const COLORS = ["#1E3A8A", "#F3F4F6"]; // Blue for Active, Grey for Inactive
+  const [locationData, seLocationData] = useState([
+    { name: "USA", value: 100},
+    { name: "Canada", value: 60 },
+    { name: "UK", value: 75 },
+    { name: "Australia", value: 30 },
+  ])
+
+  const COLORS = ["#00369C", "#618FE9", "#A3BFF4", "#CEDEFD"];
+  const activeInactiveColors = ["#00369C", "#F7F7FB"]
 
   return (
     <div className='bg-[rgb(243,241,244)] p-6 max-h-screen flex flex-col overflow-auto'>
@@ -37,7 +86,7 @@ function AdminUserInformationReport() {
         </button>
       </div>
       <h1 className='font-satoshi-bold text-black text-3xl mb-4'>User Information Reports</h1>
-      <div className={`grid grid-cols-2 grid-rows-[17rem_2rem_15rem_15rem] gap-8 flex-1`}>
+      <div className={`grid grid-cols-2 grid-rows-[17rem_2rem_50rem_17rem] gap-8 flex-1`}>
         {/* Total Alumni */}
         <div className={`${cardDesign} row-start-1 col-start-1 flex items-center justify-center`}> 
           <div className="relative w-full max-w-[300px] h-[150px] mx-auto">
@@ -55,7 +104,7 @@ function AdminUserInformationReport() {
                   dataKey="value"
                 >
                   {alumniData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                    <Cell key={`cell-${index}`} fill={activeInactiveColors[index]} />
                   ))}
                 </Pie>
               </PieChart>
@@ -139,10 +188,109 @@ function AdminUserInformationReport() {
         </div>
         {/* Filters */}
         <div className='row-start-2 col-span-2'> Filters</div>
-        {/* Industries */}
-        <div className={`${cardDesign} row-start-3 col-span-2`}> </div>
+        {/* Industries and employment*/}
+        <div className={`${cardDesign} row-start-3 col-span-2 flex flex-col font-satoshi-regular`}> 
+          {/* Top half - bar graph */}
+          <div className='h-1/2 p-4'>
+            <h3 className='text-2xl font-satoshi-bold'> Industries</h3>
+            <ResponsiveContainer width="100%" height='100%'>
+              <BarChart data={industryData} margin={{ top: 20, bottom:-10}}>
+                <XAxis 
+                  dataKey="name" 
+                  angle={0} 
+                  textAnchor="middle" 
+                  interval={0} 
+                  height={100} 
+                  tick={{ fontSize: 10, wordWrap: "break-word", width: 80 }}
+                  />
+                
+                <Bar
+                  dataKey="value"
+                  fill="#0a3d91"
+                  barSize={30}
+                  radius={[5, 5, 0, 0]}
+                  >
+                  <LabelList dataKey="value" position="top" fill="#000" fontSize={12} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className='w-full border-t border-gray-300'></div>
+          {/* Bottom half - pie graph */}
+          <div className='h-1/2 flex flex-row p-4'>
+            {/* Employment Status */}
+            <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
+              <h3 className='text-2xl font-satoshi-bold'>Employment Status</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={employmentStatusData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius="80%"
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {employmentStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Employer Classification */}
+            <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
+              <h3 className='text-2xl font-satoshi-bold'>Employer Classification</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={employerClassificationData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius="80%"
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {employmentStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="h-full w-full flex-1 text-center flex flex-col items-center justify-center">
+              <h3 className='text-2xl font-satoshi-bold'>Salary Grade</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={salaryGradeData}
+                  layout="vertical"
+                  margin={{ top: 10, bottom: 30, left: 10, right: 10 }}
+                >
+                  <XAxis type="number" hide/>
+                  <YAxis type="category" dataKey="name" width={150} />
+                  <Bar dataKey="value" fill="#0a3d91" barSize={20} radius={[0, 5, 5, 0]}>
+                    <LabelList dataKey="value" position="right" fill="#000" fontSize={14} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
         {/* Locations */}
-        <div className={`${cardDesign} row-start-4 col-span-2`}> </div>
+        <div className={`${cardDesign} row-start-4 col-span-2 h-full p-4`}> 
+          <h3 className='text-2xl font-satoshi-bold'> Locations </h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={locationData} layout="vertical" margin={{ left: 20, right: 20, bottom: 40 }}>
+              <XAxis type="number"/>
+              <YAxis type="category" dataKey="name" width={100} />
+              <Bar dataKey="value" barSize={20} radius={[0, 5, 5, 0]}>
+                {locationData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[0]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   )
