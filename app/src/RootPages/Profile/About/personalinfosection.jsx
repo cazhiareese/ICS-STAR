@@ -3,6 +3,7 @@ import { MapPin, Phone, IdCard, GraduationCap } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 
 const semester = ["1st Semester", "2nd Semester", "Mid Semester"];
+const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
 
 const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
   return (

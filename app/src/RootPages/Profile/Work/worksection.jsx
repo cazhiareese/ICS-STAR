@@ -121,7 +121,7 @@ function WorkSection({ userDetails, handleChange }) {
           handleEditToggle(); // Toggle edit mode
         }}
       />
-
+  
       {/* Work Experience Card */}
       <div className="w-full py-2">
         {/* First Row: Job Title & Date */}
@@ -132,14 +132,14 @@ function WorkSection({ userDetails, handleChange }) {
                 type="text"
                 value={userDetails.job_title}
                 onChange={(e) => handleChange(e, "job_title")}
-                className="w-[250px] h-[30px] py-1 text-[23px]  font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 "
+                className="w-[250px] sm:w-full h-[30px] py-1 text-[23px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 "
               />
             ) : (
-              <h3 className=" text-[23px] text-primary font-satoshi-black">
+              <h3 className="text-[23px] text-primary font-satoshi-black">
                 {userDetails.job_title}
               </h3>
             )}
-
+  
             {isEditing ? (
               <div className="flex gap-2">
                 {workModes.map((mode) => (
@@ -162,13 +162,13 @@ function WorkSection({ userDetails, handleChange }) {
               </span>
             )}
           </div>
-
+  
           {isEditing ? (
             <input
               type="text"
               value={userDetails.work_start_date}
               onChange={(e) => handleChange(e, "work_start_date")}
-              className="text-primary text-[18px] font-satoshi-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              className="text-primary text-[18px] font-satoshi-medium bg-white border border-gray-300 rounded-md px-2 py-1 w-[250px] sm:w-full"
             />
           ) : (
             <p className="text-primary text-[18px] font-satoshi-medium">
@@ -176,21 +176,21 @@ function WorkSection({ userDetails, handleChange }) {
             </p>
           )}
         </div>
-
+  
         {/* Second Row: Company Name */}
         {isEditing ? (
           <input
             type="text"
             value={userDetails.company_name}
             onChange={(e) => handleChange(e, "company_name")}
-            className="w-[250px] h-[30px] py-1 text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 "
+            className="w-[250px] sm:w-full h-[30px] py-1 text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 "
           />
         ) : (
           <p className="text-black text-[20px] font-satoshi-medium">
             {userDetails.company_name}
           </p>
         )}
-
+  
         {/* Third Row: Work Location & Button */}
         <div className="flex justify-between items-center">
           {isEditing ? (
@@ -198,14 +198,14 @@ function WorkSection({ userDetails, handleChange }) {
               type="text"
               value={userDetails.work_location}
               onChange={(e) => handleChange(e, "work_location")}
-              className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1 "
+              className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] sm:w-full h-[30px] py-1"
             />
           ) : (
             <p className="text-black font-satoshi-medium text-[20px]">
               {userDetails.work_location}
             </p>
           )}
-
+  
           <button
             className="text-black text-[16px] font-satoshi-medium hover:underline flex items-center gap-1"
             onClick={handleToggleMore}
@@ -214,7 +214,7 @@ function WorkSection({ userDetails, handleChange }) {
             {showMore ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
         </div>
-
+  
         {/* Expandable Details */}
         {showMore && (
           <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-4 text-black text-[20px] font-satoshi-medium">
@@ -225,7 +225,7 @@ function WorkSection({ userDetails, handleChange }) {
                 <select
                   value={userDetails.employer_class}
                   onChange={(e) => handleChange(e, "employer_class")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-full sm:w-[250px] h-[30px]"
                 >
                   {employerClasses.map((status) => (
                     <option key={status} value={status}>
@@ -239,14 +239,14 @@ function WorkSection({ userDetails, handleChange }) {
                 </span>
               )}
             </div>
-
+  
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Tenured Status:</span>
               {isEditing ? (
                 <select
                   value={userDetails.tenured_status}
                   onChange={(e) => handleChange(e, "tenured_status")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-full sm:w-[250px] h-[30px]"
                 >
                   {tenuredStatuses.map((status) => (
                     <option key={status} value={status}>
@@ -260,7 +260,7 @@ function WorkSection({ userDetails, handleChange }) {
                 </span>
               )}
             </div>
-
+  
             {/* Salary Range */}
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Salary Range:</span>
@@ -268,7 +268,7 @@ function WorkSection({ userDetails, handleChange }) {
                 <select
                   value={userDetails.salary_grade}
                   onChange={(e) => handleChange(e, "salary_grade")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-full sm:w-[250px] h-[30px]"
                 >
                   {Object.entries(salaryRanges).map(([key, value]) => (
                     <option key={key} value={key}>
@@ -287,6 +287,7 @@ function WorkSection({ userDetails, handleChange }) {
       </div>
     </div>
   );
+  
 }
 
 export default WorkSection;
