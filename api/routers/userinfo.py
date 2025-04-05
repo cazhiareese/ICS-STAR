@@ -201,15 +201,6 @@ async def update_profile(
     facebook: str = Form(...),
     linkedin: str = Form(...),
     github: str = Form(...),
-    industry: str = Form(...),
-    employment_status: str = Form(...),
-    company_name: str = Form(...),
-    job_title: str = Form(...),
-    work_location: str = Form(...),
-    work_mode: str = Form(...),
-    employer_class: str = Form(...),
-    tenured_status: str = Form(...),
-    salary_grade: str = Form(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
@@ -227,15 +218,6 @@ async def update_profile(
     user.facebook = facebook
     user.linkedin = linkedin
     user.github = github
-    user.industry = industry
-    user.employment_status = employment_status
-    user.company_name = company_name
-    user.job_title = job_title
-    user.work_location = work_location
-    user.work_mode = work_mode
-    user.employer_class = employer_class
-    user.tenured_status = tenured_status
-    user.salary_grade = salary_grade
     
     db.commit()
     db.refresh(user)
