@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { BadgeCheck, Filter, List, LayoutGrid, MoveLeft, MoveRight, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
 
 function AdminRecords() {
   const navigate = useNavigate()
@@ -12,35 +13,44 @@ function AdminRecords() {
   const [viewStyle, setViewStye] = useState('List')
   const [maxRows, setMaxRows] = useState(12)
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false)
 
+  // For the search
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  const fetchUsers = (type) => {
-    setUserType(type);
-  };
+  // const fetchUsers = (type) => {
+  //   setUserType(type);
+  // };
   
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/admin/filter/${userType}`)
-      .then(response => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${API_BASE_URL}/admin/filter/${userType}`);
         console.log(response.data);
         setUsers(response.data);
-      })
-      .catch(error => {
+      } catch (error) {
         console.log('Error getting users');
         setUsers([]);
-      });
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
   }, [userType]);
   
   // Initial fetch
   useEffect(() => {
-    fetchUsers('alum');
+    // fetchUsers('alum');
+    setUserType('alum')
   }, []);
 
   return (
-    <div className='flex flex-col lg:p-6 h-screen max-w-7xl mx-auto'>
+    <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
       {/* Records, search, view pending */}
       <div className='justify-between mt-2 lg:mb-8 flex relative'>
         {/* Records header */}
@@ -71,11 +81,11 @@ function AdminRecords() {
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
         <div className='w-full lg:w-auto  min-w-xs'>
           {/* Alumni button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alum' ? 'border-primary' : 'border-transparent'}`} onClick={() => fetchUsers('alum')}>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alum' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alum')}>
             <p className='text-black font-satoshi-medium text-md'> Alumni </p>
           </button>
           {/* Student button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'students' ? ' border-primary' : 'border-transparent'}`} onClick={() => fetchUsers('students')}>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'students' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('students')}>
             <p className='text-black font-satoshi-medium text-md'> Student </p>
           </button>
         </div>
@@ -118,71 +128,81 @@ function AdminRecords() {
         </div>
       </div>
       {/* Table for desktop*/}
-      <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block'>
-        <table className="w-full">
-          {/* Table Header */}
-          <thead>
-            <tr className="text-left text-xs text-primary font-satoshi-regular">
-              <th className="py-2 px-4"></th>
-              <th className="py-2 px-4">NAME</th>
-              <th className="py-2 px-4">BATCH</th>
-              <th className="py-2 px-4">BASE LOCATION</th>
-              <th className="py-2 px-4">JOB TITLE</th>
-              <th className="py-2 px-4">LAST UPDATE</th>
-              <th className="py-2 px-4"></th>
-            </tr>
-          </thead>
+      <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
+        {loading ? (
+          <div className='flex justify-center items-center h-full'>
+            <CircularLoading width={48} height={48} />
+          </div>
+        ) : (
+          <table className="w-full">
+            {/* Table Header */}
+            <thead>
+              <tr className="text-left text-xs text-primary font-satoshi-regular">
+                <th className="py-2 px-4"></th>
+                <th className="py-2 px-4">NAME</th>
+                <th className="py-2 px-4">BATCH</th>
+                <th className="py-2 px-4">BASE LOCATION</th>
+                <th className="py-2 px-4">JOB TITLE</th>
+                <th className="py-2 px-4">LAST UPDATE</th>
+                <th className="py-2 px-4"></th>
+              </tr>
+            </thead>
 
-          {/* Table Body */}
-          <tbody className='font-satoshi-regular text-md'>
-            {users.map((user, index) => (
-              <tr 
+            {/* Table Body */}
+            <tbody className='font-satoshi-regular text-md'>
+              {users.map((user, index) => (
+                <tr 
                 key={index} 
                 className="hover:bg-gray-100 cursor-pointer" 
                 onClick={() => {navigate(`/admin/records/${user.id}`)}}
-              >
-                {/* Name Column */}
-                <td>
-                  {/* <div className="w-8 h-8 bg-gray-300 rounded-full"></div> */}
-                </td>
-                {/* User Name */}
-                <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold"> {user.name} </td>
-                {/* User Batch*/}
-                <td className="py-3 px-4">{user.batch}</td>
-                {/* User Location */}
-                <td className="py-3 px-4">{user.location_base}</td>
-                {/* User Job */}
-                <td className="py-3 px-4">{user.job_title}</td>
-                {/* User last update */}
-                <td className="py-3 px-4">{user.last_updated}</td>
-                {/* User Status */}
-                <td>
-                  {user.status && (
-                    <span className="bg-gray-200 px-4 py-1 rounded-2xl text-black font-satoshi-bold text-sm">
-                      {user.status}
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                >
+                  {/* Name Column */}
+                  <td>
+                    {/* <div className="w-8 h-8 bg-gray-300 rounded-full"></div> */}
+                  </td>
+                  {/* User Name */}
+                  <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold"> {user.name} </td>
+                  {/* User Batch*/}
+                  <td className="py-3 px-4">{user.batch}</td>
+                  {/* User Location */}
+                  <td className="py-3 px-4">{user.location_base}</td>
+                  {/* User Job */}
+                  <td className="py-3 px-4">{user.job_title}</td>
+                  {/* User last update */}
+                  <td className="py-3 px-4">{user.last_updated}</td>
+                  {/* User Status */}
+                  <td>
+                    {user.status && (
+                      <span className="bg-gray-200 px-4 py-1 rounded-2xl text-black font-satoshi-bold text-sm">
+                        {user.status}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
       {/* Table for mobile */}
-      <div className='flex flex-col lg:hidden'>
+        <div className='flex flex-col lg:hidden overflow-auto'>
         {/* User Card */}
-        {users.map((user) => (
-          <div key={user.id} 
-          className='flex w-full p-3 hover:bg-gray-100 cursor-pointer'
-          onClick={() => {navigate(`/admin/records/${user.id}`)}}>
-            {/* Image placeholder */}
-            <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-            <div className='flex flex-col ml-6'>
-              <h2 className='font-satoshi-bold text-md'> {user.name} </h2>
-              <p className='font-satoshi-light text-sm'> {user.batch} </p>
+        {loading ? (
+          <CircularLoading/>
+        ) : (
+          users.map((user) => (
+            <div key={user.id} 
+            className='flex w-full p-3 hover:bg-gray-100 cursor-pointer'
+            onClick={() => {navigate(`/admin/records/${user.id}`)}}>
+              {/* Image placeholder */}
+              <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+              <div className='flex flex-col ml-6'>
+                <h2 className='font-satoshi-bold text-md'> {user.name} </h2>
+                <p className='font-satoshi-light text-sm'> {user.batch} </p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   )
