@@ -7,6 +7,8 @@ from util.userutil import upload_profile, get_current_user, verify_password, has
 
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill
 
+from schemas.user import UserEmploymentStatus, UserTypeEnum
+
 router = APIRouter()
 
 @router.post("/upload-profile-picture")
@@ -82,7 +84,7 @@ async def add_skills(
 @router.put("/update-employment")
 async def update_employment(
     industry: str = Form(...),
-    employment_status: str = Form(...),
+    employment_status: UserEmploymentStatus = Form(...),
     company_name: str = Form(...),
     job_title: str = Form(...),
     country: str = Form(...),
@@ -97,11 +99,11 @@ async def update_employment(
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    if user.user_type.value == "student":
+    if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
     
     user.industry = industry
-    user.employment_status = employment_status
+    user.employment_status = employment_status.value
     user.company_name = company_name
     user.job_title = job_title
     user.work_location = f"{city}, {country}"
