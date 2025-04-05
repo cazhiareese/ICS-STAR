@@ -28,6 +28,7 @@ import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
 import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendingverifications";
 import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminverificationconfirmation";
 import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
+import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboardLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="user-reports" element={<AdminUserInformationReport />} />
+            <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}></Route>
           </Route>
           <Route path="records" element={<AdminRecordsLayout />} >
             <Route index element={<AdminRecords/>}/>
