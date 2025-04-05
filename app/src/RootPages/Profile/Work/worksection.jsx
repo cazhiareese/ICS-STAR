@@ -7,7 +7,6 @@ function WorkSection({ userDetails, handleChange }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const workModes = ["Remote", "Onsite", "Hybrid"];
-  //const employerclass = ["Private", "Public", "Non-Government", "Self-Employed"];
   const employerClasses = ["Government", "NGO", "Private Sector"];
   const tenuredStatuses = [
     "Permanent",
@@ -15,14 +14,6 @@ function WorkSection({ userDetails, handleChange }) {
     "Contractual",
     "Probationary",
   ];
-
-  const handleToggleMore = () => {
-    setShowMore(!showMore);
-  };
-
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
 
   const salaryRanges = {
     1: "Less than ₱9,100",
@@ -34,7 +25,88 @@ function WorkSection({ userDetails, handleChange }) {
     7: "At least ₱182,000 and up",
   };
 
+  const handleToggleMore = () => {
+    setShowMore(!showMore);
+  };
 
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const saveEmployment = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+      console.log(userDetails);
+  
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  
+      // Check if any required fields are missing
+      const requiredFields = [
+        "industry",
+        "employment_status",
+        "company_name",
+        "job_title",
+        "country",
+        "city",
+        "work_mode",
+        "employer_class",
+        "tenured_status",
+        "salary_grade"
+      ];
+  
+      for (const field of requiredFields) {
+        if (!userDetails[field]) {
+          console.error(`${field} is missing`);
+          return;
+        }
+      }
+  
+      // Prepare the data to send as JSON
+      const payload = {
+        industry: userDetails.industry || "ph",
+        employment_status: userDetails.employment_status || "tambay",
+        company_name: userDetails.company_name || "",
+        job_title: userDetails.job_title || "",
+        country: userDetails.country || "bahay",
+        city: userDetails.city || "",
+        work_mode: userDetails.work_mode || "",
+        employer_class: userDetails.employer_class || "",
+        tenured_status: userDetails.tenured_status || "",
+        salary_grade: userDetails.salary_grade || "",
+      };
+  
+      // Log payload to verify
+      console.log("Payload being sent:", JSON.stringify(payload, null, 2));
+  
+      const response = await fetch(`${API_BASE_URL}/update-employment`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json", // Ensure you're sending JSON
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload), // Send the payload as a JSON string
+      });
+  
+      if (!response.ok) {
+        const result = await response.json();
+        console.error("API Error:", result); // Log detailed API error
+        throw new Error("Failed to update employment details");
+      }
+  
+      const result = await response.json();
+      console.log(result.message);
+  
+      // Handle success or UI updates
+    } catch (err) {
+      console.error("Error during employment update:", err);
+    }
+  };
+  
+  
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
@@ -42,7 +114,12 @@ function WorkSection({ userDetails, handleChange }) {
       <SectionHeader
         title="Current Work"
         buttonText={isEditing ? "Save Work" : "Edit Work"}
-        onButtonClick={handleEditToggle}
+        onButtonClick={() => {
+          if (isEditing) {
+            saveEmployment(); // Call saveEmployment on Save
+          }
+          handleEditToggle(); // Toggle edit mode
+        }}
       />
 
       {/* Work Experience Card */}
@@ -184,7 +261,7 @@ function WorkSection({ userDetails, handleChange }) {
               )}
             </div>
 
-            {/* Salary Range (Instead of Salary Grade) */}
+            {/* Salary Range */}
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Salary Range:</span>
               {isEditing ? (

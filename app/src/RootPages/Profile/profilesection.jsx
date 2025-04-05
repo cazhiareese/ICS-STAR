@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Camera, Facebook, Github, Linkedin, Pencil, Check } from "lucide-react";
 import SaveConfirmationModal from "./components/savemodal";
 import prince from "../../assets/prince boy.jpg";
@@ -6,12 +6,97 @@ import prince from "../../assets/prince boy.jpg";
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
+  const [profilePicture, setProfilePicture] = useState(null); // Store the profile picture URL
 
-  const handleSave = () => {
-    setShowModal(false);
-    setEditMode(false);
-    // Save logic can be added here
+  // Fetch the user's profile picture
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("User not authenticated");
+          return;
+        }
+
+        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+        const response = await fetch(`${API_BASE_URL}/profile-picture`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setProfilePicture(result.profile_picture || prince); // Use a fallback image if no profile picture is set
+        } else {
+          console.error("Failed to fetch profile picture");
+        }
+      } catch (err) {
+        console.error("Error while fetching profile picture:", err);
+      }
+    };
+
+    fetchProfilePicture();
+  }, []); // Fetch on component mount
+
+  const handleSave = () => {     // <-- Call the parent save logic
+    setShowModal(false);    // Close modal
+    setEditMode(false);     // Exit edit mode
+    setOriginalEmail(userDetails.email); // Update original email tracker
+    saveProfile();
+ 
   };
+
+  const saveProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("User not authenticated");
+        return;
+      }
+  
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  
+      const formData = new FormData();
+      formData.append("first_name", userDetails.first_name || "");
+      console.log(userDetails.first_name);
+      formData.append("last_name", userDetails.last_name || "");
+      formData.append("email", userDetails.email || "");
+      formData.append("mobile_number", userDetails.mobile_number || "");
+      formData.append("city", userDetails.city || "");
+      formData.append("state", userDetails.state || "");
+      formData.append("country", userDetails.country || "");
+      formData.append("marital_status", userDetails.marital_status || "");
+      formData.append("facebook", userDetails.facebook || "");
+      formData.append("linkedin", userDetails.linkedin || "");
+      formData.append("github", userDetails.github || "");
+  
+      const response = await fetch(`${API_BASE_URL}/profile/edit`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+  
+      const result = await response.json();
+      console.log(result.message);
+      setEditMode(false); // Exit edit mode after successful save
+    } catch (err) {
+      console.error(err);
+      setError("Failed to update profile");
+    }
+  };
+  
+
+
+  
 
 
   return (
@@ -43,7 +128,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
         {/* Profile Image */}
         <div className="relative w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
-          <img src={prince} alt="Profile" className="w-full h-full object-cover" />
+          <img src={profilePicture||prince} alt="Profile" className="w-full h-full object-cover" />
           <div className="absolute bottom-1 right-1 bg-white p-[6px] rounded-full shadow-md cursor-pointer">
             <Camera size={16} className="text-gray-600" />
           </div>
@@ -56,7 +141,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
               <input
                 type="text"
                 value={userDetails.first_name}
-                onChange={(e) => handleChange(e, "first_name}")}
+                onChange={(e) => handleChange(e, "first_name")}
                 className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
               <input

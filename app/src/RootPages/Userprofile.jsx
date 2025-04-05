@@ -57,25 +57,39 @@ function UserProfile() {
               const data = result.data; // Correctly access 'data.data'
   
               setUserDetails({
-                  first_name: data.first_name,
-                  last_name: data.last_name,
-                  email: data.email,
-                  user_type: data.user_type,
-                  location: `${data.city}, ${data.state}`,
-                  city: data.city,
-                  state: data.state,
-                  mobile_number: data.mobile_number,
-                  student_number: data.student_number,
-                  graduation_year: data.graduation_year,
-                  graduation_semester: data.graduation_semester,
-                  job_title: data.job_title,
-                  company_name: data.company_name,
-                  work_location: data.work_location,
-                  work_mode: data.work_mode,
-                  employer_class: data.employer_class,
-                  tenured_status: data.tenured_status,
-                  salary_grade: data.salary_grade,
+                first_name: data.first_name,
+                last_name: data.last_name,
+                email: data.email,
+                user_type: data.user_type,
+                location: `${data.city}, ${data.state}`,
+                city: data.city,
+                state: data.state,
+                country: data.country, // Added country
+                mobile_number: data.mobile_number,
+                student_number: data.student_number,
+                age: data.age, // Added age
+                gender: data.gender, // Added gender
+                marital_status: data.marital_status, // Added marital_status
+                image: data.image, // Added image
+                position: data.position, // Added position
+                is_banned: data.is_banned, // Added is_banned
+                standing: data.standing, // Added standing
+                graduation_year: data.graduation_year,
+                graduation_semester: data.graduation_semester,
+                employment_status: data.employment_status,
+                industry: data.industry,
+                job_title: data.job_title,
+                company_name: data.company_name,
+                work_location: data.work_location,
+                work_mode: data.work_mode,
+                employer_class: data.employer_class,
+                tenured_status: data.tenured_status,
+                salary_grade: data.salary_grade,
+                facebook: data.facebook, // Added facebook
+                linkedin: data.linkedin, // Added linkedin
+                github: data.github // Added github
               });
+              
   
               // Set skills, scholarships, and affiliations
               setSkills(data.skills || []);
@@ -306,10 +320,14 @@ const addScholarship = async (newScholarship) => {
   }
 };
 
+
+
+
+
     const handleChange = (e, field) => {
       setUserDetails({ ...userDetails, [field]: e.target.value });
     };
-
+    console.log(localStorage.getItem("token"));
     return (
       <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
 
@@ -326,7 +344,7 @@ const addScholarship = async (newScholarship) => {
             {/* Conditional Rendering Based on Tab Selection */}
       {activeTab === "About" && (
         <>
-          <PersonalInfoSection editMode={editMode} userDetails={userDetails} handleChange={handleChange} />    
+          <PersonalInfoSection editMode={editMode} userDetails={userDetails} handleChange={handleChange}  />    
           <SkillsInterestsSection editMode={editMode} skills={skills} removeSkill={removeSkill} addSkills={addSkills} />
           <AffiliationsSection editMode={editMode} affiliations={affiliations} removeAffiliation={removeAffiliation} addAffiliation={addAffiliation} />
           <ScholarshipsSection editMode={editMode} scholarships={scholarships} removeScholarship={removeScholarship}   addScholarship={addScholarship}/>
