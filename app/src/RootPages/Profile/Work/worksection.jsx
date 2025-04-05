@@ -49,13 +49,18 @@ function WorkSection({ userDetails, handleChange }) {
       <div className="w-full py-2">
         {/* First Row: Job Title & Date */}
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
+        <div
+  className={`flex gap-2 sm:gap-4 ${
+    isEditing ? "flex-col sm:flex-row items-start" : "items-center"
+  }`}
+>
+
             {isEditing ? (
               <input
                 type="text"
                 value={userDetails.job_title}
                 onChange={(e) => handleChange(e, "job_title")}
-                className="w-[250px] h-[30px] py-1 text-[23px]  font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 "
+                className="w-[250px] h-[30px] py-1 text-[23px]  font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 ${isEditing ?} "
               />
             ) : (
               <h3 className=" text-[23px] text-primary font-satoshi-black">
@@ -91,7 +96,10 @@ function WorkSection({ userDetails, handleChange }) {
               type="text"
               value={userDetails.work_start_date}
               onChange={(e) => handleChange(e, "work_start_date")}
-              className="text-primary text-[18px] font-satoshi-medium bg-white border border-gray-300 rounded-md px-2 py-1"
+              className={`w-[200px] h-[30px] py-1 text-[23px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 ${
+                isEditing ? "sm:mb-0 mb-8" : ""
+              }`}
+              
             />
           ) : (
             <p className="text-primary text-[18px] font-satoshi-medium">
@@ -106,7 +114,7 @@ function WorkSection({ userDetails, handleChange }) {
             type="text"
             value={userDetails.company_name}
             onChange={(e) => handleChange(e, "company_name")}
-            className="w-[250px] h-[30px] py-1 text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 "
+            className=" text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px] "
           />
         ) : (
           <p className="text-black text-[20px] font-satoshi-medium">
@@ -121,12 +129,12 @@ function WorkSection({ userDetails, handleChange }) {
               type="text"
               value={userDetails.work_location}
               onChange={(e) => handleChange(e, "work_location")}
-              className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] py-1 "
+              className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px]  "
             />
           ) : (
             <p className="text-black font-satoshi-medium text-[20px]">
               {userDetails.work_location}
-            </p>
+            </p> 
           )}
 
           <button
@@ -148,10 +156,10 @@ function WorkSection({ userDetails, handleChange }) {
                 <select
                   value={userDetails.employer_class}
                   onChange={(e) => handleChange(e, "employer_class")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] "
                 >
                   {employerClasses.map((status) => (
-                    <option key={status} value={status}>
+                    <option className="text-[15px] sm:text-[20px] " key={status} value={status}>
                       {status}
                     </option>
                   ))}
@@ -169,10 +177,10 @@ function WorkSection({ userDetails, handleChange }) {
                 <select
                   value={userDetails.tenured_status}
                   onChange={(e) => handleChange(e, "tenured_status")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] "
                 >
                   {tenuredStatuses.map((status) => (
-                    <option key={status} value={status}>
+                    <option className="text-[15px] sm:text-[20px] " key={status} value={status}>
                       {status}
                     </option>
                   ))}
@@ -191,10 +199,10 @@ function WorkSection({ userDetails, handleChange }) {
                 <select
                   value={userDetails.salary_grade}
                   onChange={(e) => handleChange(e, "salary_grade")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[250px] h-[30px] "
+                  className="text-primary font-satoshi-bold bg-white border text-[20px] border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] sm:text-[20px]"
                 >
                   {Object.entries(salaryRanges).map(([key, value]) => (
-                    <option key={key} value={key}>
+                    <option className="text-[15px] sm:text-[20px] " key={key} value={key}>
                       {value}
                     </option>
                   ))}
