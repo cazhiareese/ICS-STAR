@@ -67,7 +67,15 @@ function AdminUserInformationReport() {
     { name: "More than ₱181,999", value: 2 },
   ])
 
-  const COLORS = ["#1E3A8A", "#F3F4F6"]; // Blue for Active, Grey for Inactive
+  const [locationData, seLocationData] = useState([
+    { name: "USA", value: 100},
+    { name: "Canada", value: 60 },
+    { name: "UK", value: 75 },
+    { name: "Australia", value: 30 },
+  ])
+
+  const COLORS = ["#00369C", "#618FE9", "#A3BFF4", "#CEDEFD"];
+  const activeInactiveColors = ["#00369C", "#F7F7FB"]
 
   return (
     <div className='bg-[rgb(243,241,244)] p-6 max-h-screen flex flex-col overflow-auto'>
@@ -78,7 +86,7 @@ function AdminUserInformationReport() {
         </button>
       </div>
       <h1 className='font-satoshi-bold text-black text-3xl mb-4'>User Information Reports</h1>
-      <div className={`grid grid-cols-2 grid-rows-[17rem_2rem_50rem_15rem] gap-8 flex-1`}>
+      <div className={`grid grid-cols-2 grid-rows-[17rem_2rem_50rem_17rem] gap-8 flex-1`}>
         {/* Total Alumni */}
         <div className={`${cardDesign} row-start-1 col-start-1 flex items-center justify-center`}> 
           <div className="relative w-full max-w-[300px] h-[150px] mx-auto">
@@ -96,7 +104,7 @@ function AdminUserInformationReport() {
                   dataKey="value"
                 >
                   {alumniData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                    <Cell key={`cell-${index}`} fill={activeInactiveColors[index]} />
                   ))}
                 </Pie>
               </PieChart>
@@ -269,7 +277,20 @@ function AdminUserInformationReport() {
           </div>
         </div>
         {/* Locations */}
-        <div className={`${cardDesign} row-start-4 col-span-2`}> </div>
+        <div className={`${cardDesign} row-start-4 col-span-2 h-full p-4`}> 
+          <h3 className='text-2xl font-satoshi-bold'> Locations </h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={locationData} layout="vertical" margin={{ left: 20, right: 20, bottom: 40 }}>
+              <XAxis type="number"/>
+              <YAxis type="category" dataKey="name" width={100} />
+              <Bar dataKey="value" barSize={20} radius={[0, 5, 5, 0]}>
+                {locationData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[0]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   )
