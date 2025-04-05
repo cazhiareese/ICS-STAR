@@ -170,7 +170,7 @@ function AdminUserInformationReport() {
                   const inactivePercentage = ((row.inactive / row.count) * 100).toFixed(0);
                   
                   return (
-                    <tr key={index} className="text-sm">
+                    <tr key={index} className="text-sm cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`)}}>
                       <td className="p-2">{row.batch}</td>
                       <td className="p-2">{row.count}</td>
                       <td className="p-2">
