@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
-import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import { ChevronDown, Search, X } from "lucide-react"; 
+import axios from 'axios';
+import React, {useState, useEffect} from 'react';
 
 const AlumniIndustryFilter = ({
   isIndustryExpanded,
@@ -10,16 +12,32 @@ const AlumniIndustryFilter = ({
   setIndustryList,
 }) => {
 
-    const industries = [
-        "Agriculture",
-        "Healthcare",
-        "Entertainment",
-        "Education",
-        "Instructor",
-        "Information Technology"
-    ]
+  const [industries, setIndustries] = useState([]); 
+  
+  //Search Suggestions
+  useEffect(() => {
+      const fetchData = async () => {
+          if (!affiliationInput) {
+              setIndustries([]);
+              return;
+          }
+          try {
+              const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/industries?q=${encodeURIComponent(industryInput)}&limit=5`);
+              setIndustries(response.data);
+              console.log(response.data);
+          } catch (error) {
+              console.error("Error fetching affiliation data:", error);
+              // setAlumniList([]);
+          }
+          
+      };
+  
+      fetchData();  // Fetch data when dependencies change
+  
+  }, [industryInput]);
+  
 
-    // Handle the enter key press
+  // Handle the enter key press
   const handleIndustrySearch = (e) => {
     if (e.key === "Enter" && industryInput.trim()) {
       setIndustryList([...industryList, industryInput]); // Add the input to IndustryList
@@ -36,7 +54,7 @@ const AlumniIndustryFilter = ({
   };
 
   // Filter industrys based on user input
-  const filteredIndustries = industries.filter(industry => industry.toLowerCase().includes(industryInput.toLowerCase()));
+  // const filteredIndustries = industries.filter(industry => industry.toLowerCase().includes(industryInput.toLowerCase()));
 
   return (
 
@@ -126,7 +144,7 @@ const AlumniIndustryFilter = ({
               )
             ))
           ) : (
-            filteredIndustries.map((industry, index) => (
+            industries.map((industry, index) => (
               !industryList.includes(industry) && ( // Check if industry is not already in IndustryList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button

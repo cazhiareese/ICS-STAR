@@ -19,7 +19,7 @@ const AlumniCareerFilter = ({
     useEffect(() => {
         const fetchData = async () => {
             if (!careerInput) {
-                setFilteredAlumni([]);
+                setJobs([]);
                 return;
             }
             try {

@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import axios from 'axios';
+import React, {useState, useEffect} from 'react';
 
 const AlumniLocationFilter = ({
   isLocationExpanded,
@@ -10,13 +12,29 @@ const AlumniLocationFilter = ({
   setLocation,
   setIsIndustryExpanded
 }) => {
-
-    const locations = [
-        "Manila",
-        "Laguna",
-        "Davao",
-        "Camarines Sur"
-    ]
+    const [locations, setLocations] = useState([]); 
+    
+    //Search Suggestions
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!locationInput) {
+                setLocations([]);
+                return;
+            }
+            try {
+                const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/cities?q=${encodeURIComponent(locationInput)}&limit=5`);
+                setLocations(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error("Error fetching alumni data:", error);
+                // setAlumniList([]);
+            }
+            
+        };
+    
+        fetchData();  // Fetch data when dependencies change
+    
+    }, [locationInput]);
 
     // Handle the enter key press
   const handleLocationSearch = (e) => {

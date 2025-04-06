@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import axios from 'axios';
+import React, {useState, useEffect} from 'react';
 
 const AlumniSkillsFilter = ({
   isSkillsExpanded,
@@ -11,14 +13,29 @@ const AlumniSkillsFilter = ({
   setIsLocationExpanded
 }) => {
 
-    const skills = [
-        "Human Interaction Design",
-        "Machine Learning",
-        "Data Science",
-        "Big Data",
-        "Leadership"
-    ]
+  const [skills, setSkills] = useState([]); 
 
+  //Search Suggestions
+  useEffect(() => {
+      const fetchData = async () => {
+          if (!skillsInput) {
+              setSkills([]);
+              return;
+          }
+          try {
+              const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/skills?q=${encodeURIComponent(skillsInput)}&limit=5`);
+              setSkills(response.data);
+              console.log(response.data);
+          } catch (error) {
+              console.error("Error fetching skills data:", error);
+          }
+          
+      };
+  
+      fetchData();  // Fetch data when dependencies change
+  
+  }, [skillsInput]);
+  
     // Handle the enter key press
   const handleSkillsSearch = (e) => {
     if (e.key === "Enter" && skillsInput.trim()) {
@@ -36,7 +53,7 @@ const AlumniSkillsFilter = ({
   };
 
   // Filter jobs based on user input
-  const filteredSkills = skills.filter(skill => skill.toLowerCase().includes(skillsInput.toLowerCase()));
+  // const filteredSkills = skills.filter(skill => skill.toLowerCase().includes(skillsInput.toLowerCase()));
 
   return (
 
@@ -126,7 +143,7 @@ const AlumniSkillsFilter = ({
               )
             ))
           ) : (
-            filteredSkills.map((skill, index) => (
+            skills.map((skill, index) => (
               !skillsList.includes(skill) && ( // Check if job is not already in careerList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button

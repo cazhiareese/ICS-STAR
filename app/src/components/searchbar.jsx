@@ -44,6 +44,7 @@ const SearchBar =
         setSearchInput(e.target.value);
     };
 
+    //creates an object for url making
     const search = () => {
         let filters = {}; // Initialize filter object
         if (searchInput != ""){
@@ -59,10 +60,10 @@ const SearchBar =
             filters.job_title = careerList;
         }
         if (Array.isArray(affiliationList) && affiliationList.length > 0) {
-            filters.affiliations = affiliationList;
+            filters.affiliation = affiliationList;
         }
         if (Array.isArray(skillsList) && skillsList.length > 0) {
-            filters.skills = skillsList;
+            filters.skill = skillsList;
         }
         if (Array.isArray(industryList) && industryList.length > 0) {
             filters.industry = industryList;
@@ -100,7 +101,7 @@ const SearchBar =
         }
     };
     
-
+    //Builds URL using object
     function buildSearchUrl(filters) {
         let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
         let queryParams = new URLSearchParams(filters).toString();

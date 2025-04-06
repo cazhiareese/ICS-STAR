@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
-import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import { ChevronDown, Search, X } from "lucide-react"; 
+import axios from 'axios';
+import React, {useState, useEffect} from 'react';
 
 const AlumniAffiliationFilter = ({
   isAffiliationExpanded,
@@ -10,16 +12,30 @@ const AlumniAffiliationFilter = ({
   setAffiliationList,
   setIsSkillsExpanded
 }) => {
-
-  const affiliations = [
-      "Young Software Engineers' Society",
-      "Alliance of Computer Science Students",
-      "Computer Science Society",
-      "Mathematical Science Society",
-      "El Gamma Penumbra"
-  ]
-
+  const [affiliations, setAffiliations] = useState([]); 
+ 
+  //Search Suggestions
+  useEffect(() => {
+      const fetchData = async () => {
+          if (!affiliationInput) {
+              setAffiliations([]);
+              return;
+          }
+          try {
+              const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/affiliations?q=${encodeURIComponent(affiliationInput)}&limit=5`);
+              setAffiliations(response.data);
+              console.log(response.data);
+          } catch (error) {
+              console.error("Error fetching affiliation data:", error);
+              // setAlumniList([]);
+          }
+          
+      };
   
+      fetchData();  // Fetch data when dependencies change
+  
+  }, [affiliationInput]);
+
 
     // Handle the enter key press
   const handleAffiliationSearch = (e) => {
