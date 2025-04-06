@@ -1,6 +1,12 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from util.alumni_search_autocomplete_logic import get_name_suggestions, get_job_title_suggestions, get_skill_suggestions, get_industry_suggestions, get_city_suggestions
+from util.alumni_search_autocomplete_logic import (
+    get_name_suggestions, 
+    get_job_title_suggestions, 
+    get_skill_suggestions, 
+    get_industry_suggestions, 
+    get_city_suggestions
+    )
 from typing import Optional, List, Dict
 from config.database import get_db
 from typing import List, Optional
