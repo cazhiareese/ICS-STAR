@@ -20,7 +20,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
-async def get_org_suggestion(db: Session, query_text: str, limit: int = 5) -> List[str]:
+def get_org_suggestion(db: Session, query_text: str, limit: int = 5) -> List[str]:
     results = db.query(distinct(Orgs.name))\
         .filter(
             or_(

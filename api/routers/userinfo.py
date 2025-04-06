@@ -1,15 +1,24 @@
 from fastapi import Depends, APIRouter, HTTPException, status, Form, UploadFile, File, Query
 from sqlalchemy.orm import Session
 from config.database import get_db
-from typing import List
+from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion
 
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill
 
 from schemas.user import UserEmploymentStatus, UserTypeEnum
 
 router = APIRouter()
+
+@router.get("/get-org")
+def get_org(
+    q: str = Query(..., min_length=1, description="Search org"),
+    limit: Optional[int] = Query(5, ge=1, le=20, description="Maximum number of results"),
+    db: Session = Depends(get_db)
+):
+
+    return get_org_suggestion(db, q, limit)
 
 @router.post("/upload-profile-picture")
 async def upload_profile_picture(
