@@ -39,6 +39,11 @@ class UnemploymentReasonEnum(str, PyEnum):
    cannot_start = "Cannot start working at present"
    other = "Other"
 
+class UserGradSemEnum(str, PyEnum):
+    first_sem = "1st Semester"
+    second_sem = "2nd Semester"
+    midyear = "Midyear"
+
 # Models
 class User(Base):
    __tablename__ = 'users'
