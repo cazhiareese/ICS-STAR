@@ -57,7 +57,10 @@ function ImageUploadModal({ isOpen, onClose, onUpload }) {
 
       const result = await response.json();
       console.log("Response from backend:", result); // Debugging: log the backend response
-      onUpload(result); // Call the parent function to update the profile
+
+      // Pass the uploaded image URL or path back to the parent component
+      onUpload(result.imageUrl); // Assume the backend returns the image URL as 'imageUrl'
+
       onClose(); // Close the modal after successful upload
     } catch (err) {
       console.error("Error during upload:", err); // Debugging: log the error

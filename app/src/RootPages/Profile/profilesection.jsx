@@ -102,8 +102,9 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
     }
   };
 
-  const handleProfilePictureUpload = (newImage) => {
-    setProfilePicture(newImage); // Update the profile picture with the new image
+  const handleUpload = (imageUrl) => {
+    setProfilePicture(imageUrl); // Update the profile image in the parent component
+    console.log("Profile picture updated:", imageUrl); // Debugging: log the new profile image URL
   };
 
   return (
@@ -211,7 +212,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       <ImageUploadModal
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
-        onUpload={handleProfilePictureUpload}
+        onUpload={handleUpload}
       />
     </div>
   );
