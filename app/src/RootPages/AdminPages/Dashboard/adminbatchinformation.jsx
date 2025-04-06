@@ -2,6 +2,8 @@ import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MoveLeft } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, LabelList } from 'recharts';
+
 
 function AdminBatchInformation() {
     const navigate = useNavigate()
@@ -23,6 +25,14 @@ function AdminBatchInformation() {
       { name: 'Undergoing training', value: 25 },
       { name: 'Still looking for work', value: 25 },
     ])
+
+    const [jobTitles, setJobTitles] = useState([
+        { title: 'Full-Stack Developer', count: 4578, percent: 3.3 },
+        { title: 'Front-end Developer', count: 3500, percent: 2.5 },
+        { title: 'Back-end Developer', count: 3000, percent: 2.2 },
+        { title: 'Data Scientist', count: 6000, percent: 4.1 },
+        { title: 'Researcher', count: 7000, percent: 5.0 }
+      ])
 
     const [selectedYear, setSelectedYear] = useState()
     const [batchTotalCount, setBatchTotalCount] = useState(100)
@@ -177,6 +187,39 @@ function AdminBatchInformation() {
           <div className='w-full flex flex-row items-center'>
             <h3 className='font-satoshi-medium text-xl'> Brief Statistics </h3>
             <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
+          </div>
+          {/* Top Job Titles */}
+          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            <h2 className='font-satoshi-bold text-xl'> Top Job Titles </h2>
+            <div className='h-full w-full '>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                layout="vertical"
+                data={jobTitles}
+                margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
+              >
+                <XAxis type="number" hide />
+                <YAxis
+                  type="category"
+                  dataKey="title"
+                  tick={{ fill: "#5A5673", fontSize:10}}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Bar
+                  dataKey="count"
+                  barSize={20}
+                  background={{ fill: "#EAF1FF" }}
+                  radius={[10,10,10,10]}
+                >
+                  {jobTitles.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
+                  ))}
+                  {/* <LabelList dataKey="count" position="right" fill="#000" fontSize={14} /> */}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>
