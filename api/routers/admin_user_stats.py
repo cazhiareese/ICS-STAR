@@ -2,11 +2,10 @@ from typing import Dict, List, Optional
 from fastapi import Depends, APIRouter, HTTPException, Query, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from schemas.user import UserOut
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
-from util.user_information_stats import  employment_class_util, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, get_active_by_batch, grouped_by_industry, salary_grade_util, tenure_status_util, work_mode_util
+from util.user_information_stats import  employment_class_util, get_active_alumni_stats, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, grouped_by_industry, salary_grade_util, tenure_status_util, work_mode_util
 from util.admin_alum_list import get_alumni_list_filter,  get_alumni_filter, get_all_alumni, get_student_filter
 
 router = APIRouter()
@@ -20,8 +19,8 @@ async def get_all_alumni_route(db: Session = Depends(get_db)):
     return{"message": "success", "data": all_alumni}
 
 @router.get("/admin/stats/get_active_by_batch")
-async def get_active_batch(db: Session= Depends(get_db), order:str="total_users"):
-    active_batch = get_active_by_batch(db, order)
+async def get_active_batch(db: Session= Depends(get_db), order:Optional[str] = None):
+    active_batch = get_active_alumni_stats(db, order=order, alumni_general=False)
 
     return{"message": "success", "data": active_batch}
 
@@ -41,13 +40,13 @@ async def get_batch_top_jobs(db:Session=Depends(get_db), batch:str=""):
 
 @router.get("/admin/stats/get_batch_top_industries")
 async def get_batch_top_industries(db:Session=Depends(get_db), batch:str=""):
-    top_industries =  grouped_by_industry(db, batch=batch, country =None)
+    top_industries =  grouped_by_industry(db, batch=batch, country =None, limit=True)
 
     return{"message":"success", "data":top_industries}
 
 @router.get("/admin/stats/get_batch_top_countries")
 async def get_batch_top_countries(db:Session=Depends(get_db), batch:str=""):
-    top_countries =  get_top_country_batch(db, batch)
+    top_countries =  get_top_country_batch(db, batch, limit=True)
 
     return{"message":"success", "data":top_countries}
 
@@ -65,7 +64,7 @@ async def get_country_top_jobs(db:Session=Depends(get_db), industry:str=""):
 
 @router.get("/admin/stats/get_country_top_industries")
 async def get_country_top_industries(db:Session=Depends(get_db), country:str=""):
-    top_industries = grouped_by_industry(db, batch=None, country =country)
+    top_industries = grouped_by_industry(db, batch=None, country =country, limit=True)
 
     return{"message":"success", "data":top_industries}
 
@@ -188,35 +187,35 @@ async def count_unverified(db: Session = Depends(get_db)):
 
 
 @router.get("/admin/stats/employment_status")
-async def get_employment(db:Session=Depends(get_db)):
-    batch_employ = get_employment_status(db, batch= None)
+async def get_employment(db:Session=Depends(get_db), batch: Optional[str] = None):
+    batch_employ = get_employment_status(db, batch=batch)
 
 
     return{"message": "success", "data": batch_employ}
 
 @router.get("/admin/stats/employment_class")
-async def get_employment_class(db:Session=Depends(get_db)):
-    batch_employ_class = employment_class_util(db, industry= None)
+async def get_employment_class(db:Session=Depends(get_db), batch: Optional[str] = None):
+    batch_employ_class = employment_class_util(db, industry= None, batch=batch)
 
 
     return{"message": "success", "data": batch_employ_class}
 
 @router.get("/admin/stats/industry/employment_class")
 async def get_employment_class(db:Session=Depends(get_db), industry:str = None):
-    batch_employ_class = employment_class_util(db, industry= industry)
+    batch_employ_class = employment_class_util(db, industry= industry, batch=None)
 
 
     return{"message": "success", "data": batch_employ_class}
 
 
 @router.get("/admin/stats/industry/count")
-async def get_industry_count(db:Session=Depends(get_db)):
-    industry_count = grouped_by_industry(db, batch=None, country =None)
+async def get_industry_count(db:Session=Depends(get_db),  batch: Optional[str] = None):
+    industry_count = grouped_by_industry(db, batch=batch, country =None, limit=False)
     return{"message": "success", "data": industry_count}
 
 @router.get("/admin/stats/industry/salary_grade")
 async def get_salary_count(db:Session=Depends(get_db), industry:str=None):
-    industry_count = salary_grade_util(db, industry = industry)
+    industry_count = salary_grade_util(db, industry = industry, batch=None)
     return{"message": "success", "data": industry_count}
 
 
@@ -231,6 +230,19 @@ async def get_worktype_count(db:Session=Depends(get_db), industry:str=None):
     return{"message": "success", "data": work_mode}
 
 @router.get("/admin/stats/salary_grade")
-async def get_worktype_count(db:Session=Depends(get_db)):
-    sal_grade = salary_grade_util(db, industry = None)
+async def get_worktype_count(db:Session=Depends(get_db), batch:Optional[str] = None):
+    sal_grade = salary_grade_util(db, industry = None, batch=batch)
     return{"message": "success", "data": sal_grade}
+
+@router.get("/admin/stats/countries")
+async def country_route(db: Session = Depends(get_db), batch: Optional[str] = None):
+
+    top_countries =  get_top_country_batch(db, batch, limit=False)
+
+    return{"message":"success", "data":top_countries}
+
+@router.get("/admin/stats/activity")
+async def general_activity_route(db: Session = Depends(get_db)):
+    activity_data= get_active_alumni_stats(db, alumni_general = True)
+
+    return{"message": "success", "data": activity_data}
