@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from 'axios';
@@ -17,35 +17,28 @@ const SearchBar =
     setLoading,
     setAlumniList
   })=> {
+    const [filteredAlumni, setFilteredAlumni] = useState([]); 
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!searchInput) {
+                setFilteredAlumni([]);
+                return;
+            }
+            try {
+                const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/names?q=${encodeURIComponent(searchInput)}&limit=5`);
+                setFilteredAlumni(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error("Error fetching alumni data:", error);
+                // setAlumniList([]);
+            }
+            
+        };
     
-
+        fetchData();  // Fetch data when dependencies change
     
-
-    //Dummy alumni list
-    const alumni = [
-        { name: "Janry Mendoza" },
-        { name: "Redd Villanueva" },
-        { name: "Elijah Thompson" },
-        { name: "Sophia Ramirez" },
-        { name: "Liam Anderson" },
-        { name: "Olivia Carter" },
-        { name: "Noah Bennett" },
-        { name: "Emma Robinson" },
-        { name: "Aiden Hughes" },
-        { name: "Isabella Flores" },
-        { name: "Lucas Mitchell" },
-        { name: "Mia Peterson" },
-        { name: "Ethan Simmons" },
-        { name: "Charlotte Hayes" },
-        { name: "Mason Cooper" },
-        { name: "Amelia Scott" },
-        { name: "Logan Brooks" },
-        { name: "Harper Ward" },
-        { name: "James Reed" },
-        { name: "Evelyn Murphy" },
-        { name: "Benjamin Torres" },
-        { name: "Abigail Richardson" }
-    ];
+    }, [searchInput]);
+    
     
     const handleChange = (e) => {
         setSearchInput(e.target.value);
@@ -117,11 +110,6 @@ const SearchBar =
 
     
 
-    const filteredAlumni = searchInput
-        ? alumni.filter((alumnus) =>
-              alumnus.name.toLowerCase().includes(searchInput.toLowerCase())
-          )
-        : [];
 
     return (
         <div className="md:w-full w-3/5 max-w-lg relative">
@@ -158,11 +146,11 @@ const SearchBar =
                             <motion.li
                                 key={index}
                                 className="px-4 py-2 cursor-pointer"
-                                onClick={() => setSearchInput(alumnus.name)}
+                                onClick={() => setSearchInput(alumnus)}
                                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e5e7eb")}
                                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                             >
-                                {alumnus.name}
+                                {alumnus}
                             </motion.li>
                         ))}
                     </motion.ul>
