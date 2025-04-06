@@ -28,6 +28,7 @@ function AlumniSearch() {
   const [isIndustryExpanded, setIsIndustryExpanded] = useState(false);
   const [isLocationExpanded, setIsLocationExpanded] = useState(false);
   const [isALumniInfoExpanded, setIsAlumniInfoExpanded] = useState(false);
+  const [isAlumniProfessionExpanded, setIsAlumniProfessionExpanded] = useState(false);
   
   const [careerList, setCareerList] = useState([]); // State for career list
   const [affiliationList, setAffiliationList] = useState([]); // State for affiliation list
@@ -499,7 +500,7 @@ function AlumniSearch() {
             </button>
           </div>
           
-          {/* Alumni Batch Filter */}
+          {/* Alumni Information Group Filter */}
           <div className="flex flex-col shadow mt-14 rounded-lg gap-3 items-center h-auto">
                 <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniInfoExpanded(!isALumniInfoExpanded)}>
                   <motion.h1
@@ -632,24 +633,56 @@ function AlumniSearch() {
                   />
                 </motion.div>
             </div>
+          
 
-          <AlumniCareerFilter
-            isCareerExpanded={isCareerExpanded}
-            setIsCareerExpanded={setIsCareerExpanded}
-            careerInput={careerInput}
-            setCareerInput={setCareerInput}
-            careerList={careerList}
-            setCareerList={setCareerList}
-          />  
 
-          <AlumniIndustryFilter
-            isIndustryExpanded={isIndustryExpanded}
-            setIsIndustryExpanded={setIsIndustryExpanded}
-            industryInput={industryInput}
-            setIndustryInput={setIndustryInput}
-            industryList={industryList}
-            setIndustryList={setIndustryList}
-          />
+          <div className="flex flex-col shadow mt-5 rounded-lg gap-3 items-center h-auto">
+              <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniProfessionExpanded(!isAlumniProfessionExpanded)}>
+                <motion.h1
+                  className="font-satoshi-medium justify"
+                  initial={{ fontWeight: 500, fontSize: "1.00rem" }}
+                  animate={{
+                    fontWeight: isAlumniProfessionExpanded ? 500 : 500, // Bold when expanded
+                    fontSize: isAlumniProfessionExpanded ? "1.00rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  Alumni Profession
+                </motion.h1>
+
+                <motion.button
+                  className="cursor-pointer hover:text-primary ml-auto"
+                  animate={{ rotate: isAlumniProfessionExpanded ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown size={30} />
+                </motion.button>
+              </div>
+              <motion.div
+                className={`overflow-hidden w-11/12 justify-center ${isAlumniProfessionExpanded ? "pb-6" : ""}`}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: isAlumniProfessionExpanded ? "auto" : 0, opacity: isAlumniProfessionExpanded ? 1 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <AlumniCareerFilter
+                  isCareerExpanded={isCareerExpanded}
+                  setIsCareerExpanded={setIsCareerExpanded}
+                  careerInput={careerInput}
+                  setCareerInput={setCareerInput}
+                  careerList={careerList}
+                  setCareerList={setCareerList}
+                />  
+
+                <AlumniIndustryFilter
+                  isIndustryExpanded={isIndustryExpanded}
+                  setIsIndustryExpanded={setIsIndustryExpanded}
+                  industryInput={industryInput}
+                  setIndustryInput={setIndustryInput}
+                  industryList={industryList}
+                  setIndustryList={setIndustryList}
+                />
+              </motion.div>
+          </div>
 
           <AlumniSkillsFilter
             isSkillsExpanded={isSkillsExpanded}
