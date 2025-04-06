@@ -9,11 +9,13 @@ import {
 } from "lucide-react";
 import SaveConfirmationModal from "./components/savemodal";
 import prince from "../../assets/prince boy.jpg";
+import ImageUploadModal from "./components/imageuploadmodal";
 
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
-  const [profilePicture, setProfilePicture] = useState(null); // Store the profile picture URL
+  const [profilePicture, setProfilePicture] = useState(null); 
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   // Fetch the user's profile picture
   useEffect(() => {
@@ -100,6 +102,10 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
     }
   };
 
+  const handleProfilePictureUpload = (newImage) => {
+    setProfilePicture(newImage); // Update the profile picture with the new image
+  };
+
   return (
     <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
       {/* Edit / Save Profile Button */}
@@ -138,6 +144,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
           <Camera
             size={32}
             className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
+            onClick={() => setShowUploadModal(true)}
           />
         </span>
 
@@ -199,6 +206,12 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
         onConfirm={handleSave}
         onCancel={() => setShowModal(false)}
         emailChanged={userDetails.email !== originalEmail}
+      />
+
+      <ImageUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onUpload={handleProfilePictureUpload}
       />
     </div>
   );
