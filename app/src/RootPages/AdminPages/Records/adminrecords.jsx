@@ -8,7 +8,7 @@ import UsersTable from '../../../components/AdminComponents/userstable';
 function AdminRecords() {
   const navigate = useNavigate()
 
-  const [userType, setUserType] = useState('alumni')
+  const [userType, setUserType] = useState('alum')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(48)
   const [viewStyle, setViewStye] = useState('List')
@@ -26,7 +26,7 @@ function AdminRecords() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/verified-${userType}`);
+        const response = await axios.get(`${API_BASE_URL}/admin/filter/${userType}`);
         console.log(response.data);
         setUsers(response.data);
       } catch (error) {
@@ -43,7 +43,7 @@ function AdminRecords() {
   // Initial fetch
   useEffect(() => {
     // fetchUsers('alum');
-    setUserType('alumni')
+    setUserType('alum')
   }, []);
   
   return (
@@ -83,11 +83,11 @@ function AdminRecords() {
         <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
           <div className='w-full lg:w-auto  min-w-xs'>
             {/* Alumni button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alumni')}>
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alum' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alum')}>
               <p className='text-black font-satoshi-medium text-md'> Alumni </p>
             </button>
             {/* Student button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'students' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('students')}>
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'student' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('student')}>
               <p className='text-black font-satoshi-medium text-md'> Student </p>
             </button>
           </div>
