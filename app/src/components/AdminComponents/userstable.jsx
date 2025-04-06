@@ -26,7 +26,7 @@ function UsersTable({ data }) {
                 <tr
                 key={index}
                 className="hover:bg-gray-100 cursor-pointer"
-                onClick={() => navigate(`/admin/records/${user.id}`)}
+                onClick={() => navigate(`/admin/records/${user.user_id}`)}
                 >
                 <td></td>
                 <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold">{user.name}</td>
