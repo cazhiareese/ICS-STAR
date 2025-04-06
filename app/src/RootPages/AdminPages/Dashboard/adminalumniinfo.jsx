@@ -1,18 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MoveLeft, MoveRight } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import {PieChart, Pie, Cell, ResponsiveContainer, Legend} from 'recharts'
 import { BarChart, Bar, XAxis, Tooltip, LabelList } from 'recharts';
 import { YAxis } from "recharts";
+import axios from 'axios'
+import SkeletonLoading from '../../../components/LoadingComponents/skeletonloading';
 
 
 function AdminAlumniInfo() {
   const navigate = useNavigate();
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const [loading, setLoading] = useState(true)
 
   const cardDesign = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
-  const totalAlumni = 1375;
-  const activePercentage = 23;
-  const inactivePercentage = 77;
+  const [alumniStatActivity, setAlumniStatActivity] = useState({
+    "total_alumni": 0,
+    "active_alumni": 0,
+    "active_alumni_percentage": 0.0,
+    "inactive_alumni": 0,
+    "inactive_alumni_percentage": 0.0
+  })
   const [batchPage, setBatchPage] = useState(1)
   const [totalBatchPages, setTotalBatchPages] = useState(20)
 
@@ -53,8 +62,8 @@ function AdminAlumniInfo() {
     ])
 
   const [alumniData, setAlumniData] = useState([
-    { name: "Active", value: activePercentage },
-    { name: "Inactive", value: inactivePercentage },
+    { name: "Active", value: 0 },
+    { name: "Inactive", value: 0 },
   ])
 
   const [salaryGradeData, setSalaryGradeData] = useState([
@@ -74,6 +83,29 @@ function AdminAlumniInfo() {
     { name: "Australia", value: 30 },
   ])
 
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const alumniStatActivity = await axios.get(`${API_BASE_URL}/admin/stats/activity`);
+
+        setAlumniStatActivity(alumniStatActivity.data.data);
+
+        const { active_alumni, inactive_alumni } = alumniStatActivity.data.data
+        setAlumniData([
+          { name: "Active", value: active_alumni },
+          { name: "Inactive", value: inactive_alumni },
+        ])
+      } catch (error) {
+        console.log(error);
+        // setUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  },[])
+
   const COLORS = ["#00369C", "#618FE9", "#A3BFF4", "#CEDEFD"];
   const activeInactiveColors = ["#00369C", "#F7F7FB"]
 
@@ -89,8 +121,11 @@ function AdminAlumniInfo() {
       <div className={`grid grid-cols-2 grid-rows-[17rem_2rem_50rem_17rem] gap-8 flex-1`}>
         {/* Total Alumni */}
         <div className={`${cardDesign} row-start-1 col-start-1 flex items-center justify-center`}> 
+          {loading ? (
+            <SkeletonLoading/>
+          ) : (
           <div className="relative w-full max-w-[300px] h-[150px] mx-auto">
-            {/* Pie Chart */}
+              {/* Pie Chart */}
             <ResponsiveContainer className="" width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -102,7 +137,7 @@ function AdminAlumniInfo() {
                   startAngle={180}
                   endAngle={0}
                   dataKey="value"
-                >
+                  >
                   {alumniData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={activeInactiveColors[index]} />
                   ))}
@@ -113,21 +148,22 @@ function AdminAlumniInfo() {
             {/* Center Text */}
             <div className="absolute top-[40%] left-1/2 transform -translate-x-1/2 text-center">
               <p className="text-sm font-satoshi-regular text-black">Total Alumni</p>
-              <p className="text-5xl font-satoshi-bold text-primary">{totalAlumni.toLocaleString()}</p>
+              <p className="text-5xl font-satoshi-bold text-primary">{alumniStatActivity.total_alumni}</p>
             </div>
 
             {/* Legend */}
             <div className="flex justify-center mt-2 text-sm">
               <div className="flex items-center mx-2">
                 <span className="w-3 h-3 rounded-full bg-primary mr-1"></span>
-                <span className='text-gray-400 mr-2'> Active </span> {activePercentage}%
+                <span className='text-gray-400 mr-2'> Active </span> {alumniStatActivity.active_alumni_percentage}%
               </div>
               <div className="flex items-center mx-2">
                 <span className="w-3 h-3 rounded-full bg-gray-300 mr-1"></span>
-                <span className='text-gray-400 mr-2'> Inactive </span> {inactivePercentage}%
+                <span className='text-gray-400 mr-2'> Inactive </span> {alumniStatActivity.inactive_alumni_percentage}%
               </div>
             </div>
           </div>
+          )}
         </div>
         {/* Batch information */}
         <div className={`${cardDesign} row-start-1 col-start-2 flex flex-col`}>
