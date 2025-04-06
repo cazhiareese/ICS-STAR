@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding
 
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 
-from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum
+from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum, UserStandingEnum
 
 router = APIRouter()
 
@@ -89,6 +89,28 @@ async def add_skills(
     db.commit()
     
     return {"message": "skills added successfully"}
+
+@router.post("/onboarding-info-student")
+async def onboarding_student(
+    standing: Optional[UserStandingEnum] = Form(None),
+    scholarships: Optional[List[str]] = Query(None),
+    affiliations: Optional[List[str]] = Query(None),
+    roles: Optional[List[str]] = Query(None),
+    skills: Optional[List[str]] = Query(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    process_student_onboarding(
+        user=user,
+        db=db,
+        standing=standing,
+        scholarships=scholarships,
+        affiliations=affiliations,
+        roles=roles,
+        skills=skills,
+    )
+
+    return {"message": "onboarding details updated successfully"}
 
 @router.put("/update-employment")
 async def update_employment(
