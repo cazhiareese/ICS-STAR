@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
-from schemas.user import UserOut
+from schemas.user import UserOut, UserStandingEnum, UserTypeEnum
 from config.database import get_db
 from util.userutil import require_admin
 from models.usermodel import User
@@ -13,7 +13,7 @@ router = APIRouter()
 # Arguments: current_user - the current user
 # Returns: True if user is an admin, False otherwise
 def isAdmin(current_user: User = Depends(require_admin)):
-    if current_user.user_type.value != "admin":
+    if current_user.user_type.value != UserTypeEnum.admin:
         raise HTTPException(status_code=403, detail="You do not have permission to access this resource")
     return True
 
@@ -66,7 +66,7 @@ async def read_unverified_alumni(db: Session = Depends(get_db)):
         func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
         User.verification_file
     ).filter(
-        User.user_type == "alumni",
+        User.user_type == UserTypeEnum.alumni,
         User.is_verified == False
     ).all()
 
@@ -100,7 +100,7 @@ async def read_unverified_students(db: Session = Depends(get_db)):
         func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
         User.verification_file
     ).filter(
-        User.user_type == "student",
+        User.user_type == UserTypeEnum.student,
         User.is_verified == False
     ).all()
 
@@ -123,7 +123,7 @@ async def read_unverified_students(db: Session = Depends(get_db)):
 # Returns: the count of unverified alumni
 @router.get("/admin/unverified/alumni/count", dependencies=None)
 async def read_unverified_alumni_count(db: Session = Depends(get_db)):
-    unverified_alumni_count = db.query(User).filter(User.user_type == "alumni", User.is_verified == False).count()
+    unverified_alumni_count = db.query(User).filter(User.user_type == UserTypeEnum.alumni , User.is_verified == False).count()
     return {"unverified_alumni_count": unverified_alumni_count}
 
 # Get the number of unverified students
@@ -131,7 +131,7 @@ async def read_unverified_alumni_count(db: Session = Depends(get_db)):
 # Returns: the count of unverified students
 @router.get("/admin/unverified/students/count", dependencies=None)
 async def read_unverified_students_count(db: Session = Depends(get_db)):
-    unverified_students_count = db.query(User).filter(User.user_type == "student", User.is_verified == False).count()
+    unverified_students_count = db.query(User).filter(User.user_type == UserTypeEnum.student, User.is_verified == False).count()
     return {"unverified_students_count": unverified_students_count}
 
 # Verify and confirm user registration
@@ -151,7 +151,7 @@ async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
 # Returns: a list of all graduating students
 @router.get("/admin/graduating", dependencies=None, response_model=list[UserOut])
 async def read_graduating_students(db: Session = Depends(get_db)):
-    students = db.query(User).filter(User.user_type == "student", User.standing == 'graduating').all()
+    students = db.query(User).filter(User.user_type == UserTypeEnum.student, User.standing == UserStandingEnum.graduating).all()
     return [UserOut.model_validate(student) for student in students]
 
 # Transition graduating students to alumni
@@ -169,10 +169,103 @@ async def transition_student(db: Session = Depends(get_db), user_id: UUID = None
 # Get all students (not transitioned students)
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all students
-@router.get("/admin/students", dependencies=None, response_model=list[UserOut])
+@router.get("/admin/students", dependencies=None)
 async def read_students(db: Session = Depends(get_db)):
-    students = db.query(User).filter(User.user_type == "student").all()
-    return [UserOut.model_validate(student) for student in students]
+    students = db.query(
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        User.email,
+        User.student_number,
+        func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+        User.is_verified,
+        User.image,
+        User.is_banned
+    ).filter(
+        User.user_type == UserTypeEnum.student,
+        User.is_verified == True
+    )
+
+    students_list = [
+        {
+            "user_id": student.user_id,
+            "name": f"{student.first_name} {student.last_name}",
+            "email": student.email,
+            "student_number": student.student_number,
+            "date_of_reg": student.date_of_reg,
+            "is_verified": student.is_verified,
+            "image": student.image,
+            "is_banned": student.is_banned
+        } for student in students
+    ]
+
+    return students_list
+
+# Get verified alumni
+# Arguments: db - SQLAlchemy session
+# Returns: a list of all verified alumni
+@router.get("/admin/verified-alumni", dependencies=None)
+async def read_verified_alumni(db: Session = Depends(get_db)):
+    alumni = db.query(
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        User.student_number,
+        User.work_location,
+        User.job_title,
+        func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_update'),
+        User.image
+    ).filter(
+        User.user_type == UserTypeEnum.alumni,
+        User.is_verified == True
+    ).all()
+
+    # Convert the result to a list of dictionaries
+    alumni_list = [
+        {
+            "user_id": alum.user_id,
+            "name": f"{alum.first_name} {alum.last_name}",
+            "batch": alum.student_number[0:4],
+            "base_location": alum.work_location,
+            "job_title": alum.job_title,
+            "last_update": alum.last_update,
+            "image": alum.image
+        } for alum in alumni
+    ]
+
+    return alumni_list
+
+# Get verified students
+# Arguments: db - SQLAlchemy session
+# Returns: a list of all verified students
+@router.get("/admin/verified-students", dependencies=None)
+async def read_verified_students(db: Session = Depends(get_db)):
+    students = db.query(
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        User.student_number,
+        User.standing,
+        func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_update'),
+        User.image
+    ).filter(
+        User.user_type == UserTypeEnum.student,
+        User.is_verified == True
+    ).all()
+
+    # Convert the result to a list of dictionaries
+    students_list = [
+        {
+            "user_id": student.user_id,
+            "name": f"{student.first_name} {student.last_name}",
+            "batch": student.student_number[0:4],
+            "standing": student.standing,
+            "last_update": student.last_update,
+            "image": student.image
+        } for student in students
+    ]
+
+    return students_list
 
 # Get user's verification file
 # Arguments: db - SQLAlchemy session, user_id - the user ID
