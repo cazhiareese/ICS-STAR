@@ -42,6 +42,14 @@ function AdminBatchInformation() {
       { title: 'Whole Sale', count: 2313, percent: 5.0 }
     ])
 
+    const [topCountries, setTopCountries] = useState([
+      { title: 'Australia', count: 3453, percent: 3.3 },
+      { title: 'Philippines', count: 8976, percent: 2.5 },
+      { title: 'USA', count: 3454, percent: 2.2 },
+      { title: 'France', count: 5675, percent: 4.1 },
+      { title: 'Netherlands', count: 1233, percent: 5.0 }
+    ])
+
     const [selectedYear, setSelectedYear] = useState()
     const [batchTotalCount, setBatchTotalCount] = useState(100)
     const [batchActiveCount, setBatchActiveCount] = useState(80)
@@ -193,7 +201,7 @@ function AdminBatchInformation() {
           </div>
           {/* Brief statistics divider */}
           <div className='w-full flex flex-row items-center'>
-            <h3 className='font-satoshi-medium text-xl'> Brief Statistics </h3>
+            <h3 className='font-satoshi-medium text-xl'> Brief Work Statistics </h3>
             <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
           </div>
           {/* Top Job Titles */}
@@ -254,6 +262,44 @@ function AdminBatchInformation() {
                     radius={[10,10,10,10]}
                   >
                     {topIndustries.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
+                    ))}
+                    {/* <LabelList dataKey="count" position="right" fill="#000" fontSize={14} /> */}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          {/* Brief location statistics divider */}
+          <div className='w-full flex flex-row items-center'>
+            <h3 className='font-satoshi-medium text-xl'> Brief Location Statistics </h3>
+            <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
+          </div>
+          {/* Top Counties */}
+          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            <h2 className='font-satoshi-bold text-xl'> Top Countries </h2>
+            <div className='h-full w-full '>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  layout="vertical"
+                  data={topCountries}
+                  margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="title"
+                    tick={{ fill: "#5A5673", fontSize:10}}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Bar
+                    dataKey="count"
+                    barSize={20}
+                    background={{ fill: "#EAF1FF" }}
+                    radius={[10,10,10,10]}
+                  >
+                    {topCountries.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
                     ))}
                     {/* <LabelList dataKey="count" position="right" fill="#000" fontSize={14} /> */}
