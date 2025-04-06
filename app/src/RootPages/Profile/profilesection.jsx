@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Camera, Facebook, Github, Linkedin, Pencil, Check } from "lucide-react";
+import {
+  Camera,
+  Facebook,
+  Github,
+  Linkedin,
+  Pencil,
+  Check,
+} from "lucide-react";
 import SaveConfirmationModal from "./components/savemodal";
 import prince from "../../assets/prince boy.jpg";
 
@@ -29,7 +36,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
 
         if (response.ok) {
           const result = await response.json();
-          setProfilePicture(result.profile_picture || prince); 
+          setProfilePicture(result.profile_picture || prince);
         } else {
           console.error("Failed to fetch profile picture");
         }
@@ -39,14 +46,13 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
     };
 
     fetchProfilePicture();
-  }, []); 
+  }, []);
 
-  const handleSave = () => {    
-    setShowModal(false);   
-    setEditMode(false);     
-    setOriginalEmail(userDetails.email); 
+  const handleSave = () => {
+    setShowModal(false);
+    setEditMode(false);
+    setOriginalEmail(userDetails.email);
     saveProfile();
- 
   };
 
   const saveProfile = async () => {
@@ -56,9 +62,9 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
         setError("User not authenticated");
         return;
       }
-  
+
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-  
+
       const formData = new FormData();
       formData.append("first_name", userDetails.first_name || "");
       console.log(userDetails.first_name);
@@ -72,19 +78,19 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       formData.append("facebook", userDetails.facebook || "");
       formData.append("linkedin", userDetails.linkedin || "");
       formData.append("github", userDetails.github || "");
-  
+
       const response = await fetch(`${API_BASE_URL}/profile/edit`, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to update profile");
       }
-  
+
       const result = await response.json();
       console.log(result.message);
       setEditMode(false); // Exit edit mode after successful save
@@ -93,15 +99,9 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       setError("Failed to update profile");
     }
   };
-  
-
-
-  
-
 
   return (
     <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
-      
       {/* Edit / Save Profile Button */}
       <button
         onClick={() => {
@@ -128,19 +128,18 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
         {/* Profile Image */}
         <span className="relative">
-  <span className="w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
-    <img src={profilePicture || prince} alt="Profile" className="w-full h-full object-cover" />
-  </span>
-  <Camera
-  size={32}
-  className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
-/>
-
-</span>
-
-
-
-
+          <span className="w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
+            <img
+              src={profilePicture || prince}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          </span>
+          <Camera
+            size={32}
+            className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
+          />
+        </span>
 
         {/* Name, Email, and Social Icons */}
         <div className="flex flex-col items-start gap-1 text-left">
@@ -170,15 +169,26 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
               <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
                 {userDetails.first_name} {userDetails.last_name}
               </h2>
-              <p className="text-[16px] sm:text-[20px] text-black">{userDetails.email}</p>
+              <p className="text-[16px] sm:text-[20px] text-black">
+                {userDetails.email}
+              </p>
             </>
           )}
 
           {/* Social Icons */}
           <div className="flex gap-3 mt-1">
-            <Facebook size={22} className="text-black cursor-pointer hover:text-hover" />
-            <Github size={22} className="text-black cursor-pointer hover:text-hover" />
-            <Linkedin size={22} className="text-black cursor-pointer hover:text-hover" />
+            <Facebook
+              size={22}
+              className="text-black cursor-pointer hover:text-hover"
+            />
+            <Github
+              size={22}
+              className="text-black cursor-pointer hover:text-hover"
+            />
+            <Linkedin
+              size={22}
+              className="text-black cursor-pointer hover:text-hover"
+            />
           </div>
         </div>
       </div>
