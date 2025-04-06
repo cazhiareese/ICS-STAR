@@ -304,3 +304,15 @@ async def read_report_logs(db: Session = Depends(get_db), user_id: UUID = None):
     ]
 
     return report_logs_list
+
+# Ban user
+# Arguments: db - SQLAlchemy session, user_id - the user ID
+# Returns: a message confirming the ban
+@router.put("/admin/ban/{user_id}", dependencies=None)
+async def ban_user(db: Session = Depends(get_db), user_id: UUID = None):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_banned = True
+    db.commit()
+    return {"message": "User banned"}
