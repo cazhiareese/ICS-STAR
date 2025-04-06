@@ -219,8 +219,6 @@ def get_alumni_filter(
         User.user_type == 'alumni'
         )
 
-    
-
         # Append appropriate filters to the initial query
     if name:
         # We have to also catch if full name was inputted (e.g. "John Doe" or "John Michael Doe")
@@ -291,10 +289,6 @@ def get_alumni_filter(
                     query = query.order_by(asc(User.last_name), asc(User.first_name))
             elif order_field == 'batch':
                 order_column = func.split_part(User.student_number, '-', 1)
-            elif order_field == 'city':
-                order_column = User.city
-            elif order_field == 'job':
-                order_column = User.job_title
             elif order_field == 'updated':
                 order_column = User.updated_at
             elif order_field == 'regisdate':

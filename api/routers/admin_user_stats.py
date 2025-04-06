@@ -6,7 +6,7 @@ from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
 
-from util.user_information_stats import  employment_class_util, get_active_alumni_stats, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, grouped_by_industry, salary_grade_util, tenure_status_util, work_mode_util
+from util.user_information_stats import  employment_class_util, get_active_alumni_stats, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, grouped_by_industry, salary_grade_util, tenure_status_util, unemployment_reason_util, work_mode_util
 
 from util.admin_alum_list import get_alumni_list_filter,  get_alumni_filter, get_all_alumni, get_student_filter
 
@@ -272,3 +272,10 @@ async def general_activity_route(db: Session = Depends(get_db)):
 
 
     return{"message": "success", "data": activity_data}
+
+
+@router.get("/admin/stats/batch/unemployment")
+async def batch_unemployment(db: Session = Depends(get_db), batch: Optional[str] = None):
+    unemployment_reason = unemployment_reason_util(db, batch = batch)
+
+    return{"message": "success", "data": unemployment_reason}

@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from util.alumni_search_logic import logic_search_alumni
-from models.usermodel import User, UserAffiliation, UserSkill, UserTypeEnum
+from models.usermodel import UnemploymentReason, User, UserAffiliation, UserEmploymentStatus, UserSkill, UserTypeEnum
 from models.report_model import Report
 from sqlalchemy import func, case, or_, text, desc,asc
 from datetime import datetime, timedelta
@@ -538,5 +538,52 @@ def work_mode_util(db: Session, industry: Optional[str] = None):
         })
     
     return mode_list
+
+
+def unemployment_reason_util(db: Session, batch: Optional[str] = None):
+    unemployed_query = (
+    db.query(
+        func.count()
+    )
+    .filter(
+        User.is_verified == True,
+        User.user_type == 'alumni',
+        or_(User.employment_status == UserEmploymentStatus.unemployed, User.employment_status == UserEmploymentStatus.unemployed_no_exp)
+        
+    )
+    )
+    
+    query = (
+    db.query(
+        UnemploymentReason.reason,
+        func.count(User.user_id).label('user_count')
+    )
+    .join(UnemploymentReason, User.reasons)
+    .group_by(UnemploymentReason.reason)  # Only group by reason now
+    )
+
+    if batch:
+        unemployed_query = unemployed_query.filter(func.split_part(User.student_number, '-', 1)== batch)
+        query = query.filter(func.split_part(User.student_number, '-', 1)== batch)  # Filter to just one batch   
+    
+    total_unemployed = unemployed_query.scalar()
+    unemployed_reason = query.all()
+
+    if not unemployed_reason:
+        raise HTTPException(status_code=404, detail="No unemployment reason")
+
+
+    reason_dict = [row._asdict() for row in unemployed_reason]
+    reason_list = []
+
+    for reas in reason_dict:
+        reason_list.append({
+            "work_mode": reas["reason"],
+            "count": reas["user_count"],
+            "percentage": round((reas["user_count"]/total_unemployed)*100,2)
+        })
+    
+    return reason_list
+
 
 
