@@ -7,11 +7,11 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
-from typing import List
+from typing import List, Optional
 
 from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum
+from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -50,6 +50,53 @@ async def get_studno(student_number: str, db: Session = Depends(get_db)):
     if db.query(User).filter(User.student_number == student_number).first():
         raise HTTPException(status_code=400, detail="Student number already exists")
     return True
+
+def process_student_onboarding(
+    user: User,
+    db: Session,
+    standing: Optional[UserStandingEnum],
+    scholarships: Optional[List[str]],
+    affiliations: Optional[List[str]],
+    roles: Optional[List[str]],
+    skills: Optional[List[str]]
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    if user.user_type.value == UserTypeEnum.alumni:
+        raise HTTPException(status_code=400, detail="For student only")
+    
+    try:
+        if scholarships:
+            new_scholarships = [
+                UserScholarship(user_id=user.user_id, scholarship=scholarship)
+                for scholarship in scholarships
+            ]
+            db.add_all(new_scholarships)
+
+        if affiliations:
+            if len(affiliations) != len(roles):
+                raise HTTPException(status_code=400, detail="Invalid input")
+
+            new_affiliations = [
+                UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role)
+                for affiliation, role in zip(affiliations, roles)
+            ]
+            db.add_all(new_affiliations)
+
+        if skills:
+            new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
+            db.add_all(new_skills)
+
+        if standing:
+            user.standing = standing
+
+        db.commit()
+        db.refresh(user)
+        
+    except Exception as e:
+            raise HTTPException(status_code=500, detail="Error updating info")
+        
 
 async def register_user(
     first_name: str,
