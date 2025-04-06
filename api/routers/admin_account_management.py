@@ -64,6 +64,7 @@ async def read_unverified_alumni(db: Session = Depends(get_db)):
         User.graduation_year,
         User.graduation_semester,
         func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+        User.verification_file
     ).filter(
         User.user_type == "alumni",
         User.is_verified == False
@@ -78,6 +79,7 @@ async def read_unverified_alumni(db: Session = Depends(get_db)):
             "student_number": alum.student_number,
             "grad_class": f"{alum.graduation_year} - {alum.graduation_semester}",
             "date_of_reg": alum.date_of_reg,
+            "verification_file": alum.verification_file
         } for alum in unverified_alum
     ]
 
@@ -96,6 +98,7 @@ async def read_unverified_students(db: Session = Depends(get_db)):
         User.email,
         User.student_number,
         func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+        User.verification_file
     ).filter(
         User.user_type == "student",
         User.is_verified == False
@@ -109,6 +112,7 @@ async def read_unverified_students(db: Session = Depends(get_db)):
             "email": student.email,
             "student_number": student.student_number,
             "date_of_reg": student.date_of_reg,
+            "verification_file": student.verification_file
         } for student in unverified_students
     ]
     
