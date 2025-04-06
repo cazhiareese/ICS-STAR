@@ -5,11 +5,13 @@ import supabase
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
+from typing import List
 
 from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum
+from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -17,6 +19,21 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
+
+def get_org_suggestion(db: Session, query_text: str, limit: int = 5) -> List[str]:
+    results = db.query(distinct(Orgs.name))\
+        .filter(
+            or_(
+                Orgs.name.ilike(f"%{query_text}%"),
+                Orgs.alias.ilike(f"%{query_text}%")
+            )
+        )\
+        .filter(Orgs.name.isnot(None))\
+        .order_by(Orgs.name)\
+        .limit(limit)\
+        .all()
+        
+    return [result[0] for result in results]
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -43,7 +60,7 @@ async def register_user(
     user_type: UserTypeEnum,
     verification_file: UploadFile = File(None),
     graduation_year: str = None,
-    graduation_semester: str = None,
+    graduation_semester: UserGradSemEnum = None,
     db: Session = Depends(get_db)
 ):
     await get_email(email, db)
@@ -96,6 +113,13 @@ async def upload_profile(profile_picture, user, db):
 
     if len(file_content) > MAX_FILE_SIZE or profile_picture.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Invalid verification file")
+    
+    if user.image:
+        try:
+            old_file_path = user.image.replace(STORAGE_STRING, "")
+            supabase_client.storage.from_("128storage").remove([old_file_path])
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Failed to delete old profile picture: {e}")
 
     profile_picture_ext = profile_picture.filename.split(".")[-1]
     profile_picture_name = f"profile_pictures/{uuid.uuid4()}.{profile_picture_ext}"

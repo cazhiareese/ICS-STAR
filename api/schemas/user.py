@@ -27,6 +27,18 @@ class UserEmploymentStatus(str, Enum):
     self_employed = "self-employed"
     unemployed = "unemployed"
     unemployed_no_exp = "unemployed_no_experience"
+    
+class UserGradSemEnum(str, Enum):
+    first_sem = "1st Semester"
+    second_sem = "2nd Semester"
+    midyear = "Midyear"
+    
+class UnemploymentReasonEnum(str, Enum):
+   training = "Undergoing professional training"
+   academics = "Currently pursuing academic studies"
+   seek = "Still seeking work"
+   cannot_start = "Cannot start working at present"
+   other = "Other"
 
 class UserOut(BaseModel):
     user_id: UUID

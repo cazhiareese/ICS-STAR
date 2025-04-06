@@ -25,6 +25,24 @@ class UserStandingEnum(str, PyEnum):
    junior = 'junior'
    senior = 'senior'
    graduating = 'graduating'
+   
+class UserEmploymentStatus(str, PyEnum):
+    employed = "employed"
+    self_employed = "self-employed"
+    unemployed = "unemployed"
+    unemployed_no_exp = "unemployed_no_experience"
+
+class UnemploymentReasonEnum(str, PyEnum):
+   training = "Undergoing professional training"
+   academics = "Currently pursuing academic studies"
+   seek = "Still seeking work"
+   cannot_start = "Cannot start working at present"
+   other = "Other"
+
+class UserGradSemEnum(str, PyEnum):
+    first_sem = "1st Semester"
+    second_sem = "2nd Semester"
+    midyear = "Midyear"
 
 # Models
 class User(Base):
@@ -82,6 +100,16 @@ class User(Base):
    logs = relationship("Log", back_populates="user")
    reports = relationship("Report", foreign_keys="[Report.reporter_id]", back_populates="reporter", lazy="joined")
    account_reports = relationship("Report", foreign_keys="[Report.reported_user_id]", back_populates="reported_user", lazy="joined")
+   reasons = relationship("UnemploymentReason", back_populates="user")
+   
+class UnemploymentReason(Base):
+   __tablename__ = 'unemployment_reason'
+   user_id = Column(UUID(as_uuid=True), ForeignKey('users.user_id'), primary_key=True)
+   reason = Column(String(255), primary_key=True)
+   created_at = Column(DateTime(timezone=True), server_default=func.now())
+   updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+   
+   user = relationship("User", back_populates="reasons")
 
 class UserSkill(Base):
    __tablename__ = 'user_skill'
@@ -112,3 +140,10 @@ class UserAffiliation(Base):
    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
   
    user = relationship("User", back_populates="affiliations")
+
+class Orgs(Base):
+   __tablename__ = 'org'
+  
+   org_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+   name = Column(String(255), nullable=False)
+   alias = Column(String(50))
