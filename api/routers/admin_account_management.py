@@ -316,3 +316,62 @@ async def ban_user(db: Session = Depends(get_db), user_id: UUID = None):
     user.is_banned = True
     db.commit()
     return {"message": "User banned"}
+
+# Get user profile
+# Arguments: db - SQLAlchemy session, user_id - the user ID
+# Returns: the user profile
+@router.get("/profile/{user_id}", dependencies=None)
+async def get_profile(
+    db: Session = Depends(get_db),
+    user_id: UUID = None,
+):
+    
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    profile_details = {
+        "user_id": user.user_id,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+        "mobile_number": user.mobile_number,
+        "age": user.age,
+        "gender": user.gender.value if user.gender else None,
+        "city": user.city,
+        "state": user.state,
+        "country": user.country,
+        "marital_status": user.marital_status,
+        "image": user.image,
+        "user_type": user.user_type.value,
+        "position": user.position,
+        "is_banned": user.is_banned,
+        "student_number": user.student_number,
+        "standing": user.standing.value if user.standing else None,
+        "graduation_year": user.graduation_year,
+        "graduation_semester": user.graduation_semester,
+        "employment_status": user.employment_status,
+        "industry": user.industry,
+        "company_name": user.company_name,
+        "job_title": user.job_title,
+        "work_location": user.work_location,
+        "work_mode": user.work_mode,
+        "employer_class": user.employer_class,
+        "tenured_status": user.tenured_status,
+        "salary_grade": user.salary_grade,
+        "facebook": user.facebook,
+        "linkedin": user.linkedin,
+        "github": user.github,
+        "created_at": user.created_at,
+        "updated_at": user.updated_at,
+        "skills": [skill.skill for skill in user.skills],
+        "scholarships": [scholarship.scholarship for scholarship in user.scholarships],
+        "affiliations": [
+            {"affiliation": aff.affiliation, "role": aff.role} for aff in user.affiliations
+        ],
+    }
+    
+    return {"message": "success", "data": profile_details}
