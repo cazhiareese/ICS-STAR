@@ -29,7 +29,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
 
         if (response.ok) {
           const result = await response.json();
-          setProfilePicture(result.profile_picture || prince); // Use a fallback image if no profile picture is set
+          setProfilePicture(result.profile_picture || prince); 
         } else {
           console.error("Failed to fetch profile picture");
         }
@@ -39,12 +39,12 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
     };
 
     fetchProfilePicture();
-  }, []); // Fetch on component mount
+  }, []); 
 
-  const handleSave = () => {     // <-- Call the parent save logic
-    setShowModal(false);    // Close modal
-    setEditMode(false);     // Exit edit mode
-    setOriginalEmail(userDetails.email); // Update original email tracker
+  const handleSave = () => {    
+    setShowModal(false);   
+    setEditMode(false);     
+    setOriginalEmail(userDetails.email); 
     saveProfile();
  
   };
@@ -127,12 +127,20 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
         {/* Profile Image */}
-        <div className="relative w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
-          <img src={profilePicture||prince} alt="Profile" className="w-full h-full object-cover" />
-          <div className="absolute bottom-1 right-1 bg-white p-[6px] rounded-full shadow-md cursor-pointer">
-            <Camera size={16} className="text-gray-600" />
-          </div>
-        </div>
+        <span className="relative">
+  <span className="w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
+    <img src={profilePicture || prince} alt="Profile" className="w-full h-full object-cover" />
+  </span>
+  <Camera
+  size={32}
+  className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
+/>
+
+</span>
+
+
+
+
 
         {/* Name, Email, and Social Icons */}
         <div className="flex flex-col items-start gap-1 text-left">
