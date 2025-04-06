@@ -92,7 +92,10 @@ const SearchBar =
     };
 
     const fetchData = async () => {
+        
+
         let searchAPIURL = search();  // Get API URL based on the filters
+        console.log("Triggered fetchData()", searchAPIURL);
         setLoading(true); 
         try {
             const response = await axios.get(searchAPIURL);

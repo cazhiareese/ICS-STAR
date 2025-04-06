@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef} from "react";
+import React, { useState, useEffect, useMemo, useRef   } from "react";
 import SearchBar from "../../components/searchbar";
 import AlumniCareerFilter from "../../components/careerfilter";
 import AlumniAffiliationFilter from "../../components/alumaffiliation";
@@ -61,6 +61,8 @@ function AlumniSearch() {
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
+    setIsAlumniInfoExpanded(true);
+    setIsBatchExpanded(true);
   };
   //Dummy data
   const alumni = 
@@ -99,7 +101,7 @@ function AlumniSearch() {
           filters.affiliation = affiliationList;
       }
       if (Array.isArray(skillsList) && skillsList.length > 0) {
-          filters.skill = skillsList;
+          filters.skills = skillsList;
       }
       if (Array.isArray(industryList) && industryList.length > 0) {
           filters.industry = industryList;
@@ -240,153 +242,236 @@ function AlumniSearch() {
               <X size={30} />
             </button>
           </div>
-
-          {/* Alumni Batch Filter */}
-          <div className="flex flex-col shadow mt-14 rounded-lg gap-3 bg-white">
-            <div className="flex flex-row px-5 py-3" onClick={() => setIsBatchExpanded(!isBatchExpanded)}>
+          {/* MOBILE VIEW FILTER */}
+          {/* Alumni Information Group Filter */}
+          <div className="flex flex-col shadow mt-14 rounded-lg gap-3 items-center h-auto">
+            <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniInfoExpanded(!isALumniInfoExpanded)}>
               <motion.h1
-                className="flex-1/2 font-satoshi-medium"
+                className="font-satoshi-medium justify"
                 initial={{ fontWeight: 500, fontSize: "1.00rem" }}
                 animate={{
-                  fontWeight: isBatchExpanded ? 600 : 500, // Bold when expanded
-                  fontSize: isBatchExpanded ? "1.50rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
+                  fontWeight: isALumniInfoExpanded ? 500 : 500, // Bold when expanded
+                  fontSize: isALumniInfoExpanded ? "1.00rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
                 }}
                 transition={{ duration: 0.2 }}
               >
-                Batch of Alumni
+                Alumni Information
               </motion.h1>
 
               <motion.button
-                className="cursor-pointer hover:text-primary"
-                animate={{ rotate: isBatchExpanded ? 180 : 0 }}
+                className="cursor-pointer hover:text-primary ml-auto"
+                animate={{ rotate: isALumniInfoExpanded ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
               >
                 <ChevronDown size={30} />
               </motion.button>
             </div>
-
-            {/* Year Picker for Batch */}
             <motion.div
-              className="overflow-hidden"
+              className={`overflow-hidden w-11/12 justify-center ${isALumniInfoExpanded ? "pb-6" : ""}`}
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: isBatchExpanded ? "auto" : 0, opacity: isBatchExpanded ? 1 : 0 }}
+              animate={{ height: isALumniInfoExpanded ? "auto" : 0, opacity: isALumniInfoExpanded ? 1 : 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
-                <Calendar className="text-primary hidden md:block" />
-                <YearPicker
-                  selectedYear={selectedBatchYear} // Using separate state for Batch Year
-                  setSelectedYear={setSelectedBatchYear}
-                />
-              </div>
+              {/* Alumni Batch Filter */}
+              <div className="flex flex-col shadow rounded-lg gap-3 bg-white">
+                <div className="flex flex-row px-5 py-3" onClick={() => setIsBatchExpanded(!isBatchExpanded)}>
+                  <motion.h1
+                    className="flex-1/2 font-satoshi-medium"
+                    initial={{ fontWeight: 500, fontSize: "1.00rem" }}
+                    animate={{
+                      fontWeight: isBatchExpanded ? 600 : 500, // Bold when expanded
+                      fontSize: isBatchExpanded ? "1.50rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Batch of Alumni
+                  </motion.h1>
 
-                {/* Buttons for skip and next for mobile*/}
-                <div onClick={() => {
-                  setIsGraduateExpanded(true);
-                  setIsBatchExpanded(false);
-                }} className="flex lg:hidden justify-between px-5 pb-3">
-                <button
-                  onClick={() => {setSelectedBatchYear(""); 
-                    setIsGraduateExpanded(true);
-                    setIsBatchExpanded(false);}}
-                  className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
+                  <motion.button
+                    className="cursor-pointer hover:text-primary"
+                    animate={{ rotate: isBatchExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown size={30} />
+                  </motion.button>
+                </div>
+
+                {/* Year Picker for Batch */}
+                <motion.div
+                  className="overflow-hidden"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: isBatchExpanded ? "auto" : 0, opacity: isBatchExpanded ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                  Skip
-                </button>
+                  <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
+                    <Calendar className="text-primary hidden md:block" />
+                    <YearPicker
+                      selectedYear={selectedBatchYear} // Using separate state for Batch Year
+                      setSelectedYear={setSelectedBatchYear}
+                    />
+                  </div>
 
-                <button onClick={() => {
-                  setIsGraduateExpanded(true);
-                  setIsBatchExpanded(false);
-                }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
-                  Next
-                </button>
+                    {/* Buttons for skip and next for mobile*/}
+                    <div onClick={() => {
+                      setIsGraduateExpanded(true);
+                      setIsBatchExpanded(false);
+                    }} className="flex lg:hidden justify-between px-5 pb-3">
+                    <button
+                      onClick={() => {setSelectedBatchYear(""); 
+                        setIsGraduateExpanded(true);
+                        setIsBatchExpanded(false);}}
+                      className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
+                    >
+                      Skip
+                    </button>
+
+                    <button onClick={() => {
+                      setIsGraduateExpanded(true);
+                      setIsBatchExpanded(false);
+                    }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
+                      Next
+                    </button>
+                  </div>
+                </motion.div>
+
+                
               </div>
+
+              {/* Alumni Graduate Filter */}
+              <div className="flex flex-col shadow mt-5 rounded-lg gap-3 bg-white">
+                <div className="flex flex-row px-5 py-3" onClick={() => setIsGraduateExpanded(!isGraduateExpanded)}>
+                  <motion.h1
+                    className="flex-1/2 font-satoshi-medium"
+                    initial={{ fontWeight: 500, fontSize: "1.00rem" }}
+                    animate={{
+                      fontWeight: isGraduateExpanded ? 600 : 500, // Bold when expanded
+                      fontSize: isGraduateExpanded ? "1.50rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Year Alumni Graduated
+                  </motion.h1>
+
+                  <motion.button
+                    className="cursor-pointer hover:text-primary"
+                    animate={{ rotate: isGraduateExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown size={30} />
+                  </motion.button>
+                </div>
+
+                {/* Year Picker for Graduation */}
+                <motion.div
+                  className="overflow-hidden"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: isGraduateExpanded ? "auto" : 0, opacity: isGraduateExpanded ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
+                    <Calendar className="text-primary hidden md:block" />
+                    <YearPicker
+                      selectedYear={selectedGraduationYear} 
+                      setSelectedYear={setSelectedGraduationYear}
+                    />
+                  </div>
+
+                  {/* Buttons for skip and next for mobile*/}
+                  <div className="flex lg:hidden justify-between px-5 pb-3">
+                    <button
+                      onClick={() => {setSelectedGraduationYear(""); 
+                        setIsAffiliationExpanded(true);
+                        setIsGraduateExpanded(false);}}
+                      className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
+                    >
+                      Skip
+                    </button>
+
+                    <button onClick={() => {
+                      setIsAffiliationExpanded(true);
+                      setIsGraduateExpanded(false);
+                    }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
+                      Next
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+
+              <AlumniAffiliationFilter
+                isAffiliationExpanded={isAffiliationExpanded}
+                setIsAffiliationExpanded={setIsAffiliationExpanded}
+                affiliationInput={affiliationInput}
+                setAffiliationInput={setAffiliationInput}
+                affiliationList={affiliationList}
+                setAffiliationList={setAffiliationList}
+                setIsLocationExpanded={setIsLocationExpanded}
+
+              />
+
+              <AlumniLocationFilter
+                isLocationExpanded={isLocationExpanded}
+                setIsLocationExpanded={setIsLocationExpanded}
+                locationInput={locationInput}
+                setLocationInput={setLocationInput}
+                location={location}
+                setLocation={setLocation}
+                setIsIndustryExpanded={setIsIndustryExpanded}
+                setIsAlumniProfessionExpanded={setIsAlumniProfessionExpanded}
+                setIsCareerExpanded={setIsCareerExpanded}
+                setIsAlumniInfoExpanded={setIsAlumniInfoExpanded}
+              />
             </motion.div>
-
-             
           </div>
-
-          {/* Alumni Graduate Filter */}
-          <div className="flex flex-col shadow mt-5 rounded-lg gap-3 bg-white">
-            <div className="flex flex-row px-5 py-3" onClick={() => setIsGraduateExpanded(!isGraduateExpanded)}>
+          <div className="flex flex-col shadow mt-5 rounded-lg gap-3 items-center h-auto">
+            <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniProfessionExpanded(!isAlumniProfessionExpanded)}>
               <motion.h1
-                className="flex-1/2 font-satoshi-medium"
+                className="font-satoshi-medium justify"
                 initial={{ fontWeight: 500, fontSize: "1.00rem" }}
                 animate={{
-                  fontWeight: isGraduateExpanded ? 600 : 500, // Bold when expanded
-                  fontSize: isGraduateExpanded ? "1.50rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
+                  fontWeight: isAlumniProfessionExpanded ? 500 : 500, // Bold when expanded
+                  fontSize: isAlumniProfessionExpanded ? "1.00rem" : "1.25rem", // lg: 1.25rem, sm: 0.875rem
                 }}
                 transition={{ duration: 0.2 }}
               >
-                Year Alumni Graduated
+                Alumni Profession
               </motion.h1>
 
               <motion.button
-                className="cursor-pointer hover:text-primary"
-                animate={{ rotate: isGraduateExpanded ? 180 : 0 }}
+                className="cursor-pointer hover:text-primary ml-auto"
+                animate={{ rotate: isAlumniProfessionExpanded ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
               >
                 <ChevronDown size={30} />
               </motion.button>
             </div>
-
-            {/* Year Picker for Graduation */}
             <motion.div
-              className="overflow-hidden"
+              className={`overflow-hidden w-11/12 justify-center ${isAlumniProfessionExpanded ? "pb-6" : ""}`}
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: isGraduateExpanded ? "auto" : 0, opacity: isGraduateExpanded ? 1 : 0 }}
+              animate={{ height: isAlumniProfessionExpanded ? "auto" : 0, opacity: isAlumniProfessionExpanded ? 1 : 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
-                <Calendar className="text-primary hidden md:block" />
-                <YearPicker
-                  selectedYear={selectedGraduationYear} 
-                  setSelectedYear={setSelectedGraduationYear}
-                />
-              </div>
+              <AlumniCareerFilter
+                isCareerExpanded={isCareerExpanded}
+                setIsCareerExpanded={setIsCareerExpanded}
+                careerInput={careerInput}
+                setCareerInput={setCareerInput}
+                careerList={careerList}
+                setCareerList={setCareerList}
+                setIsIndustryExpanded={setIsIndustryExpanded}
+              />
 
-              {/* Buttons for skip and next for mobile*/}
-              <div className="flex lg:hidden justify-between px-5 pb-3">
-                <button
-                  onClick={() => {setSelectedGraduationYear(""); 
-                    setIsCareerExpanded(true);
-                    setIsGraduateExpanded(false);}}
-                  className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
-                >
-                  Skip
-                </button>
-
-                <button onClick={() => {
-                  setIsCareerExpanded(true);
-                  setIsGraduateExpanded(false);
-                }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
-                  Next
-                </button>
-              </div>
+              <AlumniIndustryFilter
+                isIndustryExpanded={isIndustryExpanded}
+                setIsIndustryExpanded={setIsIndustryExpanded}
+                industryInput={industryInput}
+                setIndustryInput={setIndustryInput}
+                industryList={industryList}
+                setIndustryList={setIndustryList}
+                setIsSkillsExpanded={setIsSkillsExpanded}
+                setIsAlumniProfessionExpanded={setIsAlumniProfessionExpanded}
+              />
             </motion.div>
-          </div>
-
-          <AlumniCareerFilter
-            isCareerExpanded={isCareerExpanded}
-            setIsCareerExpanded={setIsCareerExpanded}
-            careerInput={careerInput}
-            setCareerInput={setCareerInput}
-            careerList={careerList}
-            setCareerList={setCareerList}
-            setIsAffiliationExpanded={setIsAffiliationExpanded}
-          />
-
-          <AlumniAffiliationFilter
-            isAffiliationExpanded={isAffiliationExpanded}
-            setIsAffiliationExpanded={setIsAffiliationExpanded}
-            affiliationInput={affiliationInput}
-            setAffiliationInput={setAffiliationInput}
-            affiliationList={affiliationList}
-            setAffiliationList={setAffiliationList}
-            setIsSkillsExpanded={setIsSkillsExpanded}
-
-          />
-
+          </div>  
           <AlumniSkillsFilter
             isSkillsExpanded={isSkillsExpanded}
             setIsSkillsExpanded={setIsSkillsExpanded}
@@ -397,24 +482,9 @@ function AlumniSearch() {
             setIsLocationExpanded={setIsLocationExpanded}
           />
 
-          <AlumniLocationFilter
-            isLocationExpanded={isLocationExpanded}
-            setIsLocationExpanded={setIsLocationExpanded}
-            locationInput={locationInput}
-            setLocationInput={setLocationInput}
-            location={location}
-            setLocation={setLocation}
-            setIsIndustryExpanded={setIsIndustryExpanded}
-          />
+          
 
-          <AlumniIndustryFilter
-            isIndustryExpanded={isIndustryExpanded}
-            setIsIndustryExpanded={setIsIndustryExpanded}
-            industryInput={industryInput}
-            setIndustryInput={setIndustryInput}
-            industryList={industryList}
-            setIndustryList={setIndustryList}
-          />
+          
 
 
           
@@ -431,6 +501,8 @@ function AlumniSearch() {
               setIsSkillsExpanded(false);
               setIsIndustryExpanded(false);
               setIsLocationExpanded(false);
+              setIsAlumniInfoExpanded(false);
+              setIsAlumniProfessionExpanded(false);
             }} 
             className="text-black px-4 py-2 font-satoshi-medium cursor-pointer rounded-2xl bg-white shadow-2xl"
           >
@@ -768,9 +840,12 @@ function AlumniSearch() {
           )}
 
           {/* <h1 className="md:text-3xl text-2xl font-satoshi-medium text-gray-500 pl-10 py-6 lg:text-left text-center">{alumniList.length} Search Results</h1> */}
-          {!loading && (
-              <h1 className="md:text-3xl text-xl font-satoshi-medium text-gray-500 pl-10 py-6 lg:text-left text-center">{alumniList.length} Search Results</h1>
+          {!loading && Array.isArray(alumniList) && (
+            <h1 className="md:text-3xl text-xl font-satoshi-medium text-gray-500 pl-10 py-6 lg:text-left text-center">
+              {alumniList.length} Search Results
+            </h1>
           )}
+
         
           {loading && (
               <h1 className="md:text-3xl text-xl font-satoshi-medium text-gray-400 pl-10 py-6 lg:text-left text-center">Searching...</h1>
@@ -778,17 +853,17 @@ function AlumniSearch() {
           
           {/* Mapping of alumni cards */}
           <div className="flex flex-row flex-wrap gap-24 items-center justify-center">
-            {alumniList.map((alumni, index) => (
+            {Array.isArray(alumniList) && alumniList.map((alumnus, index) => (
               <AlumniSearchCard
-                key={index}
-                full_name={alumni.full_name}
-                graduation_year={alumni.graduation_year}
-                job_title={alumni.job_title}
-                skills={alumni.skills}
-                location={alumni.location}
-                email={alumni.email}
-                image={alumni.image}
-              />
+              key={index}
+              full_name={alumnus.full_name}
+              graduation_year={alumnus.graduation_year}
+              job_title={alumnus.job_title}
+              skills={alumnus.skills}
+              location={alumnus.location}
+              email={alumnus.email}
+              picture={alumnus.picture}
+            />
             ))}
           </div>
 

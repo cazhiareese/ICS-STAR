@@ -10,7 +10,7 @@ const AlumniCareerFilter = ({
   setCareerInput,
   careerList,
   setCareerList,
-  setIsAffiliationExpanded
+  setIsIndustryExpanded
 }) => {
     const [jobs, setJobs] = useState([]); 
     // cache reference
@@ -184,7 +184,7 @@ const AlumniCareerFilter = ({
          <div className="flex lg:hidden justify-between px-5 pb-3">
             <button
               onClick={() => {setCareerList([]); 
-                setIsAffiliationExpanded(true);
+                setIsIndustryExpanded(true);
                 setIsCareerExpanded(false);}}
               className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
             >
@@ -192,7 +192,7 @@ const AlumniCareerFilter = ({
             </button>
 
             <button onClick={() => {
-              setIsAffiliationExpanded(true);
+              setIsIndustryExpanded(true);
               setIsCareerExpanded(false);
             }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
               Next

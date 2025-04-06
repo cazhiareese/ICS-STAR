@@ -3,6 +3,7 @@ import { ChevronDown, Search, X } from "lucide-react";
 import axios from 'axios';
 import React, {useState, useEffect, useRef} from 'react';
 
+
 const AlumniAffiliationFilter = ({
   isAffiliationExpanded,
   setIsAffiliationExpanded,
@@ -10,9 +11,10 @@ const AlumniAffiliationFilter = ({
   setAffiliationInput,
   affiliationList,
   setAffiliationList,
-  setIsSkillsExpanded
+  setIsLocationExpanded
 }) => {
   const [affiliations, setAffiliations] = useState([]); 
+  
   // cache reference
   const cache = useRef({});
 
@@ -185,7 +187,7 @@ const AlumniAffiliationFilter = ({
         <div className="flex lg:hidden justify-between px-5 pb-3">
           <button
             onClick={() => {setAffiliationList([]); 
-              setIsSkillsExpanded(true);
+              setIsLocationExpanded(true);
               setIsAffiliationExpanded(false);}}
             className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
           >
@@ -193,7 +195,7 @@ const AlumniAffiliationFilter = ({
           </button>
 
           <button onClick={() => {
-            setIsSkillsExpanded(true);
+            setIsLocationExpanded(true);
             setIsAffiliationExpanded(false);
           }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
             Next

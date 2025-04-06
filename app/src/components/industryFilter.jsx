@@ -10,6 +10,8 @@ const AlumniIndustryFilter = ({
   setIndustryInput,
   industryList,
   setIndustryList,
+  setIsSkillsExpanded,
+  setIsAlumniProfessionExpanded
 }) => {
 
   const [industries, setIndustries] = useState([]); 
@@ -183,6 +185,8 @@ const AlumniIndustryFilter = ({
         <div className="flex lg:hidden justify-between px-5 pb-3">
           <button
             onClick={() => {setIndustryList([]); 
+              setIsAlumniProfessionExpanded(false);
+              setIsSkillsExpanded(true);
               setIsIndustryExpanded(false);}}
             className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
           >
@@ -190,6 +194,8 @@ const AlumniIndustryFilter = ({
           </button>
 
           <button onClick={() => {
+            setIsAlumniProfessionExpanded(false);
+            setIsSkillsExpanded(true);
             setIsIndustryExpanded(false);
           }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
             Next
