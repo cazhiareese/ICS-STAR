@@ -4,6 +4,7 @@ from schemas.user import UserOut, UserStandingEnum, UserTypeEnum
 from config.database import get_db
 from util.userutil import require_admin
 from models.usermodel import User
+from models.report_model import Report
 from uuid import UUID
 from sqlalchemy import func
 
@@ -276,3 +277,30 @@ async def read_verification_file(db: Session = Depends(get_db), user_id: UUID = 
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return {"verification_file": user.verification_file}
+
+# Get user's report logs
+# Arguments: db - SQLAlchemy session, user_id - the user ID
+# Returns: a list of all report logs of the user
+@router.get("/admin/report-logs/{user_id}", dependencies=None)
+async def read_report_logs(db: Session = Depends(get_db), user_id: UUID = None):
+    report_logs = db.query(
+        Report.report_id,
+        func.to_char(Report.created_at, 'MM/DD/YYYY').label('report_date'),
+        func.to_char(Report.created_at, 'HH24:MI:SS').label('report_time'),
+        Report.reason,
+        Report.status,
+    ).filter(
+        Report.reported_user_id == user_id
+    ).all()
+    
+    report_logs_list = [
+        {
+            "report_id": report.report_id,
+            "report_date": report.report_date,
+            "report_time": report.report_time,
+            "reason": report.reason,
+            "status": report.status
+        } for report in report_logs
+    ]
+
+    return report_logs_list
