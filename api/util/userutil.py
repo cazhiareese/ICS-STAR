@@ -83,8 +83,13 @@ async def register_user(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": str(new_user.user_id), "role": str(new_user.user_type)}, expires_delta=access_token_expires
+    )
 
-    return {"message": "Account created successfully"}
+    return {"message": "Account created successfully", "access_token": access_token}
 
 async def upload_profile(profile_picture, user, db):
     file_content = await profile_picture.read()
