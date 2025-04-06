@@ -11,11 +11,13 @@ import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 
 function Step3Onboarding() {
     const[employed, setEmployed] = useState(true);
-    
+    const [typeEmployed, setTypeEmployed] = useState("No")
     const[selfEmployed, setSelfemployed] = useState(false);
     const[unemployed, setUnemployed] = useState(false);
     const [step, setStep]= useState(1);
     const[unemployedWorkExperience, setUnemployedWorkExperience]= useState(false)
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    
     const [location, setLocation] = useState({
       country: "",
       cityState: "",
@@ -26,33 +28,42 @@ function Step3Onboarding() {
     const {currentSection, setCurrentSection} = useOnboardingContext()
     
     const options = [
-      { label: 'Undergoing professional training', value: 'professional_training' },
-      { label: 'Currently pursuing academic studies', value: 'academic_studies' },
-      { label: 'Still seeking work', value: 'seeking_work' },
+      { label: 'Undergoing professional training', value: 'training' },
+      { label: 'Currently pursuing academic studies', value: 'academics' },
+      { label: 'Still seeking work', value: 'seek' },
       { label: 'Other', value: 'other' },
-      { label: 'Cannot start working at present (e.g. having illness, raising children)', value: 'cannot_work' },
+      { label: 'Cannot start working at present (e.g. having illness, raising children)', value: 'cannot_start' },
     ];
 
     const handleEmployedClick =()=>{
       setEmployed(true)
       setUnemployed(false)
       setSelfemployed(false)
+      setTypeEmployed("unemployed_no_exp")
     }
     const handleUnemployedClick =()=>{
       setEmployed(false)
       setUnemployed(true)
       setSelfemployed(false)
+      if (setUnemployedWorkExperience == true){
+        setTypeEmployed("unemployed_no_exp")
+      }
+      else {
+        setTypeEmployed("unemployed")
+      }
+      
     }
     const handleSelfemployedClick =()=>{
       setEmployed(false)
       setUnemployed(false)
       setSelfemployed(true)
+      setTypeEmployed("self_employed")
     }
 
     const handleChange = (e) => {
       setLocation({ ...location, [e.target.name]: e.target.value });
     };
-    const [selectedOptions, setSelectedOptions] = useState([]);
+    
 
   const handleCheckboxChange = (value) => {
     if (selectedOptions.includes(value)) {
@@ -101,6 +112,8 @@ function Step3Onboarding() {
     remote: false,
   });
 
+  
+
   const [selectedSkills, setSelectedSkills] = useState([]);
 
   const toggleSkill = (skill) => {
@@ -111,10 +124,65 @@ function Step3Onboarding() {
     }
   };
 
+  const updateEmployment = async () => {
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      console.error("No token found. Please log in.");
+      return;
+    }
+  
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  
+    // Create FormData instance
+    const formData = new FormData();
+    formData.append("industry", "Technology");
+    formData.append("employment_status", typeEmployed || "employed");
+    formData.append("company_name", "OpenAI");
+    formData.append("job_title", "Software Engineer");
+    formData.append("country", "USA");
+    formData.append("city", "San Francisco");
+    formData.append("work_mode", "remote");
+    formData.append("employer_class", "private");
+    formData.append("tenured_status", "permanent");
+    formData.append("salary_grade", "1");
+  
+    // Append reasons (array of strings)
+    if (selectedOptions && Array.isArray(selectedOptions)) {
+      selectedOptions.forEach(reason => {
+        formData.append("reasons", reason); // Backend must accept multiple "reasons"
+      });
+    }
+  
+    try {
+      const response = await fetch(`https://ics-star-api.vercel.app/update-employment`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          // Do NOT set "Content-Type", browser will set it to multipart/form-data with boundary
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error updating employment:", errorData);
+        return;
+      }
+  
+      const result = await response.json();
+      console.log("Employment updated:", result.message);
+  
+    } catch (err) {
+      console.error("Failed to update employment:", err);
+    }
+  };
+  
+
     return (
     <>
       {step==1 ? (<div className="flex flex-col justify-center md:mx-30 mx-10">
-
+        {/* Step 1 check employment type */}
         <img src={peersIcon} className="lg:h-20 lg:w-20 h-10 w-10 xl:mt-0 mb-5 "></img>
         <label className="font-satoshi-black lg:text-5xl md:text-4xl sm:text-3xl text-2xl"> Employment Status</label>
         <label className="font-satoshi-light lg:text-3xl md:text-2xl sm:text-xl text-lg"> Select the option that best describes your current situation.</label>
@@ -140,6 +208,8 @@ function Step3Onboarding() {
                 <label className="font-satoshi-black text-2xl text">Unemployed</label>
                 
               </div>
+
+              {/* Check if Unemployed */}
               {unemployed && (
                 <div className="relative flex flex-col items-center bg-secondary px-6 lg:py-6 py-3 rounded-2xl shadow-md mt-5 lg:w-[30%] w-[100%] lg:ml-10">
                   {/* Speech bubble arrow */}
@@ -187,6 +257,8 @@ function Step3Onboarding() {
         </div>
         
       </div>):
+
+        
         (
         unemployed ? 
         // Unemployed Part
@@ -225,7 +297,7 @@ function Step3Onboarding() {
 
               </div> 
               <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
-                  onClick={()=>setCurrentSection(4)}
+                  onClick={()=>(updateEmployment())}
               >
                       <label className="font-satoshi-bold cursor-pointer">Proceed</label>
               </div>
@@ -294,7 +366,7 @@ function Step3Onboarding() {
         </div>
       </>) : 
       
-      // For third unemployed Step
+      // For third employed Step
       (<>
       
         <div className="flex flex-col p-6 w-full max-w-3xl mx-auto">
@@ -477,7 +549,7 @@ function Step3Onboarding() {
 
               </div> 
               <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
-                  onClick = {()=>setCurrentSection(4)}
+                  onClick = {()=>{updateEmployment()}}
               >
                       <label className="font-satoshi-bold cursor-pointer">Proceed</label>
               </div>

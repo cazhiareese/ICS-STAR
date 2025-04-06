@@ -4,12 +4,12 @@ import {User}  from 'lucide-react'
 import Camera from "../../assets/onBoardingAssets/camera.png";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 function Step1Onboarding() {
-
+  const canvasRef = useRef(null);
   const [file, setFile] = useState(null);
   const [userImage, setUserImage] = useState("")
-  const [image, setImage] = useState(null);
-  const {currentSection, setCurrentSection} = useOnboardingContext()
+  const {currentSection, setCurrentSection, name, email} = useOnboardingContext()
   const [selectPicture, setSelectPicture] = useState(false)
+  
 
 
 
@@ -22,7 +22,9 @@ function Step1Onboarding() {
   const [brightness, setBrightness] = useState(100); // 100% means no change
   const [contrast, setContrast] = useState(100); // 100% means no change
   const [saturation, setSaturation] = useState(100); // 100% means no change
-  const canvasRef = useRef(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [editImage, setEditImage] = useState(null);  // This will store the ongoing edits
+
   const [editType, setEditType] = useState("Crop");
 
     // Handle dragging
@@ -38,10 +40,13 @@ function Step1Onboarding() {
       const x = e.clientX - imageRef.current.startX;
       const y = e.clientY - imageRef.current.startY;
 
-      // Optional: add constraint logic here
       setPosition({ x, y });
+      // updateEditImage(canvasRef.current);
     };
-  
+    const handleImageLoad = () => {
+      setImageLoaded(true); // Set imageLoaded state to true when the image is loaded
+    };
+
     const handleMouseUp = () => {
       setIsDragging(false);
     };
@@ -55,42 +60,83 @@ function Step1Onboarding() {
       };
     }, [isDragging]);
   
-    const cropImage = () => {
+    const updateEditImage = (canvas) => {
+      const ctx = canvas.getContext("2d");
+    
+      const image = imageRef.current;
+      
+      // Set the canvas dimensions to match the image
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      
+      // Apply filters to the canvas context
+      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+      
+      // Draw the image on the canvas with applied filters
+      ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+      
+      // Get the image data from the canvas and update the editImage state
+      const filteredImageData = canvas.toDataURL("image/png");
+      setEditImage(filteredImageData);
+    };
+    
+
+    const captureImage = () => {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
-  
-      const image = new Image();
-      image.src = imageSrc;
-  
-      image.onload = () => {
-        // Set canvas size to be the same as the image
-        const size = Math.min(image.width, image.height);
-        canvas.width = size;
-        canvas.height = size;
-  
-        // Draw the image in a circular mask
-        ctx.beginPath();
-        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
-        ctx.clip(); // Apply the circular mask
-  
-        // Draw the image inside the circle
-        ctx.drawImage(
-          image,
-          (image.width - size) / 2,
-          (image.height - size) / 2,
-          size,
-          size,
-          0,
-          0,
-          size,
-          size
-        );
-        
-        // Save the cropped image as a data URL (you can use it as an image source)
-        const croppedImageDataUrl = canvas.toDataURL("image/png");
-        downloadImage(croppedImageDataUrl);
-      };
+      if (!canvas || !imageRef.current || !containerRef.current || !imageLoaded) return;
+
+      const image = imageRef.current;
+      const container = containerRef.current;
+      const containerWidth = container.offsetWidth;
+      const containerHeight = container.offsetHeight;
+
+      const L = containerWidth * 0.6;
+      canvas.width = L;
+      canvas.height = L;
+
+      const naturalWidth = image.naturalWidth;
+      const naturalHeight = image.naturalHeight;
+
+      // Scale factor for fitting image inside container (initial render scale)
+      const scaleFit = Math.min(containerWidth / naturalWidth, containerHeight / naturalHeight);
+
+      // Final rendered size after initial fit and zoom
+      const renderedWidth = naturalWidth * scaleFit * zoom;
+      const renderedHeight = naturalHeight * scaleFit * zoom;
+
+      // Top-left of image inside container
+      const imageX = (containerWidth - renderedWidth) / 2 + position.x;
+      const imageY = (containerHeight - renderedHeight) / 2 + position.y;
+
+      // Crop circle center
+      const cropCenterX = containerWidth / 2;
+      const cropCenterY = containerHeight / 2;
+
+      // Find where the crop circle maps to in the natural image
+      const L_natural = L / (scaleFit * zoom);
+      const srcX = (cropCenterX - imageX) / (scaleFit * zoom) - L_natural / 2;
+      const srcY = (cropCenterY - imageY) / (scaleFit * zoom) - L_natural / 2;
+
+      ctx.clearRect(0, 0, L, L);
+      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+
+      ctx.drawImage(
+        image,
+        srcX, srcY, L_natural, L_natural,
+        0, 0, L, L
+      );
+
+      const croppedImageData = canvas.toDataURL("image/png");
+      setEditImage(croppedImageData);
     };
+    
+    
+    
+    
+    
+
+
     // const processFile = (selectedFile) => {
     //   if (selectedFile) {
     //       const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
@@ -107,9 +153,6 @@ function Step1Onboarding() {
     //   }
     // };
 
-
-
-
     const handleFileChange = (event) => {
       const file = event.target.files[0];
       if (!file) return; // Prevents errors if no file is selected
@@ -118,9 +161,20 @@ function Step1Onboarding() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setUserImage(reader.result);
+        setImageLoaded(true);
       };
       reader.readAsDataURL(file);
     };
+
+    const handleSave = () => {
+      setUserImage(editImage); // Save the edited image to userImage
+      setSelectPicture(false);
+    };
+    useEffect(() => {
+      if (imageLoaded) {
+        captureImage();
+      }
+    }, [zoom, position, imageLoaded, contrast, brightness, saturation]);
 
     return (
     <>
@@ -133,7 +187,7 @@ function Step1Onboarding() {
               <div className="relative w-full h-full flex justify-center items-center">
                 {userImage=="" ? 
                 (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>):
-                <img src={userImage} alt="Profile" className="md:w-55 w-20 md:h-55 h-20 rounded-full" />
+                <img src={userImage} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" />
                 }
               
                 <input 
@@ -153,8 +207,8 @@ function Step1Onboarding() {
             </div>
            
             <div className="flex flex-col items-center justify-center flex-1">
-              <label className="font-satoshi-bold md:text-3xl sm:text-2xl text-xl text-center ">Kiefer L. Tayawa</label>
-              <label className="font-satoshi-light text-lg">kltayawa@up.edu.ph</label>
+              <label className="font-satoshi-bold md:text-3xl sm:text-2xl text-xl text-center ">{name}</label>
+              <label className="font-satoshi-light text-lg">{email}</label>
             </div>
         </div>
         <div className="flex flex-row items-center justify-center my-20 md:space-x-20 w-full sm:text-2xl text-xl">
@@ -207,6 +261,8 @@ function Step1Onboarding() {
                 <div className="relative flex flex-col items-center justify-center w-[50%] h-[100%] md:h-[80%] md:max-h-100 max-h-50  rounded-4xl overflow-hidden  bg-black picture-holder"
                   ref={containerRef}
                 >
+
+                  
         
                   {/* Image with zoom effect */}
                   <img
@@ -214,7 +270,7 @@ function Step1Onboarding() {
                     src={userImage}
                     alt="Profile Preview"
                     onMouseDown={handleMouseDown}
-                    
+                    onLoad={handleImageLoad}
                     style={{
                       objectFit: 'contain',
                       transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
@@ -229,6 +285,7 @@ function Step1Onboarding() {
 
                   {/* Dark overlay with transparent circle center */}
                   <div className="absolute inset-0 pointer-events-none">
+                    <canvas ref={canvasRef} style={{ display: "none" }} />
                     <div className="w-full h-full">
                       <div
                         className="w-[50%] aspect-[1/1] rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -239,12 +296,9 @@ function Step1Onboarding() {
                       />
                     </div>
                   </div>
-
-                  {/* Slider below the picture holder */}
-                  
                   
                 </div>
-
+                {/* Slider below the picture holder */}
                 {/* Edit Functions */}
 
                 {/* Mobile Version */}
@@ -289,7 +343,7 @@ function Step1Onboarding() {
                     </div>
                   </div>
 
-                  }
+                  }crop
                   
                   { editType === "Contrast" &&
                   <div className="flex flex-col items-center">
@@ -403,13 +457,14 @@ function Step1Onboarding() {
 
               
 
-              
+              <img src={editImage} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" />
               <div className="flex flex-row justify-between items-center w-full md:px-30 pb-10 px-10">
                 <label className="w-30 h-15 bg-primary flex items-center justify-center text-white font-satoshi-bold rounded-3xl"
                   onClick={()=>{setSelectPicture(false)}}>
                   Go Back
                 </label>
-                <label className="w-30 h-15 bg-primary flex items-center justify-center text-white font-satoshi-bold rounded-3xl">
+                <label className="w-30 h-15 bg-primary flex items-center justify-center text-white font-satoshi-bold rounded-3xl" 
+                  onClick={handleSave}>
                   Save
                 </label>
               </div>

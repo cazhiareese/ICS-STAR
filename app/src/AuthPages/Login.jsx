@@ -147,7 +147,7 @@ function LoginPage() {
                 className="absolute top-0 right-0 w-[70%]"
             />
         </div>
-        
+
         {/* Lower Portion */}
         <div className="flex flex-col overflow-auto [@media(max-height:800px)]:justify-normal items-center justify-center w-screen h-screen p-10 z-10 overflow-clip">
             

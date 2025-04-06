@@ -109,7 +109,9 @@ function Step2Onboarding() {
             ) : ( 
                 <div className="flex flex-col justify-center pt-10 md:mx-30 mx-10">
                     <img src={peersIcon} className="lg:h-20 lg:w-20 h-10 w-10 mt-10 mb-5 mr-auto" alt="Peers Icon" />
-                    
+                    <label className="font-satoshi-light lg:text-3xl text-xl pb-10">
+                        Please select atmost 5 each
+                    </label>
                     {/* Scholarships Section */}
                     {scholarships &&<>
                     

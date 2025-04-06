@@ -45,7 +45,7 @@ function Success(){
             }
     
             if (userType === "alumni") {
-                formData.append("graduation_year", userData.academicYear.slice(-4));
+                formData.append("graduation_year", userData.academicYear);
                 if (userData.selectedTerm = "1st Semester") formData.append("graduation_semester", UserGradSemEnum.first_sem);
                 if (userData.selectedTerm = "2nd Semester") formData.append("graduation_semester", UserGradSemEnum.second_sem);
                 if (userData.selectedTerm = "Midyear") formData.append("graduation_semester", UserGradSemEnum.midyear);
@@ -61,11 +61,12 @@ function Success(){
             if (response.ok) {
                 localStorage.setItem("token", data.access_token);
                 alert("Registration Successful!");
-                if (userType=="alumni"){
-                    navigate("/alumni");
-                } else {
-                    navigate("/student");
-                }
+                // if (userType=="alumni"){
+                //     navigate("/alumni");
+                // } else {
+                //     navigate("/student");
+                // }
+                navigate("/setup")
             } else {
                 alert(data.detail || "Registration failed!");
                 console.error("Response Status:", response.status);

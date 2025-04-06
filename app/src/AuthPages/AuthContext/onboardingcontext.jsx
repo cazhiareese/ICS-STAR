@@ -6,25 +6,11 @@ export function OnboardingProvider({ children }) {
     const [currentSection, setCurrentSection] = useState(0);
 
 
-    const [onboarding, setOnboarding] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        fileName: "",
-        fileSize: "",
-        photo: null,
-        value: "",
-        academicYear: "",
-        selectedYear: "",
-        selectedTerm: "",
-        image: "",
-        type: "",
-        confirmPassword: ""
-    });
+    const [name, setName] = useState("___")
+    const [email, setEmail] = useState("___")
 
     return (
-        <OnboardingContext.Provider value={{ currentSection, setCurrentSection }}>
+        <OnboardingContext.Provider value={{ email, setEmail, currentSection, setCurrentSection, name, setName }}>
             {children}
         </OnboardingContext.Provider>
     );
