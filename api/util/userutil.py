@@ -11,7 +11,7 @@ from typing import List
 
 from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum, Orgs
+from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -60,7 +60,7 @@ async def register_user(
     user_type: UserTypeEnum,
     verification_file: UploadFile = File(None),
     graduation_year: str = None,
-    graduation_semester: str = None,
+    graduation_semester: UserGradSemEnum = None,
     db: Session = Depends(get_db)
 ):
     await get_email(email, db)
