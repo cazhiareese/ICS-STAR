@@ -113,6 +113,13 @@ async def upload_profile(profile_picture, user, db):
 
     if len(file_content) > MAX_FILE_SIZE or profile_picture.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Invalid verification file")
+    
+    if user.image:
+        try:
+            old_file_path = user.image.replace(STORAGE_STRING, "")
+            supabase_client.storage.from_("128storage").remove([old_file_path])
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Failed to delete old profile picture: {e}")
 
     profile_picture_ext = profile_picture.filename.split(".")[-1]
     profile_picture_name = f"profile_pictures/{uuid.uuid4()}.{profile_picture_ext}"
