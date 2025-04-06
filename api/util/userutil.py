@@ -11,7 +11,7 @@ from typing import List, Optional
 
 from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum
+from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum, UnemploymentReasonEnum, UserEmploymentStatus
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -97,6 +97,71 @@ def process_student_onboarding(
     except Exception as e:
             raise HTTPException(status_code=500, detail="Error updating info")
         
+
+def process_alumni_onboarding(
+    user: User,
+    db: Session,
+    scholarships: Optional[List[str]] = None,
+    affiliations: Optional[List[str]] = None,
+    roles: Optional[List[str]] = None,
+    skills: Optional[List[str]] = None,
+    reasons: Optional[List[UnemploymentReasonEnum]] = None,
+    industry: Optional[str] = None,
+    employment_status: Optional[UserEmploymentStatus] = None,
+    company_name: Optional[str] = None,
+    job_title: Optional[str] = None,
+    country: Optional[str] = None,
+    city: Optional[str] = None,
+    work_mode: Optional[str] = None,
+    employer_class: Optional[str] = None,
+    tenured_status: Optional[str] = None,
+    salary_grade: Optional[str] = None,
+):
+    
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    if user.user_type.value == UserTypeEnum.student:
+        raise HTTPException(status_code=400, detail="For alumni only")
+    try:
+        if scholarships:
+            new_scholarships = [
+                UserScholarship(user_id=user.user_id, scholarship=scholarship)
+                for scholarship in scholarships
+            ]
+            db.add_all(new_scholarships)
+
+        if affiliations:
+            if len(affiliations) != len(roles):
+                raise HTTPException(status_code=400, detail="Invalid input")
+
+            new_affiliations = [
+                UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role)
+                for affiliation, role in zip(affiliations, roles)
+            ]
+            db.add_all(new_affiliations)
+
+        if skills:
+            new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
+            db.add_all(new_skills)
+
+        
+        user.industry = industry
+        user.employment_status = employment_status if employment_status else None
+        user.company_name = company_name
+        user.job_title = job_title
+        user.work_location = f"{city}, {country}" if city and country else None
+        user.work_mode = work_mode
+        user.employer_class = employer_class
+        user.tenured_status = tenured_status
+        user.salary_grade = salary_grade
+
+        db.commit()
+        db.refresh(user)
+        
+    except Exception as e:
+            raise HTTPException(status_code=500, detail="Error updating info")
+
 
 async def register_user(
     first_name: str,
