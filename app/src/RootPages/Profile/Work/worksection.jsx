@@ -34,8 +34,6 @@ function WorkSection({ userDetails, handleChange }) {
     7: "At least ₱182,000 and up",
   };
 
-
-
   return (
     <div className="w-full max-w-[1100px] mt-6">
       {/* Section Header */}
@@ -49,12 +47,11 @@ function WorkSection({ userDetails, handleChange }) {
       <div className="w-full py-2">
         {/* First Row: Job Title & Date */}
         <div className="flex justify-between items-center">
-        <div
-  className={`flex gap-2 sm:gap-4 ${
-    isEditing ? "flex-col sm:flex-row items-start" : "items-center"
-  }`}
->
-
+          <div
+            className={`flex gap-2 sm:gap-4 ${
+              isEditing ? "flex-col sm:flex-row items-start" : "items-center"
+            }`}
+          >
             {isEditing ? (
               <input
                 type="text"
@@ -99,7 +96,6 @@ function WorkSection({ userDetails, handleChange }) {
               className={`w-[200px] h-[30px] py-1 text-[23px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 ${
                 isEditing ? "sm:mb-0 mb-8" : ""
               }`}
-              
             />
           ) : (
             <p className="text-primary text-[18px] font-satoshi-medium">
@@ -134,7 +130,7 @@ function WorkSection({ userDetails, handleChange }) {
           ) : (
             <p className="text-black font-satoshi-medium text-[20px]">
               {userDetails.work_location}
-            </p> 
+            </p>
           )}
 
           <button
@@ -159,7 +155,11 @@ function WorkSection({ userDetails, handleChange }) {
                   className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] "
                 >
                   {employerClasses.map((status) => (
-                    <option className="text-[15px] sm:text-[20px] " key={status} value={status}>
+                    <option
+                      className="text-[15px] sm:text-[20px] "
+                      key={status}
+                      value={status}
+                    >
                       {status}
                     </option>
                   ))}
@@ -180,7 +180,11 @@ function WorkSection({ userDetails, handleChange }) {
                   className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] "
                 >
                   {tenuredStatuses.map((status) => (
-                    <option className="text-[15px] sm:text-[20px] " key={status} value={status}>
+                    <option
+                      className="text-[15px] sm:text-[20px] "
+                      key={status}
+                      value={status}
+                    >
                       {status}
                     </option>
                   ))}
@@ -202,7 +206,11 @@ function WorkSection({ userDetails, handleChange }) {
                   className="text-primary font-satoshi-bold bg-white border text-[20px] border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] sm:text-[20px]"
                 >
                   {Object.entries(salaryRanges).map(([key, value]) => (
-                    <option className="text-[15px] sm:text-[20px] " key={key} value={key}>
+                    <option
+                      className="text-[15px] sm:text-[20px] "
+                      key={key}
+                      value={key}
+                    >
                       {value}
                     </option>
                   ))}
