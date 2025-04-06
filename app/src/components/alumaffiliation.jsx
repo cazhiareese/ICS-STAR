@@ -11,13 +11,15 @@ const AlumniAffiliationFilter = ({
   setIsSkillsExpanded
 }) => {
 
-    const affiliations = [
-        "Young Software Engineers' Society",
-        "Alliance of Computer Science Students",
-        "Computer Science Society",
-        "Mathematical Science Society",
-        "El Gamma Penumbra"
-    ]
+  const affiliations = [
+      "Young Software Engineers' Society",
+      "Alliance of Computer Science Students",
+      "Computer Science Society",
+      "Mathematical Science Society",
+      "El Gamma Penumbra"
+  ]
+
+  
 
     // Handle the enter key press
   const handleAffiliationSearch = (e) => {
@@ -42,7 +44,7 @@ const AlumniAffiliationFilter = ({
 
     
 
-    <div className="flex flex-col shadow mt-5 rounded-lg bg-white lg:bg-transparent">
+    <div className="flex flex-col shadow-md mt-5 rounded-lg bg-white lg:bg-transparent">
       <div className="flex flex-row px-5 py-3" onClick={() => setIsAffiliationExpanded(!isAffiliationExpanded)}>
         <motion.h1
           className="flex-1/2 font-satoshi-medium"

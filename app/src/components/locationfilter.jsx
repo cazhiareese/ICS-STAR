@@ -40,7 +40,7 @@ const AlumniLocationFilter = ({
   const filteredlocations = locations.filter(location => location.toLowerCase().includes(locationInput.toLowerCase()));
 
   return (
-    <div className="flex flex-col shadow mt-5 rounded-lg bg-white lg:bg-transparent">
+    <div className="flex flex-col shadow-md mt-5 rounded-lg bg-white lg:bg-transparent">
       <div className="flex flex-row px-5 py-3" onClick={() => setIsLocationExpanded(!isLocationExpanded)}>
         <motion.h1
           className="flex-1/2 font-satoshi-medium"

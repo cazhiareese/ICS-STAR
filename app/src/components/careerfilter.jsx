@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
+import React, {useState, useEffect} from 'react';
 import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import axios from 'axios';
 
 const AlumniCareerFilter = ({
   isCareerExpanded,
@@ -10,15 +12,30 @@ const AlumniCareerFilter = ({
   setCareerList,
   setIsAffiliationExpanded
 }) => {
+    const [jobs, setJobs] = useState([]); 
 
-    const jobs = [
-        "Frontend Developer",
-        "Backend Developer",
-        "Data Scientist",
-        "Professor",
-        "Instructor",
-        "Information Technology"
-    ]
+    
+    //Search Suggestions
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!careerInput) {
+                setFilteredAlumni([]);
+                return;
+            }
+            try {
+                const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/job-titles?q=${encodeURIComponent(careerInput)}&limit=5`);
+                setJobs(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error("Error fetching alumni data:", error);
+                // setAlumniList([]);
+            }
+            
+        };
+    
+        fetchData();  // Fetch data when dependencies change
+    
+    }, [careerInput]);
 
     // Handle the enter key press
   const handleCareerSearch = (e) => {
