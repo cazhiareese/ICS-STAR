@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
-from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING
+from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
 from models.usermodel import User, UserTypeEnum
 
@@ -24,6 +24,16 @@ def verify_password(plain_password, hashed_password):
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
+async def get_email(email: str, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return True
+
+async def get_studno(student_number: str, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.student_number == student_number).first():
+        raise HTTPException(status_code=400, detail="Student number already exists")
+    return True
+
 async def register_user(
     first_name: str,
     last_name: str,
@@ -36,11 +46,8 @@ async def register_user(
     graduation_semester: str = None,
     db: Session = Depends(get_db)
 ):
-    if db.query(User).filter(User.email == email).first():
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    if db.query(User).filter(User.student_number == student_number).first():
-        raise HTTPException(status_code=400, detail="Student number already exists")
+    await get_email(email, db)
+    await get_studno(student_number, db)
 
     if verification_file:
         file_content = await verification_file.read()
@@ -76,8 +83,13 @@ async def register_user(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": str(new_user.user_id), "role": str(new_user.user_type)}, expires_delta=access_token_expires
+    )
 
-    return {"message": "Account created successfully"}
+    return {"message": "Account created successfully", "access_token": access_token}
 
 async def upload_profile(profile_picture, user, db):
     file_content = await profile_picture.read()
