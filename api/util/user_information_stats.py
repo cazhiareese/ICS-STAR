@@ -29,7 +29,7 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
                     else_=0
                 )
             ).label("inactive_users")
-        ).where(User.verified == True, User.user_type == 'alumni', User.student_number.is_not(None))
+        ).where(User.is_verified == True, User.user_type == 'alumni', User.student_number.is_not(None))
         
         result = query.first()
         if not result:
@@ -61,7 +61,7 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
                         else_=0
                     )
                 ).label("inactive_users")
-            ).where(User.verified == True, User.student_number.is_not(None))
+            ).where(User.is_verified == True, User.student_number.is_not(None))
             .group_by("batch")
         )
 
