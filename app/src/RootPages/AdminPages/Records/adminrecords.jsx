@@ -3,11 +3,12 @@ import { BadgeCheck, Filter, List, LayoutGrid, MoveLeft, MoveRight, Search } fro
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import UsersTable from '../../../components/AdminComponents/userstable';
 
 function AdminRecords() {
   const navigate = useNavigate()
 
-  const [userType, setUserType] = useState('alum')
+  const [userType, setUserType] = useState('alumni')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(48)
   const [viewStyle, setViewStye] = useState('List')
@@ -20,16 +21,12 @@ function AdminRecords() {
   const [focused, setFocused] = useState(false)
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-  // const fetchUsers = (type) => {
-  //   setUserType(type);
-  // };
   
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/filter/${userType}`);
+        const response = await axios.get(`${API_BASE_URL}/admin/verified-${userType}`);
         console.log(response.data);
         setUsers(response.data);
       } catch (error) {
@@ -46,7 +43,7 @@ function AdminRecords() {
   // Initial fetch
   useEffect(() => {
     // fetchUsers('alum');
-    setUserType('alum')
+    setUserType('alumni')
   }, []);
   
   return (
@@ -86,7 +83,7 @@ function AdminRecords() {
         <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
           <div className='w-full lg:w-auto  min-w-xs'>
             {/* Alumni button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alum' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alum')}>
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alumni')}>
               <p className='text-black font-satoshi-medium text-md'> Alumni </p>
             </button>
             {/* Student button */}
@@ -134,54 +131,7 @@ function AdminRecords() {
         </div>
         {/* Table for desktop*/}
         <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
-            <table className="w-full">
-              {/* Table Header */}
-              <thead>
-                <tr className="text-left text-xs text-primary font-satoshi-regular">
-                  <th className="py-2 px-4"></th>
-                  <th className="py-2 px-4">NAME</th>
-                  <th className="py-2 px-4">BATCH</th>
-                  <th className="py-2 px-4">BASE LOCATION</th>
-                  <th className="py-2 px-4">JOB TITLE</th>
-                  <th className="py-2 px-4">LAST UPDATE</th>
-                  <th className="py-2 px-4"></th>
-                </tr>
-              </thead>
-
-              {/* Table Body */}
-              <tbody className='font-satoshi-regular text-md'>
-                {users.map((user, index) => (
-                  <tr 
-                  key={index} 
-                  className="hover:bg-gray-100 cursor-pointer" 
-                  onClick={() => {navigate(`/admin/records/${user.id}`)}}
-                  >
-                    {/* Name Column */}
-                    <td>
-                      {/* <div className="w-8 h-8 bg-gray-300 rounded-full"></div> */}
-                    </td>
-                    {/* User Name */}
-                    <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold"> {user.name} </td>
-                    {/* User Batch*/}
-                    <td className="py-3 px-4">{user.batch}</td>
-                    {/* User Location */}
-                    <td className="py-3 px-4">{user.location_base}</td>
-                    {/* User Job */}
-                    <td className="py-3 px-4">{user.job_title}</td>
-                    {/* User last update */}
-                    <td className="py-3 px-4">{user.last_updated}</td>
-                    {/* User Status */}
-                    <td>
-                      {user.status && (
-                        <span className="bg-gray-200 px-4 py-1 rounded-2xl text-black font-satoshi-bold text-sm">
-                          {user.status}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <UsersTable data={users}/>
         </div>
       {/* Table for mobile */}
       <div className='flex flex-col lg:hidden overflow-auto'>
