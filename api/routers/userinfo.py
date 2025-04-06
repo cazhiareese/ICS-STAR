@@ -5,9 +5,9 @@ from typing import List, Optional
 
 from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion
 
-from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill
+from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 
-from schemas.user import UserEmploymentStatus, UserTypeEnum
+from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum
 
 router = APIRouter()
 
@@ -94,6 +94,7 @@ async def add_skills(
 async def update_employment(
     industry: str = Form(...),
     employment_status: UserEmploymentStatus = Form(...),
+    reasons: Optional[List[UnemploymentReasonEnum]] = Query(None),
     company_name: str = Form(...),
     job_title: str = Form(...),
     country: str = Form(...),
@@ -110,6 +111,14 @@ async def update_employment(
     
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
+
+    if reasons:
+        unemployment_reasons = [
+            UnemploymentReason(user_id=user.user_id, reason=reason.value)
+            for reason in reasons
+        ]
+        db.add_all(unemployment_reasons)
+        db.commit()
     
     user.industry = industry
     user.employment_status = employment_status.value
