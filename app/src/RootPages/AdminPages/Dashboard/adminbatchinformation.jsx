@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { MoveLeft } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { BarChart, Bar, XAxis, YAxis, LabelList } from 'recharts';
-
+import UsersTable from '../../../components/AdminComponents/userstable';
+import { div } from 'framer-motion/client';
 
 function AdminBatchInformation() {
     const navigate = useNavigate()
@@ -48,6 +49,119 @@ function AdminBatchInformation() {
       { title: 'USA', count: 3454, percent: 2.2 },
       { title: 'France', count: 5675, percent: 4.1 },
       { title: 'Netherlands', count: 1233, percent: 5.0 }
+    ])
+
+    const [batchUsers, setBatchUsers] = useState([
+      {
+        id: 1,
+        name: "Kiefer Tayawa",
+        batch: 2022,
+        location_base: "Manila, PH",
+        job_title: "Full-Stack Developer",
+        industry: "Full-Stack Developer",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: false,
+      },
+      {
+        id: 2,
+        name: "Alan Turing",
+        batch: 2022,
+        location_base: "Wilmslow, Cheshire",
+        job_title: "Data Science",
+        industry: "Data Science",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: true,
+      },
+      {
+        id: 3,
+        name: "Ada Lovelace",
+        batch: 2022,
+        location_base: "London, England",
+        job_title: "Web Development",
+        industry: "Web Development",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: false,
+      },
+      {
+        id: 4,
+        name: "Alan Turing",
+        batch: 2022,
+        location_base: "Wilmslow, Cheshire",
+        job_title: "Data Science",
+        industry: "Data Science",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: false,
+      },
+      {
+        id: 5,
+        name: "Ada Lovelace",
+        batch: 2022,
+        location_base: "London, England",
+        job_title: "Web Development",
+        industry: "Web Development",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: false,
+      },
+      {
+        id: 6,
+        name: "Alan Turing",
+        batch: 2022,
+        location_base: "Wilmslow, Cheshire",
+        job_title: "Data Science",
+        industry: "Data Science",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: false,
+      },
+      {
+        id: 7,
+        name: "Ada Lovelace",
+        batch: 2022,
+        location_base: "London, England",
+        job_title: "Web Development",
+        industry: "Web Development",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: false,
+      },
+      {
+        id: 8,
+        name: "Alan Turing",
+        batch: 2022,
+        location_base: "Wilmslow, Cheshire",
+        job_title: "Data Science",
+        industry: "Data Science",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: true,
+      },
+      {
+        id: 9,
+        name: "Ada Lovelace",
+        batch: 2022,
+        location_base: "London, England",
+        job_title: "Web Development",
+        industry: "Web Development",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: false,
+      },
+      {
+        id: 10,
+        name: "Ada Lovelace",
+        batch: 2022,
+        location_base: "London, England",
+        job_title: "Web Development",
+        industry: "Web Development",
+        last_updated: "1/1/2020",
+        status: "Inactive",
+        badge: false,
+      },
     ])
 
     const [selectedYear, setSelectedYear] = useState()
@@ -311,7 +425,9 @@ function AdminBatchInformation() {
           </div>
         </div>
         ) : ( 
-        <></>
+          <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
+            <UsersTable data={batchUsers}/>
+          </div>
         )}
       </div>
     </div>
