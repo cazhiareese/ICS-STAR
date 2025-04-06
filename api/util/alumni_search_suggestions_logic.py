@@ -1,6 +1,6 @@
 from sqlalchemy import func, desc
 from sqlalchemy.orm import Session
-from models.usermodel import User, UserTypeEnum, UserSkill 
+from models.usermodel import User, UserTypeEnum, UserSkill, UserAffiliation 
 from config import config
 from config.database import get_db
 from typing import List
@@ -54,6 +54,19 @@ def get_top_cities(db: Session) -> List[str]:
     
     return [result[0] for result in results]
 
+# Get Top 4 affiliations by counting occurrences
+def get_top_affiliations(db: Session) -> List[str]:
+    results = db.query(UserAffiliation.affiliation, func.count(UserAffiliation.affiliation).label('count'))\
+                .join(User, User.user_id == UserAffiliation.user_id)\
+                .filter(User.user_type == UserTypeEnum.alumni)\
+                .filter(UserAffiliation.affiliation.isnot(None))\
+                .group_by(UserAffiliation.affiliation)\
+                .order_by(desc('count'))\
+                .limit(4)\
+                .all()
+    
+    return [result[0] for result in results]
+
 # Get all job titles
 def get_all_job_titles(db: Session) -> List[str]:
     results = db.query(User.job_title)\
@@ -95,6 +108,18 @@ def get_all_cities(db: Session) -> List[str]:
                 .filter(User.city.isnot(None))\
                 .distinct()\
                 .order_by(User.city)\
+                .all()
+    
+    return [result[0] for result in results]
+
+# Get all affiliations
+def get_all_affiliations(db: Session) -> List[str]:
+    results = db.query(UserAffiliation.affiliation)\
+                .join(User, User.user_id == UserAffiliation.user_id)\
+                .filter(User.user_type == UserTypeEnum.alumni)\
+                .filter(UserAffiliation.affiliation.isnot(None))\
+                .distinct()\
+                .order_by(UserAffiliation.affiliation)\
                 .all()
     
     return [result[0] for result in results]
