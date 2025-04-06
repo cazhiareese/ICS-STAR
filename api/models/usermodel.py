@@ -103,3 +103,10 @@ class UserAffiliation(Base):
    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
   
    user = relationship("User", back_populates="affiliations")
+
+class Orgs(Base):
+   __tablename__ = 'org'
+  
+   org_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+   name = Column(String(255), nullable=False)
+   alias = Column(String(50))
