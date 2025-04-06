@@ -1,13 +1,37 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Home, FileText, Calendar, Newspaper, BriefcaseBusiness, Heart, LogOut, CircleUserRound, FileUser, ShieldUser, TriangleAlert, HandCoins, MoveRight, Users, Wallet } from "lucide-react";
 import { 
   PieChart, Pie, Cell, Tooltip, Legend, 
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid
 } from "recharts";
 import { Link } from "react-router-dom";
+import axios from 'axios'
+import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
 
 function AdminDashboard() {
+
+  const [loading, setLoading] = useState(true)
+  const [pendingVerifications, setPendingVerifications] = useState()
+
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const pendingVerificationCount = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
+        console.log(pendingVerificationCount.data.count);
+        setPendingVerifications(pendingVerificationCount.data.count);
+      } catch (error) {
+        console.log('Error getting dashboard data');
+        // setUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  },[])
 
   const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
 
@@ -20,6 +44,7 @@ function AdminDashboard() {
     fundingRequests: 10,
     registeredAlumni: 542,
   }
+
 
   const events = [
     {
@@ -99,15 +124,23 @@ function AdminDashboard() {
           </div> 
         {/* Pending Verifications */}
           <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-col justify-between`}> 
-            <div className="flex flex-row justify-between">
-              <p className="text-5xl"> {response.pendingVerifications} </p>
-              <div className="">
-                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+            {loading ? (
+              <div className="flex items-center justify-center h-full">
+                <SkeletonLoading/>
+              </div>
+            ) : (
+            <>
+              <div className="flex flex-row justify-between">
+                <p className="text-5xl"> {pendingVerifications} </p>
+                <div className="">
+                  <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
                   <FileUser className="w-6 h-6 text-white" />
+                  </div>
                 </div>
               </div>
-            </div>
               <p className="font-satoshi-light text-sm "> Pending Verifications </p>
+            </>
+            )}
           </div> 
         {/* Reported Postings */}
         <div className={`${dashboardCard} col-start-2 row-start-2 flex flex-col justify-between`}> 
