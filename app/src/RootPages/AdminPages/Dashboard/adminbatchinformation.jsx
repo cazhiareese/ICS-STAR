@@ -118,6 +118,7 @@ function AdminBatchInformation() {
           </div>
         </div>
         {/* Statistics */}
+        {statsOrUser === 'stats' ? (
         <div className='flex flex-col gap-2 mt-2'>
           {/* Employment Status */}
           <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
@@ -213,7 +214,7 @@ function AdminBatchInformation() {
                   layout="vertical"
                   data={jobTitles}
                   margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
-                >
+                  >
                   <XAxis type="number" hide />
                   <YAxis
                     type="category"
@@ -221,13 +222,13 @@ function AdminBatchInformation() {
                     tick={{ fill: "#5A5673", fontSize:10}}
                     axisLine={false}
                     tickLine={false}
-                  />
+                    />
                   <Bar
                     dataKey="count"
                     barSize={20}
                     background={{ fill: "#EAF1FF" }}
                     radius={[10,10,10,10]}
-                  >
+                    >
                     {jobTitles.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
                     ))}
@@ -246,7 +247,7 @@ function AdminBatchInformation() {
                   layout="vertical"
                   data={topIndustries}
                   margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
-                >
+                  >
                   <XAxis type="number" hide />
                   <YAxis
                     type="category"
@@ -254,13 +255,13 @@ function AdminBatchInformation() {
                     tick={{ fill: "#5A5673", fontSize:10}}
                     axisLine={false}
                     tickLine={false}
-                  />
+                    />
                   <Bar
                     dataKey="count"
                     barSize={20}
                     background={{ fill: "#EAF1FF" }}
                     radius={[10,10,10,10]}
-                  >
+                    >
                     {topIndustries.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
                     ))}
@@ -284,7 +285,7 @@ function AdminBatchInformation() {
                   layout="vertical"
                   data={topCountries}
                   margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
-                >
+                  >
                   <XAxis type="number" hide />
                   <YAxis
                     type="category"
@@ -292,13 +293,13 @@ function AdminBatchInformation() {
                     tick={{ fill: "#5A5673", fontSize:10}}
                     axisLine={false}
                     tickLine={false}
-                  />
+                    />
                   <Bar
                     dataKey="count"
                     barSize={20}
                     background={{ fill: "#EAF1FF" }}
                     radius={[10,10,10,10]}
-                  >
+                    >
                     {topCountries.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
                     ))}
@@ -309,9 +310,13 @@ function AdminBatchInformation() {
             </div>
           </div>
         </div>
+        ) : ( 
+        <></>
+        )}
       </div>
     </div>
-  )
-}
-
-export default AdminBatchInformation
+    )
+  }
+  
+  export default AdminBatchInformation
+  
