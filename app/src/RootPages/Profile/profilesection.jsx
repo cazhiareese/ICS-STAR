@@ -14,13 +14,10 @@ import ImageUploadModal from "./components/imageuploadmodal";
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
-  const [profilePicture, setProfilePicture] = useState(null); 
+  const [profilePicture, setProfilePicture] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
-
-  
-
-  // Fetch the user's profile picture
+  //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
   useEffect(() => {
     const fetchProfilePicture = async () => {
       try {
@@ -67,41 +64,40 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
         setError("User not authenticated");
         return;
       }
-  
+
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-  
-      // 🧠 Sync userDetails to formData before sending
+
       const currentFormData = {
-        first_name: userDetails.first_name || '',
-        last_name: userDetails.last_name || '',
-        email: userDetails.email || '',
-        mobile_number: userDetails.mobile_number || '',
-        city: userDetails.city || '',
-        state: userDetails.state || '',
-        country: userDetails.country || '',
-        marital_status: userDetails.marital_status || '',
-        facebook: userDetails.facebook || '',
-        linkedin: userDetails.linkedin || '',
-        github: userDetails.github || '',
+        first_name: userDetails.first_name || "",
+        last_name: userDetails.last_name || "",
+        email: userDetails.email || "",
+        mobile_number: userDetails.mobile_number || "",
+        city: userDetails.city || "",
+        state: userDetails.state || "",
+        country: userDetails.country || "",
+        marital_status: userDetails.marital_status || "",
+        facebook: userDetails.facebook || "",
+        linkedin: userDetails.linkedin || "",
+        github: userDetails.github || "",
       };
-  
+
       const urlEncodedData = new URLSearchParams(currentFormData).toString();
-  
+
       console.log("🔍 Final Request Body:", urlEncodedData);
-  
+
       const response = await fetch(`${API_BASE_URL}/profile/edit`, {
         method: "PUT",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/x-www-form-urlencoded",
           Authorization: `Bearer ${token}`,
         },
         body: urlEncodedData,
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to update profile");
       }
-  
+
       const result = await response.json();
       console.log(result.message);
       setEditMode(false);
@@ -110,12 +106,10 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       setError("Failed to update profile");
     }
   };
-  
-  
 
   const handleUpload = (imageUrl) => {
-    setProfilePicture(imageUrl); // Update the profile image in the parent component
-    console.log("Profile picture updated:", imageUrl); // Debugging: log the new profile image URL
+    setProfilePicture(imageUrl);
+    console.log("Profile picture updated:", imageUrl);
   };
 
   return (
@@ -124,7 +118,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       <button
         onClick={() => {
           if (editMode) {
-            setShowModal(true); // Show modal when saving
+            setShowModal(true);
           } else {
             setEditMode(true);
           }
