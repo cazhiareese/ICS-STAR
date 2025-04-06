@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding
 
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 
@@ -110,6 +110,50 @@ async def onboarding_student(
         skills=skills,
     )
 
+    return {"message": "onboarding details updated successfully"}
+
+
+@router.post("/onboarding-info-alum")
+async def onboarding_info(
+    scholarships: Optional[List[str]] = Query(None),
+    affiliations: Optional[List[str]] = Query(None),
+    roles: List[str] = Query(None),
+    industry: str = Form(None),
+    employment_status: UserEmploymentStatus = Form(None),
+    reasons: Optional[List[UnemploymentReasonEnum]] = Query(None),
+    company_name: str = Form(None),
+    job_title: str = Form(None),
+    country: str = Form(None),
+    city: str = Form(None),
+    work_mode: str = Form(None),
+    employer_class: str = Form(None),
+    tenured_status: str = Form(None),
+    salary_grade: str = Form(None),
+    skills: Optional[List[str]] = Query(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+
+    process_alumni_onboarding(
+        user=user,
+        db=db,
+        scholarships=scholarships,
+        affiliations=affiliations,
+        roles=roles,
+        industry=industry,
+        employment_status=employment_status,
+        reasons=reasons,
+        company_name=company_name,
+        job_title=job_title,
+        country=country,
+        city=city,
+        work_mode=work_mode,
+        employer_class=employer_class,
+        tenured_status=tenured_status,
+        salary_grade=salary_grade,
+        skills=skills
+    )
+    
     return {"message": "onboarding details updated successfully"}
 
 @router.put("/update-employment")
