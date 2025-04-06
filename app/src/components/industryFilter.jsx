@@ -17,7 +17,7 @@ const AlumniIndustryFilter = ({
   //Search Suggestions
   useEffect(() => {
       const fetchData = async () => {
-          if (!affiliationInput) {
+          if (!industryInput) {
               setIndustries([]);
               return;
           }
@@ -26,7 +26,7 @@ const AlumniIndustryFilter = ({
               setIndustries(response.data);
               console.log(response.data);
           } catch (error) {
-              console.error("Error fetching affiliation data:", error);
+              console.error("Error fetching inudustry data:", error);
               // setAlumniList([]);
           }
           
