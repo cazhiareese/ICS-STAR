@@ -4,6 +4,7 @@ from sqlalchemy.pool import NullPool
 import uuid
 from enum import Enum as PyEnum
 from config.config import Base
+from sqlalchemy.dialects.postgresql import ENUM
 
 
 # Enums
@@ -17,7 +18,7 @@ class UserTypeEnum(PyEnum):
    student = 'student'
    alumni = 'alumni'
 
-class UserStandingEnum(PyEnum):
+class UserStandingEnum(str, PyEnum):
    freshman = 'freshman'
    old_freshman = 'old freshman'
    sophomore = 'sophomore'
@@ -48,7 +49,15 @@ class User(Base):
    position = Column(String(50))
    is_banned = Column(Boolean, default=False)
    student_number = Column(String(15), unique=True)
-   standing = Column(Enum(UserStandingEnum), nullable=True)
+   standing = Column(
+    ENUM(
+        UserStandingEnum,
+        name='user_standing_enum',  # Must match your PostgreSQL enum type name exactly
+        create_type=False,  # Important - tells SQLAlchemy the type already exists
+        values_callable=lambda x: [e.value for e in UserStandingEnum]  # Explicit values
+    ),
+    nullable=True
+)
    graduation_year = Column(Integer)
    graduation_semester = Column(String(20))
    employment_status = Column(String(50))
