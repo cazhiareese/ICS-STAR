@@ -5,7 +5,9 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from models.usermodel import User
 from routers.admin_account_management import isAdmin
+
 from util.user_information_stats import  employment_class_util, get_active_alumni_stats, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, grouped_by_industry, salary_grade_util, tenure_status_util, work_mode_util
+
 from util.admin_alum_list import get_alumni_list_filter,  get_alumni_filter, get_all_alumni, get_student_filter
 
 router = APIRouter()
@@ -40,7 +42,9 @@ async def get_batch_top_jobs(db:Session=Depends(get_db), batch:str=""):
 
 @router.get("/admin/stats/get_batch_top_industries")
 async def get_batch_top_industries(db:Session=Depends(get_db), batch:str=""):
+
     top_industries =  grouped_by_industry(db, batch=batch, country =None, limit=True)
+
 
     return{"message":"success", "data":top_industries}
 
@@ -64,7 +68,9 @@ async def get_country_top_jobs(db:Session=Depends(get_db), industry:str=""):
 
 @router.get("/admin/stats/get_country_top_industries")
 async def get_country_top_industries(db:Session=Depends(get_db), country:str=""):
+
     top_industries = grouped_by_industry(db, batch=None, country =country, limit=True)
+
 
     return{"message":"success", "data":top_industries}
 
@@ -109,6 +115,25 @@ async def search_alumni(
 ):
     
     results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation, order_by=order_by, needs_verified=True)
+
+    
+    # Raise 404 if no results found
+    if not results:
+        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
+    
+    return results
+
+@router.get("/admin/filter/unverified/alum")
+async def search_alumni_unverified(
+    name: Optional[str] = None,
+    graduation_year: Optional[int] = None,
+    batch: Optional[str] = None,
+    order_by: list[str]=Query([]),
+    db: Session = Depends(get_db)
+):
+    
+    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=None, city=None, skill=None, industry=None, batch=batch, affiliation=None, order_by=order_by, needs_verified=False)
+
     
     # Raise 404 if no results found
     if not results:
@@ -244,5 +269,6 @@ async def country_route(db: Session = Depends(get_db), batch: Optional[str] = No
 @router.get("/admin/stats/activity")
 async def general_activity_route(db: Session = Depends(get_db)):
     activity_data= get_active_alumni_stats(db, alumni_general = True)
+
 
     return{"message": "success", "data": activity_data}

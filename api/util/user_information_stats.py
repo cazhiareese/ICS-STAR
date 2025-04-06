@@ -9,6 +9,7 @@ from sqlalchemy import func, case, or_, text, desc,asc
 from datetime import datetime, timedelta
 
 
+
 def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_general: bool = False):
     one_year_ago = datetime.now() - timedelta(days=365)
     
@@ -92,6 +93,7 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
                 "inactive_users_percentage": round((res["inactive_users"]/res["total_users"])*100, 2) if res["total_users"] else 0,
             })
 
+
         return results_analyzed
 
 def get_employment_status(db: Session, batch:Optional[str] = None):
@@ -101,7 +103,9 @@ def get_employment_status(db: Session, batch:Optional[str] = None):
         func.count()
     )
     .filter(
+
         User.is_verified == True,
+
         User.user_type == 'alumni',
         User.employment_status.is_not(None),
         
@@ -115,12 +119,13 @@ def get_employment_status(db: Session, batch:Optional[str] = None):
     
     total_alumni_sum = sum_query.scalar()
 
-
     query = (
         db.query(
             User.employment_status.label("employment_status"),
             func.count().label("total_alumni")
+
         ).filter(User.is_verified == True, User.user_type == 'alumni', User.employment_status.is_not(None))
+
     )
 
     if batch:
@@ -149,7 +154,9 @@ def get_job_util(db: Session, batch:Optional[str] = None, industry: Optional[str
         func.count()
     )
     .filter(
+
         User.is_verified == True,
+
         User.user_type == 'alumni',
         User.job_title.is_not(None)
     )
@@ -161,6 +168,7 @@ def get_job_util(db: Session, batch:Optional[str] = None, industry: Optional[str
             func.count().label("job_count")
         )
         .filter( User.is_verified == True,User.user_type == 'alumni', User.job_title.isnot(None))  
+
         
     )
 
@@ -176,7 +184,9 @@ def get_job_util(db: Session, batch:Optional[str] = None, industry: Optional[str
         sum_query = sum_query.filter(User.industry == industry)
         query = query.filter(User.industry == industry).group_by(User.job_title).order_by(func.count().desc())
     else:
+
         query = query.group_by(User.job_title).order_by(func.count().desc())
+
 
     total_employed = sum_query.scalar()
 
@@ -299,9 +309,6 @@ def employment_class_util(db: Session, industry:Optional[str] = None, batch: Opt
     )
     )
 
-
-
-
     query = (
         db.query(
             User.employer_class.label("employer_class"),
@@ -337,14 +344,14 @@ def employment_class_util(db: Session, industry:Optional[str] = None, batch: Opt
     return employment_class_list
 
 
-def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional[str] = None ):
+
+def salary_grade_util(db: Session, industry:Optional[str] = None):
 
     sum_query= (
     db.query(
         func.count()
     )
     .where(
-        User.is_verified == True,
         User.user_type == 'alumni',
         User.salary_grade.is_not(None),
     )
@@ -355,14 +362,9 @@ def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional
             User.salary_grade,
             func.count().label("count")
         )
-        .filter(User.is_verified == True, User.user_type == 'alumni', User.salary_grade.isnot(None))  
+        .filter(User.user_type == 'alumni', User.salary_grade.isnot(None))  
         
     )
-
-    if batch:
-        sum_query = sum_query.filter(func.split_part(User.student_number, '-', 1)== batch)
-        query = query.filter(func.split_part(User.student_number, '-', 1)== batch)
-
 
     if industry:
         sum_query = sum_query.filter(User.industry == industry)
@@ -375,6 +377,7 @@ def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional
     if not top_salary:
         raise HTTPException(status_code=404, detail="No top industries")
 
+
     top_salaries_dict = [row._asdict() for row in top_salary]
     top_salaries_list = []
 
@@ -386,6 +389,7 @@ def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional
         })
     
     return top_salaries_list
+
 
 
 
@@ -410,7 +414,6 @@ def grouped_by_industry(db: Session, batch: Optional[str] = None, country: Optio
             func.count().label("industry_count")
         )
         .filter(User.is_verified == True,User.user_type == 'alumni', User.industry.isnot(None))  
-        
     )
 
     if batch:
@@ -419,6 +422,7 @@ def grouped_by_industry(db: Session, batch: Optional[str] = None, country: Optio
             query = query.filter(func.split_part(User.student_number, '-', 1)== batch).group_by(User.industry).order_by(func.count().desc()).limit(5)
         else: 
             query = query.filter(func.split_part(User.student_number, '-', 1)== batch).group_by(User.industry).order_by(func.count().desc())
+
     elif country: 
         sum_query = sum_query.filter(User.country == country)
         query = query.filter(User.country == country).group_by(User.industry).order_by(func.count().desc()).limit(5)
@@ -460,7 +464,8 @@ def tenure_status_util(db: Session, industry: Optional[str] = None):
             User.tenured_status,
             func.count().label("count")
         )
-        .filter(User.is_verified == True,User.user_type == 'alumni', User.tenured_status.isnot(None))  
+
+        .filter(User.is_verified == True,User.user_type == 'alumni', User.tenured_status.isnot(None))
         
     )
 
@@ -493,6 +498,7 @@ def work_mode_util(db: Session, industry: Optional[str] = None):
         func.count()
     )
     .where(
+
         User.is_verified == True,
         User.user_type == 'alumni',
         User.work_mode.is_not(None),
@@ -504,8 +510,7 @@ def work_mode_util(db: Session, industry: Optional[str] = None):
             User.work_mode,
             func.count().label("count")
         )
-        .filter(User.is_verified == True,User.user_type == 'alumni', User.work_mode.isnot(None))  
-        
+        .filter(User.is_verified == True,User.user_type == 'alumni', User.work_mode.isnot(None))         
     )
 
     if industry:
@@ -517,7 +522,9 @@ def work_mode_util(db: Session, industry: Optional[str] = None):
     mode = query.group_by(User.work_mode).order_by(func.count().desc()).all()
 
     if not mode:
+
         raise HTTPException(status_code=404, detail="No work mode available")
+
 
     mode_dict = [row._asdict() for row in mode]
     mode_list = []

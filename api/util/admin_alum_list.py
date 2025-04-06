@@ -92,11 +92,12 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         query = query.filter(
         func.split_part(User.student_number, '-', 1)== batch
     )
+
     if industry:
         query = query.filter(
-       
         User.industry == industry
     )
+
     if country:
         query = query.filter(
         User.country == country
@@ -105,11 +106,13 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
     if order_by:
         for order in order_by:
             order_parts = order.lower().split('_')
+
             order_field = '_'.join(order_parts[:-1])
             order_direction = order_parts[-1] if len(order_parts) > 1 else 'asc'
            
             print(order_field)
             print(order_direction)
+
 
             if order_field == 'name':
                 print("here_name")
@@ -123,7 +126,7 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
                 order_column = func.split_part(User.student_number, '-', 1)
 
             elif order_field == 'updated':
-                print("here_updated")
+
                 order_column = User.updated_at
             else:
                 continue  # skip invalid fields
@@ -312,6 +315,7 @@ def get_alumni_filter(
         # Default ordering if none specified
             query = query.order_by(asc(User.last_name), asc(User.first_name))
 
+
     alumni = query.all()
 
     if not alumni:
@@ -445,6 +449,7 @@ def get_student_filter(
         else:
         # Default ordering if none specified
             query = query.order_by(asc(User.last_name), asc(User.first_name))
+
 
     students = query.all()
 
