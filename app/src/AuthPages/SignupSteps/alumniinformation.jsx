@@ -3,6 +3,7 @@ import Step2 from "../../assets/SignupAssets/step2.png";
 import { CloudUpload, File, X } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
+import ErrorBox from "../errorbox.jsx"
 
 function AlumnInfo(){
 
@@ -26,11 +27,11 @@ function AlumnInfo(){
     // For Year
     const handleInputChange = (e) => {
         let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
-        if (value.length > 8) value = value.slice(0, 8);
+        if (value.length > 4) value = value.slice(0, 4);
 
-        let formattedValue = "AY ";
+        let formattedValue = "";
         if (value.length >= 4) {
-            formattedValue += value.slice(0, 4) + " - ";
+            formattedValue += value.slice(0, 4);
             if (value.length > 4) {
                 formattedValue += value.slice(4);
             }
@@ -81,9 +82,10 @@ function AlumnInfo(){
 
     // As Student number change limits it also to 5 digits
     const handleSNChange = (e) => {
-        let inputValue = e.target.value.replace(/[^0-9]/g, ''); // Allow only numbers
+        let inputValue = e.target.value.replace(/\D/g, ""); // Allow only numbers
         if (inputValue.length > 5) return; // Limit to 5 digits
         updateUserData("value", e.target.value)
+        
     };
 
     // Requirements Checker !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -91,23 +93,19 @@ function AlumnInfo(){
     const checkRequirements = () =>{
         if (userData.value && (userData.academicYear && userData.academicYear!="AY ") &&userData.selectedYear &&userData.selectedTerm){
              setCurrentSection("3")
-
-            
-           
             
         } else{
             setError(true)
             if ((userData.academicYear && userData.academicYear!="AY ")  || userData.selectedTerm !="") setTermGraduated(false); else setTermGraduated(true)
             
             if (userData.selectedYear && userData.value) setStudentNumberError(false); else setStudentNumberError(true)
-    
         }
     }
     
     
     return(
-        <div className="flex flex-col w-full items-center overflow-auto pt-40 sm:pt-0 sm:mt-0 mt-10">
-             <div className = "flex flex-row z-10 space-x-8 mt-20">
+        <div className="flex flex-col w-full items-center overflow-auto pt-10 sm:pt-0 sm:mt-0 mt-10">
+             <div className = "fixed flex flex-row z-20 space-x-8 mt-10 ">
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(1)}></button>
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(2)}></button>
 
@@ -115,17 +113,17 @@ function AlumnInfo(){
                         <button className = "w-15 h-15 " ></button>
                         <button className = "w-15 h-15 "/> 
             </div>
-            <img src={Step2} className="-mt-12"/>
-            <label className="font-satoshi-bold text-center text-3xl text-black pt-10 pb-8">Alumni Information</label>
+            <img src={Step2} className="fixed mt-10 z-10 "/>
+            <label className="fixed font-satoshi-bold text-center text-3xl text-black pt-30 pb-8 w-full bg-white">Alumni Information</label>
             
-            <div class="grid grid-cols-2 gap-4 p-4 lg:w-150 md:w-120">
+            <div class="grid grid-cols-2 gap-4 p-4 lg:w-150 md:w-120 pt-50 ">
                 <div className="font-satoshi-regular">
                     Student Number <label className="text-red-700">*</label>
                 </div>
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
                     <select 
                         value={userData.selectedYear} 
-                        onChange={(e) => updateUserData("selectedYear", e.target.value)}
+                        onChange={(e) => { updateUserData("selectedYear", e.target.value), updateUserData("academicYear", parseInt(e.target.value) +4)}}
                         className={`border rounded-lg h-10 w-[45%] text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
                     >
                         <option value="" disabled>Select a year</option>
@@ -134,16 +132,23 @@ function AlumnInfo(){
                         ))}
                     </select>
                     <label>-</label>
-                    <input type="number" 
+                    <input type="text" 
                            value={userData.value} 
                            onChange={handleSNChange} 
                            placeholder={"Enter up to 5 digits"} className={`w-[45%] border-1 rounded-lg h-10 text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
                     />
+                    
 
                 </div>
+                { studentNumberError &&
+                    <div className="w-full -mt-3">
+                        <ErrorBox/>
+                    </div>
+                }
                 <div className="col-span-2 font-satoshi-regular">
                     Year and Term Graduated <label className="text-red-700">*</label>
                 </div>
+                
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
                     <select 
                         value={userData.selectedTerm} 
@@ -153,22 +158,28 @@ function AlumnInfo(){
                         <option value="" disabled>Select a Term</option>
                         <option value="1st Semester">First Semester</option>
                         <option value="2nd Semester">Second Semester</option>
+                        <option value="Midyear">Midyear</option>
                         
                     </select>
                     <label>-</label>
-                    <div className={`flex items-center border rounded-lg px-4 py-2 w-[45%] shadow-sm ${termGraduated==false ? 'border-black':'border-red-600'}`}>
+                    <div className={`flex items-center border rounded-lg px-4 py-2 w-[45%] shadow-sm text-center ${termGraduated==false ? 'border-black':'border-red-600'}`}>
                         <input
                             type="text"
                             value={userData.academicYear} 
                             onChange={handleInputChange}
-                            placeholder="AY YYYY - YYYY"
-                            className={`outline-none w-full text-gray-700 placeholder-gray-400`}
+                            placeholder="YYYY"
+                            className={`outline-none w-full text-gray-700 placeholder-gray-400 text-center`}
                         />
                     </div>
                 </div>
+                { termGraduated &&
+                    <div className="w-full -mt-3">
+                        <ErrorBox/>
+                    </div>
+                }
 
-                <div class="col-span-2">
-                    Upload your Diploma 
+                <div class="col-span-2 font-satoshi-regular">
+                    Upload your Diploma (Optional)
                 </div>
                 
                     {!userData.image ? (
@@ -234,10 +245,10 @@ function AlumnInfo(){
                     </label>
                 </div>
 
-                <div className={`col-span-2 items-center flex mt-0 -pb-10 text-red-400 ${error ? 'block': 'hidden'}`}>
+                {/* <div className={`col-span-2 items-center flex mt-0 -pb-10 text-red-400 ${error ? 'block': 'hidden'}`}>
                     <label>Please answer all required fields above</label>
 
-                </div>
+                </div> */}
 
                 <div class=" text-black flex flex-col items-start">
                         <button

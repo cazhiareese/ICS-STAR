@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "../../index.css";
 import {User}  from 'lucide-react'
 import Camera from "../../assets/onBoardingAssets/camera.png";
@@ -9,26 +9,112 @@ function Step1Onboarding() {
   const [userImage, setUserImage] = useState("")
   const [image, setImage] = useState(null);
   const {currentSection, setCurrentSection} = useOnboardingContext()
+  const [selectPicture, setSelectPicture] = useState(false)
 
-    const processFile = (selectedFile) => {
-      if (selectedFile) {
-          const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
 
-          setFile(selectedFile)
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setUserImage(reader.result);
-          };
-          reader.readAsDataURL(file);
-          console.log("SJDFDS")
 
-      }
+  // For Editing of userProfile
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const imageRef = useRef(null);
+  const containerRef = useRef(null);
+  const [zoom, setZoom] = useState(1); // zoom scale 1 = 100%
+  const [brightness, setBrightness] = useState(100); // 100% means no change
+  const [contrast, setContrast] = useState(100); // 100% means no change
+  const [saturation, setSaturation] = useState(100); // 100% means no change
+  const canvasRef = useRef(null);
+  const [editType, setEditType] = useState("Crop");
+
+    // Handle dragging
+    const handleMouseDown = (e) => {
+      e.preventDefault();
+      setIsDragging(true);
+      imageRef.current.startX = e.clientX - position.x;
+      imageRef.current.startY = e.clientY - position.y;
     };
+  
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      const x = e.clientX - imageRef.current.startX;
+      const y = e.clientY - imageRef.current.startY;
+
+      // Optional: add constraint logic here
+      setPosition({ x, y });
+    };
+  
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+  
+    useEffect(() => {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+      return () => {
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+    }, [isDragging]);
+  
+    const cropImage = () => {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+  
+      const image = new Image();
+      image.src = imageSrc;
+  
+      image.onload = () => {
+        // Set canvas size to be the same as the image
+        const size = Math.min(image.width, image.height);
+        canvas.width = size;
+        canvas.height = size;
+  
+        // Draw the image in a circular mask
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
+        ctx.clip(); // Apply the circular mask
+  
+        // Draw the image inside the circle
+        ctx.drawImage(
+          image,
+          (image.width - size) / 2,
+          (image.height - size) / 2,
+          size,
+          size,
+          0,
+          0,
+          size,
+          size
+        );
+        
+        // Save the cropped image as a data URL (you can use it as an image source)
+        const croppedImageDataUrl = canvas.toDataURL("image/png");
+        downloadImage(croppedImageDataUrl);
+      };
+    };
+    // const processFile = (selectedFile) => {
+    //   if (selectedFile) {
+    //       const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
+
+    //       setFile(selectedFile)
+          
+    //       const reader = new FileReader();
+    //       reader.onloadend = () => {
+    //         setUserImage(reader.result);
+    //       };
+    //       reader.readAsDataURL(file);
+    //       console.log("SJDFDS")
+
+    //   }
+    // };
+
+
+
 
     const handleFileChange = (event) => {
       const file = event.target.files[0];
       if (!file) return; // Prevents errors if no file is selected
       setFile(file)
+      setSelectPicture(true)
       const reader = new FileReader();
       reader.onloadend = () => {
         setUserImage(reader.result);
@@ -44,21 +130,25 @@ function Step1Onboarding() {
         <label className="font-satoshi-light md:text-2xl sm:text-xl text-lg text-left w-full">Add a profile picture</label>
         <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-175 sm:w-150 w-95 h-40">
             <div className="flex items-center justify-center rounded-full bg-white md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0">
-              {userImage=="" ? 
-              (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>):
-              <img src={userImage} alt="Profile" className="md:w-55 w-20 md:h-55 h-20 rounded-full" />
-              }
-              <input 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden"
-                  id="fileInput"
-                  onChange={handleFileChange}
-              />
+              <div className="relative w-full h-full flex justify-center items-center">
+                {userImage=="" ? 
+                (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>):
+                <img src={userImage} alt="Profile" className="md:w-55 w-20 md:h-55 h-20 rounded-full" />
+                }
+              
+                <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden"
+                    id="fileInput"
+                    onChange={handleFileChange}
+                />
 
-              <label htmlFor="fileInput" className= "absolute pt-35 pl-45 w-55 cursor-pointer">
-                <img src={Camera} />
-              </label>
+                <label htmlFor="fileInput" className= "absolute pt-35 pl-45 w-55 cursor-pointer">
+                  <img src={Camera} />
+                </label>
+              </div>
+              
 
             </div>
            
@@ -92,6 +182,241 @@ function Step1Onboarding() {
           
         
       </div>
+
+      {/* Select Picture */}
+      {selectPicture &&
+      <div className="flex items-center justify-center ">
+          <div className="bg-black h-screen w-screen absolute top-0 opacity-80 left-0">
+            
+          </div>
+
+          <div className="absolute flex flex-col items-center pt-10 h-[90%] w-[80%] bg-white z-30 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl overflow-y-scroll">
+              <label className="font-satoshi-bold text-3xl">Edit Profile Picture</label>
+              
+              <div className="md:hidden flex flex-row mt-10  items-center justify-center z-20">
+                  <label className={`font-satoshi-bold sm:text-lg text-sm h-10 sm:px-3 sm:p-1 p-2.5 ${editType == "Crop" ? 'rounded-2xl text-white bg-primary':'text-black'}`} onClick={()=>{setEditType("Crop")}}>Crop</label>
+                  <label className={`font-satoshi-bold sm:text-lg text-sm h-10 sm:px-3 sm:p-1 p-2.5 ${editType == "Brightness" ? 'rounded-2xl text-white bg-primary':'text-black'}`} onClick={()=>{setEditType("Brightness")}}>Brightness</label>
+                  <label className={`font-satoshi-bold sm:text-lg text-sm h-10 sm:px-3 sm:p-1 p-2.5 ${editType == "Contrast" ? 'rounded-2xl text-white bg-primary':'text-black'}`} onClick={()=>{setEditType("Contrast")}}>Contrast</label>
+                  <label className={`font-satoshi-bold sm:text-lg text-sm h-10 sm:px-3 sm:p-1 p-2.5 ${editType == "Saturation" ? 'rounded-2xl text-white bg-primary':'text-black'}`} onClick={()=>{setEditType("Saturation")}}>Saturation</label>
+              </div>
+              {/* Orientation */}
+              <div className="flex md:flex-row w-full h-full items-center justify-center flex-col ">
+
+              
+                {/* Picture container */}
+                <div className="relative flex flex-col items-center justify-center w-[50%] h-[100%] md:h-[80%] md:max-h-100 max-h-50  rounded-4xl overflow-hidden  bg-black picture-holder"
+                  ref={containerRef}
+                >
+        
+                  {/* Image with zoom effect */}
+                  <img
+                    ref={imageRef}
+                    src={userImage}
+                    alt="Profile Preview"
+                    onMouseDown={handleMouseDown}
+                    
+                    style={{
+                      objectFit: 'contain',
+                      transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+                      transition: isDragging ? "none" : "transform 0.2s ease",
+                      cursor: isDragging ? "grabbing" : "grab",
+                      filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
+                      
+                    }}
+                    className="w-full h-full"
+                    draggable={false}
+                  />
+
+                  {/* Dark overlay with transparent circle center */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="w-full h-full">
+                      <div
+                        className="w-[50%] aspect-[1/1] rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                        style={{
+                          boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.5)",
+                          background: "transparent",
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Slider below the picture holder */}
+                  
+                  
+                </div>
+
+                {/* Edit Functions */}
+
+                {/* Mobile Version */}
+
+                <div className="flex md:hidden flex-row items-center justify-center md:w-1/3 w-3/4 mt-10">
+                  
+                  { editType === "Crop" &&
+                  <div className="flex flex-col items-center">
+                    <label className=" text-black font-satoshi-bold text-xl pt-2">Crop</label>
+                    <div className=" space-x-5 flex flex-row items-center justify-center w-[80%]  z-20">
+                        <label className=" text-black font-satoshi-bold text-3xl pb-2">-</label>
+                        <input
+                          type="range"
+                          min="0.1"
+                          max="3"
+                          step="0.01"
+                          value={zoom}
+                          onChange={(e) => setZoom(e.target.value)}
+                          className="w-1/2 z-40"
+                        />
+                        <label className="text-black font-satoshi-bold text-3xl pb-2">+</label>
+                    </div>
+                  </div>  
+                  }
+                  
+
+                  { editType == "Brightness" &&
+                  <div className="flex flex-col items-center">
+                    {/* Brightness Slider */}
+                    <label className=" text-black font-satoshi-bold text-xl pt-2">Brightness</label>
+                    <div className=" space-x-5 flex flex-row items-center justify-center w-[80%]  z-20">
+                        <label className=" text-black font-satoshi-bold text-3xl pb-2">-</label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="200"
+                          value={brightness}
+                          onChange={(e) => setBrightness(e.target.value)}
+                          className="w-1/2 z-40"
+                        />
+                        <label className="text-black font-satoshi-bold text-3xl pb-2">+</label>
+                    </div>
+                  </div>
+
+                  }
+                  
+                  { editType === "Contrast" &&
+                  <div className="flex flex-col items-center">
+                    {/* Contrast Slider */}
+                    <label className=" text-black font-satoshi-bold text-xl pt-2">Contrast</label>
+                    <div className=" space-x-5 flex flex-row items-center justify-center w-[80%]  z-20">
+                        <label className=" text-black font-satoshi-bold text-3xl pb-2">-</label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="200"
+                          value={contrast}
+                          onChange={(e) => setContrast(e.target.value)}
+                          className="w-1/2 z-40"
+                        />
+                        <label className="text-black font-satoshi-bold text-3xl pb-2">+</label>
+                    </div>
+                  </div>
+                  }
+
+                  {/* Saturation */}
+                  { editType === "Saturation" &&
+                  <div className="flex flex-col items-center">
+                    <label className=" text-black font-satoshi-bold text-xl pt-2">Saturation</label>
+                    <div className=" space-x-5 flex flex-row items-center justify-center w-[80%]  z-20">
+                        <label className=" text-black font-satoshi-bold text-3xl pb-2">-</label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="200"
+                          value={saturation}
+                          onChange={(e) => setSaturation(e.target.value)}
+                          className="w-1/2 z-40"
+                        />
+                        <label className="text-black font-satoshi-bold text-3xl pb-2">+</label>
+                    </div>
+                  </div>
+                  }
+
+                
+                </div>
+
+                
+
+                {/* Laptop Version */}
+                <div className="hidden md:flex flex-col items-center justify-center md:w-1/3 w-3/4">
+                    
+                  <label className=" text-black font-satoshi-bold text-xl pt-2">Crop</label>
+                  <div className=" space-x-5 flex flex-row items-center justify-center w-[80%]  z-20">
+                      <label className=" text-black font-satoshi-bold text-3xl pb-2">-</label>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="3"
+                        step="0.01"
+                        value={zoom}
+                        onChange={(e) => setZoom(e.target.value)}
+                        className="w-1/2 z-40"
+                      />
+                      <label className="text-black font-satoshi-bold text-3xl pb-2">+</label>
+                  </div>
+
+                  {/* Brightness Slider */}
+                  <label className=" text-black font-satoshi-bold text-xl pt-2">Brightness</label>
+                  <div className=" space-x-5 flex flex-row items-center justify-center w-[80%]  z-20">
+                      <label className=" text-black font-satoshi-bold text-3xl pb-2">-</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="200"
+                        value={brightness}
+                        onChange={(e) => setBrightness(e.target.value)}
+                        className="w-1/2 z-40"
+                      />
+                      <label className="text-black font-satoshi-bold text-3xl pb-2">+</label>
+                  </div>
+
+                  {/* Contrast Slider */}
+                  <label className=" text-black font-satoshi-bold text-xl pt-2">Contrast</label>
+                  <div className=" space-x-5 flex flex-row items-center justify-center w-[80%]  z-20">
+                      <label className=" text-black font-satoshi-bold text-3xl pb-2">-</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="200"
+                        value={contrast}
+                        onChange={(e) => setContrast(e.target.value)}
+                        className="w-1/2 z-40"
+                      />
+                      <label className="text-black font-satoshi-bold text-3xl pb-2">+</label>
+                  </div>
+                  {/* Saturation */}
+                  <label className=" text-black font-satoshi-bold text-xl pt-2">Saturation</label>
+                  <div className=" space-x-5 flex flex-row items-center justify-center w-[80%]  z-20">
+                      <label className=" text-black font-satoshi-bold text-3xl pb-2">-</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="200"
+                        value={saturation}
+                        onChange={(e) => setSaturation(e.target.value)}
+                        className="w-1/2 z-40"
+                      />
+                      <label className="text-black font-satoshi-bold text-3xl pb-2">+</label>
+                  </div>
+
+                
+                </div>
+
+              </div>
+
+              
+
+              
+              <div className="flex flex-row justify-between items-center w-full md:px-30 pb-10 px-10">
+                <label className="w-30 h-15 bg-primary flex items-center justify-center text-white font-satoshi-bold rounded-3xl"
+                  onClick={()=>{setSelectPicture(false)}}>
+                  Go Back
+                </label>
+                <label className="w-30 h-15 bg-primary flex items-center justify-center text-white font-satoshi-bold rounded-3xl">
+                  Save
+                </label>
+              </div>
+              
+          </div>
+      </div>}
+      
     </>
     
   );

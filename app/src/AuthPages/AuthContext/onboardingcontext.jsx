@@ -5,6 +5,24 @@ const OnboardingContext = createContext();
 export function OnboardingProvider({ children }) {
     const [currentSection, setCurrentSection] = useState(0);
 
+
+    const [onboarding, setOnboarding] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        fileName: "",
+        fileSize: "",
+        photo: null,
+        value: "",
+        academicYear: "",
+        selectedYear: "",
+        selectedTerm: "",
+        image: "",
+        type: "",
+        confirmPassword: ""
+    });
+
     return (
         <OnboardingContext.Provider value={{ currentSection, setCurrentSection }}>
             {children}

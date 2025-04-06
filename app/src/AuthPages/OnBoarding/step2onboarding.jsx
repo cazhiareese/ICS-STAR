@@ -53,13 +53,13 @@ function Step2Onboarding() {
         <>
             {!secondStep ? (
                 <div className="flex flex-col justify-center md:mx-30 mx-10">
-                    <img src={peersIcon} className="lg:h-20 lg:w-20 h-10 w-10 mt-10 mb-5" alt="Peers Icon" />
+                    <img src={peersIcon} className="lg:h-15 lg:w-15 h-10 w-10 mt-10 mb-5" alt="Peers Icon" />
                     <label className="font-satoshi-black lg:text-5xl sm:text-3xl text-2xl ">Did you have Affiliations or Scholarships?</label>
                     <label className="font-satoshi-light lg:text-3xl text-xl">
                         Please select if you had any of the following during your time at college
                     </label>
 
-                    <div className="flex flex-row flex-wrap lg:space-x-10 lg:pt-15 items-center justify-center">
+                    <div className="flex flex-row flex-wrap lg:space-x-10 items-center justify-center">
                         <div
                             className={`flex flex-col mt-10 lg:w-70 w-[100%] border lg:h-70 h-30 justify-center rounded-2xl px-10 ${
                                 affiliations ? "bg-secondary" : "bg-white"
@@ -72,7 +72,7 @@ function Step2Onboarding() {
                             </label>
                         </div>
 
-                        <div className="lg:flex flex-col md:w-[10%] text-justify justify-center rounded-2xl px-10 hidden"></div>
+                        <div className="xl:flex flex-col lg:w-[10%] text-justify justify-center rounded-2xl px-10 hidden"></div>
 
                         <div
                             className={`flex flex-col mt-10 lg:w-70 w-[100%] border lg:h-70 h-30 justify-center rounded-2xl px-10 ${
@@ -94,14 +94,22 @@ function Step2Onboarding() {
 
                         <div
                             className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
-                            onClick={() => setSecondStep(true)}
+                            onClick={() => {if (!scholarships && !affiliations) {
+                                setCurrentSection(3)
+                            } else {
+                                setSecondStep(true)
+                            }
+                        
+                            }}
                         >
                             <label className="font-satoshi-bold cursor-pointer md:text-2xl text-lg">Proceed</label>
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : ( 
                 <div className="flex flex-col justify-center pt-10 md:mx-30 mx-10">
+                    <img src={peersIcon} className="lg:h-20 lg:w-20 h-10 w-10 mt-10 mb-5 mr-auto" alt="Peers Icon" />
+                    
                     {/* Scholarships Section */}
                     {scholarships &&<>
                     
@@ -135,7 +143,7 @@ function Step2Onboarding() {
                     
 
                     {/* Affiliations Section */}
-
+                    
                     {affiliations && <>
                     <label className="font-satoshi-black lg:text-4xl md:text-3xl sm:text-2xl text-xl pt-10">Affiliations</label>
 

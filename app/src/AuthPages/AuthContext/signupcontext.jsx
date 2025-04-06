@@ -16,7 +16,8 @@ export function AppProvider({ children }) {
         selectedYear: "",
         selectedTerm: "",
         image: "",
-        type: ""
+        type: "",
+        confirmPassword: ""
     });
 
     const updateUserData = (field, value) => {

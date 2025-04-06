@@ -39,7 +39,7 @@ function MainPanelOnboarding() {
     return (
     <>
         <div className="flex items-center justify-center h-screen">
-            <div className="flex flex-col items-center justify-start mt-10 z-20 bg-white w-[90%] max-h-[90%] border overflow-auto">
+            <div className="flex flex-col items-center justify-start mt-10 z-20 bg-white w-[90%] h-[90%] border overflow-auto">
                 <div className= "my-10">
                     {ProgressBar[currentSection]}
                 </div>

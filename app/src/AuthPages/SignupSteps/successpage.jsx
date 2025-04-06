@@ -21,6 +21,12 @@ function Success(){
         )
     };
 
+    const UserGradSemEnum = {
+        first_sem: "1st Semester",
+        second_sem: "2nd Semester",
+        midyear: "Midyear"
+    };
+
     const baseURL = "https://ics-star-api.vercel.app/"
 
     const register = async (e) => {
@@ -40,7 +46,9 @@ function Success(){
     
             if (userType === "alumni") {
                 formData.append("graduation_year", userData.academicYear.slice(-4));
-                formData.append("graduation_semester", userData.selectedTerm);
+                if (userData.selectedTerm = "1st Semester") formData.append("graduation_semester", UserGradSemEnum.first_sem);
+                if (userData.selectedTerm = "2nd Semester") formData.append("graduation_semester", UserGradSemEnum.second_sem);
+                if (userData.selectedTerm = "Midyear") formData.append("graduation_semester", UserGradSemEnum.midyear);
             }
     
             const response = await fetch(`${baseURL}register`, {
@@ -51,6 +59,7 @@ function Success(){
             const data = await response.json();
             
             if (response.ok) {
+                localStorage.setItem("token", data.access_token);
                 alert("Registration Successful!");
                 if (userType=="alumni"){
                     navigate("/alumni");
@@ -70,20 +79,19 @@ function Success(){
     };
 
     return(
-        <div className="flex flex-col w-full items-center pt-40 sm:pt-0 sm:mt-0 mt-10">
-            <div className = "flex flex-row z-20 space-x-8 mt-20">
-                        <button className = "w-15 h-15" onClick={()=>setCurrentSection(1)}></button>
+        <div className="flex flex-col w-full items-center overflow-auto pt-10 sm:pt-0 sm:mt-0 mt-10">
+             <div className = "fixed flex flex-row z-20 space-x-8 mt-10 ">
+                        <button className = "w-15 h-15 " onClick={()=>setCurrentSection(1)}></button>
                         <button className = "w-15 h-15 " onClick={()=>setCurrentSection(2)}></button>
 
                         {/*  Placeholder buttons do not work, only for debugging and better placement of the 2 buttons above*/}
                         <button className = "w-15 h-15 " ></button>
                         <button className = "w-15 h-15 "/> 
             </div>
-            <img src={Step3} className="-mt-12"/>
-
-            <label className="font-satoshi-bold text-center text-3xl text-black pt-20 pb-8 w-80">Account Created Successfully!</label>
+            <img src={Step3} className="fixed mt-10 z-10 "/>
+            <label className="fixed font-satoshi-bold text-center text-3xl text-black pt-30 pb-8 w-full bg-white">Account Created Successfully</label>
             
-            <div className = "flex flex-col lg:w-150 md:w-100 w-70 h-full text-xl text-justify pt-15">
+            <div className = "flex flex-col lg:w-150 md:w-100 w-70 h-full text-xl text-justify pt-60">
                     <label className="font-satoshi-regular text-primary inline">
                             Your account is currently awaiting verification by our admin team,&nbsp;
                             <label className="font-satoshi-regular text-black inline ">

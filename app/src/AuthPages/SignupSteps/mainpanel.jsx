@@ -100,16 +100,9 @@ function SignupMain() {
             (
                 
                 <div className="flex flex-col items-center justify-start sm:mt-20 sm:flex-1 bg-white sm:z-10">
-                    {/* <div className = "flex flex-row z-10 space-x-8">
-                        <button className = "w-15 h-15 " onClick={()=>setCurrentSection(1)}></button>
-                        <button className = "w-15 h-15 " onClick={()=>setCurrentSection(2)}></button>
+                    
 
-                        {/*  Placeholder buttons do not work, only for debugging and better placement of the 2 buttons above*/}
-                        {/*<button className = "w-15 h-15 " ></button>
-                        <button className = "w-15 h-15 "/> 
-                    </div> */}
-
-                    <div className="-mt-12 flex-1 flex w-full overflow-auto">
+                    <div className="-mt-5 flex-1 flex w-full overflow-auto">
                         {userType === "Student" 
                             ? (StudentComponents[currentSection] || <div>Invalid Section</div>) 
                             : (AlumniComponents[currentSection] || <div>Invalid Section</div>)
