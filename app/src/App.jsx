@@ -21,7 +21,6 @@ import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
 
-import AdminUserInformationReport from "./RootPages/AdminPages/Dashboard/adminuserinformationreport";
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
 import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayout";
 import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
@@ -29,6 +28,7 @@ import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendi
 import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminverificationconfirmation";
 import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
+import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
 
 function App() {
@@ -62,7 +62,7 @@ function App() {
         <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<AdminDashboardLayout />}>
             <Route index element={<AdminDashboard />} />
-            <Route path="user-reports" element={<AdminUserInformationReport />} />
+            <Route path="alumni-report" element={<AdminAlumniInfo />} />
             <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}></Route>
           </Route>
           <Route path="records" element={<AdminRecordsLayout />} >

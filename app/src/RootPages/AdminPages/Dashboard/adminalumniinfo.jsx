@@ -6,7 +6,7 @@ import { BarChart, Bar, XAxis, Tooltip, LabelList } from 'recharts';
 import { YAxis } from "recharts";
 
 
-function AdminUserInformationReport() {
+function AdminAlumniInfo() {
   const navigate = useNavigate();
 
   const cardDesign = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
@@ -296,4 +296,4 @@ function AdminUserInformationReport() {
   )
 }
 
-export default AdminUserInformationReport
+export default AdminAlumniInfo

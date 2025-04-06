@@ -4,12 +4,13 @@ import {
   PieChart, Pie, Cell, Tooltip, Legend, 
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid
 } from "recharts";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios'
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
 
 function AdminDashboard() {
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(true)
   const [pendingVerifications, setPendingVerifications] = useState()
@@ -282,7 +283,10 @@ function AdminDashboard() {
               </div>
               {/* View Alumni Statistics */}
               <div>
-                <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light text-sm">View your Alumni</p> <MoveRight/></button>      
+                <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => {navigate("/admin/dashboard/alumni-report")}}> 
+                  <p className="font-satoshi-light text-sm">View your Alumni</p> 
+                  <MoveRight/>
+                </button>      
               </div>
             </div>
             {/* Alumni Locations and Industries */}
@@ -350,11 +354,9 @@ function AdminDashboard() {
                 <h2 className="font-satoshi-medium text-2xl"> System Engagement</h2>  
                 <p className="font-satoshi-light text-xs">User visit for the last 30 days</p>
               </div>
-              <Link to="/admin/dashboard/user-reports">
-                <button className="flex flex-row gap-4 cursor-pointer mt-2"> 
-                  <p className="font-satoshi-light text-sm">View User Information Reports</p> <MoveRight/>
-                </button>      
-              </Link>
+              <button className="flex flex-row gap-4 cursor-pointer mt-2"> 
+                <p className="font-satoshi-light text-sm">View User Information Reports</p> <MoveRight/>
+              </button>      
             </div>
             <div className="flex items-center mt-2">
               <ResponsiveContainer width="90%" height={200}>
