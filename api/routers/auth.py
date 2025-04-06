@@ -11,7 +11,7 @@ from util.userutil import register_user, get_current_active_user, require_studen
 from util.reports_logic import logic_login_log, logic_logout_log
 
 from schemas.user import UserOut
-from models.usermodel import User
+from models.usermodel import User, UserGradSemEnum
 
 router = APIRouter()
 
@@ -33,7 +33,7 @@ async def register(
     user_type: str = Form(...),
     verification_file: UploadFile = File(None),
     graduation_year: str = Form(None),
-    graduation_semester: str = Form(None),
+    graduation_semester: UserGradSemEnum = Form(None),
     db: Session = Depends(get_db),
 ):
     return await register_user(
