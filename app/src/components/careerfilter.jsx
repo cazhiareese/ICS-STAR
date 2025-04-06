@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
 import axios from 'axios';
 
@@ -13,28 +13,49 @@ const AlumniCareerFilter = ({
   setIsAffiliationExpanded
 }) => {
     const [jobs, setJobs] = useState([]); 
-
+    // cache reference
+    const cache = useRef({});
     
-    //Search Suggestions
     useEffect(() => {
-        const fetchData = async () => {
-            if (!careerInput) {
-                setJobs([]);
-                return;
-            }
-            try {
-                const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/job-titles?q=${encodeURIComponent(careerInput)}&limit=5`);
-                setJobs(response.data);
-                console.log(response.data);
-            } catch (error) {
-                console.error("Error fetching alumni data:", error);
-                // setAlumniList([]);
-            }
-            
-        };
-    
-        fetchData();  // Fetch data when dependencies change
-    
+      const fetchData = async () => {
+        if (!careerInput) {
+          // Check cache for top job titles
+          if (cache.current["top-job-titles"]) {
+            setJobs(cache.current["top-job-titles"]);
+            console.log("Using cached top job titles:", cache.current["top-job-titles"]);
+            return; // Skip API call if cached data exists
+          }
+  
+          try {
+            const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-job-titles");
+            setJobs(response.data);
+            cache.current["top-job-titles"] = response.data; // Cache the result
+            console.log("Fetched top job titles:", response.data);
+          } catch (error) {
+            console.error("Error fetching job titles data:", error);
+          }
+        } else {
+          const query = careerInput.trim().toLowerCase();
+          
+          // Check cache for job titles based on user input
+          if (cache.current[query]) {
+            setJobs(cache.current[query]); // Use cached data if it exists
+            console.log("Using cached job titles for input:", query, cache.current[query]);
+            return;
+          }
+  
+          try {
+            const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/job-titles?q=${encodeURIComponent(query)}&limit=5`);
+            setJobs(response.data);
+            cache.current[query] = response.data; // Cache the result for future use
+            console.log("Fetched job titles for input:", query, response.data);
+          } catch (error) {
+            console.error("Error fetching job titles data:", error);
+          }
+        }
+      };
+  
+      fetchData();
     }, [careerInput]);
 
     // Handle the enter key press

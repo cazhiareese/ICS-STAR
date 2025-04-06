@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
 import axios from 'axios';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef } from 'react';
 
 const AlumniSkillsFilter = ({
   isSkillsExpanded,
@@ -14,26 +14,49 @@ const AlumniSkillsFilter = ({
 }) => {
 
   const [skills, setSkills] = useState([]); 
+  // cache reference
+  const cache = useRef({});
 
   //Search Suggestions
   useEffect(() => {
-      const fetchData = async () => {
-          if (!skillsInput) {
-              setSkills([]);
-              return;
-          }
-          try {
-              const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/skills?q=${encodeURIComponent(skillsInput)}&limit=5`);
-              setSkills(response.data);
-              console.log(response.data);
-          } catch (error) {
-              console.error("Error fetching skills data:", error);
-          }
-          
-      };
-  
-      fetchData();  // Fetch data when dependencies change
-  
+    const fetchData = async () => {
+      // Check if the input is empty, and use the cached data for top skills if available
+      if (!skillsInput) {
+        if (cache.current["top-skills"]) {
+          setSkills(cache.current["top-skills"]);
+          console.log("Using cached top skills:", cache.current["top-skills"]);
+          return; // Skip the API call if we have cached data
+        }
+
+        try {
+          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-skills");
+          setSkills(response.data);
+          cache.current["top-skills"] = response.data; // Cache the response
+          console.log("Fetched top skills:", response.data);
+        } catch (error) {
+          console.error("Error fetching skills data:", error);
+        }
+      } else {
+        const query = skillsInput.trim().toLowerCase();
+        
+        if (cache.current[query]) {
+          setSkills(cache.current[query]); // Use the cached result if available
+          console.log("Using cached skills for input:", query, cache.current[query]);
+          return;
+        }
+
+        try {
+          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/skills?q=${encodeURIComponent(query)}&limit=5`);
+          setSkills(response.data);
+          cache.current[query] = response.data; // Cache the result for future use
+          console.log("Fetched skills for input:", query, response.data);
+        } catch (error) {
+          console.error("Error fetching skills data:", error);
+        }
+      }
+    };
+
+    fetchData();
   }, [skillsInput]);
   
     // Handle the enter key press

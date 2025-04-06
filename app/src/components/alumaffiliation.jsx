@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react"; 
 import axios from 'axios';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 
 const AlumniAffiliationFilter = ({
   isAffiliationExpanded,
@@ -13,27 +13,49 @@ const AlumniAffiliationFilter = ({
   setIsSkillsExpanded
 }) => {
   const [affiliations, setAffiliations] = useState([]); 
- 
-  //Search Suggestions
+  // cache reference
+  const cache = useRef({});
+
   useEffect(() => {
-      const fetchData = async () => {
-          if (!affiliationInput) {
-              setAffiliations([]);
-              return;
-          }
-          try {
-              const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/affiliations?q=${encodeURIComponent(affiliationInput)}&limit=5`);
-              setAffiliations(response.data);
-              console.log(response.data);
-          } catch (error) {
-              console.error("Error fetching affiliation data:", error);
-              // setAlumniList([]);
-          }
-          
-      };
-  
-      fetchData();  // Fetch data when dependencies change
-  
+    const fetchData = async () => {
+      if (!affiliationInput) {
+        // Check cache for top affiliations
+        if (cache.current["top-affiliations"]) {
+          setAffiliations(cache.current["top-affiliations"]);
+          console.log("Using cached top affiliations:", cache.current["top-affiliations"]);
+          return; // Skip API call if cached data exists
+        }
+
+        try {
+          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-affiliations");
+          setAffiliations(response.data);
+          cache.current["top-affiliations"] = response.data; // Cache the result
+          console.log("Fetched top affiliations:", response.data);
+        } catch (error) {
+          console.error("Error fetching affiliations data:", error);
+        }
+      } else {
+        const query = affiliationInput.trim().toLowerCase();
+        
+        // Check cache for affiliations based on user input
+        if (cache.current[query]) {
+          setAffiliations(cache.current[query]); // Use cached data if it exists
+          console.log("Using cached affiliations for input:", query, cache.current[query]);
+          return;
+        }
+
+        try {
+          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/affiliations?q=${encodeURIComponent(query)}&limit=5`);
+          setAffiliations(response.data);
+          cache.current[query] = response.data; // Cache the result for future use
+          console.log("Fetched affiliations for input:", query, response.data);
+        } catch (error) {
+          console.error("Error fetching affiliations data:", error);
+        }
+      }
+    };
+
+    fetchData();
   }, [affiliationInput]);
 
 
@@ -135,7 +157,7 @@ const AlumniAffiliationFilter = ({
               !affiliationList.includes(affiliations) && ( // Check if affiliations is not already in AffiliationList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button
-                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer"
+                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer truncate max-w-full"
                     onClick={() => setAffiliationList([...affiliationList, affiliations])}
                   >
                     {affiliations}
@@ -148,7 +170,7 @@ const AlumniAffiliationFilter = ({
               !affiliationList.includes(affiliations) && ( // Check if affiliations is not already in AffiliationList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button
-                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer"
+                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer truncate max-w-full"
                     onClick={() => setAffiliationList([...affiliationList, affiliations])}
                   >
                     {affiliations}

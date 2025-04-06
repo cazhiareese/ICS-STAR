@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react"; 
 import axios from 'axios';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 
 const AlumniIndustryFilter = ({
   isIndustryExpanded,
@@ -13,27 +13,47 @@ const AlumniIndustryFilter = ({
 }) => {
 
   const [industries, setIndustries] = useState([]); 
-  
-  //Search Suggestions
+   const cache = useRef({}); //cache reference
   useEffect(() => {
-      const fetchData = async () => {
-          if (!industryInput) {
-              setIndustries([]);
-              return;
-          }
-          try {
-              const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/industries?q=${encodeURIComponent(industryInput)}&limit=5`);
-              setIndustries(response.data);
-              console.log(response.data);
-          } catch (error) {
-              console.error("Error fetching inudustry data:", error);
-              // setAlumniList([]);
-          }
-          
-      };
-  
-      fetchData();  // Fetch data when dependencies change
-  
+    const fetchData = async () => {
+      if (!industryInput) {
+        // Check cache for top industries
+        if (cache.current["top-industries"]) {
+          setIndustries(cache.current["top-industries"]);
+          console.log("Using cached top industries:", cache.current["top-industries"]);
+          return; // Skip API call if cached data exists
+        }
+
+        try {
+          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-industries");
+          setIndustries(response.data);
+          cache.current["top-industries"] = response.data; // Cache the result
+          console.log("Fetched top industries:", response.data);
+        } catch (error) {
+          console.error("Error fetching industry data:", error);
+        }
+      } else {
+        const query = industryInput.trim().toLowerCase();
+        
+        // Check cache for industries based on user input
+        if (cache.current[query]) {
+          setIndustries(cache.current[query]); // Use cached data if it exists
+          console.log("Using cached industries for input:", query, cache.current[query]);
+          return;
+        }
+
+        try {
+          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/industries?q=${encodeURIComponent(query)}&limit=5`);
+          setIndustries(response.data);
+          cache.current[query] = response.data; // Cache the result for future use
+          console.log("Fetched industries for input:", query, response.data);
+        } catch (error) {
+          console.error("Error fetching industry data:", error);
+        }
+      }
+    };
+
+    fetchData();
   }, [industryInput]);
   
 
@@ -135,7 +155,7 @@ const AlumniIndustryFilter = ({
               !industryList.includes(industry) && ( // Check if industry is not already in IndustryList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button
-                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer"
+                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer truncate max-w-full"
                     onClick={() => setIndustryList([...industryList, industry])}
                   >
                     {industry}
@@ -148,7 +168,7 @@ const AlumniIndustryFilter = ({
               !industryList.includes(industry) && ( // Check if industry is not already in IndustryList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button
-                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer"
+                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer truncate max-w-full"
                     onClick={() => setIndustryList([...industryList, industry])}
                   >
                     {industry}

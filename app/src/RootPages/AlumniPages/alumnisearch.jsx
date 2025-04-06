@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef   } from "react";
+import React, { useState, useEffect, useMemo, useRef} from "react";
 import SearchBar from "../../components/searchbar";
 import AlumniCareerFilter from "../../components/careerfilter";
 import AlumniAffiliationFilter from "../../components/alumaffiliation";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from 'axios';
@@ -18,27 +18,38 @@ const SearchBar =
     setAlumniList
   })=> {
     const [filteredAlumni, setFilteredAlumni] = useState([]); 
+    // cache reference
+    const cache = useRef({});
+
     useEffect(() => {
         const fetchData = async () => {
+            const query = searchInput.trim().toLowerCase();
+
             if (!searchInput) {
-                setFilteredAlumni([]);
-                return;
+            setFilteredAlumni([]);
+            return;
             }
+
+            // Check if the data for this query is already cached
+            if (cache.current[query]) {
+            setFilteredAlumni(cache.current[query]); // Use cached data
+            console.log("Using cached alumni data for:", query, cache.current[query]);
+            return;
+            }
+
             try {
-                const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/names?q=${encodeURIComponent(searchInput)}&limit=5`);
-                setFilteredAlumni(response.data);
-                console.log(response.data);
+            const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/names?q=${encodeURIComponent(searchInput)}&limit=5`);
+            setFilteredAlumni(response.data);
+            cache.current[query] = response.data; // Cache the result for future use
+            console.log("Fetched alumni data for:", query, response.data);
             } catch (error) {
-                console.error("Error fetching alumni data:", error);
-                // setAlumniList([]);
+            console.error("Error fetching alumni data:", error);
             }
-            
         };
-    
-        fetchData();  // Fetch data when dependencies change
-    
+
+        fetchData();  // Fetch data when dependencies change (searchInput)
     }, [searchInput]);
-    
+
     
     const handleChange = (e) => {
         setSearchInput(e.target.value);
