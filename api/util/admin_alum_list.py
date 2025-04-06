@@ -92,12 +92,13 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         query = query.filter(
         func.split_part(User.student_number, '-', 1)== batch
     )
-    elif industry:
+
+    if industry:
         query = query.filter(
-       
         User.industry == industry
     )
-    elif country:
+
+    if country:
         query = query.filter(
         User.country == country
     )
@@ -105,21 +106,27 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
     if order_by:
         for order in order_by:
             order_parts = order.lower().split('_')
-            order_field = text('_'.join(order_parts[:-1]))
+
+            order_field = '_'.join(order_parts[:-1])
             order_direction = order_parts[-1] if len(order_parts) > 1 else 'asc'
            
             print(order_field)
+            print(order_direction)
+
 
             if order_field == 'name':
+                print("here_name")
                 # Order by last_name then first_name
                 if order_direction == 'desc':
                     query = query.order_by(desc(User.last_name), desc(User.first_name))
                 else:
                     query = query.order_by(asc(User.last_name), asc(User.first_name))
             elif order_field == 'batch':
+                print("here_batch")
                 order_column = func.split_part(User.student_number, '-', 1)
 
             elif order_field == 'updated':
+
                 order_column = User.updated_at
             else:
                 continue  # skip invalid fields
@@ -302,8 +309,12 @@ def get_alumni_filter(
                 else:
                     query = query.order_by(asc(order_column))
     else:
+        if not needs_verified:
+            query = query.order_by(desc(User.created_at))
+        else:
         # Default ordering if none specified
-        query = query.order_by(asc(User.last_name), asc(User.first_name))
+            query = query.order_by(asc(User.last_name), asc(User.first_name))
+
 
     alumni = query.all()
 
@@ -433,7 +444,12 @@ def get_student_filter(
                 else:
                     query = query.order_by(asc(order_column))
     else:
-        query = query.order_by(asc(User.last_name), asc(User.first_name))
+        if not needs_verified:
+            query = query.order_by(desc(User.created_at))
+        else:
+        # Default ordering if none specified
+            query = query.order_by(asc(User.last_name), asc(User.first_name))
+
 
     students = query.all()
 
