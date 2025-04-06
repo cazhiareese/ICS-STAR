@@ -1,0 +1,36 @@
+from pydantic import BaseModel, Field, HttpUrl
+from uuid import UUID
+from datetime import datetime
+from enum import Enum
+from typing import Optional, List
+
+
+# Enum for report status 
+class ReportStatusEnum(str, Enum):
+    pending = "pending"
+    reviewed = "reviewed"
+    resolved = "resolved"
+    rejected = "rejected"
+
+class ReportOut(BaseModel):
+    report_id: UUID
+    reporter_id: UUID
+    reported_user_id: Optional[UUID] = None
+    reported_post_id: Optional[UUID] = None
+    reason: str
+    status: ReportStatusEnum
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ReportAttachmentOut(BaseModel):
+    attachment_id: UUID
+    report_id: UUID
+    file_url: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
