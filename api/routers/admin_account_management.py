@@ -22,8 +22,33 @@ def isAdmin(current_user: User = Depends(require_admin)):
 # Returns: a list of all unverified users
 @router.get("/admin/unverified", dependencies=None, response_model=list[UserOut])
 async def read_unverified_users(db: Session = Depends(get_db)):
-    users = db.query(User).filter(User.is_verified == False).all()
-    return [UserOut.model_validate(user) for user in users]
+    unverified_users = db.query(
+        User.user_id,
+        User.first_name,
+        User.last_name,
+        User.email,
+        User.student_number,
+        User.graduation_year,
+        User.graduation_semester,
+        func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+        User.verification_file
+    ).filter(
+        User.is_verified == False
+    ).all()
+    
+    unverified_users_list = [
+        {
+            "user_id": user.user_id,
+            "name": f"{user.first_name} {user.last_name}",
+            "email": user.email,
+            "student_number": user.student_number,
+            "grad_class": f"{user.graduation_year} - {user.graduation_semester}",
+            "date_of_reg": user.date_of_reg,
+            "verification_file": user.verification_file
+        } for user in unverified_users
+    ]
+
+    return unverified_users_list
 
 # Get unverified alumni
 # Arguments: db - SQLAlchemy session
