@@ -5,11 +5,13 @@ import supabase
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
+from typing import List
 
 from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum
+from models.usermodel import User, UserTypeEnum, Orgs
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -17,6 +19,21 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
+
+async def get_org_suggestion(db: Session, query_text: str, limit: int = 5) -> List[str]:
+    results = db.query(distinct(Orgs.name))\
+        .filter(
+            or_(
+                Orgs.name.ilike(f"%{query_text}%"),
+                Orgs.alias.ilike(f"%{query_text}%")
+            )
+        )\
+        .filter(Orgs.name.isnot(None))\
+        .order_by(Orgs.name)\
+        .limit(limit)\
+        .all()
+        
+    return [result[0] for result in results]
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
