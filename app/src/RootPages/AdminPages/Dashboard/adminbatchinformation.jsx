@@ -34,6 +34,14 @@ function AdminBatchInformation() {
         { title: 'Researcher', count: 7000, percent: 5.0 }
       ])
 
+    const [topIndustries, setTopIndustries] = useState([
+      { title: 'Services', count: 4578, percent: 3.3 },
+      { title: 'Manufacturing', count: 9809, percent: 2.5 },
+      { title: 'Finance', count: 1293, percent: 2.2 },
+      { title: 'Retail', count: 5646, percent: 4.1 },
+      { title: 'Whole Sale', count: 2313, percent: 5.0 }
+    ])
+
     const [selectedYear, setSelectedYear] = useState()
     const [batchTotalCount, setBatchTotalCount] = useState(100)
     const [batchActiveCount, setBatchActiveCount] = useState(80)
@@ -192,33 +200,66 @@ function AdminBatchInformation() {
           <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Job Titles </h2>
             <div className='h-full w-full '>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                layout="vertical"
-                data={jobTitles}
-                margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
-              >
-                <XAxis type="number" hide />
-                <YAxis
-                  type="category"
-                  dataKey="title"
-                  tick={{ fill: "#5A5673", fontSize:10}}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Bar
-                  dataKey="count"
-                  barSize={20}
-                  background={{ fill: "#EAF1FF" }}
-                  radius={[10,10,10,10]}
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  layout="vertical"
+                  data={jobTitles}
+                  margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
                 >
-                  {jobTitles.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
-                  ))}
-                  {/* <LabelList dataKey="count" position="right" fill="#000" fontSize={14} /> */}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="title"
+                    tick={{ fill: "#5A5673", fontSize:10}}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Bar
+                    dataKey="count"
+                    barSize={20}
+                    background={{ fill: "#EAF1FF" }}
+                    radius={[10,10,10,10]}
+                  >
+                    {jobTitles.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
+                    ))}
+                    {/* <LabelList dataKey="count" position="right" fill="#000" fontSize={14} /> */}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          {/* Top Industries */}
+          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            <h2 className='font-satoshi-bold text-xl'> Top Industries </h2>
+            <div className='h-full w-full '>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  layout="vertical"
+                  data={topIndustries}
+                  margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="title"
+                    tick={{ fill: "#5A5673", fontSize:10}}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Bar
+                    dataKey="count"
+                    barSize={20}
+                    background={{ fill: "#EAF1FF" }}
+                    radius={[10,10,10,10]}
+                  >
+                    {topIndustries.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
+                    ))}
+                    {/* <LabelList dataKey="count" position="right" fill="#000" fontSize={14} /> */}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
