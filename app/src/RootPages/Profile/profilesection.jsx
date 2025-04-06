@@ -17,6 +17,9 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [profilePicture, setProfilePicture] = useState(null); 
   const [showUploadModal, setShowUploadModal] = useState(false);
 
+
+  
+
   // Fetch the user's profile picture
   useEffect(() => {
     const fetchProfilePicture = async () => {
@@ -64,43 +67,51 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
         setError("User not authenticated");
         return;
       }
-
+  
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-      const formData = new FormData();
-      formData.append("first_name", userDetails.first_name || "");
-      console.log(userDetails.first_name);
-      formData.append("last_name", userDetails.last_name || "");
-      formData.append("email", userDetails.email || "");
-      formData.append("mobile_number", userDetails.mobile_number || "");
-      formData.append("city", userDetails.city || "");
-      formData.append("state", userDetails.state || "");
-      formData.append("country", userDetails.country || "");
-      formData.append("marital_status", userDetails.marital_status || "");
-      formData.append("facebook", userDetails.facebook || "");
-      formData.append("linkedin", userDetails.linkedin || "");
-      formData.append("github", userDetails.github || "");
-
+  
+      // 🧠 Sync userDetails to formData before sending
+      const currentFormData = {
+        first_name: userDetails.first_name || '',
+        last_name: userDetails.last_name || '',
+        email: userDetails.email || '',
+        mobile_number: userDetails.mobile_number || '',
+        city: userDetails.city || '',
+        state: userDetails.state || '',
+        country: userDetails.country || '',
+        marital_status: userDetails.marital_status || '',
+        facebook: userDetails.facebook || '',
+        linkedin: userDetails.linkedin || '',
+        github: userDetails.github || '',
+      };
+  
+      const urlEncodedData = new URLSearchParams(currentFormData).toString();
+  
+      console.log("🔍 Final Request Body:", urlEncodedData);
+  
       const response = await fetch(`${API_BASE_URL}/profile/edit`, {
         method: "PUT",
         headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        body: urlEncodedData,
       });
-
+  
       if (!response.ok) {
         throw new Error("Failed to update profile");
       }
-
+  
       const result = await response.json();
       console.log(result.message);
-      setEditMode(false); // Exit edit mode after successful save
+      setEditMode(false);
     } catch (err) {
       console.error(err);
       setError("Failed to update profile");
     }
   };
+  
+  
 
   const handleUpload = (imageUrl) => {
     setProfilePicture(imageUrl); // Update the profile image in the parent component
