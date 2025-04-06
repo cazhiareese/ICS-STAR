@@ -345,13 +345,14 @@ def employment_class_util(db: Session, industry:Optional[str] = None, batch: Opt
 
 
 
-def salary_grade_util(db: Session, industry:Optional[str] = None):
+def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional[str] = None ):
 
     sum_query= (
     db.query(
         func.count()
     )
     .where(
+        User.is_verified == True,
         User.user_type == 'alumni',
         User.salary_grade.is_not(None),
     )
@@ -362,9 +363,14 @@ def salary_grade_util(db: Session, industry:Optional[str] = None):
             User.salary_grade,
             func.count().label("count")
         )
-        .filter(User.user_type == 'alumni', User.salary_grade.isnot(None))  
+        .filter(User.is_verified == True, User.user_type == 'alumni', User.salary_grade.isnot(None))  
         
     )
+
+    if batch:
+        sum_query = sum_query.filter(func.split_part(User.student_number, '-', 1)== batch)
+        query = query.filter(func.split_part(User.student_number, '-', 1)== batch)
+
 
     if industry:
         sum_query = sum_query.filter(User.industry == industry)
@@ -377,7 +383,6 @@ def salary_grade_util(db: Session, industry:Optional[str] = None):
     if not top_salary:
         raise HTTPException(status_code=404, detail="No top industries")
 
-
     top_salaries_dict = [row._asdict() for row in top_salary]
     top_salaries_list = []
 
@@ -389,10 +394,6 @@ def salary_grade_util(db: Session, industry:Optional[str] = None):
         })
     
     return top_salaries_list
-
-
-
-
 
 
 def grouped_by_industry(db: Session, batch: Optional[str] = None, country: Optional[str] = None, limit: bool = False):

@@ -105,9 +105,9 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
 
     if order_by:
         for order in order_by:
-            order_parts = order.lower().split('_')
+            order_parts = order.lower().split('_') 
 
-            order_field = '_'.join(order_parts[:-1])
+            order_field = '_'.join(order_parts[:-1]) if len(order_parts) > 1 else order_parts[0]
             order_direction = order_parts[-1] if len(order_parts) > 1 else 'asc'
            
             print(order_field)
