@@ -219,7 +219,7 @@ function AdminUserDetails() {
               {/* Modal Header */}
               <div className="flex justify-between w-full items-center pb-2">
                 <h2 className="text-2xl font-satoshi-medium">Report Logs</h2>
-                <button className='rounded-full h-fit bg-error p-1 cursor-pointer' onClick={() => limitAccessLoading(false)}>
+                <button className='rounded-full h-fit bg-error p-1 cursor-pointer' onClick={() => setLimitAccessLoading(false)}>
                   <X className="w-5 h-5 text-white" />
                 </button>
               </div>
