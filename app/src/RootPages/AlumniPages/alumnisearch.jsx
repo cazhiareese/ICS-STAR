@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useMemo, useRef   } from "react";
-import SearchBar from "../../components/searchbar";
-import AlumniCareerFilter from "../../components/careerfilter";
-import AlumniAffiliationFilter from "../../components/alumaffiliation";
-import AlumniSkillsFilter from "../../components/skillsfilter";
-import AlumniIndustryFilter from "../../components/industryFilter";
-import AlumniLocationFilter from "../../components/locationfilter";
-import AlumniSearchCard from "../../components/alumnisearchcard";
+import SearchBar from "../../components/AlumniComponents/searchbar";
+import AlumniCareerFilter from "../../components/AlumniComponents/careerfilter";
+import AlumniAffiliationFilter from "../../components/AlumniComponents/alumaffiliation";
+import AlumniSkillsFilter from "../../components/AlumniComponents/skillsfilter";
+import AlumniIndustryFilter from "../../components/AlumniComponents/industryFilter";
+import AlumniLocationFilter from "../../components/AlumniComponents/locationfilter";
+import AlumniSearchCard from "../../components/AlumniComponents/alumnisearchcard";
 import { X, ChevronDown, Calendar, Search, Filter } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import "./datepicker.css";
-import YearPicker from "../../components/datepicker";
+import YearPicker from "../../components/AlumniComponents/datepicker";
 import { motion } from "framer-motion";
 import axios from 'axios';
 
@@ -17,9 +17,7 @@ import axios from 'axios';
 
 
 function AlumniSearch() {
-  const [selectedBatchYear, setSelectedBatchYear] = useState(""); // Separate state for Batch Year
-  const [selectedGraduationYear, setSelectedGraduationYear] = useState(""); // Separate state for Graduation Year
-  
+  // State for expanding animations
   const [isBatchExpanded, setIsBatchExpanded] = useState(false);
   const [isGraduateExpanded, setIsGraduateExpanded] = useState(false);
   const [isCareerExpanded, setIsCareerExpanded] = useState(false);
@@ -30,6 +28,9 @@ function AlumniSearch() {
   const [isALumniInfoExpanded, setIsAlumniInfoExpanded] = useState(false);
   const [isAlumniProfessionExpanded, setIsAlumniProfessionExpanded] = useState(false);
   
+  // State for filter containers
+  const [selectedBatchYear, setSelectedBatchYear] = useState(""); // Separate state for Batch Year
+  const [selectedGraduationYear, setSelectedGraduationYear] = useState(""); // Separate state for Graduation Year
   const [careerList, setCareerList] = useState([]); // State for career list
   const [affiliationList, setAffiliationList] = useState([]); // State for affiliation list
   const [skillsList, setSkillsList] = useState([]); // State for skills list
@@ -37,7 +38,7 @@ function AlumniSearch() {
   const [location, setLocation] = useState([]); 
   const [searchInput, setSearchInput] = useState(""); 
   
-
+  
   const memoizedCareerList = useMemo(() => careerList, [careerList]);
   const memoizedAffiliationList = useMemo(() => affiliationList, [affiliationList]);
   const memoizedSkillsList = useMemo(() => skillsList, [skillsList]);
@@ -65,24 +66,19 @@ function AlumniSearch() {
     setIsBatchExpanded(true);
   };
   //Dummy data
-  const alumni = 
-  {
-    full_name: "Kiefer Tayawa",
-    graduation_year: 2022,
-    job_title: "Software Engineer",
-    skills: [
-      "Machine Learning",
-      "Python Programming"
-    ],
-    location: "Cebu",
-    email: "kiper@gmail.com",
-    image: "https://i.pinimg.com/originals/09/f3/3e/09f33ecb3753807c45c29a3155aa1773.jpg"
-  }
-
-  // useEffect(() => {
-  //   setAlumniList([alumni, alumni, alumni]);
-  // }, [alumniList]);
-
+  // const alumni = 
+  // {
+  //   full_name: "Kiefer Tayawa",
+  //   graduation_year: 2022,
+  //   job_title: "Software Engineer",
+  //   skills: [
+  //     "Machine Learning",
+  //     "Python Programming"
+  //   ],
+  //   location: "Cebu",
+  //   email: "kiper@gmail.com",
+  //   image: "https://i.pinimg.com/originals/09/f3/3e/09f33ecb3753807c45c29a3155aa1773.jpg"
+  // }
 
 
   const search = () => {
@@ -168,7 +164,7 @@ function AlumniSearch() {
   
 
   const removeSkill = (index) => {
-    // Create a new array excluding the career at the given index
+    // Creates a new array excluding the career at the given index
     const updatedSkillList = skillsList.filter((_, i) => i !== index);
     
     // Update the state with the new list
@@ -176,7 +172,7 @@ function AlumniSearch() {
   };
 
   const removeLocation = (index) => {
-    // Create a new array excluding the career at the given index
+    // Creates a new array excluding the career at the given index
     const updatedLocationList = location.filter((_, i) => i !== index);
     
     // Update the state with the new list
@@ -184,7 +180,7 @@ function AlumniSearch() {
   };
 
   const removeCareer = (index) => {
-    // Create a new array excluding the career at the given index
+    // Creates a new array excluding the career at the given index
     const updatedCareerList = careerList.filter((_, i) => i !== index);
     
     // Update the state with the new list
@@ -192,7 +188,7 @@ function AlumniSearch() {
   };
 
   const removeAffiliation = (index) => {
-    // Create a new array excluding the Affiliation at the given index
+    // Creates a new array excluding the Affiliation at the given index
     const updatedAffiliationList = affiliationList.filter((_, i) => i !== index);
     
     // Update the state with the new list
@@ -200,10 +196,10 @@ function AlumniSearch() {
   };
 
   const removeIndustry = (index) => {
-    // Create a new array excluding the Industry at the given index
+    // Creates a new array excluding the Industry at the given index
     const updatedIndustryList = industryList.filter((_, i) => i !== index);
     
-    // Update the state with the new list
+    // Updates the state with the new list
     setIndustryList(updatedIndustryList);
   };
 
@@ -221,9 +217,7 @@ function AlumniSearch() {
  
   
   return (
-    
     <div className="flex flex-col ">
-      
       <motion.div
         className="fixed bottom-0 left-0 w-full bg-gray-100 z-50 p-5 shadow-lg rounded-t-2xl lg:hidden overflow-y-auto"
         style={{ maxHeight: "100vh", height: "100%" }}
@@ -232,8 +226,6 @@ function AlumniSearch() {
         exit={{ y: "100vh" }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-
-
        <div className=" flex lg:hidden flex-col w-full pt-3">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
@@ -481,16 +473,10 @@ function AlumniSearch() {
             setSkillsList={setSkillsList}
             setIsLocationExpanded={setIsLocationExpanded}
           />
-
-          
-
-          
-
-
-          
         </div>
-
+        {/* Buttons for clear and confirm */}
         <div className="flex lg:hidden justify-between px-5 pb-3 mt-20">
+          {/* Confirm Button */}
           <button
             onClick={() => {
               resetAllFilters();
@@ -508,7 +494,8 @@ function AlumniSearch() {
           >
             Clear All
           </button>
-
+          
+          {/* Confirm */}
           <button onClick={() => {
             setIsFilterOpen(false);
             setIsBatchExpanded(false);
@@ -544,8 +531,6 @@ function AlumniSearch() {
           <button onClick={toggleFilter} className="flex flex-center h-14 cursor-pointer rounded-2xl outline-gray-300 outline-2 bg-gray-100 text-primary w-12 justify-center items-center text-center lg:hidden">
               <Filter size={20} />
           </button>
-          
-          
         </div>
       </div>
 
@@ -572,7 +557,7 @@ function AlumniSearch() {
             </button>
           </div>
           
-          {/* Alumni Information Group Filter */}
+          {/* Alumni Information Group Filter for DESKTOP VIEW */}
           <div className="flex flex-col shadow mt-14 rounded-lg gap-3 items-center h-auto">
                 <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniInfoExpanded(!isALumniInfoExpanded)}>
                   <motion.h1
@@ -683,9 +668,6 @@ function AlumniSearch() {
                       </div>
                     </motion.div>
                   </div>
-
-            
-
                   <AlumniAffiliationFilter
                     isAffiliationExpanded={isAffiliationExpanded}
                     setIsAffiliationExpanded={setIsAffiliationExpanded}

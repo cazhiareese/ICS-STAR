@@ -21,6 +21,7 @@ const SearchBar =
     // cache reference
     const cache = useRef({});
 
+    //Use effect for search suggestions
     useEffect(() => {
         const fetchData = async () => {
             const query = searchInput.trim().toLowerCase();
@@ -91,9 +92,8 @@ const SearchBar =
         }
     };
 
+    //Function for getting the data of alumni based on filters
     const fetchData = async () => {
-        
-
         let searchAPIURL = search();  // Get API URL based on the filters
         console.log("Triggered fetchData()", searchAPIURL);
         setLoading(true); 
