@@ -48,13 +48,13 @@ function AdminAlumniInfo() {
   //   { name: "Wholesale Trade", value: 10 },
   //   { name: "Other", value: 12 },
   // ])
-  const [employmentStatusData, setEmploymentStatusData] = useState([
-    { name: "Employed", value: 60 },
-    { name: "Unemployed", value: 20 },
-    { name: "Self-Employed", value: 5 },
-    { name: "Self-Employed", value: 5 },
-    { name: "Student", value: 10 }
-  ]) 
+  // const [employmentStatusData, setEmploymentStatusData] = useState([
+  //   { name: "Employed", value: 60 },
+  //   { name: "Unemployed", value: 20 },
+  //   { name: "Self-Employed", value: 5 },
+  //   { name: "Self-Employed", value: 5 },
+  //   { name: "Student", value: 10 }
+  // ]) 
   
   const [employerClassificationData, setEmployerClassificationData] = useState([
       { name: "Private", value: 50 },
@@ -86,6 +86,23 @@ function AdminAlumniInfo() {
   ])
 
   const [industries, setIndustries] = useState()
+  const [employmentStatusData, setEmploymentStatusData] = useState([
+    // {
+    //     "status": "unemployed",
+    //     "count": 6,
+    //     "percentage": 33.33
+    // },
+    // {
+    //     "status": "employed",
+    //     "count": 11,
+    //     "percentage": 61.11
+    // },
+    // {
+    //     "status": "unemployed_no_experience",
+    //     "count": 1,
+    //     "percentage": 5.56
+    // }
+  ])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,8 +120,10 @@ function AdminAlumniInfo() {
 
         const industryCount = await axios.get(`${API_BASE_URL}/admin/stats/industry/count`)
         setIndustries(industryCount.data.data)
-        // console.log(industryCount.data)
 
+        const employmentCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_status`)
+        console.log(employmentCount.data.data)
+        setEmploymentStatusData(employmentCount.data.data)
       } catch (error) {
         console.log(error);
         // setUsers([]);
@@ -274,7 +293,12 @@ function AdminAlumniInfo() {
             {/* Employment Status */}
             <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
               <h3 className='text-2xl font-satoshi-bold'>Employment Status</h3>
-              <ResponsiveContainer width="100%" height="100%">
+              {loading ? (
+                <div className='flex items-center justify-center h-full'>
+                  <CircularLoading size={90}/>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={employmentStatusData}
@@ -282,14 +306,20 @@ function AdminAlumniInfo() {
                     cy="50%"
                     outerRadius="80%"
                     fill="#8884d8"
-                    dataKey="value"
-                  >
+                    dataKey="percentage"
+                    nameKey="status"
+                    >
                     {employmentStatusData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
+                  <Tooltip
+                    formatter={(value, name) => [`${value}%`, name]}
+                    cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
+              )}
             </div>
             {/* Employer Classification */}
             <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
