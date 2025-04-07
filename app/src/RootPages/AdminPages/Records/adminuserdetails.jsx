@@ -100,7 +100,7 @@ function AdminUserDetails() {
     // alert("Limited account access")
     setLimitAccessLoading(true)
     try {
-      const response = await axios.put(`${API_BASE_URL}/admin/ban${userid}`)
+      const response = await axios.put(`${API_BASE_URL}/admin/ban/${userid}`)
       console.log(response)
     } catch (error) {
       console.log(error)
