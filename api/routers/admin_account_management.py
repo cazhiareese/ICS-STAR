@@ -380,7 +380,7 @@ async def get_profile(
 # Get unverified user
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: the unverified user
-@router.get("/admin/unverified/{user_id}", dependencies=None)
+@router.get("/admin/unverified/user/{user_id}", dependencies=None)
 async def read_unverified_user(db: Session = Depends(get_db), user_id: UUID = None):
     user = db.query(
         User.user_id,
