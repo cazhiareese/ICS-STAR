@@ -375,3 +375,42 @@ async def get_profile(
     }
     
     return {"message": "success", "data": profile_details}
+
+
+# Get unverified user
+# Arguments: db - SQLAlchemy session, user_id - the user ID
+# Returns: the unverified user
+@router.get("/admin/unverified/{user_id}", dependencies=None)
+async def read_unverified_user(db: Session = Depends(get_db), user_id: UUID = None):
+    user = db.query(
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        User.email,
+        User.student_number,
+        User.graduation_year,
+        User.graduation_semester,
+        func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+        User.verification_file,
+        User.image
+    ).filter(
+        User.user_id == user_id,
+        User.is_verified == False
+    ).first()
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Convert the result to a dictionary
+    unverified_user = {
+        "user_id": user.user_id,
+        "name": f"{user.first_name} {user.last_name}",
+        "email": user.email,
+        "student_number": user.student_number,
+        "grad_class": f"{user.graduation_year} - {user.graduation_semester}",
+        "date_of_reg": user.date_of_reg,
+        "verification_file": user.verification_file,
+        "image": user.image
+    }
+
+    return unverified_user
