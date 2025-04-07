@@ -69,13 +69,13 @@ function AdminAlumniInfo() {
   ])
 
   const [salaryGradeData, setSalaryGradeData] = useState([
-    { name: "Less than ₱9,100", value: 10 },
-    { name: "₱9,100 - ₱18,200", value: 15 },
-    { name: "₱18,200 - ₱36,399", value: 30 },
-    { name: "₱36,399 - ₱63,699", value: 5 },
-    { name: "₱63,700 - ₱109,199", value: 12 },
-    { name: "₱109,200 to ₱181,999", value: 31 },
-    { name: "More than ₱181,999", value: 2 },
+    // { name: "Less than ₱9,100", value: 10 },
+    // { name: "₱9,100 - ₱18,200", value: 15 },
+    // { name: "₱18,200 - ₱36,399", value: 30 },
+    // { name: "₱36,399 - ₱63,699", value: 5 },
+    // { name: "₱63,700 - ₱109,199", value: 12 },
+    // { name: "₱109,200 to ₱181,999", value: 31 },
+    // { name: "More than ₱181,999", value: 2 },
   ])
 
   const [locationData, seLocationData] = useState([
@@ -132,6 +132,10 @@ function AdminAlumniInfo() {
         const employerCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_class`)
         // console.log(employmentCount.data.data)
         setEmployerClassificationData(employerCount.data.data)
+        
+        // Get salary grade 
+        const salaryGradeCount = await axios.get(`${API_BASE_URL}/admin/stats/salary_grade`)
+        setSalaryGradeData(salaryGradeCount.data.data)
       } catch (error) {
         console.log(error);
         // setUsers([]);
@@ -360,21 +364,28 @@ function AdminAlumniInfo() {
               </ResponsiveContainer>
               )}
             </div>
+            {/* Salary grade */}
             <div className="h-full w-full flex-1 text-center flex flex-col items-center justify-center">
               <h3 className='text-2xl font-satoshi-bold'>Salary Grade</h3>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={salaryGradeData}
-                  layout="vertical"
-                  margin={{ top: 10, bottom: 30, left: 10, right: 10 }}
-                >
-                  <XAxis type="number" hide/>
-                  <YAxis type="category" dataKey="name" width={150} />
-                  <Bar dataKey="value" fill="#0a3d91" barSize={20} radius={[0, 5, 5, 0]}>
-                    <LabelList dataKey="value" position="right" fill="#000" fontSize={14} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              {loading ? (
+                <div className='flex items-center justify-center h-full'>
+                  <CircularLoading size={90}/>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={salaryGradeData}
+                    layout="vertical"
+                    margin={{ top: 10, bottom: 30, left: 10, right: 10 }}
+                    >
+                    <XAxis type="number" hide/>
+                    <YAxis type="category" dataKey="salary_grade" width={150} tickLine={false} axisLine={false}/>
+                    <Bar dataKey="count" fill="#0a3d91" barSize={20} radius={[5, 5, 5, 5]}>
+                      <LabelList dataKey="count" position="right" fill="#000" fontSize={14} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                )}
             </div>
           </div>
         </div>
