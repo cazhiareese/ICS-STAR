@@ -6,6 +6,8 @@ import { BarChart, Bar, XAxis, Tooltip, LabelList } from 'recharts';
 import { YAxis } from "recharts";
 import axios from 'axios'
 import SkeletonLoading from '../../../components/LoadingComponents/skeletonloading';
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import { div } from 'framer-motion/client';
 
 
 function AdminAlumniInfo() {
@@ -33,19 +35,19 @@ function AdminAlumniInfo() {
       { batch: 2022, count: 99, active: 80, inactive: 22 },
     ])
 
-  const [industryData, setIndustryData] = useState([
-    { name: "Agriculture, Forestry, and Fishing", value: 2 },
-    { name: "Construction", value: 3 },
-    { name: "Finance, Insurance, and Real Estate", value: 4 },
-    { name: "Manufacturing", value: 5 },
-    { name: "Mining", value: 6 },
-    { name: "Public Administration", value: 7 },
-    { name: "Retail Trade", value: 8 },
-    { name: "Services", value: 9 },
-    { name: "Transportation", value: 11 },
-    { name: "Wholesale Trade", value: 10 },
-    { name: "Other", value: 12 },
-  ])
+  // const [industryData, setIndustryData] = useState([
+  //   { name: "Agriculture, Forestry, and Fishing", value: 2 },
+  //   { name: "Construction", value: 3 },
+  //   { name: "Finance, Insurance, and Real Estate", value: 4 },
+  //   { name: "Manufacturing", value: 5 },
+  //   { name: "Mining", value: 6 },
+  //   { name: "Public Administration", value: 7 },
+  //   { name: "Retail Trade", value: 8 },
+  //   { name: "Services", value: 9 },
+  //   { name: "Transportation", value: 11 },
+  //   { name: "Wholesale Trade", value: 10 },
+  //   { name: "Other", value: 12 },
+  // ])
   const [employmentStatusData, setEmploymentStatusData] = useState([
     { name: "Employed", value: 60 },
     { name: "Unemployed", value: 20 },
@@ -83,6 +85,8 @@ function AdminAlumniInfo() {
     { name: "Australia", value: 30 },
   ])
 
+  const [industries, setIndustries] = useState()
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -96,6 +100,11 @@ function AdminAlumniInfo() {
           { name: "Active", value: active_alumni },
           { name: "Inactive", value: inactive_alumni },
         ])
+
+        const industryCount = await axios.get(`${API_BASE_URL}/admin/stats/industry/count`)
+        setIndustries(industryCount.data.data)
+        // console.log(industryCount.data)
+
       } catch (error) {
         console.log(error);
         // setUsers([]);
@@ -229,28 +238,36 @@ function AdminAlumniInfo() {
           {/* Top half - bar graph */}
           <div className='h-1/2 p-4'>
             <h3 className='text-2xl font-satoshi-bold'> Industries</h3>
-            <ResponsiveContainer width="100%" height='100%'>
-              <BarChart data={industryData} margin={{ top: 20, bottom:-10}}>
-                <XAxis 
-                  dataKey="name" 
-                  angle={0} 
-                  textAnchor="middle" 
-                  interval={0} 
-                  height={100} 
-                  tick={{ fontSize: 10, wordWrap: "break-word", width: 80 }}
-                  />
-                
-                <Bar
-                  dataKey="value"
-                  fill="#0a3d91"
-                  barSize={30}
-                  radius={[5, 5, 0, 0]}
-                  >
-                  <LabelList dataKey="value" position="top" fill="#000" fontSize={12} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+            {loading ? (
+              <div className='flex items-center justify-center h-full'>
+                <CircularLoading size={90}/>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height='100%'>
+                <BarChart data={industries} margin={{ top: 20, bottom:-10}}>
+                  <XAxis 
+                    dataKey="industry" 
+                    angle={0} 
+                    textAnchor="middle" 
+                    interval={0} 
+                    height={100} 
+                    tick={{ fontSize: 10, wordWrap: "break-word", width: 100 }}
+                    tickLine={false}
+                    axisLine={false}
+                    />
+                  
+                  <Bar
+                    dataKey="count"
+                    fill="#0a3d91"
+                    barSize={60}
+                    radius={[5, 5, 5, 5]}
+                    >
+                    <LabelList dataKey="count" position="top" fill="#000" fontSize={12} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              )}
+            </div>
           <div className='w-full border-t border-gray-300'></div>
           {/* Bottom half - pie graph */}
           <div className='h-1/2 flex flex-row p-4'>
