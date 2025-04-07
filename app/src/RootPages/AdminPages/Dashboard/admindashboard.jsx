@@ -25,7 +25,7 @@ function AdminDashboard() {
         console.log(pendingVerificationCount.data.count);
         setPendingVerifications(pendingVerificationCount.data.count);
       } catch (error) {
-        console.log('Error getting dashboard data');
+        console.log(error);
         // setUsers([]);
       } finally {
         setLoading(false);
