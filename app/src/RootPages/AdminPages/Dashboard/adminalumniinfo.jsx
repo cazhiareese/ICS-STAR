@@ -7,7 +7,7 @@ import { YAxis } from "recharts";
 import axios from 'axios'
 import SkeletonLoading from '../../../components/LoadingComponents/skeletonloading';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
-import { div } from 'framer-motion/client';
+import { div, q } from 'framer-motion/client';
 
 
 function AdminAlumniInfo() {
@@ -57,10 +57,10 @@ function AdminAlumniInfo() {
   // ]) 
   
   const [employerClassificationData, setEmployerClassificationData] = useState([
-      { name: "Private", value: 50 },
-      { name: "Government", value: 30 },
-      { name: "NGO", value: 10 },
-      { name: "Freelancer", value: 10 }
+      // { name: "Private", value: 50 },
+      // { name: "Government", value: 30 },
+      // { name: "NGO", value: 10 },
+      // { name: "Freelancer", value: 10 }
     ])
 
   const [alumniData, setAlumniData] = useState([
@@ -108,22 +108,30 @@ function AdminAlumniInfo() {
     const fetchData = async () => {
       setLoading(true);
       try {
+        // Get alumni count
         const alumniStatActivity = await axios.get(`${API_BASE_URL}/admin/stats/activity`);
-
         setAlumniStatActivity(alumniStatActivity.data.data);
-
+        
+        // Destructure response
         const { active_alumni, inactive_alumni } = alumniStatActivity.data.data
         setAlumniData([
           { name: "Active", value: active_alumni },
           { name: "Inactive", value: inactive_alumni },
         ])
 
+        // Get industry count
         const industryCount = await axios.get(`${API_BASE_URL}/admin/stats/industry/count`)
         setIndustries(industryCount.data.data)
 
+        // Get employment count
         const employmentCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_status`)
         console.log(employmentCount.data.data)
         setEmploymentStatusData(employmentCount.data.data)
+
+        // Get employer classification
+        const employerCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_class`)
+        // console.log(employmentCount.data.data)
+        setEmployerClassificationData(employerCount.data.data)
       } catch (error) {
         console.log(error);
         // setUsers([]);
@@ -324,6 +332,11 @@ function AdminAlumniInfo() {
             {/* Employer Classification */}
             <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
               <h3 className='text-2xl font-satoshi-bold'>Employer Classification</h3>
+              {loading ? (
+                <div className='flex items-center justify-center h-full'>
+                  <CircularLoading size={90}/>
+                </div>
+              ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -332,14 +345,20 @@ function AdminAlumniInfo() {
                     cy="50%"
                     outerRadius="80%"
                     fill="#8884d8"
-                    dataKey="value"
+                    dataKey="percentage"
+                    nameKey="class"
                   >
-                    {employmentStatusData.map((entry, index) => (
+                    {employerClassificationData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
+                  <Tooltip
+                    formatter={(value, percentage) => [`${value}%`, percentage]}
+                    cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
+              )}
             </div>
             <div className="h-full w-full flex-1 text-center flex flex-col items-center justify-center">
               <h3 className='text-2xl font-satoshi-bold'>Salary Grade</h3>
