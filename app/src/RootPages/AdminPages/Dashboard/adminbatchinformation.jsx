@@ -1,10 +1,10 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MoveLeft } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { BarChart, Bar, XAxis, YAxis, LabelList } from 'recharts';
 import UsersTable from '../../../components/AdminComponents/userstable';
-import { div } from 'framer-motion/client';
+import axios from 'axios'
 
 function AdminBatchInformation() {
     const navigate = useNavigate()
