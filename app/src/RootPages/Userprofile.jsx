@@ -14,7 +14,7 @@ import {
   removeAffiliation as apiRemoveAffiliation,
   addScholarship as apiAddScholarship,
   removeScholarship as apiRemoveScholarship,
-} from "./Profile/UserProfileAPI/userProfileApi"; // Adjust the import path as necessary
+} from "./Profile/UserProfileAPI/userProfileApi"; 
 
 const token = localStorage.getItem("token");
 

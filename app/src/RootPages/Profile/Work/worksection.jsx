@@ -263,6 +263,7 @@ function WorkSection({ userDetails, handleChange }) {
             </div>
 
             {/* Salary Range (Instead of Salary Grade) */}
+            
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Salary Range:</span>
               {isEditing ? (
