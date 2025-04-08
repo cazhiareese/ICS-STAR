@@ -31,20 +31,26 @@ import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminv
 import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
 import { jwtDecode } from "jwt-decode";
 
-const isSignedIn = !!sessionStorage.getItem("token");
+const isSignedIn = !!localStorage.getItem("token");
 
 
 function App() {
 
   function checkType ()
   {
-    const User = sessionStorage.getItem("token")
-    const decoded = jwtDecode(User)
-    const token = decoded.user
-    return token.type
+    const User = localStorage.getItem("token");
+    let tokenType = null;
+    if (User) {
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      tokenType = decoded.role;
+      console.log("Decoded token type:", tokenType);
+    } else {
+      console.warn("⚠️ No token found in sessionStorage");
+    }
   }
 
-  
+
   return (
     <Routes>
       {/* Login Pages (No Navbar) */}

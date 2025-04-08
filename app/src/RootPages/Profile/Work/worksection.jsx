@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
 import SectionHeader from "../components/sectionheader"; 
-import {jwtDecode} from "jwt-decode"; 
 
 function WorkSection({ userDetails, handleChange }) {
   const [showMore, setShowMore] = useState(false);
@@ -87,16 +86,7 @@ function WorkSection({ userDetails, handleChange }) {
     }
   };
 
-  const User = localStorage.getItem("token");
-  let tokenType = null;
-  if (User) {
-    const decoded = jwtDecode(User);
-    console.log("Decoded token:", decoded);
-    tokenType = decoded.role;
-    console.log("Decoded token type:", tokenType);
-  } else {
-    console.warn("⚠️ No token found in sessionStorage");
-  }
+
   
   
 
