@@ -215,7 +215,7 @@ async def register_user(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(new_user.user_id), "role": str(new_user.user_type)}, expires_delta=access_token_expires
+        data={"sub": str(new_user.user_id), "role": new_user.user_type.value}, expires_delta=access_token_expires
     )
 
     return {"message": "Account created successfully", "access_token": access_token}
