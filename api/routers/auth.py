@@ -7,13 +7,21 @@ from config.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
 from schemas.user import UserOut
 
-from util.userutil import register_user, get_current_active_user, require_student, require_alum, require_admin, authenticate_user, create_access_token
+from util.userutil import register_user, get_current_active_user, require_student, require_alum, require_admin, authenticate_user, create_access_token, get_email, get_studno
 from util.reports_logic import logic_login_log, logic_logout_log
 
 from schemas.user import UserOut
-from models.usermodel import User
+from models.usermodel import User, UserGradSemEnum
 
 router = APIRouter()
+
+@router.get("/get-email")
+async def check_email(email: str, db: Session = Depends(get_db)):
+    return await get_email(email, db)
+
+@router.get("/get-studno")
+async def check_student_number(student_number: str, db: Session = Depends(get_db)):
+    return await get_studno(student_number, db)
 
 @router.post("/register")
 async def register(
@@ -25,7 +33,7 @@ async def register(
     user_type: str = Form(...),
     verification_file: UploadFile = File(None),
     graduation_year: str = Form(None),
-    graduation_semester: str = Form(None),
+    graduation_semester: UserGradSemEnum = Form(None),
     db: Session = Depends(get_db),
 ):
     return await register_user(

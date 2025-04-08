@@ -1,6 +1,6 @@
-from sqlalchemy import or_, distinct
+from sqlalchemy import or_, distinct, func, desc
 from sqlalchemy.orm import Session
-from models.usermodel import User, UserTypeEnum, UserSkill 
+from models.usermodel import User, UserTypeEnum, UserSkill, UserAffiliation 
 from config import config
 from config.database import get_db
 from typing import List
@@ -88,5 +88,36 @@ def get_industry_suggestions(db: Session, query_text: str, limit: int = 4) -> Li
                 .limit(limit)\
                 .all()
     
+
+    return [result[0] for result in results]
+
+# Get suggestions for cities based on partial input in the text field
+#
+# Arguments:
+# db: Session - database session
+# query_text: str - partial input in the text field
+# limit: int - maximum number of suggestions to return
+#
+# Returns: a list of city suggestions
+def get_city_suggestions(db: Session, query_text: str, limit: int = 4) -> List[str]:
+    results = db.query(distinct(User.city))\
+                .filter(User.user_type == UserTypeEnum.alumni)\
+                .filter(User.city.ilike(f"%{query_text}%"))\
+                .filter(User.city.isnot(None))\
+                .order_by(User.city)\
+                .limit(limit)\
+                .all()
+
+    return [result[0] for result in results] 
+
+def get_affiliation_suggestions(db: Session, query_text: str, limit: int = 4) -> List[str]:
+    results = db.query(distinct(UserAffiliation.affiliation))\
+                .join(User, User.user_id == UserAffiliation.user_id)\
+                .filter(User.user_type == UserTypeEnum.alumni)\
+                .filter(UserAffiliation.affiliation.ilike(f"%{query_text}%"))\
+                .filter(UserAffiliation.affiliation.isnot(None))\
+                .order_by(UserAffiliation.affiliation)\
+                .limit(limit)\
+                .all()
 
     return [result[0] for result in results]
