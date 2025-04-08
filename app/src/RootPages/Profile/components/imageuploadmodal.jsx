@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
 function ImageUploadModal({ isOpen, onClose, onUpload }) {
-  const [image, setImage] = useState(null); // Will store the actual file
-  const [imagePreview, setImagePreview] = useState(null); // Will store the preview URL
+  const [image, setImage] = useState(null); 
+  const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -10,16 +10,16 @@ function ImageUploadModal({ isOpen, onClose, onUpload }) {
     const file = e.target.files[0];
     console.log("File selected:", file); // Debugging: log the selected file
     if (file) {
-      setImage(file); // Store the file object
-      setImagePreview(URL.createObjectURL(file)); // Store the preview URL for showing the image preview
-      console.log("Image URL created:", URL.createObjectURL(file)); // Debugging: log the image preview URL
+      setImage(file); 
+      setImagePreview(URL.createObjectURL(file)); 
+      console.log("Image URL created:", URL.createObjectURL(file)); 
     }
   };
 
   const handleSubmit = async () => {
     if (!image) {
       setError("No image selected");
-      console.log("Error: No image selected"); // Debugging: log error message
+      console.log("Error: No image selected"); 
       return;
     }
 
@@ -27,19 +27,19 @@ function ImageUploadModal({ isOpen, onClose, onUpload }) {
     setError(null);
     console.log("Uploading image...");
 
-    const token = localStorage.getItem("token"); // Assuming the user is authenticated
-    console.log("Token retrieved:", token); // Debugging: log the token
+    const token = localStorage.getItem("token"); 
+    console.log("Token retrieved:", token); 
     if (!token) {
       setError("User not authenticated");
-      console.log("Error: User not authenticated"); // Debugging: log error message
+      console.log("Error: User not authenticated"); 
       setLoading(false);
       return;
     }
 
     // Prepare form data
     const formData = new FormData();
-    formData.append("file", image); // Append the actual file object, not the preview URL
-    console.log("FormData created:", formData); // Debugging: log FormData contents
+    formData.append("file", image); 
+    console.log("FormData created:", formData); 
 
     try {
       console.log("Sending request...");
@@ -56,18 +56,18 @@ function ImageUploadModal({ isOpen, onClose, onUpload }) {
       }
 
       const result = await response.json();
-      console.log("Response from backend:", result); // Debugging: log the backend response
+      console.log("Response from backend:", result); 
 
       // Pass the uploaded image URL or path back to the parent component
-      onUpload(result.imageUrl); // Assume the backend returns the image URL as 'imageUrl'
+      onUpload(result.imageUrl); 
 
-      onClose(); // Close the modal after successful upload
+      onClose(); 
     } catch (err) {
-      console.error("Error during upload:", err); // Debugging: log the error
+      console.error("Error during upload:", err); 
       setError(err.message || "An error occurred during upload");
     } finally {
       setLoading(false);
-      console.log("Upload process finished."); // Debugging: log when upload finishes
+      console.log("Upload process finished."); 
     }
   };
 
@@ -94,7 +94,16 @@ function ImageUploadModal({ isOpen, onClose, onUpload }) {
         />
         
         {/* Image Preview */}
-        {imagePreview && <img src={imagePreview} alt="Preview" className="mb-4 w-full rounded-md" />}
+        {imagePreview && (
+  <div className="w-[300px] h-[300px] mb-4 rounded-md overflow-hidden border border-gray-300">
+    <img
+      src={imagePreview}
+      alt="Preview"
+      className="w-full h-full object-cover"
+    />
+  </div>
+)}
+
 
         {/* Error Message */}
         {error && <p className="text-red-500 text-sm">{error}</p>}

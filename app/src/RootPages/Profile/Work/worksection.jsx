@@ -34,13 +34,68 @@ function WorkSection({ userDetails, handleChange }) {
     7: "At least ₱182,000 and up",
   };
 
+  const saveEmployment = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("User not authenticated");
+        return;
+      }
+  
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  
+      const [city, country] = userDetails.work_location
+        ? userDetails.work_location.split(",").map((s) => s.trim())
+        : ["", ""];
+  
+      const currentEmploymentData = {
+        industry: userDetails.industry || "",
+        employment_status: userDetails.employment_status || "",
+        company_name: userDetails.company_name || "",
+        job_title: userDetails.job_title || "",
+        city: city || "",
+        country: country || "",
+        work_mode: userDetails.work_mode || "",
+        employer_class: userDetails.employer_class || "",
+        tenured_status: userDetails.tenured_status || "",
+        salary_grade: userDetails.salary_grade || "",
+      };
+  
+      const urlEncodedData = new URLSearchParams(currentEmploymentData).toString();
+  
+      console.log("📤 Employment Data:", urlEncodedData);
+  
+      const response = await fetch(`${API_BASE_URL}/update-employment`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${token}`,
+        },
+        body: urlEncodedData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to update employment info");
+      }
+  
+      const result = await response.json();
+      console.log("✅", result.message);
+      setIsEditing(false);
+    } catch (err) {
+      console.error("❌", err);
+      alert("Failed to update employment info");
+    }
+  };
+  
+
   return (
     <div className="w-full max-w-[1100px] mt-6">
       {/* Section Header */}
       <SectionHeader
         title="Current Work"
         buttonText={isEditing ? "Save Work" : "Edit Work"}
-        onButtonClick={handleEditToggle}
+        onButtonClick={isEditing? saveEmployment : handleEditToggle}
       />
 
       {/* Work Experience Card */}
