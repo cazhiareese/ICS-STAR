@@ -54,7 +54,7 @@ function App() {
         <Route path="alumni" element={<AlumniLanding />}/> 
         <Route path="alumnisearch" element={<AlumniSearch />} />
         <Route path="profile" element={<UserProfile />} />
-
+      </Route>
 
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>
@@ -75,7 +75,7 @@ function App() {
           <Route path="donations" element={<AdminDonations />} />
         </Route>
 
-      </Route>
+
 
       {/* Redirect unknown routes */}
       <Route path="*" element={<Navigate to="/" />} />
