@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import log_route, auth, userinfo, admin_user_stats, reporting, admin_account_management, alumni_search_route, alumni_search_autocomplete_route, alumni_search_suggestions_route
+from routers import log_route, auth, userinfo, admin_user_stats, reporting, admin_account_management, alumni_search_route, alumni_search_autocomplete_route, alumni_search_suggestions_route, alum_donation
 
 
 app = FastAPI()
@@ -13,6 +13,7 @@ app.include_router(userinfo.router)
 app.include_router(alumni_search_route.router)
 app.include_router(alumni_search_autocomplete_route.router)
 app.include_router(alumni_search_suggestions_route.router)
+app.include_router(alum_donation.router)
 
 @app.get("/")
 def read_root():
