@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
 import SectionHeader from "../components/sectionheader"; 
+import {jwtDecode} from "jwt-decode"; 
 
 function WorkSection({ userDetails, handleChange }) {
   const [showMore, setShowMore] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const workModes = ["Remote", "Onsite", "Hybrid"];
-  //const employerclass = ["Private", "Public", "Non-Government", "Self-Employed"];
   const employerClasses = ["Government", "NGO", "Private Sector"];
   const tenuredStatuses = [
     "Permanent",
@@ -86,6 +86,18 @@ function WorkSection({ userDetails, handleChange }) {
       console.error("❌", err);
     }
   };
+
+  const User = localStorage.getItem("token");
+  let tokenType = null;
+  if (User) {
+    const decoded = jwtDecode(User);
+    console.log("Decoded token:", decoded);
+    tokenType = decoded.role;
+    console.log("Decoded token type:", tokenType);
+  } else {
+    console.warn("⚠️ No token found in sessionStorage");
+  }
+  
   
 
   return (

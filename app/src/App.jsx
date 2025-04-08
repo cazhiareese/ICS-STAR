@@ -8,6 +8,7 @@ import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
 
+
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
 import { OnboardingProvider } from "./AuthPages/AuthContext/onboardingcontext";
@@ -28,9 +29,22 @@ import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
 import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendingverifications";
 import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminverificationconfirmation";
 import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
+import { jwtDecode } from "jwt-decode";
+
+const isSignedIn = !!sessionStorage.getItem("token");
 
 
 function App() {
+
+  function checkType ()
+  {
+    const User = sessionStorage.getItem("token")
+    const decoded = jwtDecode(User)
+    const token = decoded.user
+    return token.type
+  }
+
+  
   return (
     <Routes>
       {/* Login Pages (No Navbar) */}
@@ -48,8 +62,9 @@ function App() {
         </OnboardingProvider>
       } />
 
+
       {/* Routes that include the Navbar */}
-      <Route path="/" element={<Root />}>
+      <Route path='/' element={<Root />}>
         <Route path="student" element={<StudentLanding />} />
         <Route path="alumni" element={<AlumniLanding />}/> 
         <Route path="alumnisearch" element={<AlumniSearch />} />
@@ -74,7 +89,6 @@ function App() {
           <Route path="career" element={<AdminCareer />} />
           <Route path="donations" element={<AdminDonations />} />
         </Route>
-
 
 
       {/* Redirect unknown routes */}
