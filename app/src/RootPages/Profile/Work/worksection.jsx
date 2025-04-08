@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp, Check } from "lucide-react"; // Import icons
-import SectionHeader from "../components/sectionheader"; // Adjust the path based on your project structure
+import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
+import SectionHeader from "../components/sectionheader"; 
 
 function WorkSection({ userDetails, handleChange }) {
   const [showMore, setShowMore] = useState(false);
@@ -84,7 +84,6 @@ function WorkSection({ userDetails, handleChange }) {
       setIsEditing(false);
     } catch (err) {
       console.error("❌", err);
-      alert("Failed to update employment info");
     }
   };
   
