@@ -6,6 +6,16 @@ import SkillsInterestsSection from './Profile/About/skillsinterestsection';
 import AffiliationsSection from './Profile/About/affiliationssection';
 import ScholarshipsSection from './Profile/About/scholarshipsection';
 import WorkSection from './Profile/Work/worksection';
+import {
+  fetchProfile as apiFetchProfile,
+  addSkills as apiAddSkills,
+  removeSkill as apiRemoveSkill,
+  addAffiliation as apiAddAffiliation,
+  removeAffiliation as apiRemoveAffiliation,
+  addScholarship as apiAddScholarship,
+  removeScholarship as apiRemoveScholarship
+} from './Profile/UserProfileAPI/userProfileApi'; // Adjust the import path as necessary
+
 
 const token = localStorage.getItem("token");
 
@@ -22,29 +32,7 @@ function UserProfile() {
     useEffect(() => {
       const fetchProfile = async () => {
           try {
-              if (!token) {
-                  setError("User not authenticated");
-                  return;
-              }
-  
-              const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-              const response = await fetch(`${API_BASE_URL}/profile`, {
-                  method: "GET",
-                  headers: {
-                      Authorization: `Bearer ${token}`
-                  },
-              });
-  
-              if (!response.ok) {
-                  if (response.status === 401) {
-                      setError("Unauthorized access. Please log in again.");
-                      return;
-                  }
-                  throw new Error("Network response was not ok");
-              }
-  
-              const result = await response.json();
-              const data = result.data; // Correctly access 'data.data'
+              const data = await apiFetchProfile(); // Correctly access 'data.data'
   
               setUserDetails({
                 first_name: data.first_name,
@@ -97,32 +85,8 @@ function UserProfile() {
 
   const addSkills = async (newSkills) => {
     try {
-        if (!token) {
-            setError("User not authenticated");
-            return;
-        }
-
-        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-        // Convert skills array into a query string format
-        const queryParams = new URLSearchParams();
-        newSkills.forEach(skill => queryParams.append("skills", skill));
-
-        const response = await fetch(`${API_BASE_URL}/add-skills?${queryParams.toString()}`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to add skills");
-        }
-
-        const result = await response.json();
-        console.log(result.message); // "skills added successfully"
-
-        // Update state only after successful API call
+        await apiAddSkills(newSkills); // Call the API function to add skills
+        console.log("Skills added successfully");
         setSkills([...skills, ...newSkills]);
     } catch (err) {
         setError("Failed to add skills");
@@ -131,28 +95,8 @@ function UserProfile() {
 
 const removeSkill = async (skillToRemove) => {
   try {
-    if (!token) {
-      setError("User not authenticated");
-      return;
-    }
-
-    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-    // Send DELETE request to remove the skill with the query parameter format
-    const response = await fetch(`${API_BASE_URL}/remove-skill/?skill=${encodeURIComponent(skillToRemove)}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to remove skill");
-    }
-
-    const result = await response.json();
-    console.log(result.message); // "Skill removed successfully"
-
+    await apiRemoveSkill(skillToRemove); // Call the API function to remove skill
+    console.log("Skill removed successfully");
     // Update the UI by filtering out the removed skill
     setSkills(skills.filter(skill => skill !== skillToRemove));
   } catch (err) {
@@ -163,32 +107,8 @@ const removeSkill = async (skillToRemove) => {
 
 const removeAffiliation = async (affiliationToRemove) => {
   try {
-    if (!token) {
-      setError("User not authenticated");
-      return;
-    }
-
-    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-    // Make sure you're sending the affiliation name, not the whole object
-    const affiliationName = affiliationToRemove.affiliation || affiliationToRemove;
-
-    // Send DELETE request to remove the affiliation with the query parameter format
-    const response = await fetch(`${API_BASE_URL}/remove-affiliation/?affiliation=${encodeURIComponent(affiliationName)}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to remove affiliation");
-    }
-
-    const result = await response.json();
-    console.log(result.message); // "Affiliation removed successfully"
-
-    // Update the UI by filtering out the removed affiliation
+    await apiRemoveAffiliation(affiliationToRemove); // Call the API function to remove affiliation
+    console.log("Affiliation removed successfully");
     setAffiliations(affiliations.filter(affiliation => affiliation.affiliation !== affiliationName));
   } catch (err) {
     setError("Failed to remove affiliation");
@@ -197,73 +117,18 @@ const removeAffiliation = async (affiliationToRemove) => {
 
 const removeScholarship = async (scholarshipToRemove) => {
   try {
-    if (!token) {
-      setError("User not authenticated");
-      return;
-    }
-
-    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-    // Send DELETE request to remove the scholarship
-    const response = await fetch(`${API_BASE_URL}/remove-scholarship/?scholarship=${encodeURIComponent(scholarshipToRemove)}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to remove scholarship");
-    }
-
-    const result = await response.json();
-    console.log(result.message); // "Scholarship removed successfully"
-
-    // Update the UI by filtering out the removed scholarship
+    await apiRemoveScholarship(scholarshipToRemove); // Call the API function to remove scholarship
+    console.log("Scholarship removed successfully");
     setScholarships(scholarships.filter(scholarship => scholarship !== scholarshipToRemove));
   } catch (err) {
     setError("Failed to remove scholarship");
   }
 };
 
-
-
-
 const addAffiliation = async (newAffiliation) => {
   try {
-      if (!token) {
-          setError("User not authenticated");
-          return;
-      }
-
-      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-      // Ensure newAffiliation is an object with 'affiliation' and 'role'
-      if (!newAffiliation.affiliation || !newAffiliation.role) {
-          setError("Invalid affiliation format");
-          return;
-      }
-
-      // Convert affiliations & roles into query parameters
-      const queryParams = new URLSearchParams();
-      queryParams.append("affiliations", newAffiliation.affiliation);
-      queryParams.append("roles", newAffiliation.role);
-
-      const response = await fetch(`${API_BASE_URL}/add-affiliations?${queryParams.toString()}`, {
-          method: "POST",
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
-      });
-
-      if (!response.ok) {
-          throw new Error("Failed to add affiliation");
-      }
-
-      const result = await response.json();
-      console.log(result.message); // "affiliations added successfully"
-
-      // Update UI only after a successful API call
+      await apiAddAffiliation(newAffiliation); // Call the API function to add affiliation
+      console.log("Affiliation added successfully");
       setAffiliations([...affiliations, newAffiliation]);
   } catch (err) {
       setError("Failed to add affiliation");
@@ -272,41 +137,13 @@ const addAffiliation = async (newAffiliation) => {
 
 const addScholarship = async (newScholarship) => {
   try {
-      if (!token) {
-          setError("User not authenticated");
-          return;
-      }
-
-      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-      // Convert scholarship into query parameters
-      const queryParams = new URLSearchParams();
-      queryParams.append("scholarships", newScholarship);
-
-      const response = await fetch(`${API_BASE_URL}/add-scholarships?${queryParams.toString()}`, {
-          method: "POST",
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
-      });
-
-      if (!response.ok) {
-          throw new Error("Failed to add scholarship");
-      }
-
-      const result = await response.json();
-      console.log(result.message); // "scholarships added successfully"
-
-      // Update UI only after a successful API call
+      await apiAddScholarship(newScholarship); // Call the API function to add scholarship
+      console.log("Scholarship added successfully");
       setScholarships([...scholarships, newScholarship]);
   } catch (err) {
       setError("Failed to add scholarship");
   }
 };
-
-
-
-
 
     const handleChange = (e, field) => {
       setUserDetails({ ...userDetails, [field]: e.target.value });
