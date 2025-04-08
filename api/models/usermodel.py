@@ -101,6 +101,10 @@ class User(Base):
    reports = relationship("Report", foreign_keys="[Report.reporter_id]", back_populates="reporter", lazy="joined")
    account_reports = relationship("Report", foreign_keys="[Report.reported_user_id]", back_populates="reported_user", lazy="joined")
    reasons = relationship("UnemploymentReason", back_populates="user")
+   monetary_donations = relationship("MonetaryDonation", foreign_keys="[MonetaryDonation.user_id]", back_populates="user", lazy="joined")
+   in_kind_donations = relationship("InKindDonation", foreign_keys="[InKindDonation.user_id]", back_populates="user", lazy="joined")
+
+   
    
 class UnemploymentReason(Base):
    __tablename__ = 'unemployment_reason'
