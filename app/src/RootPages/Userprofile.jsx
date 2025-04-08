@@ -10,13 +10,7 @@ import AffiliationsSection from './Profile/About/affiliationssection';
 import ScholarshipsSection from './Profile/About/scholarshipsection';
 import WorkSection from './Profile/Work/worksection';
 
-const alumniUsers = [
-    { user_id: 1, first_name: "John", last_name: "Doe", mobile_number: "09123456789", age: 30, gender: "M", city: "Los Baños", state: "Laguna", country: "Philippines", marital_status: "Single", image: "profile_images/john_doe.jpg", password: "hashed_password_here", email: "johndoe@example.com", verification_file: "verification_docs/john_doe.pdf", user_type: "alumni", student_number: "2015-12345", graduation_year: 2019, graduation_semester: "2nd Semester", employment_status: "Employed", job_title: "Software Engineer", work_location: "Makati City, Philippines", work_mode: "Hybrid", employer_class: "Private", tenured_status: "Yes", salary_grade: "SG 12", is_banned: false },  
-    { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: "profile_images/jane_smith.jpg", password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "Freelance UX Designer", work_location: "Remote", work_mode: "Remote", employer_class: "Freelancer", tenured_status: "No", salary_grade: "N/A", is_banned: false }  
-  ];
-  
-const signedinuser = { user_id: 2, first_name: "Jane", last_name: "Smith", mobile_number: "09234567890", age: 28, gender: "F", city: "Quezon City", state: "Metro Manila", country: "Philippines", marital_status: "Married", image: '../assets/prince boy.jpg', password: "hashed_password_here", email: "janesmith@example.com", verification_file: "verification_docs/jane_smith.pdf", user_type: "alumni", student_number: "2016-67890", graduation_year: 2020, graduation_semester: "1st Semester", employment_status: "Self-Employed", job_title: "UX Designer", work_location: "Quezon City, PH", work_mode: "Remote", employer_class: "Private Sector", tenured_status: "Permanent", salary_grade: "3", is_banned: false, company_name: "AZEUS" }
-
+const token = localStorage.getItem("token");
 
 function UserProfile() {
     const [editMode, setEditMode] = useState(false);
@@ -31,7 +25,6 @@ function UserProfile() {
     useEffect(() => {
       const fetchProfile = async () => {
           try {
-              const token = localStorage.getItem("token");
               if (!token) {
                   setError("User not authenticated");
                   return;
@@ -107,7 +100,6 @@ function UserProfile() {
 
   const addSkills = async (newSkills) => {
     try {
-        const token = localStorage.getItem("token");
         if (!token) {
             setError("User not authenticated");
             return;
@@ -142,7 +134,6 @@ function UserProfile() {
 
 const removeSkill = async (skillToRemove) => {
   try {
-    const token = localStorage.getItem("token");
     if (!token) {
       setError("User not authenticated");
       return;
@@ -175,7 +166,6 @@ const removeSkill = async (skillToRemove) => {
 
 const removeAffiliation = async (affiliationToRemove) => {
   try {
-    const token = localStorage.getItem("token");
     if (!token) {
       setError("User not authenticated");
       return;
@@ -210,7 +200,6 @@ const removeAffiliation = async (affiliationToRemove) => {
 
 const removeScholarship = async (scholarshipToRemove) => {
   try {
-    const token = localStorage.getItem("token");
     if (!token) {
       setError("User not authenticated");
       return;
@@ -245,7 +234,6 @@ const removeScholarship = async (scholarshipToRemove) => {
 
 const addAffiliation = async (newAffiliation) => {
   try {
-      const token = localStorage.getItem("token");
       if (!token) {
           setError("User not authenticated");
           return;
@@ -287,7 +275,6 @@ const addAffiliation = async (newAffiliation) => {
 
 const addScholarship = async (newScholarship) => {
   try {
-      const token = localStorage.getItem("token");
       if (!token) {
           setError("User not authenticated");
           return;
