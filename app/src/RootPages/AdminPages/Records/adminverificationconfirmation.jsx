@@ -2,34 +2,60 @@ import { React, useEffect, useState } from 'react'
 import { MoveLeft, Check, IdCard, GraduationCap } from 'lucide-react'
 import { Navigate, useNavigate , useParams } from 'react-router-dom'
 import axios from 'axios';
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import { CheckCircle } from 'lucide-react';
 
 function AdminVerificationConfirmation() {
   const navigate = useNavigate()
 
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState({
+  })
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const { userid } = useParams();
-
+  const [loading, setLoading] = useState(true)
+  const [verifyTransition, setVerifyTransition] = useState(false)  
+  const [verificationLoading, setVerificationLoading] = useState(false)
+  const [showVerificationModal, setShowVerificationModal] = useState(false)
+  
   useEffect(() => {
-    // Get the details of the user
-    // axios.get(`${API_BASE_URL}`)
-    console.log(userid)
-  })
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const userProfile = await axios.get(`${API_BASE_URL}/admin/unverified/user/${userid}`)
+        console.log(userProfile.data)
+        setUser(userProfile.data)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
+      }
+    } 
+    fetchData()
+  }, [])
 
-  function verifyUser() {
-    axios.put(`${API_BASE_URL}/admin/confirm/${userid}`)
-    .then(response => {
-      // console.log("Verification /Successful:", response.data);
-      alert(`Confirmed verification of user ${userid} !`)
+  async function verifyUser() {
+    setVerificationLoading(true)
+    try {
+      const response = await axios.put(`${API_BASE_URL}/admin/confirm/${userid}`)
       console.log(response)
-    })
-    .catch(error => {
-      console.error("Error verifying user:", error);
-    });  
+      setVerifyTransition(false)
+      setTimeout(() => {        
+      }, 500)
+      setVerifyTransition(true)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setVerificationLoading(false)
+    }
   }
 
   return (
+    loading ? (
+      <div className='flex items-center justify-center h-screen'>
+        <CircularLoading size={90}/>
+      </div>
+    ) : (
     <div className='p-6'>
       <div className='flex gap-2 mb-3'>
         <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
@@ -43,7 +69,7 @@ function AdminVerificationConfirmation() {
           <h1 className='text-primary font-satoshi-bold text-5xl '> Records </h1>
           <p className='font-satoshi-light text-lg text-gray-500'>/ Pending Verifications</p>
         </div>
-        <button className='flex items-center bg-success text-white text-md font-satoshi-regular gap-2 rounded-3xl px-4 py-1 cursor-pointer' onClick={() => {verifyUser()}}>
+        <button className='flex items-center bg-success text-white text-md font-satoshi-regular gap-2 rounded-3xl px-4 py-1 cursor-pointer' onClick={() => {setShowVerificationModal(true)}}>
           <Check className=''/>
           <p> Confirm Verification</p>
         </button>
@@ -56,8 +82,8 @@ function AdminVerificationConfirmation() {
           <div className='bg-primary rounded-full h-30 w-30'></div>
             <div className='flex flex-col justify-between ml-6'>
               <div>
-                <p className='font-satoshi-bold text-3xl'> {userid} </p>
-                <p className='font-satoshi-light'> kltayawa@up.edu.ph</p>
+                <p className='font-satoshi-bold text-3xl'> {user.name} </p>
+                <p className='font-satoshi-light'> {user.email}</p>
               </div>
             {/* Student number and graduating class */}
             <div className='flex flex-row'>
@@ -67,14 +93,14 @@ function AdminVerificationConfirmation() {
                   <IdCard/> 
                   <p className='font-satoshi-regular'>Student Number</p>
                 </div>
-                <p className='ml-8 font-satoshi-bold'>1234-56789</p>
+                <p className='ml-8 font-satoshi-bold'>{user.student_number}</p>
               </div>
               <div className='flex flex-col ml-20'>
                 <div className='flex flex-row gap-2'>
                   <GraduationCap/> 
                   <p className='font-satoshi-regular'>Graduating Class</p>
                 </div>
-                <p className='ml-8 font-satoshi-bold'>2022 - 1st Semester</p>
+                <p className='ml-8 font-satoshi-bold'>{user.grad_class}</p>
               </div>
             </div>
           </div>
@@ -85,7 +111,61 @@ function AdminVerificationConfirmation() {
           <div className='border border-disabled'></div>
         </div>
       </div>
+
+      {/* Graduation loading */}
+      {showVerificationModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+          <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
+            {/* Loading Spinner */}
+            {verificationLoading ? (
+              <div className='h-full'>
+                <CircularLoading />
+              </div>
+            ) : verifyTransition ? (
+              <>
+                <div className="text-success">
+                  <CheckCircle size={48} />
+                </div>
+                <p className="text-xl font-satoshi-medium mt-4 text-center">
+                  Confirmed verification!
+                </p>
+                <button
+                  className="bg-success text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
+                  onClick={() => {
+                    setShowVerificationModal(false)
+                    setVerifyTransition(false)
+                    navigate(-1)
+                  }}
+                >
+                  Close
+                </button>
+              </>
+            ) : (
+              <div className=''>
+                <p className="text-xl font-satoshi-medium text-center mt-4">
+                  Confirm verification?
+                </p>
+                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                  <button
+                    className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    onClick={() => setShowVerificationModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    onClick={verifyUser}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
+    )
   )
 }
 

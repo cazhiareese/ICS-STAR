@@ -3,7 +3,6 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { Search, MoveLeft, MoveRight, Filter, List, LayoutGrid } from 'lucide-react'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
-import { div } from 'framer-motion/client';
 
 function AdminPendingVerifications() {
     const navigate = useNavigate()
@@ -18,14 +17,14 @@ function AdminPendingVerifications() {
     const [focused, setFocused] = useState(false)
 
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-    const [userType, setUserType] = useState('alumni')
+    const [userType, setUserType] = useState('alum')
     const [pendingUsers, setPendingUsers] = useState([])
     const [studentUserCount, setStudentUserCount] = useState(0)
     const [alumniUserCount, setAlumniUserCount] = useState(0)
 
     const fetchUnverifiedUsers = async (type) => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/unverified/${type}`);
+        const response = await axios.get(`${API_BASE_URL}/admin/filter/unverified/${type}`);
         console.log(response.data);
         setPendingUsers(response.data);
       } catch (error) {
@@ -43,7 +42,7 @@ function AdminPendingVerifications() {
         setAlumniUserCount(response.data.unverified_alumni_count);
       })
       .catch(error => {
-        console.log('Error getting user count')
+        console.log(error)
       })
 
       // Fetch unverified students count
@@ -53,7 +52,7 @@ function AdminPendingVerifications() {
         setStudentUserCount(response.data.unverified_students_count);
       })
       .catch(error => {
-        console.log('Error getting user count')
+        console.log(error)
       })
     };
     
@@ -77,7 +76,7 @@ function AdminPendingVerifications() {
     
     // Initial fetch
     useEffect(() => {
-      setUserType('alumni') // this will automatically trigger the above effect
+      setUserType('alum') // this will automatically trigger the above effect
     }, [])
 
 
@@ -123,11 +122,11 @@ function AdminPendingVerifications() {
       <div className='flex items-center justify-between lg:ml-5 lg:flex-row flex-col gap-2 lg:gap-0'>
         <div className='lg:w-auto w-full'>
           {/* Alumni button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'alumni' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alumni')}>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'alum' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alum')}>
             <p className='text-black font-satoshi-medium text-md'> Alumni ({alumniUserCount}) </p>
           </button>
           {/* Student button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'students' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('students')}>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 lg:w-auto w-1/2 ${userType === 'student' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('student')}>
             <p className='text-black font-satoshi-medium text-md'> Student ({studentUserCount}) </p>
           </button>
         </div>
