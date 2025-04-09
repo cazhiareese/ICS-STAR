@@ -518,7 +518,6 @@ async def get_donation_history_me(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    user = db.query(User).filter(User.user_id == user_id).first()
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
