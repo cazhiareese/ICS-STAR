@@ -4,7 +4,8 @@ from config.database import get_db
 from typing import List, Optional
 
 from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding
-
+from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations
+from uuid import UUID
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 
 from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum, UserStandingEnum
@@ -429,3 +430,49 @@ async def remove_profile_picture(
     db.commit()
     
     return {"message": "Profile picture removed successfully"}
+
+# Get the donation history of the user
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of donations made by the user
+@router.get("/donation-history/")
+async def get_donation_history(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+
+    donations = get_user_donations(db, user.user_id)
+
+    return {"message": "success", "data": donations}
+
+# Get the monetary donations of the user
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of monetary donations made by the user
+@router.get("/donation-history/monetary-donations")
+async def get_monetary_donations(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    monetary_donations = get_user_monetary_donations(db, user.user_id)
+
+    return {"message": "success", "data": monetary_donations}
+
+# Get the in-kind donations of the user
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of in-kind donations made by the user
+@router.get("/donation-history/in-kind-donations")
+async def get_in_kind_donations(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    in_kind_donations = get_user_in_kind_donations(db, user.user_id)
+
+    return {"message": "success", "data": in_kind_donations}

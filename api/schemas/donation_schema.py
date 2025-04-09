@@ -38,6 +38,7 @@ class MonetaryDonationOut(BaseModel):
     drive_id: UUID
     user_id: UUID
     is_acknowledged: bool = False
+    donation_drive_title: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -50,6 +51,7 @@ class InKindDonationOut(BaseModel):
     drive_id: UUID
     user_id: UUID
     is_acknowledged: bool = False
+    donation_drive_title: Optional[str] = None
 
     class Config:
         from_attributes = True
