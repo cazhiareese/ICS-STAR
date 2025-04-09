@@ -45,15 +45,21 @@ function App() {
       console.log("Decoded token:", decoded);
       tokenType = decoded.role;
       console.log("Decoded token type:", tokenType);
+      return tokenType;
     } else {
       console.warn("⚠️ No token found in sessionStorage");
     }
   }
 
+  console.log(isSignedIn);
+  
+
 
   return (
     <Routes>
-      {/* Login Pages (No Navbar) */}
+      {/* Check if the user is signed in */}
+      {!isSignedIn &&(
+        <>
       <Route path="/" element={<LoginPage/>}/>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={
@@ -67,16 +73,35 @@ function App() {
           <OnBoarding />
         </OnboardingProvider>
       } />
+      </>
+      )}
 
-
-      {/* Routes that include the Navbar */}
+{isSignedIn && checkType() === "alumni" && (
+  <>
       <Route path='/' element={<Root />}>
-        <Route path="student" element={<StudentLanding />} />
-        <Route path="alumni" element={<AlumniLanding />}/> 
-        <Route path="alumnisearch" element={<AlumniSearch />} />
-        <Route path="profile" element={<UserProfile />} />
+        <Route path="alumni/dashboard" element={<AlumniLanding />}/> 
+        <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
+        <Route path="alumni/profile" element={<UserProfile />} />
+        <Route path="*" element={<LoginPage/>} />
       </Route>
+  </>
+)}
 
+{isSignedIn && checkType() === "student" && (
+  <>
+      <Route path='/' element={<Root />}>
+        <Route path="student/dashboard" element={<StudentLanding />}/> 
+        <Route path="student/alumnisearch" element={<AlumniSearch />} />
+        <Route path="*" element={<UserProfile />} />
+      </Route>
+  </>
+)}
+
+
+
+
+{isSignedIn && checkType() === "admin" && (
+  <>
         {/* Admin Routes */}
         <Route path="admin" element={<AdminRoot />}>
         <Route index element={<Navigate to="dashboard" />} />
@@ -95,10 +120,10 @@ function App() {
           <Route path="career" element={<AdminCareer />} />
           <Route path="donations" element={<AdminDonations />} />
         </Route>
-
+</>)}
 
       {/* Redirect unknown routes */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<LoginPage/>} />
     </Routes>
   );
 }

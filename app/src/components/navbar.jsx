@@ -14,7 +14,7 @@ function Navbar({ user }) {
   }
 
   function handleProfileClick() {
-    navigate("/profile");
+    navigate("/alumni/profile");
   }
 
   return (
