@@ -8,9 +8,9 @@ function DonationCard({ drive }) {
   );
 
   return (
-    <div className="w-full md:w-[48%] rounded-xl overflow-hidden shadow border bg-white">
-      {/* Image or blue placeholder */}
-      <div className="h-28 bg-blue-800 flex items-center justify-center">
+    <div className="w-full md:w-[38%] rounded-xl border-disabled overflow-hidden shadow border bg-white">
+      {/* Image or primary placeholder */}
+      <div className="h-28 bg-primary flex items-center justify-center">
         {drive.image_url ? (
           <img
             src={drive.image_url}
@@ -21,26 +21,26 @@ function DonationCard({ drive }) {
       </div>
 
       <div className="p-4">
-        <h3 className="text-lg font-bold text-gray-800">{drive.title}</h3>
-        <p className="text-sm text-gray-600 line-clamp-2">{drive.description}</p>
+        <h3 className="text-lg font-satoshi-black text-gray-800">{drive.title}</h3>
+        <p className="text-sm text-black font-satoshi-medium line-clamp-2">{drive.description}</p>
 
         {/* Progress bar */}
         <div className="mt-4">
-          <p className="text-sm text-gray-800">
+          <p className="text-sm text-black font-satoshi-medium">
             ₱{drive.total_amount_donated.toLocaleString()} of ₱{drive.target_cost.toLocaleString()} funded
           </p>
           <div className="w-full h-2 bg-gray-200 rounded-full mt-1">
             <div
-              className="h-full bg-blue-600 rounded-full"
+              className="h-full bg-primary rounded-full"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
 
         {/* Footer info */}
-        <div className="mt-4 flex justify-between text-sm text-gray-500">
+        <div className="mt-4 flex justify-between text-sm text-black font-satoshi-medium">
           <p>{new Date(drive.created_at).toLocaleDateString()}</p>
-          <p className="text-blue-600">{drive.donation_count} Donations</p>
+          <p className="text-primary font-satoshi-medium">{drive.donation_count} Donations</p>
         </div>
       </div>
     </div>
