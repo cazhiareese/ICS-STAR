@@ -37,7 +37,6 @@ class InKindDonation(Base):
 
     donation_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     date_donated = Column(DateTime(timezone=True))
-    amount = Column(Numeric(15, 2))
     description = Column(Text)
     drive_id = Column(UUID(as_uuid=True), ForeignKey('donation_drive.drive_id'))
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False)
