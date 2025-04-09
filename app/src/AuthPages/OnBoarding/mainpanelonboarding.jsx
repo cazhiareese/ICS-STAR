@@ -43,7 +43,7 @@ function MainPanelOnboarding() {
                 <div className= "my-10">
                     {ProgressBar[currentSection]}
                 </div>
-                <div className="w-[100%]">
+                <div className="w-[100%] rounded-xl">
                     {OnboardingComponents[currentSection]}
                 </div>
             </div>

@@ -7,7 +7,7 @@ function Step1Onboarding() {
   const canvasRef = useRef(null);
   const [file, setFile] = useState(null);
   const [userImage, setUserImage] = useState("")
-  const {currentSection, setCurrentSection, name, email} = useOnboardingContext()
+  const {currentSection, setCurrentSection, name, email, userData, updateUserData} = useOnboardingContext()
   const [selectPicture, setSelectPicture] = useState(false)
   
 
@@ -25,6 +25,10 @@ function Step1Onboarding() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [editImage, setEditImage] = useState(null);  // This will store the ongoing edits
 
+
+  const token = localStorage.getItem("token");
+  console.log(token)
+
   const [editType, setEditType] = useState("Crop");
 
     // Handle dragging
@@ -34,7 +38,7 @@ function Step1Onboarding() {
       imageRef.current.startX = e.clientX - position.x;
       imageRef.current.startY = e.clientY - position.y;
     };
-  
+
     const handleMouseMove = (e) => {
       if (!isDragging) return;
       const x = e.clientX - imageRef.current.startX;
@@ -59,26 +63,6 @@ function Step1Onboarding() {
         window.removeEventListener("mouseup", handleMouseUp);
       };
     }, [isDragging]);
-  
-    const updateEditImage = (canvas) => {
-      const ctx = canvas.getContext("2d");
-    
-      const image = imageRef.current;
-      
-      // Set the canvas dimensions to match the image
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      
-      // Apply filters to the canvas context
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
-      
-      // Draw the image on the canvas with applied filters
-      ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
-      
-      // Get the image data from the canvas and update the editImage state
-      const filteredImageData = canvas.toDataURL("image/png");
-      setEditImage(filteredImageData);
-    };
     
 
     const captureImage = () => {
@@ -130,46 +114,62 @@ function Step1Onboarding() {
       const croppedImageData = canvas.toDataURL("image/png");
       setEditImage(croppedImageData);
     };
-    
-    
-    
-    
-    
 
 
-    // const processFile = (selectedFile) => {
-    //   if (selectedFile) {
-    //       const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
-
-    //       setFile(selectedFile)
-          
-    //       const reader = new FileReader();
-    //       reader.onloadend = () => {
-    //         setUserImage(reader.result);
-    //       };
-    //       reader.readAsDataURL(file);
-    //       console.log("SJDFDS")
-
-    //   }
-    // };
+    
 
     const handleFileChange = (event) => {
       const file = event.target.files[0];
       if (!file) return; // Prevents errors if no file is selected
       setFile(file)
       setSelectPicture(true)
+
       const reader = new FileReader();
       reader.onloadend = () => {
-        setUserImage(reader.result);
+        updateUserData("profilePicture", reader.result);
+        updateUserData("profilePictureFile", file)
         setImageLoaded(true);
       };
       reader.readAsDataURL(file);
     };
 
     const handleSave = () => {
-      setUserImage(editImage); // Save the edited image to userImage
+      updateUserData("profilePicture", editImage);// Save the edited image to userImage
       setSelectPicture(false);
     };
+
+
+    const submitStep1 = async (e) => {
+      try {
+          const formData = new FormData();
+          formData.append("file", userData.profilePictureFile);
+  
+          const baseURL = "https://ics-star-api.vercel.app/"
+
+          
+          const response = await fetch(`${baseURL}upload-profile-picture`, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              body: formData, // Send formData directly
+          });
+  
+          const data = await response.json();
+          
+          if (response.ok) {
+              alert("Profile Submission Successful!");
+              setCurrentSection(2)
+          } else {
+              console.log("SFDSDF")
+              alert(data.message || JSON.stringify(data) || "Registration failed!");
+          }
+      } catch (error) {
+          console.error("Error:", error);
+          alert("Something went wrong!");
+      }
+  };
+
     useEffect(() => {
       if (imageLoaded) {
         captureImage();
@@ -185,9 +185,9 @@ function Step1Onboarding() {
         <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-175 sm:w-150 w-95 h-40">
             <div className="flex items-center justify-center rounded-full bg-white md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0">
               <div className="relative w-full h-full flex justify-center items-center">
-                {userImage=="" ? 
+                {userData.profilePicture==null ? 
                 (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>):
-                <img src={userImage} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" />
+                <img src={userData.profilePicture} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" />
                 }
               
                 <input 
@@ -225,7 +225,7 @@ function Step1Onboarding() {
 
           </div> 
           <div className="w-70 sm:h-17 h-14 bg-primary text-white flex items-center justify-center rounded-3xl cursor-pointer"
-              onClick={()=>setCurrentSection(2)}
+              onClick={submitStep1}
           >
                   <label className="font-satoshi-bold cursor-pointer">Proceed</label>
           
@@ -267,7 +267,7 @@ function Step1Onboarding() {
                   {/* Image with zoom effect */}
                   <img
                     ref={imageRef}
-                    src={userImage}
+                    src={userData.profilePicture}
                     alt="Profile Preview"
                     onMouseDown={handleMouseDown}
                     onLoad={handleImageLoad}
@@ -324,7 +324,6 @@ function Step1Onboarding() {
                   </div>  
                   }
                   
-
                   { editType == "Brightness" &&
                   <div className="flex flex-col items-center">
                     {/* Brightness Slider */}
@@ -343,7 +342,7 @@ function Step1Onboarding() {
                     </div>
                   </div>
 
-                  }crop
+                  }
                   
                   { editType === "Contrast" &&
                   <div className="flex flex-col items-center">
@@ -383,7 +382,6 @@ function Step1Onboarding() {
                   </div>
                   }
 
-                
                 </div>
 
                 

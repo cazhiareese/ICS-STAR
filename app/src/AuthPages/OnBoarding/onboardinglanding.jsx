@@ -4,7 +4,7 @@ import Constellation from "../../assets/SignupAssets/constellationMain.png"
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 // import
 function OnBoarding() {
-    const { currentSection, setCurrentSection, name, setName, setEmail } = useOnboardingContext();
+    const { currentSection, setCurrentSection, name, setName, setEmail , setUserType} = useOnboardingContext();
     const [first_name, setFirstName] = useState("");
     const [error, setError] = useState(null); // State to handle errors
 
@@ -55,6 +55,7 @@ function OnBoarding() {
                 setFirstName(result.first_name); // Set first name from the fetched data
                 setName(result.first_name + " " + result.last_name)
                 setEmail(result.email)
+                setUserType(result.user_type)
             } catch (err) {
                 console.error("Error fetching data: ", err);
                 setError("Failed to load profile data. Please try again.");
