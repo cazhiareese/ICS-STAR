@@ -82,7 +82,7 @@ function App() {
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
-            <Route path="*" element={<LoginPage />} />
+            <Route path="*" element={<Unauthorized />} />
           </Route>
         </>
       )}
