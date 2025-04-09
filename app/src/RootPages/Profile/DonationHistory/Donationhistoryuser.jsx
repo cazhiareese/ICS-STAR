@@ -19,7 +19,7 @@ function DonationHistoryUser({ userDetails }) {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/donation-history/all`, {
+        const response = await fetch(`${API_BASE_URL}/donation-history`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

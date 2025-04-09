@@ -5,6 +5,8 @@ import SectionHeader from "../components/sectionheader";
 const semester = ["1st Semester", "2nd Semester", "Mid Semester"];
 const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
 const maritalstat = ["Single", "Maried", "Divorced", "Widowed"];
+import CircularLoading from "../../../components/LoadingComponents/circularloading";
+import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
 const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
   return (
@@ -27,7 +29,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-primary font-satoshi-bold">{userDetails.location}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.location || <CircularLoading/>}</span>
           )}
         </div>
 
@@ -45,7 +47,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-primary font-satoshi-bold">{userDetails.mobile_number}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.mobile_number || <CircularLoading/>}</span>
           )}
         </div>
 
@@ -63,7 +65,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             />
           ) : (
-            <span className="text-primary font-satoshi-bold">{userDetails.student_number}</span>
+            <span className="text-primary font-satoshi-bold">{userDetails.student_number || <CircularLoading/>}</span>
           )}
         </div>
                 {/* Graduating Class */}
@@ -98,7 +100,12 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
         </>
       ) : (
         <span className="text-primary font-satoshi-bold">
-          {userDetails.graduation_year} - {userDetails.graduation_semester}
+{userDetails?.graduation_year && userDetails?.graduation_semester ? (
+  `${userDetails.graduation_year} - ${userDetails.graduation_semester}`
+) : (
+  <CircularLoading />
+)}
+
         </span>
       )}
     </div>
@@ -121,7 +128,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             </select>
           ) : (
             <span className="text-primary font-satoshi-bold">
-              {userDetails.marital_status || "Not Available"}
+              {userDetails.marital_status || <CircularLoading/>}
             </span>
           )}
         </div>
