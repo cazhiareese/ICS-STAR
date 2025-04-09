@@ -39,6 +39,7 @@ import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 import { jwtDecode } from "jwt-decode";
 import AdminDonationsLayout from "./RootPages/AdminPages/Layouts/admindonationslayout";
 import AdminDonationInformation from "./RootPages/AdminPages/Donations/admindonationinformation";
+import AdminCreateDonationDrive from "./RootPages/AdminPages/Donations/admincreatedonationdrive";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -121,21 +122,16 @@ function App() {
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
               <Route path=":userid" element={<AdminUserDetails />} />
-              <Route
-                path="pending-verifications"
-                element={<AdminPendingVerifications />}
-              />
-              <Route
-                path="verification-confirmation/:userid"
-                element={<AdminVerificationConfirmation />}
-              />
+              <Route path="pending-verifications" element={<AdminPendingVerifications />}/>
+              <Route path="verification-confirmation/:userid"element={<AdminVerificationConfirmation />}/>
             </Route>
             <Route path="events" element={<AdminEvents />} />
             <Route path="newsletter" element={<AdminNewsletter />} />
             <Route path="career" element={<AdminCareer />} />
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
-              <Route path=":donationid" element={AdminDonationInformation}/>
+              <Route path=":donationid" element={<AdminDonationInformation/>}/>
+              <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
             </Route>
           </Route>
         </>
