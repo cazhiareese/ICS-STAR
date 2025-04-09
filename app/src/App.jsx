@@ -116,7 +116,7 @@ function App() {
                 path="user-reports"
                 element={<AdminUserInformationReport />}
               />
-              <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}>
+              <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
