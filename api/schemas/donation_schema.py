@@ -30,3 +30,28 @@ class OneDonationDriveOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class MonetaryDonationOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    amount: float
+    drive_id: UUID
+    user_id: UUID
+    is_acknowledged: bool = False
+    donation_drive_title: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class InKindDonationOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    amount: float
+    description: str
+    drive_id: UUID
+    user_id: UUID
+    is_acknowledged: bool = False
+    donation_drive_title: Optional[str] = None
+
+    class Config:
+        from_attributes = True
