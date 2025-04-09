@@ -1,18 +1,25 @@
 import React from "react";
 
 function DonationCard({ drive }) {
+  console.log(drive);
+
+const token = localStorage.getItem("token");
+console.log(token);
   const progress = Math.min(
     (drive.total_amount_donated / drive.target_cost) * 100,
     100
   );
 
+  const handleClick = () => {
+    console.log(`Card clicked! ${drive.drive_id}`);
+  }
   return (
-    <div className="w-full md:w-[38%] rounded-xl border-disabled overflow-hidden shadow border bg-white">
+    <div onClick={handleClick} className="w-full md:w-[38%] rounded-xl border-disabled overflow-hidden shadow border bg-white">
       <div className="h-28 bg-primary flex items-center justify-center">
         {drive.image_url ? (
           <img
             src={drive.image_url}
-            alt={drive.title}
+            alt={drive.drive_id}
             className="h-full w-full object-cover"
           />
         ) : null}

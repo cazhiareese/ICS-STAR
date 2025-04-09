@@ -11,6 +11,7 @@ function DonationLanding() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
+
   useEffect(() => {
     const fetchDonationDrives = async () => {
       if (!token) {
@@ -82,7 +83,7 @@ function DonationLanding() {
         <div className="order-2 lg:order-1 flex-1 lg:max-w-[900px] flex flex-wrap gap-4">
           {filteredData.length > 0 ? (
             filteredData.map((drive, index) => (
-              <DonationCard key={index} drive={drive} /> // Pass data to the DonationCard component
+              <DonationCard key={index} drive={drive} /> 
             ))
           ) : (
             <p className="w-full text-center text-gray-500">
