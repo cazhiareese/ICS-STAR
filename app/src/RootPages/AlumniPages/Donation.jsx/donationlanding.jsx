@@ -78,7 +78,7 @@ function DonationLanding() {
 
 
   {/* Layout: Announcements and Donations */}
-  <div className="flex flex-col lg:flex-row gap-4">
+  <div className="flex flex-col lg:flex-row gap-4 justify-center">
     {/* Left column: Donation cards */}
     <div className="order-2 lg:order-1 flex-1 lg:max-w-[900px] flex flex-wrap gap-4">
       {filteredData.length > 0 ? (
