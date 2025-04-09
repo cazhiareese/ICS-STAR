@@ -14,6 +14,7 @@ class DonationDrive(Base):
     is_closed = Column(Boolean, default=False)
     target_cost = Column(Numeric(15, 2))
     image = Column(Text)
+    is_general = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     donation_drive_link = relationship("DonationDriveLink", foreign_keys="[DonationDriveLink.drive_id]", back_populates="drive")
