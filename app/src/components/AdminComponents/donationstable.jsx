@@ -23,7 +23,7 @@ function DonationsTable({ data }) {
                 <tr
                 key={index}
                 className="hover:bg-gray-100 cursor-pointer"
-                // onClick={() => navigate(`/admin/records/${donation.donation_id}`)}
+                onClick={() => navigate(`/admin/donations/${donation.donation_id}`)}
                 >
                 <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold">{donation.title}</td>
                 <td className="py-3 px-4">{donation.date_created}</td>
