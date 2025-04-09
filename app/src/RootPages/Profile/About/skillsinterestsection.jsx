@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { XCircle } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddSkillsModal from "../components/skillmodal";
+import CircularLoading from "../../../components/LoadingComponents/circularloading";
+import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
 const SkillsInterestsSection = ({ editMode, skills, removeSkill, addSkills }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +18,11 @@ const SkillsInterestsSection = ({ editMode, skills, removeSkill, addSkills }) =>
       />
 
       {/* Skills List */}
+      {skills.length === 0 ? (
+  <div className="mt-4">
+    <CircularLoading />
+  </div>
+) : (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
         {skills.map((skill, index) => (
           <div key={index} className="relative">
@@ -35,6 +42,7 @@ const SkillsInterestsSection = ({ editMode, skills, removeSkill, addSkills }) =>
           </div>
         ))}
       </div>
+)}
 
       {/* Add Skills Modal */}
       <AddSkillsModal
