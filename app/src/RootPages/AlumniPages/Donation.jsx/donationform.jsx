@@ -5,18 +5,26 @@ import MonetaryAmountInput from "../../../components/AlumniComponents/DonationCo
 import DonationInstructions from "../../../components/AlumniComponents/DonationComponents/donationInstructions";
 import PaymentProof from "../../../components/AlumniComponents/DonationComponents/paymentProof";
 import DonationOptions from "../../../components/AlumniComponents/DonationComponents/donationOptions";
+import DonationDetailsInput from "../../../components/AlumniComponents/DonationComponents/donationDetailsInput";
 
 function Donationform() {
     // UseState for checking if the buttons are activated
     const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
     const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
 
+    // MONETARY TYPE
     // Money donation amount
     const [monetaryAmountInput, setMonetaryAmountInput] = useState(0);
 
     // File handling
     const fileInputRef = useRef(null);
     const [fileName, setFileName] = useState('');
+
+    // Anonymous donation?
+    const [isAnonymous, setIsAnonymous] = useState(false);
+
+    // IN-KIND TYPE
+    const [donationDetailsInput, setDonationDetailsInput] = useState("");
 
     return (
         <div className='flex flex-row mx-48 my-16 gap-5'>
@@ -51,28 +59,50 @@ function Donationform() {
                         setIsMonetaryTypeOpen={setIsMonetaryTypeOpen}
                     />
                 </div>
-                {/* Monetary donation contents */}
-                <div className='flex flex-col gap-5'>
-                    {/* Monetary Donation Inputs */}
-                    <MonetaryAmountInput
-                        monetaryAmountInput={monetaryAmountInput}
-                        setMonetaryAmountInput={setMonetaryAmountInput}
-                    />
+                {isMonetaryTypeOpen && (
+                    /* Monetary donation contents */
+                    <div className='flex flex-col gap-5'>
+                        {/* Monetary Donation Inputs */}
+                        <MonetaryAmountInput
+                            monetaryAmountInput={monetaryAmountInput}
+                            setMonetaryAmountInput={setMonetaryAmountInput}
+                        />
 
-                    {/* Donation Instruction */}
-                    <DonationInstructions/>
+                        {/* Donation Instruction */}
+                        <DonationInstructions donationType={"monetary"}/>
 
-                    {/* Proof of payment */}
-                    <PaymentProof fileInputRef={fileInputRef} fileName={fileName} setFileName={setFileName}/>
+                        {/* Proof of payment */}
+                        <PaymentProof fileInputRef={fileInputRef} fileName={fileName} setFileName={setFileName}/>
 
-                    {/* Donation Options */}
-                    <DonationOptions/>
+                        {/* Donation Options */}
+                        <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous}/>
 
-                    {/* Submit Button */}
-                    <button className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto">
-                        Submit
-                    </button>
-                </div>
+                        {/* Submit Button */}
+                        <button className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer">
+                            Submit
+                        </button>
+                    </div>
+                )}
+
+                {isInKindTypeOpen && (
+                    /* Monetary donation contents */
+                    <div className='flex flex-col gap-5'>
+                        {/* Donation Details Input */}
+                        <DonationDetailsInput
+                            donationDetailsInput={donationDetailsInput}
+                            setDonationDetailsInput={setDonationDetailsInput}
+                        />
+
+                        {/* Donation Instruction */}
+                        <DonationInstructions donationType={"inKind"}/>
+
+                        {/* Submit Button */}
+                        <button className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer">
+                            Submit
+                        </button>
+                    </div>
+                    
+                )}
 
                 
             </div>
