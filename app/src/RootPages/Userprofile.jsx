@@ -6,6 +6,7 @@ import SkillsInterestsSection from "./Profile/About/skillsinterestsection";
 import AffiliationsSection from "./Profile/About/affiliationssection";
 import ScholarshipsSection from "./Profile/About/scholarshipsection";
 import WorkSection from "./Profile/Work/worksection";
+import DonationHistoryUser from "./Profile/DonationHistory/Donationhistoryuser";
 
 
 import {
@@ -205,7 +206,7 @@ function UserProfile() {
         <WorkSection userDetails={userDetails} handleChange={handleChange} />
       )}
       {activeTab === "Donation History" && (
-        <D userDetails={userDetails} />
+        <DonationHistoryUser userDetails={userDetails} />
       )}
     </div>
   );
