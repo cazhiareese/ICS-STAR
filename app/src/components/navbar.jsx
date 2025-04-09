@@ -13,9 +13,13 @@ function Navbar({ tokentype }) {
     window.location.href = "/login";
   }
 
+  function handleSearch() {
+    window.location.href = `/${tokentype}/alumnisearch`;
+  }
+
   console.log("Token type in navbar:", tokentype);
   function handleProfileClick() {
-    navigate(`/${tokentype}/profile`);
+    window.location.href = `/${tokentype}/profile`;
   }
 
   return (
@@ -31,7 +35,7 @@ function Navbar({ tokentype }) {
         <button className="hover:text-primary transition font-satoshi-bold">Events</button>
         <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
         <button className="hover:text-primary transition font-satoshi-bold">Career</button>
-        <button className="hover:text-primary transition font-satoshi-bold">Alumni Search</button>
+        <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>Alumni Search</button>
         <button className="hover:text-primary transition font-satoshi-bold">Donations</button>
       </div>
 
