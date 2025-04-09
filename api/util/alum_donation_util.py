@@ -166,7 +166,7 @@ async def make_donation(
         return {
             "donation_drive": drive.title,
             "date": monetary.date_donated,
-            "user": f"{user.first_name} {user.last_name}",
+            "user": f"{user.first_name} {user.last_name}" if not is_anonymous else "Anonymous",
             "status": "Pending Acknowledgement",
             "amount": monetary.amount
         }
