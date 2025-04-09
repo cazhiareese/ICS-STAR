@@ -3,263 +3,135 @@ from typing import Dict, List, Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from util.alumni_search_logic import logic_search_alumni
-from models.usermodel import User, UserAffiliation, UserSkill, UserTypeEnum
+from models.usermodel import UnemploymentReason, User, UserAffiliation, UserEmploymentStatus, UserSkill, UserTypeEnum
 from models.report_model import Report
 from sqlalchemy import func, case, or_, text, desc,asc
 from datetime import datetime, timedelta
 
 
-def get_user_filtered_city (db: Session, verbose: bool):
-    # [location : {alumni: [{}], student: [{}]}]
-    cities = db.query(User.city).distinct().where(User.city.is_not(None), User.user_type != 'admin').all()
 
-    if cities is None:
-        raise HTTPException(status_code=404, detail="No locations found")
-    city_list = [loc[0] for loc in cities]
-
-    alum_with_loc = []
-    stud_with_loc = []
-    for loc in city_list:
-        alum_loc = db.query(User.user_id, User.user_type).filter(User.city == loc, User.user_type=='alumni').all()
-        stud_loc = db.query(User.user_id, User.user_type).filter(User.city == loc, User.user_type=='student').all()
-
-        if alum_loc is None:
-            raise HTTPException(status_code=404, detail=f"No alum from this {loc}")
-
-        if stud_loc is None:
-            raise HTTPException(status_code=404, detail=f"No stud from this {loc}")
-        
-        # alum_loc_dict = {loc: [UserOut.model_validate(user) for user in alum_loc]}
-        # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
-        if verbose:
-            alum_loc_dict = {loc: [user[0] for user in alum_loc]}
-            stud_loc_dict = {loc: [user[0] for user in stud_loc]}
-        else:
-            alum_loc_dict = {loc: len(alum_loc)}
-            stud_loc_dict = {loc: len(stud_loc)}
-
-        alum_with_loc.append(alum_loc_dict)
-        stud_with_loc.append(stud_loc_dict)
-
-    
-    return {'students': stud_with_loc, 'alumni': alum_with_loc}
-
-def get_user_filtered_state (db: Session, verbose:bool):
-    states = db.query(User.state).distinct().where(User.state.is_not(None), User.user_type != 'admin').all()
-
-    if states is None:
-        raise HTTPException(status_code=404, detail="No locations found")
-    state_list = [loc[0] for loc in states]
-
-    alum_with_loc = []
-    stud_with_loc = []
-    for loc in state_list:
-        alum_loc = db.query(User.user_id, User.user_type).filter(User.state == loc, User.user_type=='alumni').all()
-        stud_loc = db.query(User.user_id, User.user_type).filter(User.state == loc, User.user_type=='student').all()
-
-        if alum_loc is None:
-            raise HTTPException(status_code=404, detail=f"No alum from this {loc}")
-
-        if stud_loc is None:
-            raise HTTPException(status_code=404, detail=f"No stud from this {loc}")
-        
-        # alum_loc_dict = {loc: [UserOut.model_validate(user) for user in alum_loc]}
-        # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
-
-        
-        if verbose:
-            alum_loc_dict = {loc: [user[0] for user in alum_loc]}
-            stud_loc_dict = {loc: [user[0] for user in stud_loc]}
-        else:
-            alum_loc_dict = {loc: len(alum_loc)}
-            stud_loc_dict = {loc: len(stud_loc)}
-        alum_with_loc.append(alum_loc_dict)
-        stud_with_loc.append(stud_loc_dict)
-
-    
-    return {'students': stud_with_loc, 'alumni': alum_with_loc}
-
-def get_user_filtered_country (db: Session, verbose:bool):
-
-    countries = db.query(User.country).distinct().where(User.country.is_not(None), User.user_type != 'admin').all()
-
-    if countries is None:
-        raise HTTPException(status_code=404, detail="No locations found")
-    country_list = [loc[0] for loc in countries]
-
-    alum_with_loc = []
-    stud_with_loc = []
-    for loc in country_list:
-        alum_loc = db.query(User.user_id, User.user_type).filter(User.country== loc, User.user_type=='alumni').all()
-        stud_loc = db.query(User.user_id, User.user_type).filter(User.country == loc, User.user_type=='student').all()
-
-        if alum_loc is None:
-            raise HTTPException(status_code=404, detail=f"No alum from this {loc}")
-
-        if stud_loc is None:
-            raise HTTPException(status_code=404, detail=f"No stud from this {loc}")
-        
-        # alum_loc_dict = {loc: [UserOut.model_validate(user) for user in alum_loc]}
-        # stud_loc_dict = {loc: [UserOut.model_validate(user) for user in stud_loc]}
-        
-        if verbose:
-            alum_loc_dict = {loc: [user[0] for user in alum_loc]}
-            stud_loc_dict = {loc: [user[0] for user in stud_loc]}
-        else:
-            alum_loc_dict = {loc: len(alum_loc)}
-            stud_loc_dict = {loc: len(stud_loc)}
-        alum_with_loc.append(alum_loc_dict)
-        stud_with_loc.append(stud_loc_dict)
-
-    
-    return {'students': stud_with_loc, 'alumni': alum_with_loc}
-
-
-def get_user_all_batch (db: Session,verbose:bool):
-    batches = db.query(func.split_part(User.student_number, '-', 1)).distinct().filter(User.student_number.is_not(None), User.user_type != 'admin').all()
-
-    if batches is None:
-        raise HTTPException(status_code=404, detail="No batches found")
-    
-    batches_formatted = [batch[0] for batch in batches]
-
-    alum_batch_list = []
-    stud_batch_list = []
-    for batch in batches_formatted:
-        alumni_batch = db.query(User.user_id).filter(User.student_number.like(f"{batch}-%"), User.user_type == 'alumni').all()
-        student_batch = db.query(User.user_id).filter(User.student_number.like(f"{batch}-%"), User.user_type == 'student').all()
-
-        if verbose:
-            alum_batch_dict = {batch: [user[0] for user in alumni_batch]}
-            stud_batch_dict = {batch: [user[0] for user in student_batch]}
-        else:
-            alum_batch_dict = {batch: len(alumni_batch)}
-            stud_batch_dict = {batch: len(student_batch)}
-
-        alum_batch_list.append(alum_batch_dict)
-        stud_batch_list.append(stud_batch_dict)
-
-    return {'alumni': alum_batch_list, 'students': stud_batch_list}
-
-def get_user_filter_batch(db: Session, batch: str, type: str):
-    user_batch =  db.query(User.user_id).filter(User.student_number.like(f"{batch}-%"), User.user_type == type).all()
-
-    # return [UserOut.model_validate(user) for user in user_batch]
-    return[user[0] for user in user_batch]
-
-
-def get_user_grouped_industry(db: Session, verbose:bool):
-    industries = db.query(User.industry).distinct().where(User.industry.is_not(None), User.user_type != 'admin').all()
-    if industries is None:
-            raise HTTPException(status_code=404, detail="No locations found")
-    industry_list = [ind[0] for ind in industries]
-
-    alum_with_ind = []
-
-    for ind in industry_list:
-        alum_ind = db.query(User.user_id, User.user_type).filter(User.industry== ind, User.user_type=='alumni').all()
-
-
-        if alum_ind is None:
-            raise HTTPException(status_code=404, detail=f"No alum from this {ind}")
-        
-        # alum_ind_dict = {ind: [UserOut.model_validate(user) for user in alum_ind]}
-        if verbose:
-            alum_ind_dict = {ind: [user[0] for user in alum_ind]}
-        else:
-            alum_ind_dict = {ind: len(alum_ind)}
-
-        alum_with_ind.append(alum_ind_dict)
-
-    return alum_with_ind
-
-def get_user_grouped_job_title(db: Session, verbose:bool):
-    jobs = db.query(User.job_title).distinct().where(User.job_title.is_not(None), User.user_type != 'admin').all()
-    if jobs is None:
-            raise HTTPException(status_code=404, detail="No locations found")
-    job_list = [ind[0] for ind in jobs]
-
-    alum_with_job = []
-
-    for job in job_list:
-        alum_job = db.query(User.user_id, User.user_type).filter(User.job_title== job, User.user_type=='alumni').all()
-
-
-        if alum_job is None:
-            raise HTTPException(status_code=404, detail=f"No alum from this {job}")
-        
-        # alum_job_dict = {job: [UserOut.model_validate(user) for user in alum_job]}
-        if verbose:
-            alum_job_dict = {job: [user[0] for user in alum_job]}
-        else:
-            alum_job_dict = {job: len(alum_job)}
-
-        alum_with_job.append(alum_job_dict)
-
-    return alum_with_job
-
-def get_active_by_batch(db: Session, order: str):
+def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_general: bool = False):
     one_year_ago = datetime.now() - timedelta(days=365)
-    result = (
-    db.query(
-        func.split_part(User.student_number, '-', 1).label("batch"),
-        func.count().label("total_users"),
-        func.sum(
-            case(
-                (User.updated_at >= one_year_ago, 1),
-                else_=0
-            )
-        ).label("active_users"),
-        func.sum(
-            case(
-                (User.updated_at < one_year_ago, 1),
-                else_=0
-            )
-        ).label("inactive_users")
-    ).where(User.student_number.is_not(None))
-    .group_by("batch")
-    .order_by(desc(order))
-    .all()
-    )
-    if not result:
-        raise HTTPException(status_code=404, detail="No users found for this batch")
+    
+    if alumni_general:
+        # Return general alumni statistics (not broken down by batch)
+        query = db.query(
+            func.count().label("total_users"),
+            func.sum(
+                case(
+                    (User.updated_at >= one_year_ago, 1),
+                    else_=0
+                )
+            ).label("active_users"),
+            func.sum(
+                case(
+                    (User.updated_at < one_year_ago, 1),
+                    else_=0
+                )
+            ).label("inactive_users")
+        ).where(User.is_verified == True, User.user_type == 'alumni', User.student_number.is_not(None))
+        
+        result = query.first()
+        if not result:
+            raise HTTPException(status_code=404, detail="No alumni users found")
+            
+        result_dict = result._asdict()
+        return {
+            "total_alumni": result_dict["total_users"],
+            "active_alumni": result_dict["active_users"],
+            "active_alumni_percentage": round((result_dict["active_users"]/result_dict["total_users"])*100, 2) if result_dict["total_users"] else 0,
+            "inactive_alumni": result_dict["inactive_users"],
+            "inactive_alumni_percentage": round((result_dict["inactive_users"]/result_dict["total_users"])*100, 2) if result_dict["total_users"] else 0,
+        }
+    else:
+        # Return batch-based statistics (original functionality)
+        query = (
+            db.query(
+                func.split_part(User.student_number, '-', 1).label("batch"),
+                func.count().label("total_users"),
+                func.sum(
+                    case(
+                        (User.updated_at >= one_year_ago, 1),
+                        else_=0
+                    )
+                ).label("active_users"),
+                func.sum(
+                    case(
+                        (User.updated_at < one_year_ago, 1),
+                        else_=0
+                    )
+                ).label("inactive_users")
+            ).where(User.is_verified == True, User.student_number.is_not(None))
+            .group_by("batch")
+        )
 
-    # Convert each row to a dictionary
-    result_dicts = [row._asdict() for row in result]
+        if order:
+            order_parts = order.lower().split('_')
+            field = text('_'.join(order_parts[:-1]))
+            direction = order_parts[-1] if len(order_parts) > 1 else 'asc'
+            
+            if direction == "desc":
+                query = query.order_by(desc(field))
+            else:
+                query = query.order_by(field)
+        
+        result = query.all()
+        if not result:
+            raise HTTPException(status_code=404, detail="No users found for any batch")
 
-    results_analyzed = []
-    for res in result_dicts:
-        results_analyzed.append({
-            "batch": res["batch"],
-            "total_users": res["total_users"],
-            "active_users":res["active_users"],
-            "active_users_percentage": round((res["active_users"]/res["total_users"])*100,2),
-            "inactive_users":res["inactive_users"],
-            "inactive_users_percentage": round((res["inactive_users"]/res["total_users"])*100,2),
-        })
+        # Convert each row to a dictionary
+        result_dicts = [row._asdict() for row in result]
 
-    return results_analyzed
+        results_analyzed = []
+        for res in result_dicts:
+            results_analyzed.append({
+                "batch": res["batch"],
+                "total_users": res["total_users"],
+                "active_users": res["active_users"],
+                "active_users_percentage": round((res["active_users"]/res["total_users"])*100, 2) if res["total_users"] else 0,
+                "inactive_users": res["inactive_users"],
+                "inactive_users_percentage": round((res["inactive_users"]/res["total_users"])*100, 2) if res["total_users"] else 0,
+            })
 
-def get_batch_employment_status(db: Session, batch:str):
 
-    total_alumni_sum = (
+        return results_analyzed
+
+def get_employment_status(db: Session, batch:Optional[str] = None):
+
+    sum_query = (
     db.query(
         func.count()
     )
-    .where(
+    .filter(
+
+        User.is_verified == True,
+
         User.user_type == 'alumni',
         User.employment_status.is_not(None),
-        func.split_part(User.student_number, '-', 1) == batch
+        
     )
-    .scalar()  # Returns single value
-    ) 
+    )
 
-    employment = (
+    if batch:
+        sum_query = sum_query.filter(
+            func.split_part(User.student_number, '-', 1) == batch
+        )
+    
+    total_alumni_sum = sum_query.scalar()
+
+    query = (
         db.query(
             User.employment_status.label("employment_status"),
             func.count().label("total_alumni")
-        ).where(User.user_type == 'alumni', func.split_part(User.student_number, '-', 1)== batch).group_by(User.employment_status).all()
+
+        ).filter(User.is_verified == True, User.user_type == 'alumni', User.employment_status.is_not(None))
+
     )
+
+    if batch:
+        query = query.filter(func.split_part(User.student_number, '-', 1)== batch)
+    
+    employment = query.group_by(User.employment_status).all()
 
     if not employment:
         raise HTTPException(status_code=404, detail="No alumni with employment status")
@@ -276,31 +148,49 @@ def get_batch_employment_status(db: Session, batch:str):
     return employment_status_batch
 
 
-def get_top_job_batch(db: Session, batch:str):
-    total_employed= (
+def get_job_util(db: Session, batch:Optional[str] = None, industry: Optional[str] = None, country: Optional[str] = None):
+    sum_query= (
     db.query(
         func.count()
     )
-    .where(
+    .filter(
+
+        User.is_verified == True,
+
         User.user_type == 'alumni',
-        User.job_title.is_not(None),
-        func.split_part(User.student_number, '-', 1) == batch
+        User.job_title.is_not(None)
     )
-    .scalar()  
     ) 
-    
-    top_jobs = (
+
+    query = (
         db.query(
             User.job_title,
             func.count().label("job_count")
         )
-        .filter(User.user_type == 'alumni', User.job_title.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
-        .group_by(User.job_title)
-        .order_by(func.count().desc())
-        .limit(5)  
-        .all()
+        .filter( User.is_verified == True,User.user_type == 'alumni', User.job_title.isnot(None))  
+
+        
     )
 
+    if batch:
+        sum_query = sum_query.filter(func.split_part(User.student_number, '-', 1)== batch)
+        query = query.filter(func.split_part(User.student_number, '-', 1)== batch).group_by(User.job_title).order_by(func.count().desc()).limit(5)
+
+    elif country: 
+        sum_query = sum_query.filter(User.country == country)
+        query = query.filter(User.country == country).group_by(User.job_title).order_by(func.count().desc()).limit(5)
+
+    elif industry:
+        sum_query = sum_query.filter(User.industry == industry)
+        query = query.filter(User.industry == industry).group_by(User.job_title).order_by(func.count().desc())
+    else:
+
+        query = query.group_by(User.job_title).order_by(func.count().desc())
+
+
+    total_employed = sum_query.scalar()
+
+    top_jobs = query.all()
     if not top_jobs:
         raise HTTPException(status_code=404, detail="No top jobs")
 
@@ -318,71 +208,38 @@ def get_top_job_batch(db: Session, batch:str):
     return batch_top_jobs
 
 
-def get_top_industries_batch(db: Session, batch:str):
-    total_employed= (
+def get_top_country_batch(db: Session, batch: Optional[str] = None, limit: bool= False):
+    sum_query= (
     db.query(
         func.count()
     )
     .where(
-        User.user_type == 'alumni',
-        User.industry.is_not(None),
-        func.split_part(User.student_number, '-', 1) == batch
-    )
-    .scalar() 
-    ) 
-    
-    top_industries = (
-        db.query(
-            User.industry,
-            func.count().label("industry_count")
-        )
-        .filter(User.user_type == 'alumni', User.industry.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
-        .group_by(User.industry)
-        .order_by(func.count().desc())  
-        .limit(5) 
-        .all()
-    )
-
-    if not top_industries:
-        raise HTTPException(status_code=404, detail="No top industries")
-
-    top_industries_dict = [row._asdict() for row in top_industries]
-
-    batch_top_industries = []
-
-    for ind in top_industries_dict:
-        batch_top_industries.append({
-            "industry": ind["industry"],
-            "count": ind["industry_count"],
-            "percentage": round((ind["industry_count"]/total_employed)*100,2)
-        })
-    
-    return batch_top_industries
-
-def get_top_country_batch(db: Session, batch:str):
-    total_in_country= (
-    db.query(
-        func.count()
-    )
-    .where(
+        User.is_verified == True,
         User.country.is_not(None),
-        func.split_part(User.student_number, '-', 1) == batch
-    )
-    .scalar() 
-    ) 
+        
+    ))
+     
     
-    top_countries = (
+    query = (
         db.query(
             User.country,
             func.count().label("count")
         )
-        .filter(User.user_type == 'alumni', User.country.isnot(None), func.split_part(User.student_number, '-', 1)== batch)  
-        .group_by(User.country)
-        .order_by(func.count().desc())  
-        .limit(5) 
-        .all()
+        .filter(User.is_verified == True, User.user_type == 'alumni', User.country.isnot(None))  
+
     )
 
+    if batch:
+        sum_query = sum_query.filter(func.split_part(User.student_number, '-', 1) == batch)
+        if limit: 
+            query = query.filter(func.split_part(User.student_number, '-', 1)== batch).group_by(User.country).order_by(func.count().desc()).limit(5) 
+        else: 
+            query = query.filter(func.split_part(User.student_number, '-', 1)== batch).group_by(User.country).order_by(func.count().desc())
+    else:
+        query = query.group_by(User.country).order_by(func.count().desc())
+
+    total_in_country = sum_query.scalar()
+    top_countries =  query.all()
     if not top_countries:
         raise HTTPException(status_code=404, detail="No top countries")
 
@@ -400,89 +257,6 @@ def get_top_country_batch(db: Session, batch:str):
     return batch_top_countries
 
 
-def get_top_job_country(db: Session, country:str):
-    total_employed= (
-    db.query(
-        func.count()
-    )
-    .where(
-        User.user_type == 'alumni',
-        User.job_title.is_not(None),
-        User.country == country
-    )
-    .scalar()  
-    ) 
-    
-    top_jobs = (
-        db.query(
-            User.job_title,
-            func.count().label("job_count")
-        )
-        .filter(User.user_type == 'alumni', User.job_title.isnot(None), User.country == country)  
-        .group_by(User.job_title)
-        .order_by(func.count().desc())
-        .limit(5)  
-        .all()
-    )
-
-    if not top_jobs:
-        raise HTTPException(status_code=404, detail="No top jobs")
-
-    top_jobs_dict = [row._asdict() for row in top_jobs]
-
-    batch_top_jobs = []
-
-    for job in top_jobs_dict:
-        batch_top_jobs.append({
-            "job_title": job["job_title"],
-            "count": job["job_count"],
-            "percentage": round((job["job_count"]/total_employed)*100,2)
-        })
-    
-    return batch_top_jobs
-
-
-def get_top_industries_country(db: Session, country:str):
-    total_employed= (
-    db.query(
-        func.count()
-    )
-    .where(
-        User.user_type == 'alumni',
-        User.industry.is_not(None),
-        User.country == country
-    )
-    .scalar() 
-    ) 
-    
-    top_industries = (
-        db.query(
-            User.industry,
-            func.count().label("industry_count")
-        )
-        .filter(User.user_type == 'alumni', User.industry.isnot(None), User.country == country)  
-        .group_by(User.industry)
-        .order_by(func.count().desc())  
-        .limit(5) 
-        .all()
-    )
-
-    if not top_industries:
-        raise HTTPException(status_code=404, detail="No top industries")
-
-    top_industries_dict = [row._asdict() for row in top_industries]
-
-    batch_top_industries = []
-
-    for ind in top_industries_dict:
-        batch_top_industries.append({
-            "industry": ind["industry"],
-            "count": ind["industry_count"],
-            "percentage": round((ind["industry_count"]/total_employed)*100,2)
-        })
-    
-    return batch_top_industries
-
 
 def get_cities_country(db:Session, country:str):
     total_in_country= (
@@ -490,6 +264,7 @@ def get_cities_country(db:Session, country:str):
         func.count()
     )
     .where(
+        User.is_verified == True,
         User.user_type == 'alumni',
         User.city.is_not(None),
         User.country == country
@@ -500,7 +275,7 @@ def get_cities_country(db:Session, country:str):
 
     grouped_city= (
         db.query(User.city, func.count().label("count"))
-        .filter(User.user_type == 'alumni', User.country == country, User.city.is_not(None))
+        .filter(User.is_verified == True, User.user_type == 'alumni', User.country == country, User.city.is_not(None))
         .group_by(User.city).all()
     )
 
@@ -520,4 +295,295 @@ def get_cities_country(db:Session, country:str):
 
 
 
+def employment_class_util(db: Session, industry:Optional[str] = None, batch: Optional[str] = None):
+
+    sum_query = (
+    db.query(
+        func.count()
+    )
+    .filter(
+        User.is_verified == True,
+        User.user_type == 'alumni',
+        User.employer_class.is_not(None),
+        
+    )
+    )
+
+    query = (
+        db.query(
+            User.employer_class.label("employer_class"),
+            func.count().label("total_alumni")
+        ).filter( User.is_verified == True,User.user_type == 'alumni', User.employer_class.is_not(None))
+    )
+
+    if batch:
+        sum_query = sum_query.filter(func.split_part(User.student_number, '-', 1)== batch)
+        query = query.filter(func.split_part(User.student_number, '-', 1)== batch)
+
+    if industry:
+        sum_query = sum_query.filter(
+            User.industry == industry
+        )
+        query = query.filter( User.industry == industry)
     
+    total_alumni_sum = sum_query.scalar()
+    employment = query.group_by(User.employer_class).all()
+
+    if not employment:
+        raise HTTPException(status_code=404, detail="No alumni with employment class")
+
+    employment_dicts = [row._asdict() for row in employment]
+
+    employment_class_list = []
+    for emp in employment_dicts:
+       employment_class_list.append({"class": emp["employer_class"],
+            "count" : emp["total_alumni"],
+            "percentage": round((emp["total_alumni"]/total_alumni_sum) * 100,2)
+        })
+    
+    return employment_class_list
+
+
+
+def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional[str] = None ):
+
+    sum_query= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.is_verified == True,
+        User.user_type == 'alumni',
+        User.salary_grade.is_not(None),
+    )
+    )
+
+    query = (
+        db.query(
+            User.salary_grade,
+            func.count().label("count")
+        )
+        .filter(User.is_verified == True, User.user_type == 'alumni', User.salary_grade.isnot(None))  
+        
+    )
+
+    if batch:
+        sum_query = sum_query.filter(func.split_part(User.student_number, '-', 1)== batch)
+        query = query.filter(func.split_part(User.student_number, '-', 1)== batch)
+
+
+    if industry:
+        sum_query = sum_query.filter(User.industry == industry)
+        query = query.filter(User.industry == industry)
+    
+    total_employed = sum_query.scalar()
+
+    top_salary = query.group_by(User.salary_grade).order_by(func.count().desc()).all()
+
+    if not top_salary:
+        raise HTTPException(status_code=404, detail="No top industries")
+
+    top_salaries_dict = [row._asdict() for row in top_salary]
+    top_salaries_list = []
+
+    for sal in top_salaries_dict:
+        top_salaries_list.append({
+            "salary_grade": sal["salary_grade"],
+            "count": sal["count"],
+            "percentage": round((sal["count"]/total_employed)*100,2)
+        })
+    
+    return top_salaries_list
+
+
+def grouped_by_industry(db: Session, batch: Optional[str] = None, country: Optional[str] = None, limit: bool = False):
+    sum_query= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.is_verified == True,
+        User.user_type == 'alumni',
+        User.industry.is_not(None),
+    )
+    )
+
+    
+    query = (
+        db.query(
+            User.industry,
+            func.count().label("industry_count")
+        )
+        .filter(User.is_verified == True,User.user_type == 'alumni', User.industry.isnot(None))  
+    )
+
+    if batch:
+        sum_query = sum_query.filter(func.split_part(User.student_number, '-', 1)== batch)
+        if limit:
+            query = query.filter(func.split_part(User.student_number, '-', 1)== batch).group_by(User.industry).order_by(func.count().desc()).limit(5)
+        else: 
+            query = query.filter(func.split_part(User.student_number, '-', 1)== batch).group_by(User.industry).order_by(func.count().desc())
+
+    elif country: 
+        sum_query = sum_query.filter(User.country == country)
+        query = query.filter(User.country == country).group_by(User.industry).order_by(func.count().desc()).limit(5)
+    else:
+        query = query.group_by(User.industry).order_by(func.count().desc())
+    
+    total_employed = sum_query.scalar()
+    top_industries = query.all()
+    if not top_industries:
+        raise HTTPException(status_code=404, detail="No top industries")
+
+    top_industries_dict = [row._asdict() for row in top_industries]
+
+    top_industries_list = []
+
+    for ind in top_industries_dict:
+        top_industries_list.append({
+            "industry": ind["industry"],
+            "count": ind["industry_count"],
+            "percentage": round((ind["industry_count"]/total_employed)*100,2)
+        })
+    
+    return top_industries_list
+
+def tenure_status_util(db: Session, industry: Optional[str] = None):
+    sum_query= (
+    db.query(
+        func.count()
+    )
+    .where(
+        User.is_verified == True,
+        User.user_type == 'alumni',
+        User.tenured_status.is_not(None),
+    ))
+     
+
+    query = (
+        db.query(
+            User.tenured_status,
+            func.count().label("count")
+        )
+
+        .filter(User.is_verified == True,User.user_type == 'alumni', User.tenured_status.isnot(None))
+        
+    )
+
+    if industry:
+        sum_query = sum_query.filter(User.industry == industry)
+        query = query.filter(User.industry == industry)
+    
+    total_employed = sum_query.scalar()
+
+    tenure = query.group_by(User.tenured_status).order_by(func.count().desc()).all()
+
+    if not tenure:
+        raise HTTPException(status_code=404, detail="No top industries")
+
+    tenure_dict = [row._asdict() for row in tenure]
+    tenure_list = []
+
+    for ten in tenure_dict:
+        tenure_list.append({
+            "tenured_status": ten["tenured_status"],
+            "count": ten["count"],
+            "percentage": round((ten["count"]/total_employed)*100,2)
+        })
+    
+    return tenure_list
+
+def work_mode_util(db: Session, industry: Optional[str] = None):
+    sum_query= (
+    db.query(
+        func.count()
+    )
+    .where(
+
+        User.is_verified == True,
+        User.user_type == 'alumni',
+        User.work_mode.is_not(None),
+    ))
+    
+
+    query = (
+        db.query(
+            User.work_mode,
+            func.count().label("count")
+        )
+        .filter(User.is_verified == True,User.user_type == 'alumni', User.work_mode.isnot(None))         
+    )
+
+    if industry:
+        sum_query = sum_query.filter(User.industry == industry)
+        query = query.filter(User.industry == industry)
+    
+    total_employed = sum_query.scalar()
+
+    mode = query.group_by(User.work_mode).order_by(func.count().desc()).all()
+
+    if not mode:
+
+        raise HTTPException(status_code=404, detail="No work mode available")
+
+
+    mode_dict = [row._asdict() for row in mode]
+    mode_list = []
+
+    for mod in mode_dict:
+        mode_list.append({
+            "work_mode": mod["work_mode"],
+            "count": mod["count"],
+            "percentage": round((mod["count"]/total_employed)*100,2)
+        })
+    
+    return mode_list
+
+
+def unemployment_reason_util(db: Session, batch: Optional[str] = None):
+    unemployed_query = (
+    db.query(
+        func.count()
+    )
+    .filter(
+        User.is_verified == True,
+        User.user_type == 'alumni',
+        or_(User.employment_status == UserEmploymentStatus.unemployed, User.employment_status == UserEmploymentStatus.unemployed_no_exp)
+        
+    )
+    )
+    
+    query = (
+    db.query(
+        UnemploymentReason.reason,
+        func.count(User.user_id).label('user_count')
+    )
+    .join(UnemploymentReason, User.reasons)
+    .group_by(UnemploymentReason.reason)  # Only group by reason now
+    )
+
+    if batch:
+        unemployed_query = unemployed_query.filter(func.split_part(User.student_number, '-', 1)== batch)
+        query = query.filter(func.split_part(User.student_number, '-', 1)== batch)  # Filter to just one batch   
+    
+    total_unemployed = unemployed_query.scalar()
+    unemployed_reason = query.all()
+
+    if not unemployed_reason:
+        raise HTTPException(status_code=404, detail="No unemployment reason")
+
+
+    reason_dict = [row._asdict() for row in unemployed_reason]
+    reason_list = []
+
+    for reas in reason_dict:
+        reason_list.append({
+            "work_mode": reas["reason"],
+            "count": reas["user_count"],
+            "percentage": round((reas["user_count"]/total_unemployed)*100,2)
+        })
+    
+    return reason_list
+
+
+

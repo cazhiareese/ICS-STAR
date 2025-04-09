@@ -8,6 +8,12 @@ function Sidebar({ sidebarItems }) {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation(); 
 
+  function handleLogout() {
+    sessionStorage.removeItem("User");
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  }
+
   return (
     <>
       {/* Mobile Top Bar */}
@@ -44,7 +50,7 @@ function Sidebar({ sidebarItems }) {
         ))}
 
         {/* Log Out */}
-        <div className="flex flex-row p-2 rounded-r-3xl items-center ml-2 mt-16 cursor-pointer">
+        <div className="flex flex-row p-2 rounded-r-3xl items-center ml-2 mt-16 cursor-pointer" onClick={handleLogout}>
           <span className="mr-3">
             <LogOut />
           </span>

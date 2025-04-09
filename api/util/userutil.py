@@ -5,11 +5,13 @@ import supabase
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
+from typing import List, Optional
 
-from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING
+from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum
+from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum, UnemploymentReasonEnum, UserEmploymentStatus
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -18,11 +20,148 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
+def get_org_suggestion(db: Session, query_text: str, limit: int = 5) -> List[str]:
+    results = db.query(distinct(Orgs.name))\
+        .filter(
+            or_(
+                Orgs.name.ilike(f"%{query_text}%"),
+                Orgs.alias.ilike(f"%{query_text}%")
+            )
+        )\
+        .filter(Orgs.name.isnot(None))\
+        .order_by(Orgs.name)\
+        .limit(limit)\
+        .all()
+        
+    return [result[0] for result in results]
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
+
+async def get_email(email: str, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return True
+
+async def get_studno(student_number: str, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.student_number == student_number).first():
+        raise HTTPException(status_code=400, detail="Student number already exists")
+    return True
+
+def process_student_onboarding(
+    user: User,
+    db: Session,
+    standing: Optional[UserStandingEnum],
+    scholarships: Optional[List[str]],
+    affiliations: Optional[List[str]],
+    roles: Optional[List[str]],
+    skills: Optional[List[str]]
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    if user.user_type.value == UserTypeEnum.alumni:
+        raise HTTPException(status_code=400, detail="For student only")
+    
+    try:
+        if scholarships:
+            new_scholarships = [
+                UserScholarship(user_id=user.user_id, scholarship=scholarship)
+                for scholarship in scholarships
+            ]
+            db.add_all(new_scholarships)
+
+        if affiliations:
+            if len(affiliations) != len(roles):
+                raise HTTPException(status_code=400, detail="Invalid input")
+
+            new_affiliations = [
+                UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role)
+                for affiliation, role in zip(affiliations, roles)
+            ]
+            db.add_all(new_affiliations)
+
+        if skills:
+            new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
+            db.add_all(new_skills)
+
+        if standing:
+            user.standing = standing
+
+        db.commit()
+        db.refresh(user)
+        
+    except Exception as e:
+            raise HTTPException(status_code=500, detail="Error updating info")
+        
+
+def process_alumni_onboarding(
+    user: User,
+    db: Session,
+    scholarships: Optional[List[str]] = None,
+    affiliations: Optional[List[str]] = None,
+    roles: Optional[List[str]] = None,
+    skills: Optional[List[str]] = None,
+    reasons: Optional[List[UnemploymentReasonEnum]] = None,
+    industry: Optional[str] = None,
+    employment_status: Optional[UserEmploymentStatus] = None,
+    company_name: Optional[str] = None,
+    job_title: Optional[str] = None,
+    country: Optional[str] = None,
+    city: Optional[str] = None,
+    work_mode: Optional[str] = None,
+    employer_class: Optional[str] = None,
+    tenured_status: Optional[str] = None,
+    salary_grade: Optional[str] = None,
+):
+    
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    if user.user_type.value == UserTypeEnum.student:
+        raise HTTPException(status_code=400, detail="For alumni only")
+    try:
+        if scholarships:
+            new_scholarships = [
+                UserScholarship(user_id=user.user_id, scholarship=scholarship)
+                for scholarship in scholarships
+            ]
+            db.add_all(new_scholarships)
+
+        if affiliations:
+            if len(affiliations) != len(roles):
+                raise HTTPException(status_code=400, detail="Invalid input")
+
+            new_affiliations = [
+                UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role)
+                for affiliation, role in zip(affiliations, roles)
+            ]
+            db.add_all(new_affiliations)
+
+        if skills:
+            new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
+            db.add_all(new_skills)
+
+        
+        user.industry = industry
+        user.employment_status = employment_status if employment_status else None
+        user.company_name = company_name
+        user.job_title = job_title
+        user.work_location = f"{city}, {country}" if city and country else None
+        user.work_mode = work_mode
+        user.employer_class = employer_class
+        user.tenured_status = tenured_status
+        user.salary_grade = salary_grade
+
+        db.commit()
+        db.refresh(user)
+        
+    except Exception as e:
+            raise HTTPException(status_code=500, detail="Error updating info")
+
 
 async def register_user(
     first_name: str,
@@ -33,14 +172,11 @@ async def register_user(
     user_type: UserTypeEnum,
     verification_file: UploadFile = File(None),
     graduation_year: str = None,
-    graduation_semester: str = None,
+    graduation_semester: UserGradSemEnum = None,
     db: Session = Depends(get_db)
 ):
-    if db.query(User).filter(User.email == email).first():
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    if db.query(User).filter(User.student_number == student_number).first():
-        raise HTTPException(status_code=400, detail="Student number already exists")
+    await get_email(email, db)
+    await get_studno(student_number, db)
 
     if verification_file:
         file_content = await verification_file.read()
@@ -76,14 +212,26 @@ async def register_user(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": str(new_user.user_id), "role": new_user.user_type.value}, expires_delta=access_token_expires
+    )
 
-    return {"message": "Account created successfully"}
+    return {"message": "Account created successfully", "access_token": access_token}
 
 async def upload_profile(profile_picture, user, db):
     file_content = await profile_picture.read()
 
     if len(file_content) > MAX_FILE_SIZE or profile_picture.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Invalid verification file")
+    
+    if user.image:
+        try:
+            old_file_path = user.image.replace(STORAGE_STRING, "")
+            supabase_client.storage.from_("128storage").remove([old_file_path])
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Failed to delete old profile picture: {e}")
 
     profile_picture_ext = profile_picture.filename.split(".")[-1]
     profile_picture_name = f"profile_pictures/{uuid.uuid4()}.{profile_picture_ext}"

@@ -3,18 +3,27 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, User, Globe, Menu, X } from "lucide-react"; // Icons
 import logo from "../assets/Subtract.png";
 
-function Navbar({ user }) {
+function Navbar({ tokentype }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   function handleLogout() {
     sessionStorage.removeItem("User");
     localStorage.removeItem("token");
-    navigate("/");
+    window.location.href = "/login";
   }
 
+  function handleSearch() {
+    window.location.href = `/${tokentype}/alumnisearch`;
+  }
+
+  console.log("Token type in navbar:", tokentype);
   function handleProfileClick() {
-    navigate("/profile");
+    window.location.href = `/${tokentype}/profile`;
+  }
+
+  function handleDonation(){
+    window.location.href = `/alumni/donations`;
   }
 
   return (
@@ -30,8 +39,8 @@ function Navbar({ user }) {
         <button className="hover:text-primary transition font-satoshi-bold">Events</button>
         <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
         <button className="hover:text-primary transition font-satoshi-bold">Career</button>
-        <button className="hover:text-primary transition font-satoshi-bold">Alumni Search</button>
-        <button className="hover:text-primary transition font-satoshi-bold">Donations</button>
+        <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>Alumni Search</button>
+        <button className="hover:text-primary transition font-satoshi-bold" onClick={handleDonation}>Donations</button>
       </div>
 
       {/* Icons and Mobile Menu Button */}

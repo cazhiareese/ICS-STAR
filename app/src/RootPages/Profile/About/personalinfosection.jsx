@@ -3,6 +3,8 @@ import { MapPin, Phone, IdCard, GraduationCap } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 
 const semester = ["1st Semester", "2nd Semester", "Mid Semester"];
+const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
+const maritalstat = ["Single", "Maried", "Divorced", "Widowed"];
 
 const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
   return (
@@ -10,7 +12,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
       <SectionHeader title="PERSONAL INFORMATION" />
 
       {/* Responsive Grid Layout */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-black text-[16px] font-satoshi-medium">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4 text-black text-[16px] font-satoshi-medium">
         {/* Location */}
         <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
@@ -65,42 +67,66 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
           )}
         </div>
                 {/* Graduating Class */}
-        {userDetails.user_type === "alumni" && (
-
+{/* Graduating Class */}
+{userDetails.user_type === "alumni" && (
+  <div className="flex flex-col items-start text-left">
+    <div className="flex items-center gap-2">
+      <GraduationCap size={20} className="text-black" />
+      <span>Graduating Class</span>
+    </div>
+    <div className="flex flex-row flex-wrap gap-2 w-full sm:w-[300px]">
+      {editMode ? (
+        <>
+          <select
+            value={userDetails.graduation_year}
+            onChange={(e) => handleChange(e, "graduation_year")}
+            className="text-primary text-sm font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-[80px] sm:w-[50x] h-[32px]"
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+          <select
+            value={userDetails.graduation_semester}
+            onChange={(e) => handleChange(e, "graduation_semester")}
+            className="text-primary text-sm font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 min-w-[128px] sm:w-[80px] h-[32px]"
+          >
+            {semester.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </>
+      ) : (
+        <span className="text-primary font-satoshi-bold">
+          {userDetails.graduation_year} - {userDetails.graduation_semester}
+        </span>
+      )}
+    </div>
+  </div>
+)}
+        {/* Marital Status */}
         <div className="flex flex-col items-start text-left">
           <div className="flex items-center gap-2">
-            <GraduationCap size={20} className="text-black" />
-            <span>Graduating Class</span>
+            <span>Marital Status</span>
           </div>
-          <div className="flex items-center gap-2">
-          {editMode ? (
-            <input
-              type="text"
-              value={userDetails.graduation_year}
-              onChange={(e) => handleChange(e, "graduation_year")}
-              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-[65px]"
-            />
-          ) : (
-            <span className="text-primary font-satoshi-bold">{userDetails.graduation_year}</span>
-          )}
-          <span className="text-primary font-satoshi-bold">-</span>
           {editMode ? (
             <select
-              value={userDetails.graduation_semester}
-              onChange={(e) => handleChange(e, "graduation_semester")}
+              value={userDetails.marital_status}
+              onChange={(e) => handleChange(e, "marital_status")}
               className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
             >
-              {semester.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
+            {maritalstat.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
             </select>
           ) : (
-            <span className="text-primary font-satoshi-bold">{userDetails.graduation_semester}</span>
+            <span className="text-primary font-satoshi-bold">
+              {userDetails.marital_status || "Not Available"}
+            </span>
           )}
-          </div>
-        </div>)}
+        </div>
+
+
       </div>
     </div>
   );

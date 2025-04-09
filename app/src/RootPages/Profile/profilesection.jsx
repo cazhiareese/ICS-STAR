@@ -1,27 +1,124 @@
-import React, { useState } from "react";
-import { Camera, Facebook, Github, Linkedin, Pencil, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Camera,
+  Facebook,
+  Github,
+  Linkedin,
+  Pencil,
+  Check,
+} from "lucide-react";
 import SaveConfirmationModal from "./components/savemodal";
 import prince from "../../assets/prince boy.jpg";
+import ImageUploadModal from "./components/imageuploadmodal";
 
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("User not authenticated");
+          return;
+        }
+
+        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+        const response = await fetch(`${API_BASE_URL}/profile-picture`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setProfilePicture(result.profile_picture || prince);
+        } else {
+          console.error("Failed to fetch profile picture");
+        }
+      } catch (err) {
+        console.error("Error while fetching profile picture:", err);
+      }
+    };
+
+    fetchProfilePicture();
+  }, []);
 
   const handleSave = () => {
     setShowModal(false);
     setEditMode(false);
-    // Save logic can be added here
+    setOriginalEmail(userDetails.email);
+    saveProfile();
   };
 
+  const saveProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("User not authenticated");
+        return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      const currentFormData = {
+        first_name: userDetails.first_name || "",
+        last_name: userDetails.last_name || "",
+        email: userDetails.email || "",
+        mobile_number: userDetails.mobile_number || "",
+        city: userDetails.city || "",
+        state: userDetails.state || "",
+        country: userDetails.country || "",
+        marital_status: userDetails.marital_status || "",
+        facebook: userDetails.facebook || "",
+        linkedin: userDetails.linkedin || "",
+        github: userDetails.github || "",
+      };
+
+      const urlEncodedData = new URLSearchParams(currentFormData).toString();
+
+      console.log("🔍 Final Request Body:", urlEncodedData);
+
+      const response = await fetch(`${API_BASE_URL}/profile/edit`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${token}`,
+        },
+        body: urlEncodedData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      const result = await response.json();
+      console.log(result.message);
+      setEditMode(false);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to update profile");
+    }
+  };
+
+  const handleUpload = (imageUrl) => {
+    setProfilePicture(imageUrl);
+    console.log("Profile picture updated:", imageUrl);
+  };
 
   return (
     <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
-      
       {/* Edit / Save Profile Button */}
       <button
         onClick={() => {
           if (editMode) {
-            setShowModal(true); // Show modal when saving
+            setShowModal(true);
           } else {
             setEditMode(true);
           }
@@ -42,12 +139,20 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
         {/* Profile Image */}
-        <div className="relative w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
-          <img src={prince} alt="Profile" className="w-full h-full object-cover" />
-          <div className="absolute bottom-1 right-1 bg-white p-[6px] rounded-full shadow-md cursor-pointer">
-            <Camera size={16} className="text-gray-600" />
-          </div>
-        </div>
+        <span className="relative">
+          <span className="w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
+            <img
+              src={profilePicture || prince}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          </span>
+          <Camera
+            size={32}
+            className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
+            onClick={() => setShowUploadModal(true)}
+          />
+        </span>
 
         {/* Name, Email, and Social Icons */}
         <div className="flex flex-col items-start gap-1 text-left">
@@ -56,7 +161,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
               <input
                 type="text"
                 value={userDetails.first_name}
-                onChange={(e) => handleChange(e, "first_name}")}
+                onChange={(e) => handleChange(e, "first_name")}
                 className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
               <input
@@ -77,15 +182,26 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
               <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
                 {userDetails.first_name} {userDetails.last_name}
               </h2>
-              <p className="text-[16px] sm:text-[20px] text-black">{userDetails.email}</p>
+              <p className="text-[16px] sm:text-[20px] text-black">
+                {userDetails.email}
+              </p>
             </>
           )}
 
           {/* Social Icons */}
           <div className="flex gap-3 mt-1">
-            <Facebook size={22} className="text-black cursor-pointer hover:text-hover" />
-            <Github size={22} className="text-black cursor-pointer hover:text-hover" />
-            <Linkedin size={22} className="text-black cursor-pointer hover:text-hover" />
+            <Facebook
+              size={22}
+              className="text-black cursor-pointer hover:text-hover"
+            />
+            <Github
+              size={22}
+              className="text-black cursor-pointer hover:text-hover"
+            />
+            <Linkedin
+              size={22}
+              className="text-black cursor-pointer hover:text-hover"
+            />
           </div>
         </div>
       </div>
@@ -96,6 +212,12 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
         onConfirm={handleSave}
         onCancel={() => setShowModal(false)}
         emailChanged={userDetails.email !== originalEmail}
+      />
+
+      <ImageUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onUpload={handleUpload}
       />
     </div>
   );

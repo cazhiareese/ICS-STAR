@@ -1,18 +1,23 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/navbar";
+import { jwtDecode } from "jwt-decode";
 
 function Root() {
-  const user = {
-    id: 123,
-    type: "alumni",
-  };
+
+  const User = localStorage.getItem("token");
+  const decoded = jwtDecode(User);
+  const tokentype = decoded.role;
+  console.log("Decoded token typee:", tokentype);
 
   return (
     <div>
 
-{user.type !== "admin" && (<Navbar user={user} />)}
-      <Outlet context={user} />
+{["alumni", "student"].includes(tokentype) && (
+  <Navbar tokentype={tokentype} />
+)}
+
+      <Outlet context={decoded} />
     </div>
   );
 }

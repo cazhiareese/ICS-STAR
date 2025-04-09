@@ -7,6 +7,9 @@ import StudentLanding from "./RootPages/StudentPages/studentdashboard";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
+import Unauthorized from "./AuthPages/Unauthorized";
+
+
 
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
@@ -26,61 +29,117 @@ import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayou
 import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
 import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendingverifications";
 import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminverificationconfirmation";
+
 import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
+import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlanding";
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
+import { jwtDecode } from "jwt-decode";
+const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
+  function checkType() {
+    const User = localStorage.getItem("token");
+    let tokenType = null;
+    if (User) {
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      tokenType = decoded.role;
+      console.log("Decoded token type:", tokenType);
+      return tokenType;
+    } else {
+      console.warn("⚠️ No token found in sessionStorage");
+    }
+  }
+
+  console.log(isSignedIn);
+
   return (
     <Routes>
-      {/* Login Pages (No Navbar) */}
-      <Route path="/" element={<LoginPage/>}/>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={
-        <AppProvider>
-          <SignupPage />
-        </AppProvider>
-      } />
+      {/* Check if the user is signed in */}
+      {!isSignedIn && (
+        <>
+          <Route path="login" element={<LoginPage />} />
+          <Route
+            path="signup"
+            element={
+              <AppProvider>
+                <SignupPage />
+              </AppProvider>
+            }
+          />
 
-      <Route path="/setup" element={
-        <OnboardingProvider>
-          <OnBoarding />
-        </OnboardingProvider>
-      } />
-
-      {/* Routes that include the Navbar */}
-      <Route path="/" element={<Root />}>
-        <Route path="student" element={<StudentLanding />} />
-        <Route path="alumni" element={<AlumniLanding />}/> 
-        <Route path="alumnisearch" element={<AlumniSearch />} />
-        <Route path="profile" element={<UserProfile />} />
+          <Route
+            path="setup"
+            element={
+              <OnboardingProvider>
+                <OnBoarding />
+              </OnboardingProvider>
+            }
+          />
+        </>
+      )}
 
 
-        {/* Admin Routes */}
-        <Route path="admin" element={<AdminRoot />}>
-        <Route index element={<Navigate to="dashboard" />} />
-          <Route path="dashboard" element={<AdminDashboardLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="alumni-report" element={<AdminAlumniInfo />} />
-            <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}></Route>
+      {isSignedIn && checkType() === "alumni" && (
+        <>
+          <Route path="/" element={<Root />}>
+            <Route path="alumni/dashboard" element={<AlumniLanding />} />
+            <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
+            <Route path="alumni/profile" element={<UserProfile />} />
+            <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="*" element={<Unauthorized />} />
           </Route>
-          <Route path="records" element={<AdminRecordsLayout />} >
-            <Route index element={<AdminRecords/>}/>
-            <Route path=":userid" element={<AdminUserDetails/>}/>
-            <Route path="pending-verifications" element={<AdminPendingVerifications/>}/>
-            <Route path="verification-confirmation/:userid" element={<AdminVerificationConfirmation/>}/>
-          </Route>
-          <Route path="events" element={<AdminEvents />} />
-          <Route path="newsletter" element={<AdminNewsletter />} />
-          <Route path="career" element={<AdminCareer />} />
-          <Route path="donations" element={<AdminDonations />} />
-        </Route>
+        </>
+      )}
 
-      </Route>
+      {isSignedIn && checkType() === "student" && (
+        <>
+          <Route path="/" element={<Root />}>
+            <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/alumnisearch" element={<AlumniSearch />} />
+            <Route path="*" element={<UserProfile />} />
+          </Route>
+        </>
+      )}
+
+      {isSignedIn && checkType() === "admin" && (
+        <>
+          {/* Admin Routes */}
+          <Route path="admin" element={<AdminRoot />}>
+            <Route index element={<Navigate to="dashboard" />} />
+            <Route path="dashboard" element={<AdminDashboardLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="alumni-report" element={<AdminAlumniInfo />} />
+              <Route
+                path="user-reports"
+                element={<AdminUserInformationReport />}
+              />
+              <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}>
+            </Route>
+            <Route path="records" element={<AdminRecordsLayout />}>
+              <Route index element={<AdminRecords />} />
+              <Route path=":userid" element={<AdminUserDetails />} />
+              <Route
+                path="pending-verifications"
+                element={<AdminPendingVerifications />}
+              />
+              <Route
+                path="verification-confirmation/:userid"
+                element={<AdminVerificationConfirmation />}
+              />
+            </Route>
+            <Route path="events" element={<AdminEvents />} />
+            <Route path="newsletter" element={<AdminNewsletter />} />
+            <Route path="career" element={<AdminCareer />} />
+            <Route path="donations" element={<AdminDonations />} />
+          </Route>
+        </>
+      )}
 
       {/* Redirect unknown routes */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<LoginPage />} />
     </Routes>
   );
 }

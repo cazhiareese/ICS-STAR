@@ -1,13 +1,24 @@
 from fastapi import Depends, APIRouter, HTTPException, status, Form, UploadFile, File, Query
 from sqlalchemy.orm import Session
 from config.database import get_db
-from typing import List
+from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding
 
-from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill
+from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
+
+from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum, UserStandingEnum
 
 router = APIRouter()
+
+@router.get("/get-org")
+def get_org(
+    q: str = Query(..., min_length=1, description="Search org"),
+    limit: Optional[int] = Query(5, ge=1, le=20, description="Maximum number of results"),
+    db: Session = Depends(get_db)
+):
+
+    return get_org_suggestion(db, q, limit)
 
 @router.post("/upload-profile-picture")
 async def upload_profile_picture(
@@ -79,10 +90,77 @@ async def add_skills(
     primt(new_skills)
     return {"message": "skills added successfully"}
 
+@router.post("/onboarding-info-student")
+async def onboarding_student(
+    standing: Optional[UserStandingEnum] = Form(None),
+    scholarships: Optional[List[str]] = Query(None),
+    affiliations: Optional[List[str]] = Query(None),
+    roles: Optional[List[str]] = Query(None),
+    skills: Optional[List[str]] = Query(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    process_student_onboarding(
+        user=user,
+        db=db,
+        standing=standing,
+        scholarships=scholarships,
+        affiliations=affiliations,
+        roles=roles,
+        skills=skills,
+    )
+
+    return {"message": "onboarding details updated successfully"}
+
+
+@router.post("/onboarding-info-alum")
+async def onboarding_info(
+    scholarships: Optional[List[str]] = Query(None),
+    affiliations: Optional[List[str]] = Query(None),
+    roles: List[str] = Query(None),
+    industry: str = Form(None),
+    employment_status: UserEmploymentStatus = Form(None),
+    reasons: Optional[List[UnemploymentReasonEnum]] = Query(None),
+    company_name: str = Form(None),
+    job_title: str = Form(None),
+    country: str = Form(None),
+    city: str = Form(None),
+    work_mode: str = Form(None),
+    employer_class: str = Form(None),
+    tenured_status: str = Form(None),
+    salary_grade: str = Form(None),
+    skills: Optional[List[str]] = Query(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+
+    process_alumni_onboarding(
+        user=user,
+        db=db,
+        scholarships=scholarships,
+        affiliations=affiliations,
+        roles=roles,
+        industry=industry,
+        employment_status=employment_status,
+        reasons=reasons,
+        company_name=company_name,
+        job_title=job_title,
+        country=country,
+        city=city,
+        work_mode=work_mode,
+        employer_class=employer_class,
+        tenured_status=tenured_status,
+        salary_grade=salary_grade,
+        skills=skills
+    )
+    
+    return {"message": "onboarding details updated successfully"}
+
 @router.put("/update-employment")
 async def update_employment(
     industry: str = Form(...),
-    employment_status: str = Form(...),
+    employment_status: UserEmploymentStatus = Form(...),
+    reasons: Optional[List[UnemploymentReasonEnum]] = Query(None),
     company_name: str = Form(...),
     job_title: str = Form(...),
     country: str = Form(...),
@@ -97,11 +175,19 @@ async def update_employment(
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    if user.user_type.value == "student":
+    if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
+
+    if reasons:
+        unemployment_reasons = [
+            UnemploymentReason(user_id=user.user_id, reason=reason.value)
+            for reason in reasons
+        ]
+        db.add_all(unemployment_reasons)
+        db.commit()
     
     user.industry = industry
-    user.employment_status = employment_status
+    user.employment_status = employment_status.value
     user.company_name = company_name
     user.job_title = job_title
     user.work_location = f"{city}, {country}"
@@ -203,15 +289,6 @@ async def update_profile(
     facebook: str = Form(...),
     linkedin: str = Form(...),
     github: str = Form(...),
-    industry: str = Form(...),
-    employment_status: str = Form(...),
-    company_name: str = Form(...),
-    job_title: str = Form(...),
-    work_location: str = Form(...),
-    work_mode: str = Form(...),
-    employer_class: str = Form(...),
-    tenured_status: str = Form(...),
-    salary_grade: str = Form(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
@@ -229,15 +306,6 @@ async def update_profile(
     user.facebook = facebook
     user.linkedin = linkedin
     user.github = github
-    user.industry = industry
-    user.employment_status = employment_status
-    user.company_name = company_name
-    user.job_title = job_title
-    user.work_location = work_location
-    user.work_mode = work_mode
-    user.employer_class = employer_class
-    user.tenured_status = tenured_status
-    user.salary_grade = salary_grade
     
     db.commit()
     db.refresh(user)

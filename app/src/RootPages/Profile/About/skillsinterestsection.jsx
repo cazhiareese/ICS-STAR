@@ -41,6 +41,7 @@ const SkillsInterestsSection = ({ editMode, skills, removeSkill, addSkills }) =>
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={addSkills}
+        existingSkills={skills}
       />
     </div>
   );

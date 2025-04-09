@@ -8,7 +8,7 @@ import ConstellationsMobile from "../assets/constellationMobile.png";
 import ICSSTARHEAD from "../assets/ics-starhead.png";
 import Star from "../assets/Star 52.png"
 import { Eye, EyeClosed, CircleX } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";     
 
 function LoginPage() {
     const baseURL = "https://ics-star-api.vercel.app"
@@ -90,10 +90,10 @@ function LoginPage() {
             console.log("User Info:", userData);
 
             if (userData.user_type=="alumni"){
-                window.location.href = "/alumni";
+                window.location.href = "/alumni/dashboard";
 
             } else if (userData.user_type=="student"){
-                window.location.href = "/student";
+                window.location.href = "/student/dashboard";
 
             } else if (userData.user_type=="admin"){
                 window.location.href = "/admin";
