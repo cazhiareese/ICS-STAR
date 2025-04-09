@@ -130,7 +130,7 @@ function App() {
       )}
 
       {/* Redirect unknown routes */}
-      <Route path="*" element={<Unauthorized />} />
+      <Route path="*" element={<LoginPage />} />
     </Routes>
   );
 }
