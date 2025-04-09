@@ -48,7 +48,7 @@ function Donationform() {
     const submitMonetaryDonation = async () => {
         // Create a new FormData instance
         const formData = new FormData();
-    
+        const token = localStorage.getItem("token");
         // Append form data to the FormData object
         formData.append('monetary_donation', true);
         formData.append('in_kind_donation', false);
@@ -66,6 +66,7 @@ function Donationform() {
             const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data', // This header tells the backend to expect form data
+                    'Authorization': `Bearer ${token}`
                 }
             });
     
