@@ -2,18 +2,47 @@
 import React from "react";
 
 function DonationCard({ drive }) {
+  const progress = Math.min(
+    (drive.total_amount_donated / drive.target_cost) * 100,
+    100
+  );
+
   return (
-    <div className="w-full md:w-[48%] p-4 border rounded-xl shadow bg-white">
-      <h3 className="text-lg font-bold text-gray-800">{drive.title}</h3>
-      <p className="text-gray-600">{drive.description}</p>
-      <p className="text-sm text-gray-500 mt-2">
-        🎯 Target: ₱{drive.target_cost}
-      </p>
-      <p className="text-sm text-gray-500">💸 Donated: ₱{drive.total_amount_donated}</p>
-      <p className="text-sm text-gray-500">🙌 Donations: {drive.donation_count}</p>
-      <p className="text-xs text-gray-400 mt-1">
-        📅 {new Date(drive.created_at).toLocaleDateString()}
-      </p>
+    <div className="w-full md:w-[48%] rounded-xl overflow-hidden shadow border bg-white">
+      {/* Image or blue placeholder */}
+      <div className="h-28 bg-blue-800 flex items-center justify-center">
+        {drive.image_url ? (
+          <img
+            src={drive.image_url}
+            alt={drive.title}
+            className="h-full w-full object-cover"
+          />
+        ) : null}
+      </div>
+
+      <div className="p-4">
+        <h3 className="text-lg font-bold text-gray-800">{drive.title}</h3>
+        <p className="text-sm text-gray-600 line-clamp-2">{drive.description}</p>
+
+        {/* Progress bar */}
+        <div className="mt-4">
+          <p className="text-sm text-gray-800">
+            ₱{drive.total_amount_donated.toLocaleString()} of ₱{drive.target_cost.toLocaleString()} funded
+          </p>
+          <div className="w-full h-2 bg-gray-200 rounded-full mt-1">
+            <div
+              className="h-full bg-blue-600 rounded-full"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Footer info */}
+        <div className="mt-4 flex justify-between text-sm text-gray-500">
+          <p>{new Date(drive.created_at).toLocaleDateString()}</p>
+          <p className="text-blue-600">{drive.donation_count} Donations</p>
+        </div>
+      </div>
     </div>
   );
 }
