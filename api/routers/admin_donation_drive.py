@@ -14,8 +14,8 @@ async def create_donation_drive_endpoint(
     title: str = Form(...),
     description: str = Form(...),
     target_cost: float = Form(...),
-    support_links: list[Optional[str]] = Form(None),
-    image: Optional[UploadFile] = File(None),
+    support_links: Optional[list[str]] = Form(None),
+    image: Optional[UploadFile] = File(None), 
     db: Session = Depends(get_db)
 ):
     return await create_donation_drive(

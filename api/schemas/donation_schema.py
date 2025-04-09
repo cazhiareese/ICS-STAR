@@ -48,7 +48,6 @@ class MonetaryDonationOut(BaseModel):
 class InKindDonationOut(BaseModel):
     donation_id: UUID
     date_donated: datetime
-    amount: float
     description: str
     drive_id: UUID
     user_id: UUID
@@ -58,6 +57,16 @@ class InKindDonationOut(BaseModel):
     class Config:
         from_attributes = True
 
+class DonationHistoryOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    details: float | str = None
+    drive_id: UUID
+    user_id: UUID
+    is_acknowledged: bool = False
+    donation_drive_title: Optional[str] = None
+    type: str = None
+      
 class AdminDonationDriveOut(BaseModel):
     drive_id: UUID
     title: str
