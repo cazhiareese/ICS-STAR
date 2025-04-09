@@ -14,7 +14,7 @@ console.log(token);
     console.log(`Card clicked! ${drive.drive_id}`);
   }
   return (
-    <div onClick={handleClick} className="w-full md:w-[38%] rounded-xl border-disabled overflow-hidden shadow border bg-white">
+    <div onClick={handleClick} className="w-full md:w-[35%] rounded-[20px] border-disabled overflow-hidden shadow border bg-white">
       <div className="h-28 bg-primary flex items-center justify-center">
         {drive.image_url ? (
           <img
