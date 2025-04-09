@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { PlusCircle, XCircle } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddScholarshipModal from "../components/scholarshipmodal";
+import CircularLoading from "../../../components/LoadingComponents/circularloading";
 
 const ScholarshipsSection = ({ editMode, scholarships, removeScholarship, addScholarship }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,29 +16,36 @@ const ScholarshipsSection = ({ editMode, scholarships, removeScholarship, addSch
       <div className="flex justify-between items-center mt-4">
         {/* Scholarship List */}
         <div className="w-full">
-          {scholarships.map((scholarship, index) => (
-            <div key={index}>
-              <div className="flex items-center justify-between py-2">
-                {/* Scholarship Name */}
-                <p className="text-primary font-satoshi-bold text-[20px]">{scholarship}</p>
+  {scholarships.length === 0 ? (
+    <div className="flex justify-center mt-4">
+      <CircularLoading />
+    </div>
+  ) : (
+    scholarships.map((scholarship, index) => (
+      <div key={index}>
+        <div className="flex items-center justify-between py-2">
+          {/* Scholarship Name */}
+          <p className="text-primary font-satoshi-bold text-[20px]">{scholarship}</p>
 
-                {/* Remove Icon (Only in Edit Mode) */}
-                {editMode && (
-                  <div className="bg-error rounded-full flex items-center justify-center hover:bg-red-800">
-                  <XCircle
-                    size={16}
-                    className="text-white cursor-pointer hover:text-white transition"
-                    onClick={() => removeScholarship(scholarship)}
-                  />
-                  </div>
-                )}
-              </div>
-
-              {/* Divider after every scholarship */}
-              <div className="w-full border-b border-disabled"></div>
+          {/* Remove Icon (Only in Edit Mode) */}
+          {editMode && (
+            <div className="bg-error rounded-full flex items-center justify-center hover:bg-red-800">
+              <XCircle
+                size={16}
+                className="text-white cursor-pointer hover:text-white transition"
+                onClick={() => removeScholarship(scholarship)}
+              />
             </div>
-          ))}
+          )}
         </div>
+
+        {/* Divider after every scholarship */}
+        <div className="w-full border-b border-disabled"></div>
+      </div>
+    ))
+  )}
+</div>
+
 
       </div>
 
