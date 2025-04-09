@@ -6,8 +6,10 @@ import DonationInstructions from "../../../components/AlumniComponents/DonationC
 import PaymentProof from "../../../components/AlumniComponents/DonationComponents/paymentProof";
 import DonationOptions from "../../../components/AlumniComponents/DonationComponents/donationOptions";
 import DonationDetailsInput from "../../../components/AlumniComponents/DonationComponents/donationDetailsInput";
+import axios from "axios";
 
 function Donationform() {
+    const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
     // UseState for checking if the buttons are activated
     const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
     const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
@@ -19,12 +21,64 @@ function Donationform() {
     // File handling
     const fileInputRef = useRef(null);
     const [fileName, setFileName] = useState('');
+    const [file, setFile] = useState(null); 
 
     // Anonymous donation?
     const [isAnonymous, setIsAnonymous] = useState(false);
 
     // IN-KIND TYPE
     const [donationDetailsInput, setDonationDetailsInput] = useState("");
+
+    const handleFileSubmit = (file) => {
+        setFile(file); // Store the file in state
+    };
+    
+    // const submitMonetaryDonation () {
+    //     const donationData = {
+    //         monetary_donation: true,
+    //         in_kind_donation: false,
+    //         amount: monetaryAmountInput,
+    //         description: donationDetailsInput,
+    //         proof: fileInputRef,
+    //         is_anonymous: isAnonymous,
+    //         proof: file, 
+    //     };
+    // }
+
+    const submitMonetaryDonation = async () => {
+        // Create a new FormData instance
+        const formData = new FormData();
+    
+        // Append form data to the FormData object
+        formData.append('monetary_donation', true);
+        formData.append('in_kind_donation', false);
+        formData.append('amount', monetaryAmountInput);
+        formData.append('description', donationDetailsInput);
+        formData.append('is_anonymous', isAnonymous);
+    
+        // If the file is selected, append it to FormData
+        if (file) {
+            formData.append('proof', file); // Assuming `file` contains the file data
+        }
+    
+        try {
+            // Send POST request using axios with the FormData
+            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // This header tells the backend to expect form data
+                }
+            });
+    
+            // Handle successful response
+            if (response.status === 200) {
+                console.log("Donation successful:", response.data);
+            } else {
+                console.error("Donation failed:", response);
+            }
+        } catch (error) {
+            console.error("Error submitting donation:", error);
+        }
+    };
 
     return (
         <div className='flex flex-row mx-48 my-16 gap-5'>
@@ -72,13 +126,18 @@ function Donationform() {
                         <DonationInstructions donationType={"monetary"}/>
 
                         {/* Proof of payment */}
-                        <PaymentProof fileInputRef={fileInputRef} fileName={fileName} setFileName={setFileName}/>
+                        <PaymentProof 
+                            fileInputRef={fileInputRef} 
+                            fileName={fileName} 
+                            setFileName={setFileName}
+                            onFileSubmit={handleFileSubmit}
+                        />
 
                         {/* Donation Options */}
                         <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous}/>
 
                         {/* Submit Button */}
-                        <button className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer">
+                        <button onClick={submitMonetaryDonation} className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer">
                             Submit
                         </button>
                     </div>

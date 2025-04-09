@@ -4,7 +4,8 @@ import { CloudUpload } from 'lucide-react';
 function PaymentProof(
     {fileInputRef,
     fileName,
-    setFileName
+    setFileName,
+    onFileSubmit
     }
 ) {
 
@@ -14,6 +15,7 @@ function PaymentProof(
         const file = e.target.files[0];
         if (file) {
             setFileName(file.name);
+            onFileSubmit(file);
         }
     };
 
@@ -23,6 +25,7 @@ function PaymentProof(
         const file = e.dataTransfer.files[0];
         if (file) {
             setFileName(file.name);
+            onFileSubmit(file);
         }
     };
 
