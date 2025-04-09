@@ -31,7 +31,9 @@ import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendi
 import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminverificationconfirmation";
 
 import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
+
 import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlanding";
+import DonationDeets from "./components/AlumniComponents/donations";
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
@@ -89,6 +91,7 @@ function App() {
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="alumni/donations/1" element={<DonationDeets />} />
             <Route path="*" element={<Unauthorized />} />
           </Route>
         </>

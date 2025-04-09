@@ -47,6 +47,7 @@ function LoginPage() {
           if (response.ok) {
               localStorage.setItem("token", data.access_token);
               // alert("Login Successful!");
+              alert("Login Successful")
               fetchUserData();
               
           } else {
@@ -54,6 +55,7 @@ function LoginPage() {
               alert(data)
           }
       } catch (error) {
+        
           console.error("Error:", error);
           alert("Something went wrong!");
       } finally {
