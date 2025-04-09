@@ -13,7 +13,7 @@ export default function Step4Onboarding() {
     "Frontend Developing",
   ];
 
-  const [selectedSkills, setSelectedSkills] = useState([]);
+  // const [selectedSkills, setSelectedSkills] = useState([]);
   const [inputValue, setInputValue] = useState([]);
   const [customSkills, setCustomSkills] = useState([]); // Store only manually added skills
 
@@ -21,8 +21,9 @@ export default function Step4Onboarding() {
 
   // Toggle suggestion skills (only highlight, don't create a bubble)
   const toggleSuggestion = (skill) => {
-    if (selectedSkills.includes(skill)) {
+    if (userData.skillsInterests.includes(skill)) {
       updateUserData("skillsInterests", userData.skillsInterests.filter((s) => s !== skill));
+      // console.log("SDFDSF")
     } else {
       updateUserData("skillsInterests", [...userData.skillsInterests, skill])
     }
@@ -34,7 +35,7 @@ export default function Step4Onboarding() {
       const newSkill = inputValue.trim();
 
       if (!customSkills.includes(newSkill)) {
-        setCustomSkills([...customSkills, newSkill]); // Add to custom skills list
+        // setCustomSkills([...customSkills, newSkill]); // Add to custom skills list
         updateUserData("skillsInterests", [...userData.skillsInterests, newSkill])
       }
       
@@ -44,14 +45,15 @@ export default function Step4Onboarding() {
 
   // Remove a custom skill when clicked
   const removeCustomSkill = (skill) => {
-    setCustomSkills(customSkills.filter((s) => s !== skill));
+    // console.log("SDFDSFFD")
+    // setCustomSkills(customSkills.filter((s) => s !== skill));
     updateUserData("skillsInterests",userData.skillsInterests.filter((s) => s !== skill));
   };
   const submitStep4 = async (e) => {
     try {
-        const baseURL = "https://ics-star-api.vercel.app/"
+        const baseURL = "https://ics-star-api.vercel.app/";
         const token = localStorage.getItem("token");
-        
+
         const SIParams = new URLSearchParams();
         userData.skillsInterests.forEach(item => SIParams.append("skills", item));
 
@@ -61,7 +63,7 @@ export default function Step4Onboarding() {
                 Authorization: `Bearer ${token}`,
             },
         });
-        
+
         const data = await response.json();
         console.log("Add-skills response:", data);
 
@@ -71,11 +73,12 @@ export default function Step4Onboarding() {
         } else {
             alert(data.message || JSON.stringify(data) || "skillsInterests submission failed!");
         }
-      } catch (error) {
+    } catch (error) {
         console.error("Error:", error);
         alert("Something went wrong!");
     }
 };
+
 
   return (
     <div className="flex flex-col items-center p-6 px-15">

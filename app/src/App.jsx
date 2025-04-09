@@ -35,6 +35,8 @@ import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlandin
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
+
+import Donation from "./components/donationInfo";
 import { jwtDecode } from "jwt-decode";
 const isSignedIn = !!localStorage.getItem("token");
 
@@ -89,6 +91,7 @@ function App() {
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="alumni/donations/1" element={<Donation />} />
             <Route path="*" element={<Unauthorized />} />
 
             <Route
