@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import { Plus, HandCoins, MoveLeft, MoveRight, List, LayoutGrid, Filter } from 'lucide-react'
 import DonationsTable from '../../../components/AdminComponents/donationstable'
+import { useNavigate } from 'react-router-dom'
 
 function AdminDonations() {
+  const navigate = useNavigate()
 
   const [donationType, setDonationType] = useState('open')
   const [viewStyle, setViewStyle] = useState('List')
@@ -13,6 +15,7 @@ function AdminDonations() {
   useEffect(() => {
       setDonations([
         {
+          donation_id: 1,
           title: "ICS PalCISihan",
           dateCreated: "2025-04-01",
           donationCount: 100,
@@ -61,15 +64,50 @@ function AdminDonations() {
           percentFunded: "58%",
           amountRaised: "₱8,750",
         },
+        {
+          title: "Cultural Night Raffle",
+          dateCreated: "2024-06-15",
+          donationCount: 73,
+          percentFunded: "58%",
+          amountRaised: "₱8,750",
+        },
+        {
+          title: "Cultural Night Raffle",
+          dateCreated: "2024-06-15",
+          donationCount: 73,
+          percentFunded: "58%",
+          amountRaised: "₱8,750",
+        },
+        {
+          title: "Cultural Night Raffle",
+          dateCreated: "2024-06-15",
+          donationCount: 73,
+          percentFunded: "58%",
+          amountRaised: "₱8,750",
+        },
+        {
+          title: "Cultural Night Raffle",
+          dateCreated: "2024-06-15",
+          donationCount: 73,
+          percentFunded: "58%",
+          amountRaised: "₱8,750",
+        },
+        {
+          title: "Cultural Night Raffle",
+          dateCreated: "2024-06-15",
+          donationCount: 73,
+          percentFunded: "58%",
+          amountRaised: "₱8,750",
+        },
       ])
   }, []);
 
   return (
-    <div className='h-screen p-6'>
+    <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
       {/* Header and add donation button */}
       <div className='flex justify-between items-center mb-4'>
         <h1 className='text-primary text-5xl font-satoshi-bold'>Donations</h1>
-        <button className='flex bg-primary font-satoshi-regular px-6 py-3 text-white rounded-2xl gap-2'> 
+        <button className='flex bg-primary font-satoshi-regular px-6 py-3 text-white rounded-2xl gap-2' onClick={() => {navigate("/admin/donations/create-donation-drive")}}> 
           <Plus/>
           <p> New Donation</p>
         </button>
