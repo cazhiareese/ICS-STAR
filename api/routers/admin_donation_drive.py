@@ -9,12 +9,12 @@ from util.donation_util import create_donation_drive
 router = APIRouter()
 
 # Create donation drive
-@router.post("/donation-drives")
+@router.post("/create-donation-drives")
 async def create_donation_drive_endpoint(
     title: str = Form(...),
     description: str = Form(...),
     target_cost: float = Form(...),
-    support_links: Optional[List[str]] = Form(None),
+    support_links: list[Optional[str]] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):

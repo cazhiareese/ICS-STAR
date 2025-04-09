@@ -128,7 +128,7 @@ def get_user_in_kind_donations_acknowledged(db: Session, user_id: str) -> list[I
 
     return InKindDonationOutList
 
-# Upload support image of donation drive
+# Function to create a donation drive
 async def create_donation_drive(
         title: str,
         description: str,
@@ -150,7 +150,7 @@ async def create_donation_drive(
         try:
             supabase_client.storage.from_("128storage").upload(file_name, file)
         except Exception as e:
-            raise HTTPException(status_code=500, detail="Failed to upload image.")
+            raise HTTPException(status_code=500, detail=f"Failed to upload image. Error: {str(e)}")
         
         image_url = f"{STORAGE_STRING}{file_name}"
     else:
@@ -161,7 +161,6 @@ async def create_donation_drive(
         description=description,
         target_cost=target_cost,
         image=image_url,
-        support_links=support_links,
     )
 
     db.add(donation_drive)
@@ -175,7 +174,7 @@ async def create_donation_drive(
                 link=link
             )
             db.add(donation_drive_link)
-            db.commit()
-            db.refresh(donation_drive_link)
+        db.commit()
+        db.refresh(donation_drive_link)
 
     return donation_drive
