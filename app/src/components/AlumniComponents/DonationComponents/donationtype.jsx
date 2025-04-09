@@ -19,7 +19,7 @@ function DonationType({
               }}
             > 
                 <h1 className={`${isMonetaryTypeOpen ? 'text-primary' : 'text-black'}`}><BanknoteIcon size={45}/></h1>
-                <h1 className='text-xl font-satoshi-bold'>Monetary</h1>
+                <h1 className={`${isMonetaryTypeOpen ? 'font-satoshi-bold' : 'font-satoshi-medium'} text-xl `}>Monetary</h1>
             </button>
         )
     }
@@ -36,7 +36,7 @@ function DonationType({
               }}
             > 
                 <h1 className={`${isInKindTypeOpen ? 'text-primary' : 'text-black'}`}><Package size={45}/></h1>
-                <h1 className='text-xl font-satoshi-bold'>In-kind</h1>
+                <h1 className={`${isInKindTypeOpen ? 'font-satoshi-bold' : 'font-satoshi-medium'} text-xl `}>In-kind</h1>
             </button>
         )
     }
