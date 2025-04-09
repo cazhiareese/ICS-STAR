@@ -4,6 +4,7 @@ from uuid import UUID
 from datetime import datetime
 
 class DonationDriveOut(BaseModel):
+    drive_id: UUID
     title: str
     description: Optional[str] = None
     target_cost: Optional[float] = None
@@ -17,6 +18,7 @@ class DonationDriveOut(BaseModel):
         
         
 class OneDonationDriveOut(BaseModel):
+    drive_id: UUID
     title: str
     description: Optional[str] = None
     target_cost: Optional[float] = None

@@ -21,6 +21,7 @@ def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_
     
     drives = db.query(DonationDrive).filter(
         and_(
+            DonationDrive.is_general == False,
             DonationDrive.is_deleted == False,
             DonationDrive.is_closed == False
         )
@@ -38,6 +39,7 @@ def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_
     
     drives = db.query(DonationDrive).filter(
         and_(
+            DonationDrive.is_general == False,
             DonationDrive.is_deleted == False,
             DonationDrive.is_closed == False
         )

@@ -27,6 +27,7 @@ def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveO
     donation_count = monetary_count + in_kind_count
 
     return DonationDriveOut(
+        drive_id=drive.drive_id,
         title=drive.title,
         description=drive.description,
         target_cost=float(drive.target_cost or 0) if drive.target_cost else None,
@@ -54,6 +55,7 @@ def get_one_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     link_list = [link[0] for link in links] if links else None
 
     return OneDonationDriveOut(
+        drive_id=drive.drive_id,
         title=drive.title,
         description=drive.description,
         target_cost=float(drive.target_cost or 0) if drive.target_cost else None,
@@ -82,6 +84,7 @@ def general_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     link_list = [link[0] for link in links] if links else None
 
     return OneDonationDriveOut(
+        drive_id=drive.drive_id,
         title=drive.title,
         description=drive.description,
         target_cost=float(drive.target_cost or 0) if drive.target_cost else None,
