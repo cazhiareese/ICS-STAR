@@ -112,10 +112,10 @@ function App() {
             <Route path="dashboard" element={<AdminDashboardLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
-              <Route
+              {/* <Route
                 path="user-reports"
                 element={<AdminUserInformationReport />}
-              />
+              /> */}
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>

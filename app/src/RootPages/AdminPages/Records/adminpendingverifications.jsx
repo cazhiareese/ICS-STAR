@@ -24,6 +24,7 @@ function AdminPendingVerifications() {
 
     const fetchUnverifiedUsers = async (type) => {
       try {
+        
         const response = await axios.get(`${API_BASE_URL}/admin/filter/unverified/${type}`);
         console.log(response.data);
         setPendingUsers(response.data);
