@@ -130,7 +130,7 @@ function App() {
             <Route path="career" element={<AdminCareer />} />
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
-              <Route path=":donationid" element={<AdminDonationInformation/>}/>
+              <Route path=":driveid" element={<AdminDonationInformation/>}/>
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
             </Route>
           </Route>
