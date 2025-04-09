@@ -3,6 +3,7 @@ import {ArrowLeft} from'lucide-react'
 import DonationType from '../../../components/AlumniComponents/DonationComponents/donationtype';
 import MonetaryAmountInput from "../../../components/AlumniComponents/DonationComponents/monetaryAmountInput";
 import DonationInstructions from "../../../components/AlumniComponents/DonationComponents/donationInstructions";
+import PaymentProof from "../../../components/AlumniComponents/DonationComponents/paymentProof";
 
 function Donationform() {
     // UseState for checking if the buttons are activated
@@ -23,10 +24,10 @@ function Donationform() {
                 </button>
 
                 {/* Make a donation title */}
-                <h1 className='font-satoshi-bold text-black text-5xl pt-10'>Make a donation</h1>
+                <h1 className='font-satoshi-bold text-black text-4xl pt-10'>Make a donation</h1>
 
                 {/* Donation Type Picker */}
-                <h1 className='font-satoshi-bold text-black text-xl pt-10 pb-5'>Donation Type</h1>
+                <h1 className='font-satoshi-bold text-black text-lg pt-10 pb-5'>Donation Type</h1>
                 {/* Buttons for Donation Types */}
                 <div className='flex flex-row gap-7 pb-5'>
                     {/* Monetary Donation Type Button */}
@@ -55,6 +56,9 @@ function Donationform() {
 
                     {/* Donation Instruction */}
                     <DonationInstructions/>
+
+                    {/* Proof of payment */}
+                    <PaymentProof/>
                 </div>
             </div>
         </div>

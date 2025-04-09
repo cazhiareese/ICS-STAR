@@ -61,6 +61,8 @@ function App() {
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
+          {/* REMOVE LATER */}
+          <Route path="alumni/donationforms" element={<DonationForm />} />
           <Route path="login" element={<LoginPage />} />
           <Route
             path="signup"

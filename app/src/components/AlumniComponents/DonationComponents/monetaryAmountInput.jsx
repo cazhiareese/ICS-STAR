@@ -1,4 +1,5 @@
 import React from 'react'
+import { Cloud } from 'lucide-react';
 
 function MonetaryAmountInput({
     monetaryAmountInput,
@@ -10,10 +11,10 @@ function MonetaryAmountInput({
     };
 
     return (
-        <div className='outline-2 rounded-3xl outline-neutral-400 py-10 px-10 w-full'>
-            <h1 className='text-xl font-satoshi-medium pb-3'>Enter Amount</h1>
+        <div className='outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-full'>
+            <h1 className='text-lg font-satoshi-medium pb-3'>Enter Amount</h1>
             {/* Input Box */}
-            <div className="relative w-full h-16">
+            <div className="relative w-full h-14">
                 <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black text-xl">₱</span>
                 <input
                     type="number"
