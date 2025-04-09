@@ -55,3 +55,22 @@ class InKindDonationOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class AdminDonationDriveOut(BaseModel):
+    drive_id: UUID
+    title: str
+    created_at: datetime
+    donation_count: int
+    percent_funded: float
+    amount_raised: float
+
+    class Config:
+        from_attributes = True
+
+class AdminOneDonationDriveOut(BaseModel):
+    percent_funded: float
+    pending_list: list[dict]
+    verified_list: list[dict]
+
+    class Config:
+        from_attributes = True
