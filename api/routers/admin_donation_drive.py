@@ -1,0 +1,28 @@
+from fastapi import Depends, HTTPException, APIRouter, Form, UploadFile, File
+from typing import Optional, List
+from sqlalchemy.orm import Session
+from models.donationmodel import DonationDrive, DonationDriveLink
+from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
+from config.database import get_db
+from util.donation_util import create_donation_drive
+
+router = APIRouter()
+
+# Create donation drive
+@router.post("/donation-drives")
+async def create_donation_drive_endpoint(
+    title: str = Form(...),
+    description: str = Form(...),
+    target_cost: float = Form(...),
+    support_links: Optional[List[str]] = Form(None),
+    image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db)
+):
+    return await create_donation_drive(
+        title=title,
+        description=description,
+        target_cost=target_cost,
+        image=image,
+        support_links=support_links,
+        db=db
+    )
