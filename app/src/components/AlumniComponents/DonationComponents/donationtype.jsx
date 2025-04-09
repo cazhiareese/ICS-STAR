@@ -1,24 +1,41 @@
 import React from 'react'
 import {BanknoteIcon, Package} from'lucide-react'
 
-function DonationType({donationType}) {
+function DonationType({
+    donationType,
+    isMonetaryTypeOpen,
+    isInKindTypeOpen,
+    setIsMonetaryTypeOpen,
+    setIsInKindTypeOpen
+}) {
     // Monetary donation button
     if (donationType == 'monetary') {
         return (
-            // TODO: Add color changed when clicked
-            <button className='flex flex-col w-40 rounded-3xl outline-black outline-1 px-5 py-6 gap-7 items-baseline'> 
-                <h1 className='text-black'><BanknoteIcon size={45}/></h1>
+            // Changes to color-primary when clicked
+            <button className={`cursor-pointer flex flex-col w-40 rounded-3xl outline-2 px-5 py-6 gap-7 items-baseline ${isMonetaryTypeOpen ? 'outline-primary' : 'outline-black'}`}
+            onClick={() => {
+                setIsMonetaryTypeOpen(true);
+                setIsInKindTypeOpen(false);
+              }}
+            > 
+                <h1 className={`${isMonetaryTypeOpen ? 'text-primary' : 'text-black'}`}><BanknoteIcon size={45}/></h1>
                 <h1 className='text-xl font-satoshi-bold'>Monetary</h1>
             </button>
         )
     }
 
-    //In-kind donation buttoo
+    //In-kind donation button
     if (donationType == 'inKind') {
         return (
-            // TODO: Add color changed when clicked
-            <button className='flex flex-col w-40 rounded-3xl outline-black outline-1 px-5 py-6 gap-7 items-baseline'> 
-                <h1 className='text-black'><Package size={45}/></h1>
+            // Changes to color-primary when clicked
+            <button className={`cursor-pointer flex flex-col w-40 rounded-3xl outline-2 px-5 py-6 gap-7 items-baseline ${isInKindTypeOpen ? 'outline-primary' : 'outline-black'}`}
+            onClick={() => {
+                setIsMonetaryTypeOpen(false);
+                setIsInKindTypeOpen(true);
+                console.log("Inkinnd open")
+              }}
+            > 
+                <h1 className={`${isInKindTypeOpen ? 'text-primary' : 'text-black'}`}><Package size={45}/></h1>
                 <h1 className='text-xl font-satoshi-bold'>In-kind</h1>
             </button>
         )
