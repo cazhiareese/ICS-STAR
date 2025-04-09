@@ -9,6 +9,8 @@ import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
 import Unauthorized from "./AuthPages/Unauthorized";
 
+
+
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
 import { OnboardingProvider } from "./AuthPages/AuthContext/onboardingcontext";
@@ -28,7 +30,9 @@ import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayou
 import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
 import AdminPendingVerifications from "./RootPages/AdminPages/Records/adminpendingverifications";
 import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminverificationconfirmation";
+
 import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
+import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlanding";
 import { jwtDecode } from "jwt-decode";
 
 const isSignedIn = !!localStorage.getItem("token");
@@ -82,6 +86,7 @@ function App() {
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
+            <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="*" element={<Unauthorized />} />
           </Route>
         </>

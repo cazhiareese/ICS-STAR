@@ -22,6 +22,10 @@ function Navbar({ tokentype }) {
     window.location.href = `/${tokentype}/profile`;
   }
 
+  function handleDonation(){
+    window.location.href = `/alumni/donations`;
+  }
+
   return (
     <nav className="bg-white text-black px-6 py-4 shadow-md flex justify-between items-center border-b border-gray-300 h-20 relative">
       {/* Logo + Title */}
@@ -36,7 +40,7 @@ function Navbar({ tokentype }) {
         <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
         <button className="hover:text-primary transition font-satoshi-bold">Career</button>
         <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>Alumni Search</button>
-        <button className="hover:text-primary transition font-satoshi-bold">Donations</button>
+        <button className="hover:text-primary transition font-satoshi-bold" onClick={handleDonation}>Donations</button>
       </div>
 
       {/* Icons and Mobile Menu Button */}
