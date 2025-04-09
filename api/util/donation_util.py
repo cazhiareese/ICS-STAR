@@ -121,5 +121,3 @@ def get_user_in_kind_donations_acknowledged(db: Session, user_id: str) -> list[I
         InKindDonationOutList.append(in_kind_donation)
 
     return InKindDonationOutList
-
-# 
