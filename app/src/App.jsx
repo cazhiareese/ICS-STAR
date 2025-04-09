@@ -21,7 +21,7 @@ import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
 import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/admincareer";
-import AdminDonations from "./RootPages/AdminPages/admindonations";
+import AdminDonations from "./RootPages/AdminPages/Donations/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
 
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
@@ -35,7 +35,10 @@ import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlandin
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
+
 import { jwtDecode } from "jwt-decode";
+import AdminDonationsLayout from "./RootPages/AdminPages/Layouts/admindonationslayout";
+import AdminDonationInformation from "./RootPages/AdminPages/Donations/admindonationinformation";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -112,10 +115,7 @@ function App() {
             <Route path="dashboard" element={<AdminDashboardLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
-              <Route
-                path="user-reports"
-                element={<AdminUserInformationReport />}
-              />
+              {/* <Route path="user-reports" element={<AdminUserInformationReport />}/> */}
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
@@ -133,7 +133,10 @@ function App() {
             <Route path="events" element={<AdminEvents />} />
             <Route path="newsletter" element={<AdminNewsletter />} />
             <Route path="career" element={<AdminCareer />} />
-            <Route path="donations" element={<AdminDonations />} />
+            <Route path="donations" element={<AdminDonationsLayout />}> 
+              <Route index element={<AdminDonations/>} />
+              <Route path=":donationid" element={AdminDonationInformation}/>
+            </Route>
           </Route>
         </>
       )}
