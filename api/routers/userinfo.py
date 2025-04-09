@@ -511,12 +511,11 @@ async def get_acknowledged_in_kind_donations(
 # Get the donation history of the user
 # Arguments: db - SQLAlchemy session, user - current user
 # Returns: a list of donations made by the user with acknowledgment status
-@router.get("/donation-history/{user_id}")
+@router.get("/donation-history")
 async def get_donation_history_me(
-    user_id: UUID,
     db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
 ):
-    user = db.query(User).filter(User.user_id == user_id).first()
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
