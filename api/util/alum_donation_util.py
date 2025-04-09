@@ -1,8 +1,17 @@
-from config.config import STORAGE_STRING
+from fastapi import Depends, HTTPException, UploadFile, File
+from config.config import supabase_client, STORAGE_STRING
+from config.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
+from models.usermodel import User
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
+from datetime import datetime, timezone
+from typing import Optional
+import uuid
+
+ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
+MAX_FILE_SIZE = 10 * 1024 * 1024
 
 def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveOut:
     monetary_data = db.query(
@@ -83,3 +92,106 @@ def general_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
         link=link_list,
         created_at=drive.created_at
     )
+
+
+async def upload_proof(
+    db: Session,
+    proof: Optional[UploadFile] = File(None),
+):
+    if proof:
+        file_content = await proof.read()
+        if len(file_content) > MAX_FILE_SIZE or proof.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
+            raise HTTPException(status_code=400, detail="Invalid proof of payment")
+
+        proof_ext = proof.filename.split(".")[-1]
+        proof_name = f"proof_of_payment/{uuid.uuid4()}.{proof_ext}"
+        try:
+            supabase_client.storage.from_("128storage").upload(proof_name, file_content)
+        except Exception as e:
+            print("Upload Error:", e)
+        proof_url = f"{STORAGE_STRING}{proof_name}"
+    else:
+        raise HTTPException(status_code=400, detail="Proof of payment required")
+
+    return proof_url
+
+async def make_donation(
+    db: Session,
+    user: User,
+    drive: DonationDrive,
+    monetary_donation: bool = False,
+    in_kind_donation: bool = False,
+    amount: Optional[float] = None,
+    description: Optional[str] = None,
+    proof: Optional[UploadFile] = File(None),
+    is_anonymous = Optional[bool],
+    is_general = Optional[bool],
+):
+    if not monetary_donation and not in_kind_donation:
+        raise HTTPException(
+            status_code=400,
+            detail="Please specify either monetary or in-kind donation"
+        )
+    
+    if monetary_donation and in_kind_donation:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot process both donation types simultaneously"
+        )
+    
+    if monetary_donation:
+        if amount is None or amount <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid amount"
+            )
+        
+        proof_of_payment = await upload_proof(db, proof)
+        
+        monetary = MonetaryDonation(
+            date_donated = datetime.now(timezone.utc),
+            amount = amount,
+            drive_id = drive.drive_id,
+            user_id = user.user_id,
+            is_anonymous = is_anonymous if is_anonymous else False,
+            proof = proof_of_payment,
+        )
+        try:
+            db.add(monetary)
+            db.commit()
+            db.refresh(monetary)
+        except Exception as e:
+            raise HTTPException(status_code=500, details=e)
+        
+        return {
+            "donation_drive": drive.title,
+            "date": monetary.date_donated,
+            "user": f"{user.first_name} {user.last_name}",
+            "status": "Pending Acknowledgement",
+            "amount": monetary.amount
+        }
+    
+    if in_kind_donation:
+        if not description:
+            raise HTTPException(status_code=400, detail="Description is required for in-kind donations")
+        
+        in_kind = InKindDonation(
+            date_donated = datetime.now(timezone.utc),
+            description = description,
+            drive_id = drive.drive_id,
+            user_id = user.user_id
+        )
+        try:
+            db.add(in_kind)
+            db.commit()
+            db.refresh(in_kind)
+        except Exception as e:
+            raise HTTPException(status_code=500, details=e)
+
+        return {
+            "donation_drive": drive.title,
+            "date": in_kind.date_donated,
+            "user": f"{user.first_name} {user.last_name}",
+            "status": "Pending Acknowledgement",
+            "details": in_kind.description
+        }
