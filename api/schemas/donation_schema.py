@@ -22,6 +22,7 @@ class OneDonationDriveOut(BaseModel):
     target_cost: float
     image_url: Optional[str] = None
     total_amount_donated: Optional[float] = None
+    in_kind_count: Optional[int] = None
     donation_count: Optional[int] = None
     fund_percentage: Optional[float] = None
     links: Optional[List[str]] = None
