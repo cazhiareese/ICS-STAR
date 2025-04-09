@@ -20,7 +20,7 @@ def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveO
     return DonationDriveOut(
         title=drive.title,
         description=drive.description,
-        target_cost=float(drive.target_cost or 0),
+        target_cost=float(drive.target_cost or 0) if drive.target_cost else None,
         image_url=drive.image,
         total_amount_donated=float(total_amount_donated or 0),
         donation_count=donation_count,
@@ -47,7 +47,7 @@ def get_one_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     return OneDonationDriveOut(
         title=drive.title,
         description=drive.description,
-        target_cost=float(drive.target_cost or 0),
+        target_cost=float(drive.target_cost or 0) if drive.target_cost else None,
         image_url=drive.image,
         total_amount_donated=float(total_amount_donated or 0),
         in_kind_count=in_kind_count,
@@ -75,7 +75,7 @@ def general_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     return OneDonationDriveOut(
         title=drive.title,
         description=drive.description,
-        target_cost=float(drive.target_cost or 0),
+        target_cost=float(drive.target_cost or 0) if drive.target_cost else None,
         image_url=drive.image,
         total_amount_donated=float(total_amount_donated or 0),
         in_kind_count=in_kind_count,

@@ -5,8 +5,8 @@ from datetime import datetime
 
 class DonationDriveOut(BaseModel):
     title: str
-    description: str
-    target_cost: float
+    description: Optional[str] = None
+    target_cost: Optional[float] = None
     image_url: Optional[str] = None
     total_amount_donated: Optional[float] = None
     donation_count: Optional[int] = None
@@ -18,8 +18,8 @@ class DonationDriveOut(BaseModel):
         
 class OneDonationDriveOut(BaseModel):
     title: str
-    description: str
-    target_cost: float
+    description: Optional[str] = None
+    target_cost: Optional[float] = None
     image_url: Optional[str] = None
     total_amount_donated: Optional[float] = None
     in_kind_count: Optional[int] = None
