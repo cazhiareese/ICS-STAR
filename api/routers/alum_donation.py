@@ -124,3 +124,36 @@ async def make_donations(
         db, user, drive, monetary_donation, in_kind_donation, amount, description, proof, is_anonymous
     )
     
+@router.post("/make-general-donation")
+async def make_donations(
+    monetary_donation: bool = Form(...),
+    in_kind_donation: bool = Form(...),
+    amount: Optional[float] = Form(None),
+    description: Optional[str] = Form(None),
+    proof: Optional[UploadFile] = File(None),
+    is_anonymous: Optional[bool] = Form(None),
+    is_general: Optional[bool] = Form(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    
+    if user.user_type.value == UserTypeEnum.student:
+        raise HTTPException(status_code=400, detail="For alumni only")
+    
+    if is_general:
+        drive = db.query(DonationDrive).filter(
+            DonationDrive.is_general == True,
+            DonationDrive.is_deleted == False,
+            DonationDrive.is_closed == False
+        ).first()
+    
+    
+    if not drive:
+        raise HTTPException(
+            status_code=404,
+            detail="Donation drive not found"
+        )
+    
+    return await make_donation(
+        db, user, drive, monetary_donation, in_kind_donation, amount, description, proof, is_anonymous
+    )
