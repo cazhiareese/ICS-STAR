@@ -34,9 +34,9 @@ def get_one_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     ).filter(MonetaryDonation.drive_id == drive.drive_id).one()
 
     total_amount_donated = monetary_data.total_amount_donated
-    fund_percentage = (monetary_data.total_amount_donated / drive.target_cost) * 100
-    monetary_count = monetary_data.monetary_count
+    fund_percentage = (monetary_data.total_amount_donated / drive.target_cost * 100) if drive.target_cost else None
     
+    monetary_count = monetary_data.monetary_count
     in_kind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar()
 
     donation_count = monetary_count + in_kind_count
@@ -50,8 +50,9 @@ def get_one_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
         target_cost=float(drive.target_cost or 0),
         image_url=drive.image,
         total_amount_donated=float(total_amount_donated or 0),
+        in_kind_count=in_kind_count,
         donation_count=donation_count,
-        fund_percentage=round(fund_percentage, 2),
+        fund_percentage = round(fund_percentage, 2) if fund_percentage else None,
         link=link_list,
         created_at=drive.created_at
     )
