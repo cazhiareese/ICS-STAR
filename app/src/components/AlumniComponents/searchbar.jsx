@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from 'axios';
@@ -17,40 +17,46 @@ const SearchBar =
     setLoading,
     setAlumniList
   })=> {
-    
+    const [filteredAlumni, setFilteredAlumni] = useState([]); 
+    // cache reference
+    const cache = useRef({});
 
-    
+    //Use effect for search suggestions
+    useEffect(() => {
+        const fetchData = async () => {
+            const query = searchInput.trim().toLowerCase();
 
-    //Dummy alumni list
-    const alumni = [
-        { name: "Janry Mendoza" },
-        { name: "Redd Villanueva" },
-        { name: "Elijah Thompson" },
-        { name: "Sophia Ramirez" },
-        { name: "Liam Anderson" },
-        { name: "Olivia Carter" },
-        { name: "Noah Bennett" },
-        { name: "Emma Robinson" },
-        { name: "Aiden Hughes" },
-        { name: "Isabella Flores" },
-        { name: "Lucas Mitchell" },
-        { name: "Mia Peterson" },
-        { name: "Ethan Simmons" },
-        { name: "Charlotte Hayes" },
-        { name: "Mason Cooper" },
-        { name: "Amelia Scott" },
-        { name: "Logan Brooks" },
-        { name: "Harper Ward" },
-        { name: "James Reed" },
-        { name: "Evelyn Murphy" },
-        { name: "Benjamin Torres" },
-        { name: "Abigail Richardson" }
-    ];
+            if (!searchInput) {
+            setFilteredAlumni([]);
+            return;
+            }
+
+            // Check if the data for this query is already cached
+            if (cache.current[query]) {
+            setFilteredAlumni(cache.current[query]); // Use cached data
+            console.log("Using cached alumni data for:", query, cache.current[query]);
+            return;
+            }
+
+            try {
+            const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/names?q=${encodeURIComponent(searchInput)}&limit=5`);
+            setFilteredAlumni(response.data);
+            cache.current[query] = response.data; // Cache the result for future use
+            console.log("Fetched alumni data for:", query, response.data);
+            } catch (error) {
+            console.error("Error fetching alumni data:", error);
+            }
+        };
+
+        fetchData();  // Fetch data when dependencies change (searchInput)
+    }, [searchInput]);
+
     
     const handleChange = (e) => {
         setSearchInput(e.target.value);
     };
 
+    //creates an object for url making
     const search = () => {
         let filters = {}; // Initialize filter object
         if (searchInput != ""){
@@ -66,10 +72,10 @@ const SearchBar =
             filters.job_title = careerList;
         }
         if (Array.isArray(affiliationList) && affiliationList.length > 0) {
-            filters.affiliations = affiliationList;
+            filters.affiliation = affiliationList;
         }
         if (Array.isArray(skillsList) && skillsList.length > 0) {
-            filters.skills = skillsList;
+            filters.skill = skillsList;
         }
         if (Array.isArray(industryList) && industryList.length > 0) {
             filters.industry = industryList;
@@ -86,8 +92,10 @@ const SearchBar =
         }
     };
 
+    //Function for getting the data of alumni based on filters
     const fetchData = async () => {
         let searchAPIURL = search();  // Get API URL based on the filters
+        console.log("Triggered fetchData()", searchAPIURL);
         setLoading(true); 
         try {
             const response = await axios.get(searchAPIURL);
@@ -107,7 +115,7 @@ const SearchBar =
         }
     };
     
-
+    //Builds URL using object
     function buildSearchUrl(filters) {
         let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
         let queryParams = new URLSearchParams(filters).toString();
@@ -117,11 +125,6 @@ const SearchBar =
 
     
 
-    const filteredAlumni = searchInput
-        ? alumni.filter((alumnus) =>
-              alumnus.name.toLowerCase().includes(searchInput.toLowerCase())
-          )
-        : [];
 
     return (
         <div className="md:w-full w-3/5 max-w-lg relative">
@@ -158,11 +161,11 @@ const SearchBar =
                             <motion.li
                                 key={index}
                                 className="px-4 py-2 cursor-pointer"
-                                onClick={() => setSearchInput(alumnus.name)}
+                                onClick={() => setSearchInput(alumnus)}
                                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e5e7eb")}
                                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                             >
-                                {alumnus.name}
+                                {alumnus}
                             </motion.li>
                         ))}
                     </motion.ul>

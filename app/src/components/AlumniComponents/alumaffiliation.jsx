@@ -1,5 +1,8 @@
 import { motion } from "framer-motion";
-import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import { ChevronDown, Search, X } from "lucide-react"; 
+import axios from 'axios';
+import React, {useState, useEffect, useRef} from 'react';
+
 
 const AlumniAffiliationFilter = ({
   isAffiliationExpanded,
@@ -8,16 +11,55 @@ const AlumniAffiliationFilter = ({
   setAffiliationInput,
   affiliationList,
   setAffiliationList,
-  setIsSkillsExpanded
+  setIsLocationExpanded
 }) => {
+  const [affiliations, setAffiliations] = useState([]); 
+  
+  // cache reference
+  const cache = useRef({});
 
-    const affiliations = [
-        "Young Software Engineers' Society",
-        "Alliance of Computer Science Students",
-        "Computer Science Society",
-        "Mathematical Science Society",
-        "El Gamma Penumbra"
-    ]
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!affiliationInput) {
+        // Check cache for top affiliations
+        if (cache.current["top-affiliations"]) {
+          setAffiliations(cache.current["top-affiliations"]);
+          console.log("Using cached top affiliations:", cache.current["top-affiliations"]);
+          return; // Skip API call if cached data exists
+        }
+
+        try {
+          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-affiliations");
+          setAffiliations(response.data);
+          cache.current["top-affiliations"] = response.data; // Cache the result
+          console.log("Fetched top affiliations:", response.data);
+        } catch (error) {
+          console.error("Error fetching affiliations data:", error);
+        }
+      } else {
+        const query = affiliationInput.trim().toLowerCase();
+        
+        // Check cache for affiliations based on user input
+        if (cache.current[query]) {
+          setAffiliations(cache.current[query]); // Use cached data if it exists
+          console.log("Using cached affiliations for input:", query, cache.current[query]);
+          return;
+        }
+
+        try {
+          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/affiliations?q=${encodeURIComponent(query)}&limit=5`);
+          setAffiliations(response.data);
+          cache.current[query] = response.data; // Cache the result for future use
+          console.log("Fetched affiliations for input:", query, response.data);
+        } catch (error) {
+          console.error("Error fetching affiliations data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [affiliationInput]);
+
 
     // Handle the enter key press
   const handleAffiliationSearch = (e) => {
@@ -42,7 +84,7 @@ const AlumniAffiliationFilter = ({
 
     
 
-    <div className="flex flex-col shadow mt-5 rounded-lg bg-white lg:bg-transparent">
+    <div className="flex flex-col shadow-md mt-5 rounded-lg bg-white lg:bg-transparent">
       <div className="flex flex-row px-5 py-3" onClick={() => setIsAffiliationExpanded(!isAffiliationExpanded)}>
         <motion.h1
           className="flex-1/2 font-satoshi-medium"
@@ -117,7 +159,7 @@ const AlumniAffiliationFilter = ({
               !affiliationList.includes(affiliations) && ( // Check if affiliations is not already in AffiliationList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button
-                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer"
+                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer truncate max-w-full"
                     onClick={() => setAffiliationList([...affiliationList, affiliations])}
                   >
                     {affiliations}
@@ -130,7 +172,7 @@ const AlumniAffiliationFilter = ({
               !affiliationList.includes(affiliations) && ( // Check if affiliations is not already in AffiliationList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button
-                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer"
+                    className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer truncate max-w-full"
                     onClick={() => setAffiliationList([...affiliationList, affiliations])}
                   >
                     {affiliations}
@@ -145,7 +187,7 @@ const AlumniAffiliationFilter = ({
         <div className="flex lg:hidden justify-between px-5 pb-3">
           <button
             onClick={() => {setAffiliationList([]); 
-              setIsSkillsExpanded(true);
+              setIsLocationExpanded(true);
               setIsAffiliationExpanded(false);}}
             className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
           >
@@ -153,7 +195,7 @@ const AlumniAffiliationFilter = ({
           </button>
 
           <button onClick={() => {
-            setIsSkillsExpanded(true);
+            setIsLocationExpanded(true);
             setIsAffiliationExpanded(false);
           }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
             Next

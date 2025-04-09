@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import axios from 'axios';
+import React, {useState, useEffect, useRef} from 'react';
 
 const AlumniLocationFilter = ({
   isLocationExpanded,
@@ -8,15 +10,55 @@ const AlumniLocationFilter = ({
   setLocationInput,
   location,
   setLocation,
-  setIsIndustryExpanded
+  setIsAlumniProfessionExpanded,
+  setIsCareerExpanded,
+  setIsAlumniInfoExpanded
 }) => {
+  const [locations, setLocations] = useState([]); 
+  // cache reference
+  const cache = useRef({});
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!locationInput) {
+        // Check cache for top cities
+        if (cache.current["top-cities"]) {
+          setLocations(cache.current["top-cities"]);
+          console.log("Using cached top cities:", cache.current["top-cities"]);
+          return; // Skip API call if cached data exists
+        }
 
-    const locations = [
-        "Manila",
-        "Laguna",
-        "Davao",
-        "Camarines Sur"
-    ]
+        try {
+          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-cities");
+          setLocations(response.data);
+          cache.current["top-cities"] = response.data; // Cache the result
+          console.log("Fetched top cities:", response.data);
+        } catch (error) {
+          console.error("Error fetching cities data:", error);
+        }
+      } else {
+        const query = locationInput.trim().toLowerCase();
+        
+        // Check cache for cities based on user input
+        if (cache.current[query]) {
+          setLocations(cache.current[query]); // Use cached data if it exists
+          console.log("Using cached cities for input:", query, cache.current[query]);
+          return;
+        }
+
+        try {
+          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/cities?q=${encodeURIComponent(query)}&limit=5`);
+          setLocations(response.data);
+          cache.current[query] = response.data; // Cache the result for future use
+          console.log("Fetched cities for input:", query, response.data);
+        } catch (error) {
+          console.error("Error fetching cities data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [locationInput]);
 
     // Handle the enter key press
   const handleLocationSearch = (e) => {
@@ -40,7 +82,7 @@ const AlumniLocationFilter = ({
   const filteredlocations = locations.filter(location => location.toLowerCase().includes(locationInput.toLowerCase()));
 
   return (
-    <div className="flex flex-col shadow mt-5 rounded-lg bg-white lg:bg-transparent">
+    <div className="flex flex-col shadow-md mt-5 rounded-lg bg-white lg:bg-transparent">
       <div className="flex flex-row px-5 py-3" onClick={() => setIsLocationExpanded(!isLocationExpanded)}>
         <motion.h1
           className="flex-1/2 font-satoshi-medium"
@@ -150,7 +192,9 @@ const AlumniLocationFilter = ({
         <div className="flex lg:hidden justify-between px-5 pb-3">
           <button
             onClick={() => {setLocation([]); 
-              setIsIndustryExpanded(true);
+              setIsCareerExpanded(true);
+              setIsAlumniProfessionExpanded(true);
+              setIsAlumniInfoExpanded(false);
               setIsLocationExpanded(false);}}
             className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
           >
@@ -158,7 +202,9 @@ const AlumniLocationFilter = ({
           </button>
 
           <button onClick={() => {
-            setIsIndustryExpanded(true);
+            setIsCareerExpanded(true);
+            setIsAlumniProfessionExpanded(true);
+            setIsAlumniInfoExpanded(false);
             setIsLocationExpanded(false);
           }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
             Next

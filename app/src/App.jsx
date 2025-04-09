@@ -24,7 +24,6 @@ import AdminCareer from "./RootPages/AdminPages/admincareer";
 import AdminDonations from "./RootPages/AdminPages/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
 
-import AdminUserInformationReport from "./RootPages/AdminPages/Dashboard/adminuserinformationreport";
 import AdminDashboardLayout from "./RootPages/AdminPages/Layouts/admindashboardlayout";
 import AdminRecordsLayout from "./RootPages/AdminPages/Layouts/adminrecordslayout";
 import AdminUserDetails from "./RootPages/AdminPages/Records/adminuserdetails";
@@ -33,8 +32,10 @@ import AdminVerificationConfirmation from "./RootPages/AdminPages/Records/adminv
 
 import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
 import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlanding";
-import { jwtDecode } from "jwt-decode";
+import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
+import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
+import { jwtDecode } from "jwt-decode";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -80,6 +81,7 @@ function App() {
         </>
       )}
 
+
       {isSignedIn && checkType() === "alumni" && (
         <>
           <Route path="/" element={<Root />}>
@@ -109,10 +111,12 @@ function App() {
             <Route index element={<Navigate to="dashboard" />} />
             <Route path="dashboard" element={<AdminDashboardLayout />}>
               <Route index element={<AdminDashboard />} />
+              <Route path="alumni-report" element={<AdminAlumniInfo />} />
               <Route
                 path="user-reports"
                 element={<AdminUserInformationReport />}
               />
+              <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />

@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import axios from 'axios';
+import React, {useState, useEffect, useRef } from 'react';
 
 const AlumniSkillsFilter = ({
   isSkillsExpanded,
@@ -11,14 +13,52 @@ const AlumniSkillsFilter = ({
   setIsLocationExpanded
 }) => {
 
-    const skills = [
-        "Human Interaction Design",
-        "Machine Learning",
-        "Data Science",
-        "Big Data",
-        "Leadership"
-    ]
+  const [skills, setSkills] = useState([]); 
+  // cache reference
+  const cache = useRef({});
 
+  //Search Suggestions
+  useEffect(() => {
+    const fetchData = async () => {
+      // Check if the input is empty, and use the cached data for top skills if available
+      if (!skillsInput) {
+        if (cache.current["top-skills"]) {
+          setSkills(cache.current["top-skills"]);
+          console.log("Using cached top skills:", cache.current["top-skills"]);
+          return; // Skip the API call if we have cached data
+        }
+
+        try {
+          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-skills");
+          setSkills(response.data);
+          cache.current["top-skills"] = response.data; // Cache the response
+          console.log("Fetched top skills:", response.data);
+        } catch (error) {
+          console.error("Error fetching skills data:", error);
+        }
+      } else {
+        const query = skillsInput.trim().toLowerCase();
+        
+        if (cache.current[query]) {
+          setSkills(cache.current[query]); // Use the cached result if available
+          console.log("Using cached skills for input:", query, cache.current[query]);
+          return;
+        }
+
+        try {
+          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/skills?q=${encodeURIComponent(query)}&limit=5`);
+          setSkills(response.data);
+          cache.current[query] = response.data; // Cache the result for future use
+          console.log("Fetched skills for input:", query, response.data);
+        } catch (error) {
+          console.error("Error fetching skills data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [skillsInput]);
+  
     // Handle the enter key press
   const handleSkillsSearch = (e) => {
     if (e.key === "Enter" && skillsInput.trim()) {
@@ -36,7 +76,7 @@ const AlumniSkillsFilter = ({
   };
 
   // Filter jobs based on user input
-  const filteredSkills = skills.filter(skill => skill.toLowerCase().includes(skillsInput.toLowerCase()));
+  // const filteredSkills = skills.filter(skill => skill.toLowerCase().includes(skillsInput.toLowerCase()));
 
   return (
 
@@ -126,7 +166,7 @@ const AlumniSkillsFilter = ({
               )
             ))
           ) : (
-            filteredSkills.map((skill, index) => (
+            skills.map((skill, index) => (
               !skillsList.includes(skill) && ( // Check if job is not already in careerList
                 <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 mx-12 rounded-full h-10">
                   <button
@@ -145,7 +185,6 @@ const AlumniSkillsFilter = ({
         <div className="flex lg:hidden justify-between px-5 pb-3">
           <button
             onClick={() => {setSkillsList([]); 
-              setIsLocationExpanded(true);
               setIsSkillsExpanded(false);}}
             className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
           >
@@ -153,7 +192,6 @@ const AlumniSkillsFilter = ({
           </button>
 
           <button onClick={() => {
-           setIsLocationExpanded(true);
            setIsSkillsExpanded(false);
           }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
             Next

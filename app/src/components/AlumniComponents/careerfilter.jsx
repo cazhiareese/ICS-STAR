@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
+import React, {useState, useEffect, useRef} from 'react';
 import { ChevronDown, Search, X } from "lucide-react"; // Assuming you're using React Feather for icons
+import axios from 'axios';
 
 const AlumniCareerFilter = ({
   isCareerExpanded,
@@ -8,17 +10,53 @@ const AlumniCareerFilter = ({
   setCareerInput,
   careerList,
   setCareerList,
-  setIsAffiliationExpanded
+  setIsIndustryExpanded
 }) => {
-
-    const jobs = [
-        "Frontend Developer",
-        "Backend Developer",
-        "Data Scientist",
-        "Professor",
-        "Instructor",
-        "Information Technology"
-    ]
+    const [jobs, setJobs] = useState([]); 
+    // cache reference
+    const cache = useRef({});
+    
+    useEffect(() => {
+      const fetchData = async () => {
+        if (!careerInput) {
+          // Check cache for top job titles
+          if (cache.current["top-job-titles"]) {
+            setJobs(cache.current["top-job-titles"]);
+            console.log("Using cached top job titles:", cache.current["top-job-titles"]);
+            return; // Skip API call if cached data exists
+          }
+  
+          try {
+            const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-job-titles");
+            setJobs(response.data);
+            cache.current["top-job-titles"] = response.data; // Cache the result
+            console.log("Fetched top job titles:", response.data);
+          } catch (error) {
+            console.error("Error fetching job titles data:", error);
+          }
+        } else {
+          const query = careerInput.trim().toLowerCase();
+          
+          // Check cache for job titles based on user input
+          if (cache.current[query]) {
+            setJobs(cache.current[query]); // Use cached data if it exists
+            console.log("Using cached job titles for input:", query, cache.current[query]);
+            return;
+          }
+  
+          try {
+            const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/job-titles?q=${encodeURIComponent(query)}&limit=5`);
+            setJobs(response.data);
+            cache.current[query] = response.data; // Cache the result for future use
+            console.log("Fetched job titles for input:", query, response.data);
+          } catch (error) {
+            console.error("Error fetching job titles data:", error);
+          }
+        }
+      };
+  
+      fetchData();
+    }, [careerInput]);
 
     // Handle the enter key press
   const handleCareerSearch = (e) => {
@@ -43,7 +81,7 @@ const AlumniCareerFilter = ({
 
     
 
-    <div className="flex flex-col shadow mt-5 rounded-lg bg-white lg:bg-transparent">
+    <div className="flex flex-col shadow-md rounded-lg bg-white lg:bg-transparent">
       <div className="flex flex-row px-5 py-3" onClick={() => setIsCareerExpanded(!isCareerExpanded)}>
         <motion.h1
           className="flex-1/2 font-satoshi-medium"
@@ -146,7 +184,7 @@ const AlumniCareerFilter = ({
          <div className="flex lg:hidden justify-between px-5 pb-3">
             <button
               onClick={() => {setCareerList([]); 
-                setIsAffiliationExpanded(true);
+                setIsIndustryExpanded(true);
                 setIsCareerExpanded(false);}}
               className="text-black px-4 py-2 rounded-lg underline font-satoshi-medium cursor-pointer hover:text-gray-500"
             >
@@ -154,7 +192,7 @@ const AlumniCareerFilter = ({
             </button>
 
             <button onClick={() => {
-              setIsAffiliationExpanded(true);
+              setIsIndustryExpanded(true);
               setIsCareerExpanded(false);
             }} className="bg-primary text-white px-4 py-2 rounded-2xl hover:bg-primary-dark hover:bg-blue-950 cursor-pointer">
               Next

@@ -15,7 +15,7 @@ function AdminRoot() {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen">
+    <div className="flex flex-col h-screen lg:flex-row overflow-hidden">
         {/* Sidebar */}
         <Sidebar sidebarItems={sidebarItems} />
         {/* Content */}
