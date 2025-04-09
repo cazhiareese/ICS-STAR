@@ -180,13 +180,13 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
             </>
           ) : (
             <>
-{userDetails.first_name && userDetails.last_name ? (
-  <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
-    {userDetails.first_name} {userDetails.last_name}
-  </h2>
-) : (
-  <CircularLoading />
-)}
+              {userDetails.first_name && userDetails.last_name ? (
+                <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
+                  {userDetails.first_name} {userDetails.last_name}
+                </h2>
+              ) : (
+                <CircularLoading />
+              )}
 
               <p className="text-[16px] sm:text-[20px] text-black">
                 {userDetails.email}
