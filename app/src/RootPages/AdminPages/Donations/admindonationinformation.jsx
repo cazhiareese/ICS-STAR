@@ -205,8 +205,12 @@ function AdminDonationInformation() {
         <div className='flex-2/3 border border-gray-300 rounded-xl p-6 w-full flex flex-col'>
           <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
           <div className='w-full flex-1 overflow-auto'>
+            {Object.keys(pendingDonations).length === 0 ? (
+            <p className='text-center text-gray-500'>No donations to verify</p>
+          ) : (
             <PendingDonationsTable data={pendingDonations} />
-          </div>
+          )} 
+         </div>
         </div>
       </div>
       {/* Donations and filters */}
