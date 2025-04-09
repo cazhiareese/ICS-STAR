@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { PlusCircle, XCircle,X } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddAffiliationsModal from "../components/affiliationmodal";
+import CircularLoading from "../../../components/LoadingComponents/circularloading";
 
 const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAffiliation }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,6 +15,11 @@ const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAff
 
       <div className="flex justify-between items-center mt-4">
         {/* Affiliation List (Two-column layout) */}
+        {affiliations.length === 0 ? (
+  <div className="w-full flex justify-center mt-4">
+    <CircularLoading />
+  </div>
+) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 w-full">
           {affiliations.map((affiliation, index) => (
             <div key={index} className="flex flex-col">
@@ -35,6 +41,7 @@ const AffiliationsSection = ({ editMode, affiliations, removeAffiliation, addAff
             </div>
           ))}
         </div>
+)}
 
 
       </div>

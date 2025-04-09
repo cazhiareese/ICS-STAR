@@ -19,7 +19,7 @@ const SkillsInterestsSection = ({ editMode, skills, removeSkill, addSkills }) =>
 
       {/* Skills List */}
       {skills.length === 0 ? (
-  <div className="mt-4">
+  <div className="w-full flex justify-center mt-4">
     <CircularLoading />
   </div>
 ) : (
