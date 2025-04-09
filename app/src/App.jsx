@@ -7,7 +7,7 @@ import StudentLanding from "./RootPages/StudentPages/studentdashboard";
 import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
-
+import Unauthorized from "./AuthPages/Unauthorized";
 
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
@@ -33,11 +33,8 @@ import { jwtDecode } from "jwt-decode";
 
 const isSignedIn = !!localStorage.getItem("token");
 
-
 function App() {
-
-  function checkType ()
-  {
+  function checkType() {
     const User = localStorage.getItem("token");
     let tokenType = null;
     if (User) {
@@ -52,78 +49,88 @@ function App() {
   }
 
   console.log(isSignedIn);
-  
-
 
   return (
     <Routes>
       {/* Check if the user is signed in */}
-      {!isSignedIn &&(
+      {!isSignedIn && (
         <>
-      <Route path="/" element={<LoginPage/>}/>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={
-        <AppProvider>
-          <SignupPage />
-        </AppProvider>
-      } />
+          <Route path="login" element={<LoginPage />} />
+          <Route
+            path="signup"
+            element={
+              <AppProvider>
+                <SignupPage />
+              </AppProvider>
+            }
+          />
 
-      <Route path="/setup" element={
-        <OnboardingProvider>
-          <OnBoarding />
-        </OnboardingProvider>
-      } />
-      </>
+          <Route
+            path="setup"
+            element={
+              <OnboardingProvider>
+                <OnBoarding />
+              </OnboardingProvider>
+            }
+          />
+        </>
       )}
 
-{isSignedIn && checkType() === "alumni" && (
-  <>
-      <Route path='/' element={<Root />}>
-        <Route path="alumni/dashboard" element={<AlumniLanding />}/> 
-        <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
-        <Route path="alumni/profile" element={<UserProfile />} />
-        <Route path="*" element={<LoginPage/>} />
-      </Route>
-  </>
-)}
-
-{isSignedIn && checkType() === "student" && (
-  <>
-      <Route path='/' element={<Root />}>
-        <Route path="student/dashboard" element={<StudentLanding />}/> 
-        <Route path="student/alumnisearch" element={<AlumniSearch />} />
-        <Route path="*" element={<UserProfile />} />
-      </Route>
-  </>
-)}
-
-
-
-
-{isSignedIn && checkType() === "admin" && (
-  <>
-        {/* Admin Routes */}
-        <Route path="admin" element={<AdminRoot />}>
-        <Route index element={<Navigate to="dashboard" />} />
-          <Route path="dashboard" element={<AdminDashboardLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="user-reports" element={<AdminUserInformationReport />} />
+      {isSignedIn && checkType() === "alumni" && (
+        <>
+          <Route path="/" element={<Root />}>
+            <Route path="alumni/dashboard" element={<AlumniLanding />} />
+            <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
+            <Route path="alumni/profile" element={<UserProfile />} />
+            <Route path="*" element={<LoginPage />} />
           </Route>
-          <Route path="records" element={<AdminRecordsLayout />} >
-            <Route index element={<AdminRecords/>}/>
-            <Route path=":userid" element={<AdminUserDetails/>}/>
-            <Route path="pending-verifications" element={<AdminPendingVerifications/>}/>
-            <Route path="verification-confirmation/:userid" element={<AdminVerificationConfirmation/>}/>
+        </>
+      )}
+
+      {isSignedIn && checkType() === "student" && (
+        <>
+          <Route path="/" element={<Root />}>
+            <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/alumnisearch" element={<AlumniSearch />} />
+            <Route path="*" element={<UserProfile />} />
           </Route>
-          <Route path="events" element={<AdminEvents />} />
-          <Route path="newsletter" element={<AdminNewsletter />} />
-          <Route path="career" element={<AdminCareer />} />
-          <Route path="donations" element={<AdminDonations />} />
-        </Route>
-</>)}
+        </>
+      )}
+
+      {isSignedIn && checkType() === "admin" && (
+        <>
+          {/* Admin Routes */}
+          <Route path="admin" element={<AdminRoot />}>
+            <Route index element={<Navigate to="dashboard" />} />
+            <Route path="dashboard" element={<AdminDashboardLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route
+                path="user-reports"
+                element={<AdminUserInformationReport />}
+              />
+            </Route>
+            <Route path="records" element={<AdminRecordsLayout />}>
+              <Route index element={<AdminRecords />} />
+              <Route path=":userid" element={<AdminUserDetails />} />
+              <Route
+                path="pending-verifications"
+                element={<AdminPendingVerifications />}
+              />
+              <Route
+                path="verification-confirmation/:userid"
+                element={<AdminVerificationConfirmation />}
+              />
+            </Route>
+            <Route path="events" element={<AdminEvents />} />
+            <Route path="newsletter" element={<AdminNewsletter />} />
+            <Route path="career" element={<AdminCareer />} />
+            <Route path="donations" element={<AdminDonations />} />
+          </Route>
+        </>
+      )}
 
       {/* Redirect unknown routes */}
-      <Route path="*" element={<LoginPage/>} />
+      <Route path="*" element={<Unauthorized />} />
     </Routes>
   );
 }

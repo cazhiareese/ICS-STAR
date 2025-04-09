@@ -3,18 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, User, Globe, Menu, X } from "lucide-react"; // Icons
 import logo from "../assets/Subtract.png";
 
-function Navbar({ user }) {
+function Navbar({ tokentype }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   function handleLogout() {
     sessionStorage.removeItem("User");
     localStorage.removeItem("token");
-    navigate("/");
+    window.location.href = "/login";
   }
 
+  console.log("Token type in navbar:", tokentype);
   function handleProfileClick() {
-    navigate("/alumni/profile");
+    navigate(`/${tokentype}/profile`);
   }
 
   return (
