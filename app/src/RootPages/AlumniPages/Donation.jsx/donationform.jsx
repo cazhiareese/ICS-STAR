@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef   } from "react";
 import {ArrowLeft} from'lucide-react'
 import DonationType from '../../../components/AlumniComponents/DonationComponents/donationtype';
 import MonetaryAmountInput from "../../../components/AlumniComponents/DonationComponents/monetaryAmountInput";
+import DonationInstructions from "../../../components/AlumniComponents/DonationComponents/donationInstructions";
 
 function Donationform() {
     // UseState for checking if the buttons are activated
@@ -44,13 +45,17 @@ function Donationform() {
                         setIsMonetaryTypeOpen={setIsMonetaryTypeOpen}
                     />
                 </div>
+                {/* Monetary donation contents */}
+                <div className='flex flex-col gap-5'>
+                    {/* Monetary Donation Inputs */}
+                    <MonetaryAmountInput
+                        monetaryAmountInput={monetaryAmountInput}
+                        setMonetaryAmountInput={setMonetaryAmountInput}
+                    />
 
-                {/* Monetary Donation Inputs */}
-                <MonetaryAmountInput 
-                    monetaryAmountInput={monetaryAmountInput}
-                    setMonetaryAmountInput={setMonetaryAmountInput}
-                />
-                
+                    {/* Donation Instruction */}
+                    <DonationInstructions/>
+                </div>
             </div>
         </div>
     )
