@@ -3,8 +3,6 @@ import { MoveLeft, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
-import { create } from 'framer-motion/client'
-import { defaultServerMainFields } from 'vite'
 
 function AdminCreateDonationDrive() {
   const navigate = useNavigate()
