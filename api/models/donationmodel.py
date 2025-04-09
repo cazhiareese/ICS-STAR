@@ -28,6 +28,8 @@ class MonetaryDonation(Base):
     drive_id = Column(UUID(as_uuid=True), ForeignKey('donation_drive.drive_id'))
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False)
     is_acknowledged = Column(Boolean, default=False)
+    is_anonymous = Column(Boolean, default=False)
+    proof = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     user = relationship("User", foreign_keys=[user_id],back_populates="monetary_donations")
