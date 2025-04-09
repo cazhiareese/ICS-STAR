@@ -10,6 +10,7 @@ import {
 import SaveConfirmationModal from "./components/savemodal";
 import prince from "../../assets/prince boy.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
+import CircularLoading from "../../components/LoadingComponents/circularloading";
 
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [showModal, setShowModal] = useState(false);
@@ -179,9 +180,14 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
             </>
           ) : (
             <>
-              <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
-                {userDetails.first_name} {userDetails.last_name}
-              </h2>
+{userDetails.first_name && userDetails.last_name ? (
+  <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
+    {userDetails.first_name} {userDetails.last_name}
+  </h2>
+) : (
+  <CircularLoading />
+)}
+
               <p className="text-[16px] sm:text-[20px] text-black">
                 {userDetails.email}
               </p>
