@@ -18,7 +18,7 @@ function AdminDonationInformation() {
 
   const [pendingDonations, setPendingDonations] = useState([])
   const [verifiedDonations, setverifiedDonations] = useState([])
-  const [isClosed, setIsClosed] = useState(true)
+  const [isClosed, setIsClosed] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,8 +130,8 @@ function AdminDonationInformation() {
           <h1 className='font-satoshi-bold text-primary text-4xl'>ICS New Aircon</h1>
           {/* Open or closed button */}
           {isClosed ? (
-            <div className='bg-green-100 px-7 py-1 rounded-3xl flex items-center h-fit place-self-end'> 
-            <p className='text-success font-satoshi-medium text-sm'>Open</p>
+            <div className='bg-red-100 px-7 py-1 rounded-3xl flex items-center h-fit place-self-end'> 
+            <p className='text-error font-satoshi-medium text-sm'>Closed</p>
           </div>          ) : (
             <div className='bg-green-100 px-7 py-1 rounded-3xl flex items-center h-fit place-self-end'> 
               <p className='text-success font-satoshi-medium text-sm'>Open</p>
@@ -140,14 +140,19 @@ function AdminDonationInformation() {
         </div>
         {/* Generate Report or close drive */}
         <div className='h-full gap-5 flex flex-row'>
+          {/* View Details */}
+          <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer'>
+            <p className='font-satoshi-light'>View Details</p>
+          </button>
           {isClosed ? (
-            <></>
+            <>
+              {/* Export Donor List */}
+              <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'>
+                <p className='font-satoshi-light'>Export Donor List</p>
+              </button>
+            </>          
           ) : (
             <>
-              {/* View Details */}
-              <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer'>
-                <p className='font-satoshi-light'>View Details</p>
-              </button>
               {/* Close Drive */}
               <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'>
                 <p className='font-satoshi-light'>Close Drive</p>
