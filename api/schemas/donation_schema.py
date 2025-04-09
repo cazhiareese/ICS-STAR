@@ -10,6 +10,7 @@ class DonationDriveOut(BaseModel):
     image_url: Optional[str]
     total_amount_donated: float
     donation_count: int
+    created_at: datetime
 
     class Config:
         from_attributes = True

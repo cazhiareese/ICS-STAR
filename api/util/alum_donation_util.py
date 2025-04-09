@@ -23,5 +23,6 @@ def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveO
         target_cost=float(drive.target_cost or 0),
         image_url=drive.image,
         total_amount_donated=float(total_amount_donated or 0),
-        donation_count=donation_count
+        donation_count=donation_count,
+        created_at=drive.created_at
     )
