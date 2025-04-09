@@ -1,4 +1,3 @@
-// src/components/DonationCard.jsx
 import React from "react";
 
 function DonationCard({ drive }) {
@@ -9,7 +8,6 @@ function DonationCard({ drive }) {
 
   return (
     <div className="w-full md:w-[38%] rounded-xl border-disabled overflow-hidden shadow border bg-white">
-      {/* Image or primary placeholder */}
       <div className="h-28 bg-primary flex items-center justify-center">
         {drive.image_url ? (
           <img
@@ -21,13 +19,18 @@ function DonationCard({ drive }) {
       </div>
 
       <div className="p-4">
-        <h3 className="text-lg font-satoshi-black text-gray-800">{drive.title}</h3>
-        <p className="text-sm text-black font-satoshi-medium line-clamp-2">{drive.description}</p>
+        <h3 className="text-lg font-satoshi-black text-gray-800">
+          {drive.title}
+        </h3>
+        <p className="text-sm text-black font-satoshi-medium line-clamp-2">
+          {drive.description}
+        </p>
 
         {/* Progress bar */}
         <div className="mt-4">
           <p className="text-sm text-black font-satoshi-medium">
-            ₱{drive.total_amount_donated.toLocaleString()} of ₱{drive.target_cost.toLocaleString()} funded
+            ₱{drive.total_amount_donated.toLocaleString()} of ₱
+            {drive.target_cost.toLocaleString()} funded
           </p>
           <div className="w-full h-2 bg-gray-200 rounded-full mt-1">
             <div
@@ -40,7 +43,9 @@ function DonationCard({ drive }) {
         {/* Footer info */}
         <div className="mt-4 flex justify-between text-sm text-black font-satoshi-medium">
           <p>{new Date(drive.created_at).toLocaleDateString()}</p>
-          <p className="text-primary font-satoshi-medium">{drive.donation_count} Donations</p>
+          <p className="text-primary font-satoshi-medium">
+            {drive.donation_count} Donations
+          </p>
         </div>
       </div>
     </div>
