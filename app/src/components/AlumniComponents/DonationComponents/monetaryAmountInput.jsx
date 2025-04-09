@@ -1,5 +1,5 @@
 import React from 'react'
-import { Cloud } from 'lucide-react';
+
 
 function MonetaryAmountInput({
     monetaryAmountInput,

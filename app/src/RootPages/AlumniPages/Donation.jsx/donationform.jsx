@@ -4,6 +4,7 @@ import DonationType from '../../../components/AlumniComponents/DonationComponent
 import MonetaryAmountInput from "../../../components/AlumniComponents/DonationComponents/monetaryAmountInput";
 import DonationInstructions from "../../../components/AlumniComponents/DonationComponents/donationInstructions";
 import PaymentProof from "../../../components/AlumniComponents/DonationComponents/paymentProof";
+import DonationOptions from "../../../components/AlumniComponents/DonationComponents/donationOptions";
 
 function Donationform() {
     // UseState for checking if the buttons are activated
@@ -13,14 +14,18 @@ function Donationform() {
     // Money donation amount
     const [monetaryAmountInput, setMonetaryAmountInput] = useState(0);
 
+    // File handling
+    const fileInputRef = useRef(null);
+    const [fileName, setFileName] = useState('');
+
     return (
-        <div className='flex flex-row mx-48 my-16'>
+        <div className='flex flex-row mx-48 my-16 gap-5'>
             {/* Make a Donation Part */}
             <div className='flex flex-col w-7/12'>
                 {/* Back button */}
-                <button className='text-primary flex gap-5'>
-                    <ArrowLeft size={30}/>
-                    <span className='font-satoshi-medium text-primary text-2xl'>Back</span>
+                <button className='text-primary flex gap-5 cursor-pointer'>
+                    <ArrowLeft size={25}/>
+                    <span className='font-satoshi-medium text-primary text-xl'>Back</span>
                 </button>
 
                 {/* Make a donation title */}
@@ -58,8 +63,22 @@ function Donationform() {
                     <DonationInstructions/>
 
                     {/* Proof of payment */}
-                    <PaymentProof/>
+                    <PaymentProof fileInputRef={fileInputRef} fileName={fileName} setFileName={setFileName}/>
+
+                    {/* Donation Options */}
+                    <DonationOptions/>
+
+                    {/* Submit Button */}
+                    <button className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto">
+                        Submit
+                    </button>
                 </div>
+
+                
+            </div>
+            {/* PLACEHOLDER FOR MAR's COMPONENT */}
+            <div className="outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-1/3 h-full">
+                SAMPLE
             </div>
         </div>
     )

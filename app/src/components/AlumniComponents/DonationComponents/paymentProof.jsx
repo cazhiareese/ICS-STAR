@@ -1,9 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { CloudUpload } from 'lucide-react';
 
-function PaymentProof() {
-    const fileInputRef = useRef(null);
-    const [fileName, setFileName] = useState('');
+function PaymentProof(
+    {fileInputRef,
+    fileName,
+    setFileName
+    }
+) {
+
 
     // Triggered when a user selects a file through the file picker.
     const handleFileChange = (e) => {
