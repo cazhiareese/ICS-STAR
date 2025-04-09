@@ -23,9 +23,9 @@ function PendingDonationsTable({ data }) {
                 className="hover:bg-gray-100 cursor-pointer"
                 // onClick={() => navigate(`/admin/donations/${donation.donation_id}`)}
                 >
-                <td className="py-3 px-4 flex items-center">{donation.date}</td>
-                <td className="py-3 px-4">{donation.donor}</td>
-                <td className="py-3 px-4">{donation.details}</td>
+                <td className="py-3 px-4 flex items-center">{donation.date_donated}</td>
+                <td className="py-3 px-4">{donation.name}</td>
+                <td className="py-3 px-4">{donation.donation_details}</td>
             </tr>
             ))}
         </tbody>
