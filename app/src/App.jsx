@@ -90,6 +90,15 @@ function App() {
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="*" element={<Unauthorized />} />
+
+            <Route
+            path="setup"
+            element={
+              <OnboardingProvider>
+                <OnBoarding />
+              </OnboardingProvider>
+            }
+            />
           </Route>
         </>
       )}

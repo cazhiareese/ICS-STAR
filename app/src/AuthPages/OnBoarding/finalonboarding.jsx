@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import "../../index.css";
 import Constellation from "../../assets/SignupAssets/constellationMain.png"
-// import
-function FinalOnboarding() {
+import { OnboardingProvider, useOnboardingContext } from "../AuthContext/onboardingcontext";
+import { useNavigate } from 'react-router-dom';
 
+function FinalOnboarding() {
+    const {userType} = useOnboardingContext();
+    const navigate = useNavigate();
     return (
     <>
         <div className="flex flex-col bg-white items-center justify-start font-satoshi-regular text-3xl space-y-6 -mt-20 overflow-hidden">
@@ -22,7 +25,15 @@ function FinalOnboarding() {
                 </label>
             </div>
 
-            <div className="w-80 h-20 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl my-30">
+            <div className="w-80 h-20 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl my-30"
+            onClick={()=> {
+
+                if (userType == "student"){
+                    navigate('/student')
+                } else {
+                    navigate('/alumni')
+                }
+            }}>
                 <label className="font-satoshi-bold">Start Exploring!</label>
             </div>
         </div>
