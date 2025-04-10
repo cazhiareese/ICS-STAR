@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 export default function DonationCard({driveId}) {
+  console.log(driveId);
   // Sample data — you can replace these values or pass them as props.
   
   // const percentageFunded = Math.round((currentRaised / goalAmount) * 100);
@@ -14,7 +15,7 @@ export default function DonationCard({driveId}) {
   useEffect(() => {
           const token = localStorage.getItem("token"); // if required
       
-          fetch(`https://ics-star-api.vercel.app/one-donation-drive/${driveId}`, {
+          fetch(`https://ics-star-api.vercel.app/one-donation-drive/${driveId.driveid}`, {
             headers: {
               Authorization: `Bearer ${token}`, // only if the API requires auth
             },
@@ -29,7 +30,7 @@ export default function DonationCard({driveId}) {
               console.log("Drive details:", data);
             })
             .catch((err) => {
-              console.error("Error f   etching drive details:", err);
+              console.error("Error fetching drive details:", err);
             });
         }, [driveId]);
       

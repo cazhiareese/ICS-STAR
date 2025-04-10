@@ -2,8 +2,6 @@ import React, { useContext, useState, useEffect } from "react";
 import { Paperclip } from 'lucide-react';
 
 function DonationMainView({ driveId }) {
-    console.log(driveId.driveid);
-
     // const [image, setImage] = useState("null")
     const [driveDetails, setDriveDetails] = useState(null);
     useEffect(() => {
