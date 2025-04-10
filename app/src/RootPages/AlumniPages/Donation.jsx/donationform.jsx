@@ -8,9 +8,11 @@ import DonationOptions from "../../../components/AlumniComponents/DonationCompon
 import DonationDetailsInput from "../../../components/AlumniComponents/DonationComponents/donationDetailsInput";
 import check from "../../../assets/check.png";
 import axios from "axios";
+import CircularLoading from "../../../components/LoadingComponents/circularloading";
 
 function Donationform() {
     const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
+    const formattedDate = new Date().toLocaleDateString();
     // UseState for checking if the buttons are activated
     const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
     const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
@@ -211,15 +213,40 @@ function Donationform() {
             </div> 
         ) : (
             /* Donation Submitted Prompt */
-            <div className="flex justify-center items-center w-full h-full mt-30">
+            <div className="flex justify-center items-center w-full h-full my-30">
                 <div className="flex flex-col w-1/2 items-center">
                     <img className="w-15 h-15 rounded-full" src={check} alt="check" />
                     <h1 className="font-satoshi-bold text-3xl pt-5">Donation Submitted</h1>
                     <p className="font-satoshi-light text-lg pt-5 w-2/3 text-center">Your donation will be reflected once it has been reviewed and verified by our admin team.</p>
 
                     <div className="flex flex-col w-full items-start mx-10">
-                        <h1 className="font-satoshi-bold text-xl pt-5 text-left">Donation Summary</h1>
-                        {/* TODO: Add border below */}
+                        <h1 className="font-satoshi-bold text-xl pt-5 text-left border-b-1 border-neutral-300 w-full pb-3">Donation Summary</h1>
+                        {/* Donation details */}
+                        <div className="flex flex-row w-full pt-5 items-center pl-20">
+                            <div className="w-1/2">
+                                <ol className="font-satoshi-regular space-y-4">
+                                    <li>Donation Drive</li>
+                                    <li>Date</li>
+                                    <li>User</li>
+                                    <li>Status</li>
+                                    <li>Amount</li>
+                                </ol>
+                            </div>
+
+                            <div className="w-1/2">
+                                {/* TODO EDIT DUMMY DATA LATER */}
+                                <ol className="font-satoshi-regular space-y-4">
+                                    <li>Pakain for ICS</li>
+                                    <li>{formattedDate}</li>
+                                    <li>Cyrus Par</li>
+                                    <li>Pending Acknowledgement</li>
+                                    <li>{monetaryAmountInput}</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <button className="mt-10 rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/4 h-12 ml-auto cursor-pointer">
+                            Done
+                        </button>
                     </div>
                 </div>
             </div>
