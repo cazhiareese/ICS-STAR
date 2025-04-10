@@ -35,6 +35,7 @@ import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlandin
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
+
 import { jwtDecode } from "jwt-decode";
 const isSignedIn = !!localStorage.getItem("token");
 
@@ -112,10 +113,6 @@ function App() {
             <Route path="dashboard" element={<AdminDashboardLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
-              <Route
-                path="user-reports"
-                element={<AdminUserInformationReport />}
-              />
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
