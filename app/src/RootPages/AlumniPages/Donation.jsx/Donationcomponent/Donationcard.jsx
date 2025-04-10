@@ -12,7 +12,8 @@ console.log(token);
 
   const handleClick = () => {
     console.log(`Card clicked! ${drive.drive_id}`);
-    window.location.href = `/alumni/donationforms/${drive.drive_id}`;
+    window.location.href = `/alumni/donations/${drive.drive_id}`;
+    //window.location.href = `/alumni/donationforms/${drive.drive_id}`; mar to janry
   }
   return (
     <div onClick={handleClick} className="w-full md:w-[45%] rounded-[20px] border-disabled overflow-hidden shadow border bg-white">
