@@ -1,9 +1,10 @@
 import React, {useState} from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { MoveLeft } from 'lucide-react'
 import ExpandedPendingDonations from '../../../components/AdminComponents/expandedpendingdonations'
 
 function AdminPendingDonations() {
+  const navigate = useNavigate()
   const {driveid} = useParams()
   const [pendingDonations, setPendingDonations] = useState([
     {
