@@ -37,6 +37,7 @@ import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
 
 import { jwtDecode } from "jwt-decode";
+import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -61,6 +62,8 @@ function App() {
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
+          {/* REMOVE LATER */}
+          <Route path="alumni/donationforms" element={<DonationForm />} />
           <Route path="login" element={<LoginPage />} />
           <Route
             path="signup"
@@ -90,6 +93,7 @@ function App() {
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="alumni/donationforms" element={<DonationForm />} />
             <Route path="*" element={<Unauthorized />} />
           </Route>
         </>
