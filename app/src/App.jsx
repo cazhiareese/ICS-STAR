@@ -61,8 +61,6 @@ function App() {
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
-          {/* REMOVE LATER */}
-          <Route path="alumni/donationforms" element={<DonationForm />} />
           <Route path="login" element={<LoginPage />} />
           <Route
             path="signup"
@@ -92,7 +90,8 @@ function App() {
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
-            <Route path="alumni/donationforms" element={<DonationForm />} />
+            {/* TODO: Add params for drive_id */}
+            <Route path="alumni/donationforms" element={<DonationForm />} /> 
             <Route path="*" element={<Unauthorized />} />
           </Route>
         </>
