@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 
 export default function DonationCard({driveId}) {
-  console.log(driveId);
+  console.log("malupey");
+  console.log(driveId.driveid);
   // Sample data — you can replace these values or pass them as props.
   
   // const percentageFunded = Math.round((currentRaised / goalAmount) * 100);
@@ -9,7 +10,7 @@ export default function DonationCard({driveId}) {
   const [goalAmount, setGoalAmount] = useState(0)
   const [currentRaised, setCurrentRaised] = useState(0)
   const [numberOfDonations, setNumberOfDonations] = useState(0)
-  const [percentageFunded, setPercentageFunded] = useState("")
+  const [percentageFunded, setPercentageFunded] = useState(driveId.percentageFunded)
   const [driveDetails, setDriveDetails] = useState(null);
 
   useEffect(() => {
@@ -23,10 +24,10 @@ export default function DonationCard({driveId}) {
             .then((res) => res.json())
             .then((data) => {
               setDriveDetails(data);
-              setPercentageFunded(driveDetails.fund_percentage)
-              setNumberOfDonations(driveDetails.donation_count)
-              setCurrentRaised(driveDetails.total_amount_donated)
-              setGoalAmount(driveDetails.target_cost)
+              // setPercentageFunded(driveDetails.fund_percentage)
+              // setNumberOfDonations(driveDetails.donation_count)
+              // setCurrentRaised(driveDetails.total_amount_donated)
+              // setGoalAmount(driveDetails.target_cost)
               console.log("Drive details:", data);
             })
             .catch((err) => {
@@ -44,27 +45,27 @@ export default function DonationCard({driveId}) {
       </div>
       <div className="flex justify-between items-center mb-2 pt-5">
         <h2 className="text-2xl font-satoshi-black text-primary">
-          {percentageFunded}% Funded
+          {driveDetails.fund_percentage}% Funded
         </h2>
         
       </div>
 
       {/* Raised Amount */}
       <p className="font-medium text-primary font-satoshi-light">
-        ₱{currentRaised.toLocaleString()} raised of <label className="text-gray-500">₱{goalAmount.toLocaleString()}</label>
+        ₱{driveDetails.total_amount_donated.toLocaleString()} raised of <label className="text-gray-500">₱{driveDetails.target_cost.toLocaleString()}</label>
       </p>
 
       {/* Progress Bar */}
       <div className="relative my-2 h-2 text-primary rounded font-satoshi-light">
         <div
           className="bg-blue-900 h-full rounded transition-all duration-300"
-          style={{ width: `${percentageFunded}%` }}
+          style={{ width: `${driveDetails.fund_percentage}%` }}
         ></div>
       </div>
 
       {/* Donation Count */}
       <p className="text-sm text-primary mb-4 ml-auto w-25">
-        {numberOfDonations} Donations
+        {driveDetails.donation_count} Donations
       </p>
 
       {/* Info Section */}
