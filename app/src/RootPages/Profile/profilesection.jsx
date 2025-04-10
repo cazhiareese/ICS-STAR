@@ -8,8 +8,10 @@ import {
   Check,
 } from "lucide-react";
 import SaveConfirmationModal from "./components/savemodal";
-import prince from "../../assets/prince boy.jpg";
+
+import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
+import CircularLoading from "../../components/LoadingComponents/circularloading";
 
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [showModal, setShowModal] = useState(false);
@@ -38,7 +40,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
 
         if (response.ok) {
           const result = await response.json();
-          setProfilePicture(result.profile_picture || prince);
+          setProfilePicture(result.profile_picture || defaultimage);
         } else {
           console.error("Failed to fetch profile picture");
         }
@@ -142,7 +144,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
         <span className="relative">
           <span className="w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
             <img
-              src={profilePicture || prince}
+              src={profilePicture || defaultimage}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -179,9 +181,14 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
             </>
           ) : (
             <>
-              <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
-                {userDetails.first_name} {userDetails.last_name}
-              </h2>
+              {userDetails.first_name && userDetails.last_name ? (
+                <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
+                  {userDetails.first_name} {userDetails.last_name}
+                </h2>
+              ) : (
+                <CircularLoading />
+              )}
+
               <p className="text-[16px] sm:text-[20px] text-black">
                 {userDetails.email}
               </p>

@@ -5,8 +5,56 @@ const OnboardingContext = createContext();
 export function OnboardingProvider({ children }) {
     const [currentSection, setCurrentSection] = useState(0);
 
+
+    const [name, setName] = useState("___")
+    const [email, setEmail] = useState("___")
+    const [userType, setUserType] = useState("___")
+
+
+    const [userData, setUserData] = useState({
+        profilePicture: null,
+        scholarshipList: [],
+        affiliationList:[],
+        roleList:[],
+        jobTitle: "",
+        companyName: "",
+        industrySector: "",
+        workType: "",
+        employmentType: "",
+        tenureStatus: "",
+        sameAsBase: false,
+        salaryRange: 11,
+        remote: false,
+        reason: [],
+        workCountry: "",
+        workCity: "",
+        baseCity:"",
+        baseCountry: "",
+        sameWorkBase: false,
+        remote: false,
+        skillsInterests: [],
+        profilePictureFile: null,
+        suggestions: [
+            "Artificial Intelligence",
+            "Cybersecurity",
+            "Web Development",
+            "Game Development",
+            "Machine Learning",
+            "UI/UX Designing",
+            "Mobile Development",
+            "Frontend Developing",
+        ]
+    });
+
+    const updateUserData = (field, value) => {
+        setUserData((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
+
     return (
-        <OnboardingContext.Provider value={{ currentSection, setCurrentSection }}>
+        <OnboardingContext.Provider value={{ setUserData, userData, updateUserData, email, setEmail, currentSection, setCurrentSection, name, setName, userType, setUserType}}>
             {children}
         </OnboardingContext.Provider>
     );
