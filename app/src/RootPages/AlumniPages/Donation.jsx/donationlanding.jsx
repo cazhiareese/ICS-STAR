@@ -7,12 +7,39 @@ function DonationLanding() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [generalDrive, setGeneralDrive] = useState(null);
+  console.log(generalDrive);
+
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
 
   useEffect(() => {
+    const fetchGeneralDrive = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/gen-donation-drive`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to fetch general donation drive");
+        }
+  
+        const data = await response.json();
+        setGeneralDrive(data);
+      } catch (err) {
+        console.error("Error fetching general donation drive:", err);
+        // optionally set an error state or silently fail
+      }
+    };
+  
+    if (token) {
+      fetchGeneralDrive();
+    }
+
     const fetchDonationDrives = async () => {
       if (!token) {
         setError("User not authenticated");

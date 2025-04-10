@@ -1,7 +1,7 @@
 import React from "react";
 
 function DonationCard({ drive }) {
-  console.log(drive);
+
 
 const token = localStorage.getItem("token");
 console.log(token);
