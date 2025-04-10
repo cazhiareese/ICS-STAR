@@ -6,7 +6,9 @@ function DonationType({
     isMonetaryTypeOpen,
     isInKindTypeOpen,
     setIsMonetaryTypeOpen,
-    setIsInKindTypeOpen
+    setIsInKindTypeOpen,
+    setIsInKindType={setIsInKindType},
+    setIsMonetaryType={setIsMonetaryType}
 }) {
     // Monetary donation button
     if (donationType == 'monetary') {
@@ -15,7 +17,9 @@ function DonationType({
             <button className={`cursor-pointer flex flex-col w-35 h-35 rounded-3xl outline-1 px-5 py-6 gap-7 items-baseline ${isMonetaryTypeOpen ? 'outline-primary' : 'outline-black'}`}
             onClick={() => {
                 setIsMonetaryTypeOpen(true);
+                setIsMonetaryType(true);
                 setIsInKindTypeOpen(false);
+                setIsInKindType(false);
               }}
             > 
                 <h1 className={`${isMonetaryTypeOpen ? 'text-primary' : 'text-black'}`}><BanknoteIcon size={40}/></h1>
@@ -31,7 +35,9 @@ function DonationType({
             <button className={`cursor-pointer flex flex-col w-35 h-35 rounded-3xl outline-1 px-5 py-6 gap-7 items-baseline ${isInKindTypeOpen ? 'outline-primary' : 'outline-black'}`}
             onClick={() => {
                 setIsMonetaryTypeOpen(false);
+                setIsMonetaryType(false);
                 setIsInKindTypeOpen(true);
+                setIsInKindType(true);
                 console.log("Inkinnd open")
               }}
             > 
