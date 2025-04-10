@@ -13,6 +13,10 @@ export default function DonationCard({driveId}) {
   const [percentageFunded, setPercentageFunded] = useState(driveId.percentageFunded)
   const [driveDetails, setDriveDetails] = useState(null);
 
+  const handledonationform = () => {
+    window.location.href = `/alumni/donationforms/${driveId.driveid}`;
+  }
+
   useEffect(() => {
           const token = localStorage.getItem("token"); // if required
       
@@ -83,7 +87,7 @@ export default function DonationCard({driveId}) {
       </div>
 
       {/* Donation Button */}
-      <button className="w-full bg-blue-900 text-white text-base py-3 rounded-lg cursor-pointer">
+      <button onClick={handledonationform} className="w-full bg-blue-900 text-white text-base py-3 rounded-lg cursor-pointer">
         Make a donation
       </button>
     </div>
