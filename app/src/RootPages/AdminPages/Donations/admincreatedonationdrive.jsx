@@ -192,7 +192,7 @@ function AdminCreateDonationDrive() {
               ) : (
                 <div className=''>
                   <p className="text-xl font-satoshi-medium text-center mt-4">
-                    Are you sure you want to close this donation drive?
+                    Are you sure you want to create this donation drive?
                   </p>
                   <div className="flex gap-3 mt-6 w-full h-full justify-center">
                     <button
