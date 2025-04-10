@@ -47,7 +47,7 @@ function AdminDonations() {
       {/* HELP ICS */}
       <div className='border border-gray-300 rounded-xl flex py-4 cursor-pointer hover:border-primary' onClick={() => {navigate("/admin/donations/help-ics")}}>
         {/* Help ICS */}
-        <div className='flex flex-row text-2xl items-center justify-center flex-1'> 
+        <div className='flex flex-row text-2xl items-center justify-center flex-1 gap-2'> 
           <HandCoins/>
           <h2 className='font-satoshi-medium'>Help ICS</h2>
         </div>
