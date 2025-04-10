@@ -91,7 +91,7 @@ function App() {
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
-            <Route path="alumni/donations/1" element={<Donation />} />
+            <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="*" element={<Unauthorized />} />
 
