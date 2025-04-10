@@ -129,9 +129,9 @@ function Donationform() {
     return (
         <>
             {!donationSuccess ? (
-                <div className='flex flex-row mx-48 my-16 gap-5'>
+                <div className='flex lg:flex-row flex-col md:mx-48 mx-12 my-16 gap-5'>
                     {/* Make a Donation Part */}
-                    <div className='flex flex-col w-7/12'>
+                    <div className='flex flex-col lg:w-7/12 w-full'>
                         {/* Back button */}
                         <button className='text-primary flex gap-5 cursor-pointer'>
                             <ArrowLeft size={25} />
