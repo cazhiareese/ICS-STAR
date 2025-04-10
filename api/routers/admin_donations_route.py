@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, GenericDriveOut
 from config.database import get_db
-from util.admin_donations_logic import search_donation_drives, view_donation_drive, get_percent_funded, update_generic_drive_stats, get_all_closed_drives, get_all_open_drives
+from util.admin_donations_logic import search_donation_drives, view_donation_drive, get_percent_funded, get_all_closed_drives, get_all_open_drives
 import datetime
 from uuid import UUID
 
