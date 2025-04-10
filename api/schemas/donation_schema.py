@@ -70,7 +70,7 @@ class DonationHistoryOut(BaseModel):
 class AdminDonationDriveOut(BaseModel):
     drive_id: UUID
     title: str
-    created_at: datetime
+    created_at: str
     donation_count: int
     percent_funded: float
     amount_raised: float
@@ -93,6 +93,14 @@ class AdminOneDonationDriveOut(BaseModel):
 class PercentOut(BaseModel):
     percent_funded: float
     remaining_percent: float
+
+    class Config:
+        from_attributes = True
+
+class GenericDriveOut(BaseModel):
+    total_amount: float
+    total_in_kind: int
+    number_of_unverified: int
 
     class Config:
         from_attributes = True

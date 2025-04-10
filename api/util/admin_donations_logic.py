@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation
-from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut
+from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, GenericDriveOut
 import datetime
 from uuid import UUID
 
@@ -74,10 +74,91 @@ def search_donation_drives(
         total_percentage = percent_info.percent_funded
         remaining_percentage = percent_info.remaining_percent
 
+        # Format created_at date to Month DD, YYYY
+        date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
         drive_out = AdminDonationDriveOut(
             drive_id = drive.drive_id,
             title = drive.title,
-            created_at = drive.created_at,
+            created_at = date_created,
+            donation_count = total_count,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            remaining_percent = remaining_percentage,
+        )
+        drive_out_list.append(drive_out)
+
+    return drive_out_list
+
+def get_all_open_drives(db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+    
+    drives = query.all()
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate monetary donation count
+        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+        
+        # Calculate in-kind donation count separately without referencing the 'amount' column
+        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
+        
+        total_count = monetary_count + inkind_count
+        
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+        remaining_percentage = percent_info.remaining_percent
+
+        # Format created_at date to Month DD, YYYY
+        date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            created_at = date_created,
+            donation_count = total_count,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            remaining_percent = remaining_percentage,
+        )
+        drive_out_list.append(drive_out)
+
+    return drive_out_list
+
+def get_all_closed_drives(db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate monetary donation count
+        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+        
+        # Calculate in-kind donation count separately without referencing the 'amount' column
+        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
+        
+        total_count = monetary_count + inkind_count
+        
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+        remaining_percentage = percent_info.remaining_percent
+
+        # Format created_at date to Month DD, YYYY
+        date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            created_at = date_created,
             donation_count = total_count,
             percent_funded = total_percentage,
             amount_raised = total_amount,
@@ -96,6 +177,9 @@ def search_donation_drives(
 # Returns: AdminOneDonationDriveOut object containing details of the donation drive
 def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+
+    if not drive:
+        return []
     
     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id,MonetaryDonation.is_acknowledged == True).scalar() or 0
     
@@ -226,6 +310,9 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
 def get_percent_funded(db: Session, drive_id: UUID) -> PercentOut:
     drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
 
+    if not drive:
+        return []
+
     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id,MonetaryDonation.is_acknowledged == True).scalar() or 0 
 
     # Calculate percentage
@@ -237,4 +324,31 @@ def get_percent_funded(db: Session, drive_id: UUID) -> PercentOut:
     return PercentOut(
         percent_funded=round(total_percentage, 2),
         remaining_percent=round(remaining_percentage, 2)
+    )
+
+# TODO
+# Update the generic drive statistics
+#
+# Arguments:
+# db: Session - database session
+# drive_id: UUID of the generic drive (hardcoded)
+#
+# Returns: GenericDriveOut object containing the total monetary amount, total in-kind donations, and the number of unverified donations
+# def update_generic_drive_stats(db: Session, drive_id: UUID):
+#     # Get the generic drive by hardcoded ID
+#     generic_drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+
+#     # Get the total amount of monetary donations for the generic drive
+#     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+#     # Get the total in-kind donations for the generic drive
+#     total_in_kind = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive_id).scalar() or 0
+
+#     # Get the number of unverified donations for the generic drive
+#     number_of_unverified = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == False).scalar() or 0
+
+#     return GenericDriveOut(
+#         total_amount=total_amount,
+#         total_in_kind=total_in_kind,
+#         number_of_unverified=number_of_unverified
     )
