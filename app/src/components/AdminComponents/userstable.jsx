@@ -25,7 +25,7 @@ function UsersTable({ data }) {
             {data.map((user, index) => (
                 <tr
                 key={index}
-                className="hover:bg-gray-100 cursor-pointer"
+                className="hover:bg-secondary cursor-pointer"
                 onClick={() => navigate(`/admin/records/${user.user_id}`)}
                 >
                 <td></td>

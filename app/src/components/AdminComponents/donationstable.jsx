@@ -22,7 +22,7 @@ function DonationsTable({ data }) {
             {data.map((donation, index) => (
                 <tr
                 key={index}
-                className="hover:bg-gray-100 cursor-pointer"
+                className="hover:bg-secondary cursor-pointer"
                 onClick={() => navigate(`/admin/donations/${donation.drive_id}`)}
                 >
                 <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold">{donation.title}</td>
