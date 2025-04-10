@@ -2,13 +2,17 @@ import React, { useContext, useState, useEffect } from "react";
 // import { Paperclip } from 'lucide-react';
 import DonationMainView from "./donationMainView";
 import DonationCard from "./donationDonateView";
+import { useParams } from "react-router-dom";
 
 function DonationInfo({driveID}) {
+
+  const drive_id = useParams();
+
 
     // const [donationDrives, setDonationDrives] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [donationID, setDonationID] = useState("204eab7c-8c62-4669-b8d5-08d68c1fbb3b")
+  const [donationID, setDonationID] = useState(drive_id)
 
   
   useEffect(() => {
