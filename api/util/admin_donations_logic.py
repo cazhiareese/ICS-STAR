@@ -59,21 +59,20 @@ def search_donation_drives(
     drive_out_list = []
     for drive in drives:
         # Calculate monetary donation count
-        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id).scalar() or 0
+        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
         # Calculate in-kind donation count separately without referencing the 'amount' column
         inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
         
         total_count = monetary_count + inkind_count
         
-        # Calculate amount raised by summing up the amount in monetary_donation table only
-        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id).scalar() or 0
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
 
-        # Calculate percent funded by dividing amount raised by target cost (two decimal places)
-        total_percentage = get_percent_funded(db, drive.drive_id).percent_funded
-        
-        remaining_percentage = get_percent_funded(db, drive.drive_id).remaining_percent
-
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+        remaining_percentage = percent_info.remaining_percent
 
         drive_out = AdminDonationDriveOut(
             drive_id = drive.drive_id,
@@ -98,9 +97,11 @@ def search_donation_drives(
 def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
     
-    # Calculate goal progress (percent funded)
-    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id).scalar() or 0
-    total_percentage = get_percent_funded(db, drive.drive_id).percent_funded
+    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id,MonetaryDonation.is_acknowledged == True).scalar() or 0
+    
+    percent_info = get_percent_funded(db, drive.drive_id)
+    total_percentage = percent_info.percent_funded
+    remaining_percentage = percent_info.remaining_percent
 
     # Get pending monetary donations with user information
     pending_monetary_details = db.query(
@@ -212,21 +213,19 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         current_amount = total_amount,
         target_cost = drive.target_cost,
         is_closed = drive.is_closed,
-        remaining_percent = get_percent_funded(db, drive.drive_id).remaining_percent,
+        remaining_percent = remaining_percentage,
     )
 
-def get_percent_funded(db: Session, drive_id: UUID) -> float:
-    # Get the donation drive
+def get_percent_funded(db: Session, drive_id: UUID) -> PercentOut:
     drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
 
-    # Calculate the total amount raised
-    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id).scalar() or 0 
+    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id,MonetaryDonation.is_acknowledged == True).scalar() or 0 
 
     # Calculate percentage
     total_percentage = (total_amount / drive.target_cost) * 100 if drive.target_cost else 0
 
     # Calculate remaining percent
-    remaining_percentage = 100 - total_percentage
+    remaining_percentage = 100 - total_percentage if total_percentage <= 100 else 0
 
     return PercentOut(
         percent_funded=round(total_percentage, 2),
