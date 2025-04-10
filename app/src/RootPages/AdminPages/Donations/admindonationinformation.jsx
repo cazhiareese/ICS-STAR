@@ -21,6 +21,9 @@ function AdminDonationInformation() {
   const [isClosed, setIsClosed] = useState(false)
   const [viewDetailsModal, setViewDetailsModal] = useState(false) 
   const [editing, setEditing] = useState(false)
+  const [closeDonation, setCloseDonation] = useState(false)
+  const [closeDonationLoading, setCloseDonationLoading] = useState(false)
+  const [transitionComplete, setTransitionComplete] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -156,7 +159,7 @@ function AdminDonationInformation() {
           ) : (
             <>
               {/* Close Drive */}
-              <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'>
+              <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {setCloseDonation(true)}}>
                 <p className='font-satoshi-light'>Close Drive</p>
               </button>
             </>
@@ -226,6 +229,7 @@ function AdminDonationInformation() {
       <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
         <VerifiedDonationsTable data={verifiedDonations}/>
       </div>
+      {/* View Details Modal */}
       {viewDetailsModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
             <div className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-lg min-w-md max-w-lg h-4/5">
@@ -273,6 +277,58 @@ function AdminDonationInformation() {
               {/* <button className="mt-4 bg-primary text-white px-4 py-2 rounded-3xl w-full cursor-pointer" onClick={() => {}}>
                 Limit Account Access
               </button> */}
+            </div>
+          </div>
+        )}
+        {/* Close Donation Confirmatino Modal */}
+        {closeDonation && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+            <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
+              {/* Loading Spinner */}
+              {closeDonationLoading ? (
+                <div className='h-full'>
+                  <CircularLoading />
+                </div>
+              ) : transitionComplete ? (
+                <>
+                  <div className="text-success">
+                    <CheckCircle size={48} />
+                  </div>
+                  <p className="text-xl font-satoshi-medium mt-4 text-center">
+                    Transition to Alumni Successful!
+                  </p>
+                  <button
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
+                    onClick={() => {
+                      setCloseDonation(false)
+                      setTransitionComplete(false)
+                      window.location.reload()
+                    }}
+                  >
+                    Close
+                  </button>
+                </>
+              ) : (
+                <div className=''>
+                  <p className="text-xl font-satoshi-medium text-center mt-4">
+                    Are you sure you want to close this donation drive?
+                  </p>
+                  <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                    <button
+                      className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-300"
+                      onClick={() => setCloseDonation(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                      onClick={() => {}} //TODO: Add close donation drive
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
