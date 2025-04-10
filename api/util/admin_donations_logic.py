@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation
-from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut
+from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut
 import datetime
 from uuid import UUID
 
@@ -13,8 +13,8 @@ from uuid import UUID
 # db: Session - database session
 # search_string: str - string to search in the title of the donation drive
 # date_filter: str - filter for date range ("last_7_days", "this_week", "this_month", "this_year", "custom")
-# custom_created_at: datetime.date - start date for custom filter
-# custom_end_date: datetime.date - end date for custom filter
+# custom_created_at: datetime.date - start date for custom filter (MM/DD/YYYY)
+# custom_end_date: datetime.date - end date for custom filter (MM/DD/YYYY)
 #
 # Returns: a list of AdminDonationDriveOut objects
 def search_donation_drives(
@@ -70,7 +70,9 @@ def search_donation_drives(
         total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id).scalar() or 0
 
         # Calculate percent funded by dividing amount raised by target cost (two decimal places)
-        total_percentage = (total_amount / drive.target_cost * 100) if drive.target_cost else 0
+        total_percentage = get_percent_funded(db, drive.drive_id).percent_funded
+        
+        remaining_percentage = get_percent_funded(db, drive.drive_id).remaining_percent
 
 
         drive_out = AdminDonationDriveOut(
@@ -78,8 +80,9 @@ def search_donation_drives(
             title = drive.title,
             created_at = drive.created_at,
             donation_count = total_count,
-            percent_funded = float("{:.2f}".format(total_percentage)),
+            percent_funded = total_percentage,
             amount_raised = total_amount,
+            remaining_percent = remaining_percentage,
         )
         drive_out_list.append(drive_out)
 
@@ -97,7 +100,7 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     
     # Calculate goal progress (percent funded)
     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id).scalar() or 0
-    total_percentage = (total_amount / drive.target_cost * 100) if drive.target_cost else 0
+    total_percentage = get_percent_funded(db, drive.drive_id).percent_funded
 
     # Get pending monetary donations with user information
     pending_monetary_details = db.query(
@@ -196,10 +199,31 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         })
 
     return AdminOneDonationDriveOut(
-        percent_funded = float("{:.2f}".format(total_percentage)),
+        drive_id = drive.drive_id,
+        title = drive.title,
+        percent_funded = total_percentage,
         pending_list = pending_verifications,
         verified_list = verified_donations,
         current_amount = total_amount,
         target_cost = drive.target_cost,
-        is_closed = drive.is_closed
+        is_closed = drive.is_closed,
+        remaining_percent = get_percent_funded(db, drive.drive_id).remaining_percent,
+    )
+
+def get_percent_funded(db: Session, drive_id: UUID) -> float:
+    # Get the donation drive
+    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+
+    # Calculate the total amount raised
+    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id).scalar() or 0 
+
+    # Calculate percentage
+    total_percentage = (total_amount / drive.target_cost) * 100 if drive.target_cost else 0
+
+    # Calculate remaining percent
+    remaining_percentage = 100 - total_percentage
+
+    return PercentOut(
+        percent_funded=round(total_percentage, 2),
+        remaining_percent=round(remaining_percentage, 2)
     )
