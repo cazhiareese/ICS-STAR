@@ -41,6 +41,8 @@ import AdminDonationsLayout from "./RootPages/AdminPages/Layouts/admindonationsl
 import AdminDonationInformation from "./RootPages/AdminPages/Donations/admindonationinformation";
 import AdminCreateDonationDrive from "./RootPages/AdminPages/Donations/admincreatedonationdrive";
 import AdminHelpIcs from "./RootPages/AdminPages/Donations/adminhelpics";
+import AdminPendingDonations from "./RootPages/AdminPages/Donations/adminpendingdonations";
+
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -134,6 +136,7 @@ function App() {
               <Route path=":driveid" element={<AdminDonationInformation/>}/>
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
               <Route path="help-ics/" element={<AdminHelpIcs/>}/>
+              <Route path="pending-donations/:driveid" element={<AdminPendingDonations/>}/>
             </Route>
           </Route>
         </>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MoveLeft } from 'lucide-react'
+import { MoveLeft, MoveRight } from 'lucide-react'
 import PendingDonationsTable from '../../../components/AdminComponents/pendingdonationstable'
 import VerifiedDonationsTable from '../../../components/AdminComponents/verifieddonationstable'
 
@@ -170,7 +170,7 @@ function AdminHelpIcs() {
             <p className='text-primary font-satoshi-medium text-lg'>Back to Donations List</p>
         </button>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Help ICS Out</h1>
-        <div className='h-2/5 f flex flex-row gap-2 mt-3'>
+        <div className='h-1/3 f flex flex-row gap-2 mt-3'>
             <div className='flex-1/3 border border-gray-300 rounded-2xl flex flex-col items-center gap-4 justify-center'>
                 <div className='flex flex-col items-center'>
                     <h2 className='font-satoshi-bold text-primary text-5xl'>P 123,456</h2>
@@ -186,6 +186,11 @@ function AdminHelpIcs() {
                 <div className='overflow-auto flex-1'>
                     <PendingDonationsTable data={pendingDonations}/>
                 </div>
+                <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {}}> 
+                    {/* TODO: Add HELP ICS Donation id navigation */}
+                    <p className='font-satoshi-light'> View all pending verifications </p>
+                    <MoveRight/>
+                </button>
             </div>
         </div>
         <h2 className='font-satoshi-medium text-black text-4xl my-5'>List of Donations</h2>

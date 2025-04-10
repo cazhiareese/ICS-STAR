@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { MoveLeft, X, Link } from 'lucide-react'
+import { MoveLeft, X, Link, MoveRight } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import VerifiedDonationsTable from "../../../components/AdminComponents/verifieddonationstable"
@@ -24,6 +24,7 @@ function AdminDonationInformation() {
   const [closeDonation, setCloseDonation] = useState(false)
   const [closeDonationLoading, setCloseDonationLoading] = useState(false)
   const [transitionComplete, setTransitionComplete] = useState(false)
+  const [noPendingDonations, setNoPendingDonations] = useState()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,10 +114,11 @@ function AdminDonationInformation() {
             "donation_details": "Boxes of canned goods and clothes"
           }
         ])
-    };
-
-    fetchData();
-  }, []);
+        setNoPendingDonations(Object.keys(pendingDonations).length === 0)
+      };
+      
+      fetchData();
+    }, []);
 
   const percent = 20;
 
@@ -209,13 +211,23 @@ function AdminDonationInformation() {
         {/* Pending donations table */}
         <div className='flex-2/3 border border-gray-300 rounded-xl p-6 w-full flex flex-col'>
           <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
-          <div className='w-full flex-1 overflow-auto'>
-            {Object.keys(pendingDonations).length === 0 ? (
+          <div className='w-full h-full flex-1 overflow-auto '>
+            {noPendingDonations ? (
             <p className='text-center text-gray-500'>No donations to verify</p>
           ) : (
+            <>
             <PendingDonationsTable data={pendingDonations} />
+            </>
           )} 
          </div>
+         {noPendingDonations ? (
+          <></>
+         ) : (
+           <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {navigate(`/admin/donations/pending-donations/${driveid}`)}}>
+            <p className='font-satoshi-light'> View all pending verifications </p>
+            <MoveRight/>
+          </button>
+          )}
         </div>
       </div>
       {/* Donations and filters */}
