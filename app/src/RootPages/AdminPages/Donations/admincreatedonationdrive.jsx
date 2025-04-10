@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { MoveLeft, Plus } from 'lucide-react'
+import { MoveLeft, Plus, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
@@ -11,6 +11,9 @@ function AdminCreateDonationDrive() {
 
   const fileInputRef = useRef(null);
   const [fileName, setFileName] = useState('');
+  const [transitionComplete, setTransitionComplete] = useState(false)
+  const [createConfirmation, setCreateConfirmation]= useState(false)
+  const [createConfirmationLoading, setCreateConfirmationLoading] = useState(false)
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -35,17 +38,16 @@ function AdminCreateDonationDrive() {
   const handleSupportingLinksChange = (e) => setSupportingLinks(e.target.value);
   
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setCreateLoading(true);
+    setCreateConfirmationLoading(true);
   
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('target_cost', parseFloat(targetAmount)); // Ensure it's a float
+    formData.append('target_cost', parseFloat(targetAmount));
   
     if (supportingLinks) {
       supportingLinks.split(',').forEach(link => {
-        formData.append('support_links', link.trim()); // Assuming the links are comma separated
+        formData.append('support_links', link.trim());
       });
     }
   
@@ -54,31 +56,22 @@ function AdminCreateDonationDrive() {
     }
   
     try {
-      console.log(formData)
-      // Axios POST request with form data
       const response = await axios.post(`${API_BASE_URL}/create-donation-drives`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Important for file uploads
+          'Content-Type': 'multipart/form-data',
         }
       });
   
-      const result = response; // Axios automatically parses JSON response
-      console.log(result)
-      // // Assuming the backend returns a success message or confirmation
-      // if (response.status === 200) {
-      //   alert('Donation drive created successfully:', result.message);
-      //   // Navigate to the donations list or show a success message
-      //   navigate('/donations');
-      // } else {
-      //   console.error('Error creating donation drive:', result);
-      // }
+      console.log(response);
+      setTransitionComplete(true); // show success checkmark
     } catch (error) {
       console.error('Error:', error);
+      alert("Something went wrong!");
+      setCreateConfirmation(false); // close modal on error
     } finally {
-      setCreateLoading(false)
+      setCreateConfirmationLoading(false);
     }
   };
-  
   
   return (
     <div className='p-6'>
@@ -160,17 +153,66 @@ function AdminCreateDonationDrive() {
         </div>
 
         <div className="flex justify-end">
-          {createLoading ? (
-            <div className='flex items-center justify-center border'>
-              <CircularLoading/>
-            </div>
-          ) : (
-          <button type="submit" className="bg-primary font-satoshi-medium text-white p-4 rounded-2xl hover:bg-secondary hover:text-primary cursor-pointer">
+          <button
+            type="button"
+            className="bg-primary font-satoshi-medium text-white p-4 rounded-2xl hover:bg-secondary hover:text-primary cursor-pointer"
+            onClick={() => setCreateConfirmation(true)}
+          >
             Create Donation Drive
           </button>
-          )}
         </div>
       </form>
+      {createConfirmation && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+            <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
+              {/* Loading Spinner */}
+              {createConfirmationLoading ? (
+                <div className='h-full'>
+                  <CircularLoading />
+                </div>
+              ) : transitionComplete ? (
+                <>
+                  <div className="text-success">
+                    <CheckCircle size={48} />
+                  </div>
+                  <p className="text-xl font-satoshi-medium mt-4 text-center">
+                    Successfully created donation drive!
+                  </p>
+                  <button
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
+                    onClick={() => {
+                      setCreateConfirmation(false)
+                      setTransitionComplete(false)
+                      window.location.reload()
+                    }}
+                  >
+                    Close
+                  </button>
+                </>
+              ) : (
+                <div className=''>
+                  <p className="text-xl font-satoshi-medium text-center mt-4">
+                    Are you sure you want to close this donation drive?
+                  </p>
+                  <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                    <button
+                      className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-300"
+                      onClick={() => setCreateConfirmation(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                      onClick={handleSubmit}
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
     </div>
   )
 }
