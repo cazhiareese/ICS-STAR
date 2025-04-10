@@ -4,7 +4,7 @@ import DonationMainView from "./donationMainView";
 import DonationCard from "./donationDonateView";
 import { useParams } from "react-router-dom";
 
-function DonationInfo({driveID}) {
+function DonationInfo() {
 
   const drive_id = useParams();
 
