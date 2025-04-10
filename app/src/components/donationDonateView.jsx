@@ -1,12 +1,39 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 
-export default function DonationCard() {
+export default function DonationCard({driveId}) {
   // Sample data — you can replace these values or pass them as props.
-  const goalAmount = 20000;
-  const currentRaised = 10000;
-  const numberOfDonations = 100;
-  const percentageFunded = Math.round((currentRaised / goalAmount) * 100);
+  
+  // const percentageFunded = Math.round((currentRaised / goalAmount) * 100);
 
+  const [goalAmount, setGoalAmount] = useState(0)
+  const [currentRaised, setCurrentRaised] = useState(0)
+  const [numberOfDonations, setNumberOfDonations] = useState(0)
+  const [percentageFunded, setPercentageFunded] = useState("")
+  const [driveDetails, setDriveDetails] = useState(null);
+
+  useEffect(() => {
+          const token = localStorage.getItem("token"); // if required
+      
+          fetch(`https://ics-star-api.vercel.app/one-donation-drive/${driveId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // only if the API requires auth
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              setDriveDetails(data);
+              setPercentageFunded(driveDetails.fund_percentage)
+              setNumberOfDonations(driveDetails.donation_count)
+              setCurrentRaised(driveDetails.total_amount_donated)
+              setGoalAmount(driveDetails.target_cost)
+              console.log("Drive details:", data);
+            })
+            .catch((err) => {
+              console.error("Error f   etching drive details:", err);
+            });
+        }, [driveId]);
+      
+  if (!driveDetails) return <p>Loading drive...</p>;
   return (
     <div className="max-w-sm border h-100 border-gray-300 rounded-2xl p-4 font-sans px-10 ">
       {/* Top Row: Percentage Funded and Status Pill */}
