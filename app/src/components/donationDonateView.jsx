@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 export default function DonationCard({driveId}) {
   console.log("malupey");
   console.log(driveId.driveid);
+  const navigate = useNavigate();
   // Sample data — you can replace these values or pass them as props.
   
   // const percentageFunded = Math.round((currentRaised / goalAmount) * 100);
@@ -14,7 +16,8 @@ export default function DonationCard({driveId}) {
   const [driveDetails, setDriveDetails] = useState(null);
 
   const handledonationform = () => {
-    window.location.href = `/alumni/donationforms/${driveId.driveid}`;
+    navigate(`/alumni/donationforms/${driveId.driveid}`);
+    //window.location.href = `/alumni/donationforms/${driveId.driveid}`;
   }
 
   useEffect(() => {

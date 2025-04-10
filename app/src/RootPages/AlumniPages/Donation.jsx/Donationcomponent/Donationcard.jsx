@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function DonationCard({ drive }) {
+const navigate = useNavigate();
 
 
 const token = localStorage.getItem("token");
@@ -12,7 +14,8 @@ console.log(token);
 
   const handleClick = () => {
     console.log(`Card clicked! ${drive.drive_id}`);
-    window.location.href = `/alumni/donations/${drive.drive_id}`;
+    //window.location.href = `/alumni/donations/${drive.drive_id}`;
+    navigate(`/alumni/donations/${drive.drive_id}`);
     //window.location.href = `/alumni/donationforms/${drive.drive_id}`; mar to janry
   }
   return (
