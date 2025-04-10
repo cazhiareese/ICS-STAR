@@ -12,7 +12,7 @@ function AdminPendingDonations() {
       time_donated: "16:30:00",
       donor: "John Doe",
       donation_type: "In-kind",
-      donation_description: "Solar Panel",
+      donation_details: "Solar Panel",
       proof_of_payment: "proof_john_doe.png"
     },
     {
@@ -20,7 +20,7 @@ function AdminPendingDonations() {
       time_donated: "11:41:00",
       donor: "Juan Dela Cruz",
       donation_type: "Monetary",
-      donation_amount: "₱5,000",
+      donation_details: "₱5,000",
       proof_of_payment: "proof_juan_dela_cruz.png"
     }
   ]);
@@ -50,7 +50,7 @@ function AdminPendingDonations() {
         <div className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-lg min-w-md max-w-lg h-4/5">
           {/* Header */}
           <div className="flex justify-between w-full items-center pb-2">
-            <h2 className="text-2xl font-satoshi-medium">Donation Details</h2>
+            <h2 className="text-2xl font-satoshi-medium text-primary">Review Donation</h2>
             <button className='rounded-full h-fit bg-error p-1 cursor-pointer' onClick={() => {setReviewDetailsModal(false)}}>
               <X className="w-5 h-5 text-white" />
             </button>
@@ -59,30 +59,41 @@ function AdminPendingDonations() {
           {/* Proof of Payment (placeholder bg for now) */}
           <div className='bg-primary h-1/3 w-full rounded-xl flex justify-center items-center text-white'>
             {selectedDonation.proof_of_payment}
-          </div> 
-
-          <div className='mb-5 flex flex-col w-full'>
-            <h1 className='font-satoshi-bold text-2xl'>{selectedDonation.donor}</h1>
-            <p className='font-satoshi-light'>
-              Date: {selectedDonation.date_donated} <br />
-              Time: {selectedDonation.time_donated}
-            </p>
           </div>
-
-          <div className='flex flex-col w-full flex-1'>
-            <h2 className='font-satoshi-light text-sm'>Donation Type</h2>
-            <p className='font-satoshi-regular text-sm'>{selectedDonation.donation_type}</p>
-            <h2 className='font-satoshi-light text-sm mt-2'>Details</h2>
-            <p className='font-satoshi-regular text-sm'>
-              {selectedDonation.donation_type === "Monetary"
-                ? selectedDonation.donation_amount
-                : selectedDonation.donation_description}
-            </p>
+           {/* Donation information */}
+          <div className='w-full h-full flex flex-col flex-1 px-10 text-xl items-center justify-center'>
+            {/* Donor */}
+            <div className='flex justify-between w-full'>
+              <p className='font-satoshi-light'>Donor: </p>
+              <p className='font-satoshi-medium'>{selectedDonation.donor}</p>
+            </div>
+            {/* Donation Type */}
+            <div className='flex justify-between w-full'>
+              <p className='font-satoshi-light'>Donation Type: </p>
+              <p className='font-satoshi-medium'>{selectedDonation.donation_type}</p>
+            </div>
+            {/* Donation Amount */}
+            <div className='flex justify-between w-full'>
+              <p className='font-satoshi-light'>Donation Description: </p>
+              <p className='font-satoshi-medium'>{selectedDonation.donation_details}</p>
+            </div>
+            {/* Date Donated */}
+            <div className='flex justify-between w-full'>
+              <p className='font-satoshi-light'>Date Donated: </p>
+              <p className='font-satoshi-medium'>{selectedDonation.date_donated}</p>
+            </div>
+            {/* Time Donated */}
+            <div className='flex justify-between w-full'>
+              <p className='font-satoshi-light'>Time Donated: </p>
+              <p className='font-satoshi-medium'>{selectedDonation.time_donated}</p>
+            </div>
           </div>
           {/* Buttons */}
           <div className='flex flex-row w-full gap-2 text-white font-satoshi-regular'>
-            <button className='bg-error rounded-3xl w-1/2 py-3'><p>Disapprove</p></button>
-            <button className='bg-primary rounded-3xl w-1/2 py-3'><p>Approve</p></button>
+            {/* TODO: Disapprove donation */}
+            <button className='bg-error rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-red-400'><p>Disapprove</p></button>
+            {/* TODO: Approve donation */}
+            <button className='bg-primary rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-hover'><p>Approve</p></button>
           </div>
         </div>
       </div>
