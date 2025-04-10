@@ -38,12 +38,12 @@ function MainPanelOnboarding() {
 
     return (
     <>
-        <div className="flex items-center justify-center h-screen">
-            <div className="flex flex-col items-center justify-start mt-10 z-20 bg-white w-[90%] max-h-[90%] border overflow-auto">
+        <div className="flex items-center justify-center">
+            <div className="flex flex-col items-center  z-20 bg-white w-[90%] h-[90%] border overflow-auto rounded-4xl">
                 <div className= "my-10">
                     {ProgressBar[currentSection]}
                 </div>
-                <div className="w-[100%]">
+                <div className="w-[100%] rounded-xl">
                     {OnboardingComponents[currentSection]}
                 </div>
             </div>

@@ -80,7 +80,7 @@ function AlumniSearch() {
   //   image: "https://i.pinimg.com/originals/09/f3/3e/09f33ecb3753807c45c29a3155aa1773.jpg"
   // }
 
-
+  //Function in generating search api request
   const search = () => {
       let filters = {}; // Initialize filter object
 
@@ -115,6 +115,7 @@ function AlumniSearch() {
       
   };
 
+  // Use effect for fetching data from api
   useEffect(() => {
     if (!hasMounted.current) {
         hasMounted.current = true;
@@ -144,17 +145,18 @@ function AlumniSearch() {
 
     fetchData();  // Fetch data when dependencies change
 
-}, [
-    selectedBatchYear, 
-    selectedGraduationYear, 
-    memoizedCareerList, 
-    memoizedAffiliationList, 
-    memoizedSkillsList, 
-    memoizedIndustryList, 
-    memoizedLocation,
+  }, [
+      selectedBatchYear, 
+      selectedGraduationYear, 
+      memoizedCareerList, 
+      memoizedAffiliationList, 
+      memoizedSkillsList, 
+      memoizedIndustryList, 
+      memoizedLocation,
 
-]);
+  ]);
 
+  // API url builder
   const buildSearchUrl = (filters) => {
       let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
       let queryParams = new URLSearchParams(filters).toString();
@@ -162,7 +164,7 @@ function AlumniSearch() {
   }
 
   
-
+  // Functions for removing filters
   const removeSkill = (index) => {
     // Creates a new array excluding the career at the given index
     const updatedSkillList = skillsList.filter((_, i) => i !== index);
@@ -203,6 +205,7 @@ function AlumniSearch() {
     setIndustryList(updatedIndustryList);
   };
 
+  // Remove all filters
   const resetAllFilters = () => {
     setSelectedBatchYear("");
     setSelectedGraduationYear("");
@@ -229,7 +232,6 @@ function AlumniSearch() {
        <div className=" flex lg:hidden flex-col w-full pt-3">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
-            
             <button onClick={toggleFilter} className="cursor-pointer hover:text-primary rounded-full bg-white w-12 h-12 flex items-center justify-center">
               <X size={30} />
             </button>
@@ -541,6 +543,7 @@ function AlumniSearch() {
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
             <button className="mr-2 underline font-satoshi-medium mt-4 cursor-pointer hover:text-primary" onClick={() => {
+              // Closes all expanding divs
               resetAllFilters();
               setIsBatchExpanded(false);
               setIsGraduateExpanded(false);
@@ -549,6 +552,8 @@ function AlumniSearch() {
               setIsSkillsExpanded(false);
               setIsIndustryExpanded(false);
               setIsLocationExpanded(false);
+              setIsAlumniProfessionExpanded(false);
+              setIsAlumniInfoExpanded(false);
             }} >
               Reset All
             </button>
