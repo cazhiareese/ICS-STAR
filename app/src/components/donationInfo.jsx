@@ -7,7 +7,9 @@ import { useParams } from "react-router-dom";
 function DonationInfo() {
 
   const drive_id = useParams();
+  console.log("cyrus");
   console.log(drive_id);
+  console.log("cyrussss");
 
   const [donationID, setDonationID] = useState(drive_id)
 

@@ -13,7 +13,8 @@ import { useParams } from "react-router-dom";
 
 function Donationform() {
     //const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
-    const drive_id = useParams(); // Get the drive_id from the URL params
+    const id = useParams(); // Get the drive_id from the URL params
+    const drive_id = id.driveid; // Extract the drive_id from the params
     const formattedDate = new Date().toLocaleDateString();
     console.log(drive_id)
     // UseState for checking if the buttons are activated
