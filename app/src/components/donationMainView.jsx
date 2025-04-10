@@ -2,13 +2,14 @@ import React, { useContext, useState, useEffect } from "react";
 import { Paperclip } from 'lucide-react';
 
 function DonationMainView({ driveId }) {
+    console.log(driveId.driveid);
 
     // const [image, setImage] = useState("null")
     const [driveDetails, setDriveDetails] = useState(null);
     useEffect(() => {
         const token = localStorage.getItem("token"); // if required
     
-        fetch(`https://ics-star-api.vercel.app/one-donation-drive/${driveId}`, {
+        fetch(`https://ics-star-api.vercel.app/one-donation-drive/${driveId.driveid}`, {
           headers: {
             Authorization: `Bearer ${token}`, // only if the API requires auth
           },

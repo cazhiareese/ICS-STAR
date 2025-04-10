@@ -7,41 +7,11 @@ import { useParams } from "react-router-dom";
 function DonationInfo() {
 
   const drive_id = useParams();
-
-
-    // const [donationDrives, setDonationDrives] = useState([]);
-  const [loading, setLoading] = useState(true);
+  console.log(drive_id);
 
   const [donationID, setDonationID] = useState(drive_id)
 
-  
-  useEffect(() => {
-    // setDonationID("204eab7c-8c62-4669-b8d5-08d68c1fbb3b")
-    const token = localStorage.getItem("token"); // or wherever you store it
-  
-    fetch("https://ics-star-api.vercel.app/donationdrive", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Fetched data:", data[0]);
-        // setDonationDrives(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching donation drives:", error);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
+  console.log(donationID);
 //   console.log()
     return (
 
