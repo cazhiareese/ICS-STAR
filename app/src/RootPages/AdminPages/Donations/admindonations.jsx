@@ -39,7 +39,7 @@ function AdminDonations() {
       {/* Header and add donation button */}
       <div className='flex justify-between items-center mb-4'>
         <h1 className='text-primary text-5xl font-satoshi-bold'>Donations</h1>
-        <button className='flex bg-primary font-satoshi-regular px-6 py-3 text-white rounded-2xl gap-2' onClick={() => {navigate("/admin/donations/create-donation-drive")}}> 
+        <button className='flex bg-primary font-satoshi-regular px-6 py-3 text-white rounded-2xl gap-2 cursor-pointer hover:bg-hover' onClick={() => {navigate("/admin/donations/create-donation-drive")}}> 
           <Plus/>
           <p> New Donation</p>
         </button>
