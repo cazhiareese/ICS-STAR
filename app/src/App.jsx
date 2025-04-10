@@ -40,6 +40,7 @@ import { jwtDecode } from "jwt-decode";
 import AdminDonationsLayout from "./RootPages/AdminPages/Layouts/admindonationslayout";
 import AdminDonationInformation from "./RootPages/AdminPages/Donations/admindonationinformation";
 import AdminCreateDonationDrive from "./RootPages/AdminPages/Donations/admincreatedonationdrive";
+import AdminHelpIcs from "./RootPages/AdminPages/Donations/adminhelpics";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -132,6 +133,7 @@ function App() {
               <Route index element={<AdminDonations/>} />
               <Route path=":driveid" element={<AdminDonationInformation/>}/>
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
+              <Route path="help-ics/" element={<AdminHelpIcs/>}/>
             </Route>
           </Route>
         </>

@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import { Plus, HandCoins, MoveLeft, MoveRight, List, LayoutGrid, Filter } from 'lucide-react'
 import DonationsTable from '../../../components/AdminComponents/donationstable'
 import { useNavigate } from 'react-router-dom'
-
 function AdminDonations() {
   const navigate = useNavigate()
 
@@ -15,7 +14,7 @@ function AdminDonations() {
   useEffect(() => {
       setDonations([
         {
-          donation_id: 1,
+          donation_id: '98ba9554-28e1-4ad8-a199-7ecd3a57b384',
           title: "ICS PalCISihan",
           dateCreated: "2025-04-01",
           donationCount: 100,
@@ -23,6 +22,7 @@ function AdminDonations() {
           amountRaised: "₱10,000",
         },
         {
+          donation_id: '204eab7c-8c62-4669-b8d5-08d68c1fbb3b',
           title: "ICS Quizcon Tokens",
           dateCreated: "2025-03-20",
           donationCount: 88,
@@ -112,8 +112,8 @@ function AdminDonations() {
           <p> New Donation</p>
         </button>
       </div>
-      {/* Basic stats */}
-      <div className='border border-gray-300 rounded-xl flex py-4'>
+      {/* HELP ICS */}
+      <div className='border border-gray-300 rounded-xl flex py-4 cursor-pointer hover:border-primary' onClick={() => {navigate("/admin/donations/help-ics")}}>
         {/* Help ICS */}
         <div className='flex flex-row text-2xl items-center justify-center flex-1'> 
           <HandCoins/>
