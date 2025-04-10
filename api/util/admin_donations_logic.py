@@ -216,6 +216,13 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         remaining_percent = remaining_percentage,
     )
 
+# Function to get the percentage statistics of a donation drive
+#
+# Arguments:
+# db: Session - database session
+# drive_id: UUID - ID of the donation drive
+# 
+# Returns: PercentOut object containing percentage statistics
 def get_percent_funded(db: Session, drive_id: UUID) -> PercentOut:
     drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
 
