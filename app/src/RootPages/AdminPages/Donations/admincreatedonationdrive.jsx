@@ -183,7 +183,8 @@ function AdminCreateDonationDrive() {
                     onClick={() => {
                       setCreateConfirmation(false)
                       setTransitionComplete(false)
-                      window.location.reload()
+                      // window.location.reload()
+                      navigate(-1)
                     }}
                   >
                     Close
