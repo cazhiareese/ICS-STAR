@@ -6,6 +6,9 @@ import SkillsInterestsSection from "./Profile/About/skillsinterestsection";
 import AffiliationsSection from "./Profile/About/affiliationssection";
 import ScholarshipsSection from "./Profile/About/scholarshipsection";
 import WorkSection from "./Profile/Work/worksection";
+import DonationHistoryUser from "./Profile/DonationHistory/Donationhistoryuser";
+
+
 import {
   fetchProfile as apiFetchProfile,
   addSkills as apiAddSkills,
@@ -201,6 +204,9 @@ function UserProfile() {
       )}
       {activeTab === "Work" && (
         <WorkSection userDetails={userDetails} handleChange={handleChange} />
+      )}
+      {activeTab === "Donation History" && (
+        <DonationHistoryUser userDetails={userDetails} />
       )}
     </div>
   );

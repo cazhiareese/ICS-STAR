@@ -34,10 +34,10 @@ import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
 import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlanding";
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
-
-
 import Donation from "./components/donationInfo";
+
 import { jwtDecode } from "jwt-decode";
+import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -92,6 +92,7 @@ function App() {
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/donations/1" element={<Donation />} />
+            <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="*" element={<Unauthorized />} />
 
             <Route
@@ -124,10 +125,6 @@ function App() {
             <Route path="dashboard" element={<AdminDashboardLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
-              <Route
-                path="user-reports"
-                element={<AdminUserInformationReport />}
-              />
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
