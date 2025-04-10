@@ -85,6 +85,9 @@ class AdminOneDonationDriveOut(BaseModel):
     percent_funded: float
     pending_list: list[dict]
     verified_list: list[dict]
+    current_amount: float
+    target_cost: float
+    is_closed: bool
     remaining_percent: float
 
     class Config:
