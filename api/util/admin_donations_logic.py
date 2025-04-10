@@ -134,19 +134,22 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     pending_verifications = []
     
     for donation in pending_monetary_details:
+        # Format date donated to MM/DD/YYYY
+        date_donated = donation[4].strftime("%m/%d/%Y") if donation[4] else None
         pending_verifications.append({
             "donation_id": donation[0],
             "name": f"{donation[1]} {donation[2]}",
             "donation_details": f"₱{donation[3]:,.2f}",
-            "date_donated": donation[4],
+            "date_donated": date_donated,
         })
     
     for donation in pending_inkind_details:
+        date_donated = donation[4].strftime("%m/%d/%Y") if donation[4] else None
         pending_verifications.append({
             "donation_id": donation[0],
             "name": f"{donation[1]} {donation[2]}",
             "donation_details": donation[3],
-            "date_donated": donation[4],
+            "date_donated": date_donated,
         })
 
     # Get verified monetary donations with user information
@@ -181,18 +184,20 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     verified_donations = []
     
     for donation in verified_monetary_details:
+        date_donated = donation[1].strftime("%m/%d/%Y") if donation[1] else None
         verified_donations.append({
             "donation_id": donation[0],
-            "date_donated": donation[1],
+            "date_donated": date_donated,
             "name": f"{donation[2]} {donation[3]}",
             "donation_type": "Monetary",
             "donation_details": f"₱{donation[4]:,.2f}"
         })
     
     for donation in verified_inkind_details:
+        date_donated = donation[1].strftime("%m/%d/%Y") if donation[1] else None
         verified_donations.append({
             "donation_id": donation[0],
-            "date_donated": donation[1],
+            "date_donated": date_donated,
             "name": f"{donation[2]} {donation[3]}",
             "donation_type": "In-kind",
             "donation_details": donation[4]
