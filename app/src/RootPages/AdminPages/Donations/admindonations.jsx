@@ -2,6 +2,10 @@ import React, {useState, useEffect} from 'react'
 import { Plus, HandCoins, MoveLeft, MoveRight, List, LayoutGrid, Filter } from 'lucide-react'
 import DonationsTable from '../../../components/AdminComponents/donationstable'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import CircularLoading from '../../../components/LoadingComponents/circularloading'
+import { div } from 'framer-motion/client'
+
 function AdminDonations() {
   const navigate = useNavigate()
 
@@ -10,100 +14,29 @@ function AdminDonations() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(10)
   const [donations, setDonations] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-      setDonations([
-        {
-          donation_id: '98ba9554-28e1-4ad8-a199-7ecd3a57b384',
-          title: "ICS PalCISihan",
-          dateCreated: "2025-04-01",
-          donationCount: 100,
-          percentFunded: "None",
-          amountRaised: "₱10,000",
-        },
-        {
-          donation_id: '204eab7c-8c62-4669-b8d5-08d68c1fbb3b',
-          title: "ICS Quizcon Tokens",
-          dateCreated: "2025-03-20",
-          donationCount: 88,
-          percentFunded: "None",
-          amountRaised: "None",
-        },
-        {
-          title: "Library Drive",
-          dateCreated: "2025-04-08",
-          donationCount: 6,
-          percentFunded: "100%",
-          amountRaised: "₱3,000",
-        },
-        {
-          title: "STEM Equipment",
-          dateCreated: "2025-03-15",
-          donationCount: 45,
-          percentFunded: "34%",
-          amountRaised: "₱15,500",
-        },
-        {
-          title: "Food Drive",
-          dateCreated: "2024-12-10",
-          donationCount: 120,
-          percentFunded: "70%",
-          amountRaised: "₱25,000",
-        },
-        {
-          title: "Scholarship Fund",
-          dateCreated: "2024-10-05",
-          donationCount: 200,
-          percentFunded: "85%",
-          amountRaised: "₱50,000",
-        },
-        {
-          title: "Cultural Night Raffle",
-          dateCreated: "2024-06-15",
-          donationCount: 73,
-          percentFunded: "58%",
-          amountRaised: "₱8,750",
-        },
-        {
-          title: "Cultural Night Raffle",
-          dateCreated: "2024-06-15",
-          donationCount: 73,
-          percentFunded: "58%",
-          amountRaised: "₱8,750",
-        },
-        {
-          title: "Cultural Night Raffle",
-          dateCreated: "2024-06-15",
-          donationCount: 73,
-          percentFunded: "58%",
-          amountRaised: "₱8,750",
-        },
-        {
-          title: "Cultural Night Raffle",
-          dateCreated: "2024-06-15",
-          donationCount: 73,
-          percentFunded: "58%",
-          amountRaised: "₱8,750",
-        },
-        {
-          title: "Cultural Night Raffle",
-          dateCreated: "2024-06-15",
-          donationCount: 73,
-          percentFunded: "58%",
-          amountRaised: "₱8,750",
-        },
-        {
-          title: "Cultural Night Raffle",
-          dateCreated: "2024-06-15",
-          donationCount: 73,
-          percentFunded: "58%",
-          amountRaised: "₱8,750",
-        },
-      ])
-  }, []);
-
-  return (
-    <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const response = await axios.get(`${API_BASE_URL}/admin/donations/${donationType}-drives`)
+        setDonations(response.data)
+      } catch (error) {
+        console.error("Error fetching donations:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+  
+    fetchData()
+  }, [donationType])
+  
+    
+    return (
+      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
       {/* Header and add donation button */}
       <div className='flex justify-between items-center mb-4'>
         <h1 className='text-primary text-5xl font-satoshi-bold'>Donations</h1>
@@ -179,7 +112,13 @@ function AdminDonations() {
           </div>
         </div>
         <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
-          <DonationsTable data={donations}/>
+          {loading ? (
+            <div className='w-full h-full flex items-center justify-center'>
+              <CircularLoading/>
+            </div>
+          ) : (
+            <DonationsTable data={donations}/>
+          )}
         </div>
     </div>
   )

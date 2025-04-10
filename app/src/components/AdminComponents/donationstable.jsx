@@ -26,10 +26,10 @@ function DonationsTable({ data }) {
                 onClick={() => navigate(`/admin/donations/${donation.donation_id}`)}
                 >
                 <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold">{donation.title}</td>
-                <td className="py-3 px-4">{donation.date_created}</td>
-                <td className="py-3 px-4">{donation.donationCount}</td>
-                <td className="py-3 px-4">{donation.percentFunded}</td>
-                <td className="py-3 px-4">{donation.amountRaised}</td>
+                <td className="py-3 px-4">{donation.created_at}</td>
+                <td className="py-3 px-4">{donation.donation_count}</td>
+                <td className="py-3 px-4">{donation.percent_funded}</td>
+                <td className="py-3 px-4">{donation.amount_raised}</td>
             </tr>
             ))}
         </tbody>
