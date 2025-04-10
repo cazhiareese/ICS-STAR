@@ -8,9 +8,12 @@ import DonationOptions from "../../../components/AlumniComponents/DonationCompon
 import DonationDetailsInput from "../../../components/AlumniComponents/DonationComponents/donationDetailsInput";
 import check from "../../../assets/check.png";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 function Donationform() {
-    const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
+    //const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
+    const drive_id = useParams(); // Get the drive_id from the URL params
+    console.log(drive_id)
     // UseState for checking if the buttons are activated
     const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
     const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
@@ -30,7 +33,7 @@ function Donationform() {
     // IN-KIND TYPE
     const [donationDetailsInput, setDonationDetailsInput] = useState("");
 
-    const [donationSuccess, setDonationSuccess] = useState(true);
+    const [donationSuccess, setDonationSuccess] = useState(false);
 
 
     const handleFileSubmit = (file) => {
