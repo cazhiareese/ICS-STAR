@@ -624,7 +624,7 @@ function AlumniSearch() {
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
                       <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
-                        <Calendar className="text-primary" />
+                        <h1><Calendar size={20} className="text-primary" /></h1>
                         <YearPicker
                           selectedYear={selectedBatchYear} // Using separate state for Batch Year
                           setSelectedYear={setSelectedBatchYear}
@@ -665,7 +665,7 @@ function AlumniSearch() {
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
                       <div className="px-5 pb-5 flex items-center justify-center flex-row gap-2">
-                        <Calendar className="text-primary" />
+                        <h1><Calendar size={20} className="text-primary" /></h1>
                         <YearPicker
                           selectedYear={selectedGraduationYear} 
                           setSelectedYear={setSelectedGraduationYear}
