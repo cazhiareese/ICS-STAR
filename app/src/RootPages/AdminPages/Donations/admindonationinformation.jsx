@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { MoveLeft } from 'lucide-react'
+import { MoveLeft, X, Link } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import VerifiedDonationsTable from "../../../components/AdminComponents/verifieddonationstable"
@@ -19,6 +19,8 @@ function AdminDonationInformation() {
   const [pendingDonations, setPendingDonations] = useState([])
   const [verifiedDonations, setverifiedDonations] = useState([])
   const [isClosed, setIsClosed] = useState(false)
+  const [viewDetailsModal, setViewDetailsModal] = useState(false) 
+  const [editing, setEditing] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,7 +143,7 @@ function AdminDonationInformation() {
         {/* Generate Report or close drive */}
         <div className='h-full gap-5 flex flex-row'>
           {/* View Details */}
-          <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer'>
+          <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
             <p className='font-satoshi-light'>View Details</p>
           </button>
           {isClosed ? (
@@ -224,6 +226,56 @@ function AdminDonationInformation() {
       <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
         <VerifiedDonationsTable data={verifiedDonations}/>
       </div>
+      {viewDetailsModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+            <div className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-lg min-w-md max-w-lg h-4/5">
+              {/* Modal Header */}
+              <div className="flex justify-between w-full items-center pb-2">
+                <h2 className="text-2xl font-satoshi-medium">Donation Details</h2>
+                <button className='rounded-full h-fit bg-error p-1 cursor-pointer' onClick={() => {setViewDetailsModal(false)}}>
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+              {/* Image */}
+              <div className='bg-primary h-1/3 w-full rounded-xl'>
+
+              </div> 
+              <div className='mb-5 flex flex-col w-full'>
+                <h1 className='font-satoshi-bold text-2xl'>Donation title</h1>
+                <p className='font-satoshi-light '>Date Started: 01/01/25</p>
+              </div>
+              <div className='flex flex-col w-full'>
+                <h2 className='font-satoshi-light text-sm'>Description</h2>
+                <p className='font-satoshi-regular text-sm'>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis velit at ligula tristique, ac aliquet lorem vehicula. Sed facilisis, ante sed consequat dictum, ante est tempor magna, vel condimentum justo ipsum non tortor. Morbi pharetra sapien at est tincidunt, et auctor lectus auctor. Duis ac erat non tortor efficitur malesuada.
+                </p>
+              </div>
+
+              {/* Links */}
+              <div className='w-full mt-2'>
+                <h2>Relevant Links</h2>
+                <div className='border border-t-gray-300'></div>
+                {/* Iterate over links */}
+                <div className="ml-6 flex gap-2 overflow-auto">
+                  <Link/>
+                  <a
+                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs0gcJCX4JAYcqIYzv"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className='text-primary text-sm'
+                  >
+                    https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs0gcJCX4JAYcqIYzv
+                  </a>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              {/* <button className="mt-4 bg-primary text-white px-4 py-2 rounded-3xl w-full cursor-pointer" onClick={() => {}}>
+                Limit Account Access
+              </button> */}
+            </div>
+          </div>
+        )}
     </div>
   )
 }
