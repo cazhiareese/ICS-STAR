@@ -34,7 +34,7 @@ import AlumniSearch from "./RootPages/AlumniPages/alumnisearch";
 import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlanding";
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
-
+import Donation from "./components/donationInfo";
 
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
@@ -91,9 +91,18 @@ function App() {
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="alumni/donations/1" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
-
             <Route path="*" element={<Unauthorized />} />
+
+            <Route
+            path="setup"
+            element={
+              <OnboardingProvider>
+                <OnBoarding />
+              </OnboardingProvider>
+            }
+            />
           </Route>
         </>
       )}
