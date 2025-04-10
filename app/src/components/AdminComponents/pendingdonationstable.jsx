@@ -5,7 +5,7 @@ function PendingDonationsTable({ data }) {
   const navigate = useNavigate()
 
   return (
-    <table className="w-full ">
+    <table className="w-full">
         {/* Table Header */}
         <thead>
             <tr className="text-left text-xs text-primary font-satoshi-regular">

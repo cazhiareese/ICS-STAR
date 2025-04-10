@@ -4,7 +4,6 @@ import DonationsTable from '../../../components/AdminComponents/donationstable'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
-import { div } from 'framer-motion/client'
 
 function AdminDonations() {
   const navigate = useNavigate()
