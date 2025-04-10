@@ -9,11 +9,14 @@ import DonationDetailsInput from "../../../components/AlumniComponents/DonationC
 import check from "../../../assets/check.png";
 import axios from "axios";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
+import { useParams } from "react-router-dom";
 
 function Donationform() {
-    const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97"; // TODO: To be removed later
+    //const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
+    const drive_id = useParams(); // Get the drive_id from the URL params
     const formattedDate = new Date().toLocaleDateString();
-
+    console.log(drive_id)
+    // UseState for checking if the buttons are activated
     const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
     const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
     const [isMonetaryType, setIsMonetaryType] = useState(true);
@@ -34,6 +37,8 @@ function Donationform() {
         return new Date(date).toLocaleDateString(undefined, options);
     };
 
+    const [donationDetailsInput, setDonationDetailsInput] = useState("");
+    const [donationSuccess, setDonationSuccess] = useState(false);
     const handleFileSubmit = (file) => {
         setFile(file);
     };

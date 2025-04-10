@@ -35,6 +35,7 @@ import DonationLanding from "./RootPages/AlumniPages/Donation.jsx/donationlandin
 import AdminBatchInformation from "./RootPages/AdminPages/Dashboard/adminbatchinformation";
 import AdminAlumniInfo from "./RootPages/AdminPages/Dashboard/adminalumniinfo";
 
+
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 const isSignedIn = !!localStorage.getItem("token");
@@ -90,8 +91,8 @@ function App() {
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
-            {/* TODO: Add params for drive_id */}
-            <Route path="alumni/donationforms" element={<DonationForm />} /> 
+            <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
+
             <Route path="*" element={<Unauthorized />} />
           </Route>
         </>
@@ -115,10 +116,6 @@ function App() {
             <Route path="dashboard" element={<AdminDashboardLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
-              <Route
-                path="user-reports"
-                element={<AdminUserInformationReport />}
-              />
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
