@@ -74,14 +74,25 @@ class AdminDonationDriveOut(BaseModel):
     donation_count: int
     percent_funded: float
     amount_raised: float
+    remaining_percent: float
 
     class Config:
         from_attributes = True
 
 class AdminOneDonationDriveOut(BaseModel):
+    drive_id: UUID
+    title: str
     percent_funded: float
     pending_list: list[dict]
     verified_list: list[dict]
+    remaining_percent: float
+
+    class Config:
+        from_attributes = True
+
+class PercentOut(BaseModel):
+    percent_funded: float
+    remaining_percent: float
 
     class Config:
         from_attributes = True
