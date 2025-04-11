@@ -16,6 +16,7 @@ from uuid import UUID
 
 router = APIRouter()
 
+# NEED DIN ASYNC DEF DITO AHAH
 @router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
 async def search_drives(
     title: str = "",
@@ -45,7 +46,7 @@ async def search_drives(
 
     return results
 
-# TODO: Uncomment if implementing this route
+# TODO: 
 # @router.get("/admin/donations/update-generic-drive", response_model=GenericDriveOut)
 # async def update_generic_drive(
 #     drive_id: UUID,
