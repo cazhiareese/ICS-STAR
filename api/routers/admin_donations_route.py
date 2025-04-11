@@ -71,9 +71,10 @@ def open_drives(
 
 @router.get("/admin/donations/pending-inkind", response_model=List[PendingInKindDonationsOut])
 def pending_inkind(
+    drive_id: UUID,
     db: Session = Depends(get_db)
 ):
-    results = get_all_pending_inkind_donations(db)
+    results = get_all_pending_inkind_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No pending in-kind donations found")
@@ -82,9 +83,10 @@ def pending_inkind(
 
 @router.get("/admin/donations/pending-monetary", response_model=List[PendingMonetaryDonationsOut])
 def pending_monetary(
+    drive_id: UUID,
     db: Session = Depends(get_db)
 ):
-    results = get_all_pending_monetary_donations(db)
+    results = get_all_pending_monetary_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No pending monetary donations found")
@@ -93,9 +95,10 @@ def pending_monetary(
 
 @router.get("/admin/donations/verified-inkind", response_model=List[VerifiedInKindDonationsOut])
 def verified_inkind(
+    drive_id: UUID,
     db: Session = Depends(get_db)
 ):
-    results = get_all_verified_inkind_donations(db)
+    results = get_all_verified_inkind_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No verified in-kind donations found")
@@ -104,9 +107,10 @@ def verified_inkind(
 
 @router.get("/admin/donations/verified-monetary", response_model=List[VerifiedMonetaryDonationsOut])
 def verified_monetary(
+    drive_id: UUID,
     db: Session = Depends(get_db)
 ):
-    results = get_all_verified_monetary_donations(db)
+    results = get_all_verified_monetary_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No verified monetary donations found")
