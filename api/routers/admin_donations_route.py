@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, GenericDriveOut
+from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, GenericDriveOut, PendingInKindDonationsOut, PendingMonetaryDonationsOut, VerifiedInKindDonationsOut, VerifiedMonetaryDonationsOut, AdminOverviewDonationDrive
 from config.database import get_db
-from util.admin_donations_logic import search_donation_drives, view_donation_drive, get_percent_funded, get_all_closed_drives, get_all_open_drives
+from util.admin_donations_logic import search_donation_drives, view_donation_drive, get_percent_funded, get_all_closed_drives, get_all_open_drives, get_all_links_by_drive_id, get_all_pending_inkind_donations, get_all_pending_monetary_donations, get_all_verified_inkind_donations, get_all_verified_monetary_donations, donation_drive_overview
 import datetime
 from uuid import UUID
 
@@ -69,6 +69,50 @@ def open_drives(
 
     return results
 
+@router.get("/admin/donations/pending-inkind", response_model=List[PendingInKindDonationsOut])
+def pending_inkind(
+    db: Session = Depends(get_db)
+):
+    results = get_all_pending_inkind_donations(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No pending in-kind donations found")
+
+    return results
+
+@router.get("/admin/donations/pending-monetary", response_model=List[PendingMonetaryDonationsOut])
+def pending_monetary(
+    db: Session = Depends(get_db)
+):
+    results = get_all_pending_monetary_donations(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No pending monetary donations found")
+
+    return results
+
+@router.get("/admin/donations/verified-inkind", response_model=List[VerifiedInKindDonationsOut])
+def verified_inkind(
+    db: Session = Depends(get_db)
+):
+    results = get_all_verified_inkind_donations(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No verified in-kind donations found")
+
+    return results
+
+@router.get("/admin/donations/verified-monetary", response_model=List[VerifiedMonetaryDonationsOut])
+def verified_monetary(
+    db: Session = Depends(get_db)
+):
+    results = get_all_verified_monetary_donations(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No verified monetary donations found")
+
+    return results
+
 @router.get("/admin/donations/view/{drive_id}", response_model=AdminOneDonationDriveOut)
 def view_drive(
     drive_id: UUID,
@@ -92,3 +136,15 @@ def percent_funded(
         raise HTTPException(status_code=404, detail="Drive not found")
 
     return percent
+
+@router.get("/admin/donations/overview/{drive_id}", response_model=AdminOverviewDonationDrive)
+def overview(
+    drive_id: UUID,
+    db: Session = Depends(get_db)
+):
+    results = donation_drive_overview(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No donation drives found")
+
+    return results

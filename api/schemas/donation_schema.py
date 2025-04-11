@@ -107,3 +107,49 @@ class GenericDriveOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PendingMonetaryDonationsOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    name: str
+    donation_details: float
+
+    class Config:
+        from_attributes = True
+
+class PendingInKindDonationsOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    name: str
+    donation_details: str
+
+    class Config:
+        from_attributes = True
+
+class VerifiedMonetaryDonationsOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    name: str
+    donation_details: float
+
+    class Config:
+        from_attributes = True
+
+class VerifiedInKindDonationsOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    name: str
+    donation_details: str
+
+    class Config:
+        from_attributes = True
+
+class AdminOverviewDonationDrive(BaseModel):
+    donation_id: UUID
+    image: str
+    created_at: datetime
+    description: str
+    links: List[str]
+
+    class Config:
+        from_attributes = True
