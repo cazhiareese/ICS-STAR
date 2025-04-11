@@ -8,5 +8,4 @@ def get_db():
         db.close()
 
 def get_supabase_client():
-    # Assuming supabase_client is a global variable in the config module
     return config.supabase_client
