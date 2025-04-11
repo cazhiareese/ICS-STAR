@@ -1,442 +1,429 @@
 from config.config import STORAGE_STRING
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from models.usermodel import User
-from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
-from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, PendingInKindDonationsOut, PendingMonetaryDonationsOut, VerifiedInKindDonationsOut, VerifiedMonetaryDonationsOut, AdminOverviewDonationDrive
 import datetime
 from uuid import UUID
+from schemas.donation_schema import (
+    AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut,
+    PendingInKindDonationsOut, PendingMonetaryDonationsOut,
+    VerifiedInKindDonationsOut, VerifiedMonetaryDonationsOut,
+    AdminOverviewDonationDrive
+)
 
-# Function to search for donation drives based on various filters
-#
-# Arguments:
-# db: Session - database session
-# search_string: str - string to search in the title of the donation drive
-# date_filter: str - filter for date range ("last_7_days", "this_week", "this_month", "this_year", "custom")
-# custom_created_at: datetime.date - start date for custom filter (MM/DD/YYYY)
-# custom_end_date: datetime.date - end date for custom filter (MM/DD/YYYY)
-#
-# Returns: a list of AdminDonationDriveOut objects
-def search_donation_drives(
-    db: Session, 
+# NEED YUNG ASYNC DEF KEYWORD
+async def search_donation_drives(
+    supabase_client,
     search_string: str = "", 
     date_filter: str = None,
     custom_start_date: datetime.date = None,
     custom_end_date: datetime.date = None
 ) -> list[AdminDonationDriveOut]:
     
-    query = db.query(DonationDrive)
+    # base query
+    query = supabase_client.from_("donation_drive").select("*")
     
-    # Apply search filter if provided
+    # same logic as alumni search
     if search_string:
-        query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
+        query = query.ilike("title", f"%{search_string}%")
     
     # Apply date filters
     today = datetime.date.today()
     
     if date_filter == "last_7_days":
         seven_days_ago = today - datetime.timedelta(days=7)
-        query = query.filter(DonationDrive.created_at >= seven_days_ago)
-    
+        query = query.gte("created_at", seven_days_ago.isoformat())
     elif date_filter == "this_week":
-        # Start of week is Sunday
         start_of_week = today - datetime.timedelta(days=today.weekday() + 1)
-        query = query.filter(DonationDrive.created_at >= start_of_week)
-    
+        query = query.gte("created_at", start_of_week.isoformat())
     elif date_filter == "this_month":
         start_of_month = today.replace(day=1)
-        query = query.filter(DonationDrive.created_at >= start_of_month)
-    
+        query = query.gte("created_at", start_of_month.isoformat())
     elif date_filter == "this_year":
         start_of_year = today.replace(month=1, day=1)
-        query = query.filter(DonationDrive.created_at >= start_of_year)
-    
+        query = query.gte("created_at", start_of_year.isoformat())
     elif date_filter == "custom" and custom_start_date and custom_end_date:
-        query = query.filter(DonationDrive.created_at >= custom_start_date, DonationDrive.created_at <= custom_end_date)
+        query = query.gte("created_at", custom_start_date.isoformat()).lte("created_at", custom_end_date.isoformat())
     
-    drives = query.all()
+    # Execute the query
+    drives_response = query.execute()
+    drives = drives_response.data
     
-    drive_out_list = []
-    for drive in drives:
-        # Calculate monetary donation count
-        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
-        
-        # Calculate in-kind donation count separately without referencing the 'amount' column
-        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
-        
-        total_count = monetary_count + inkind_count
-        
-        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
-        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
-
-        # Calculate percent funded and remaining percentage
-        percent_info = get_percent_funded(db, drive.drive_id)
-        total_percentage = percent_info.percent_funded
-        remaining_percentage = percent_info.remaining_percent
-
-        # Format created_at date to Month DD, YYYY
-        date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
-
-        drive_out = AdminDonationDriveOut(
-            drive_id = drive.drive_id,
-            title = drive.title,
-            created_at = date_created,
-            donation_count = total_count,
-            percent_funded = total_percentage,
-            amount_raised = total_amount,
-            remaining_percent = remaining_percentage,
-        )
-        drive_out_list.append(drive_out)
-
-    return drive_out_list
-
-def get_all_open_drives(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+    if not drives: # Para ma flag yung 404
+        return []
     
-    drives = query.all()
+    # Get all drive IDs
+    drive_ids = [drive["drive_id"] for drive in drives]
     
-    drive_out_list = []
-    for drive in drives:
-        # Calculate monetary donation count
-        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
-        
-        # Calculate in-kind donation count separately without referencing the 'amount' column
-        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
-        
-        total_count = monetary_count + inkind_count
-        
-        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
-        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
-
-        # Calculate percent funded and remaining percentage
-        percent_info = get_percent_funded(db, drive.drive_id)
-        total_percentage = percent_info.percent_funded
-        remaining_percentage = percent_info.remaining_percent
-
-        # Format created_at date to Month DD, YYYY
-        date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
-
-        drive_out = AdminDonationDriveOut(
-            drive_id = drive.drive_id,
-            title = drive.title,
-            created_at = date_created,
-            donation_count = total_count,
-            percent_funded = total_percentage,
-            amount_raised = total_amount,
-            remaining_percent = remaining_percentage,
-        )
-        drive_out_list.append(drive_out)
-
-    return drive_out_list
-
-def get_all_closed_drives(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    # Fetch all monetary donations for these drives in one batch
+    monetary_response = supabase_client.from_("monetary_donation") \
+        .select("drive_id, amount") \
+        .in_("drive_id", drive_ids) \
+        .eq("is_acknowledged", True) \
+        .execute()
     
-    drives = query.all()
+    # Fetch all in-kind donations for these drives in one batch
+    inkind_response = supabase_client.from_("in_kind_donation") \
+        .select("drive_id") \
+        .in_("drive_id", drive_ids) \
+        .execute()
+    
+    # APPARENTLY MAS MABILIS PAG GANITO AHAHDSHH
+    monetary_data = {}
+    for donation in monetary_response.data:
+        drive_id = donation["drive_id"]
+        if drive_id not in monetary_data:
+            monetary_data[drive_id] = {"count": 0, "total": 0}
+        monetary_data[drive_id]["count"] += 1
+        monetary_data[drive_id]["total"] += donation.get("amount", 0)
+    
+    inkind_counts = {}
+    for donation in inkind_response.data:
+        drive_id = donation["drive_id"]
+        if drive_id not in inkind_counts:
+            inkind_counts[drive_id] = 0
+        inkind_counts[drive_id] += 1
+    
+    # Get target costs for all drives
+    target_costs_response = supabase_client.from_("donation_drive") \
+        .select("drive_id, target_cost") \
+        .in_("drive_id", drive_ids) \
+        .execute()
+    
+    target_costs = {item["drive_id"]: item.get("target_cost", 0) for item in target_costs_response.data}
     
     drive_out_list = []
     for drive in drives:
-        # Calculate monetary donation count
-        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+        drive_id = drive["drive_id"]
         
-        # Calculate in-kind donation count separately without referencing the 'amount' column
-        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
+        # Get monetary counts and totals from our prepared data
+        monetary_count = monetary_data.get(drive_id, {}).get("count", 0)
+        total_amount = monetary_data.get(drive_id, {}).get("total", 0)
+        
+        # Get in-kind count from our prepared data
+        inkind_count = inkind_counts.get(drive_id, 0)
         
         total_count = monetary_count + inkind_count
         
-        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
-        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
-
-        # Calculate percent funded and remaining percentage
-        percent_info = get_percent_funded(db, drive.drive_id)
-        total_percentage = percent_info.percent_funded
-        remaining_percentage = percent_info.remaining_percent
-
+        # Calculate percentage
+        target_cost = target_costs.get(drive_id, 0)
+        total_percentage = (total_amount / target_cost) * 100 if target_cost else 0
+        remaining_percentage = 100 - total_percentage if total_percentage <= 100 else 0
+        
         # Format created_at date to Month DD, YYYY
-        date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
-
+        created_at = drive.get("created_at")
+        date_created = None
+        if created_at:
+            created_date = datetime.datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+            date_created = created_date.strftime("%B %d, %Y")
+        
         drive_out = AdminDonationDriveOut(
-            drive_id = drive.drive_id,
-            title = drive.title,
-            created_at = date_created,
-            donation_count = total_count,
-            percent_funded = total_percentage,
-            amount_raised = total_amount,
-            remaining_percent = remaining_percentage,
+            drive_id=drive_id,
+            title=drive.get("title"),
+            created_at=date_created,
+            donation_count=total_count,
+            percent_funded=round(total_percentage, 2),
+            amount_raised=total_amount,
+            remaining_percent=round(remaining_percentage, 2),
         )
         drive_out_list.append(drive_out)
-
+    
     return drive_out_list
 
-# Viewing a specific donation drive
-#
-# Arguments:
-# db: Session - database session
-# drive_id: UUID - ID of the donation drive to view
-# 
-# Returns: AdminOneDonationDriveOut object containing details of the donation drive
-def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
-    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+async def get_all_open_drives(supabase_client) -> list[AdminDonationDriveOut]:
+    # Get all open drives
+    drives_response = supabase_client.from_("donation_drive") \
+        .select("*") \
+        .eq("is_closed", False) \
+        .execute()
+    
+    drives = drives_response.data
+    
+    if not drives:
+        return []
+    
+    drive_ids = [drive["drive_id"] for drive in drives]
+    
+    monetary_response = supabase_client.from_("monetary_donation") \
+        .select("drive_id, amount") \
+        .in_("drive_id", drive_ids) \
+        .eq("is_acknowledged", True) \
+        .execute()
+    
+    inkind_response = supabase_client.from_("in_kind_donation") \
+        .select("drive_id") \
+        .in_("drive_id", drive_ids) \
+        .execute()
+    
+    monetary_data = {}
+    for donation in monetary_response.data:
+        drive_id = donation["drive_id"]
+        if drive_id not in monetary_data:
+            monetary_data[drive_id] = {"count": 0, "total": 0}
+        monetary_data[drive_id]["count"] += 1
+        monetary_data[drive_id]["total"] += donation.get("amount", 0)
+    
+    inkind_counts = {}
+    for donation in inkind_response.data:
+        drive_id = donation["drive_id"]
+        if drive_id not in inkind_counts:
+            inkind_counts[drive_id] = 0
+        inkind_counts[drive_id] += 1
+    
+    target_costs_response = supabase_client.from_("donation_drive") \
+        .select("drive_id, target_cost") \
+        .in_("drive_id", drive_ids) \
+        .execute()
+    
+    target_costs = {item["drive_id"]: item.get("target_cost", 0) for item in target_costs_response.data}
+    
+    drive_out_list = []
+    for drive in drives:
+        drive_id = drive["drive_id"]
+        
+        # Get monetary counts and totals from our prepared data
+        monetary_count = monetary_data.get(drive_id, {}).get("count", 0)
+        total_amount = monetary_data.get(drive_id, {}).get("total", 0)
+        
+        # Get in-kind count from our prepared data
+        inkind_count = inkind_counts.get(drive_id, 0)
+        
+        total_count = monetary_count + inkind_count
+        
+        # Calculate percentage
+        target_cost = target_costs.get(drive_id, 0)
+        total_percentage = (total_amount / target_cost) * 100 if target_cost else 0
+        remaining_percentage = 100 - total_percentage if total_percentage <= 100 else 0
+        
+        # Format created_at date (Month DD, YYYY)
+        created_at = drive.get("created_at")
+        date_created = None
+        if created_at:
+            created_date = datetime.datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+            date_created = created_date.strftime("%B %d, %Y")
+        
+        drive_out = AdminDonationDriveOut(
+            drive_id=drive_id,
+            title=drive.get("title"),
+            created_at=date_created,
+            donation_count=total_count,
+            percent_funded=round(total_percentage, 2),
+            amount_raised=total_amount,
+            remaining_percent=round(remaining_percentage, 2),
+        )
+        drive_out_list.append(drive_out)
+    
+    return drive_out_list
 
+async def get_all_closed_drives(supabase_client) -> list[AdminDonationDriveOut]:
+    # same as get_all_open_drives but with is_closed=True
+    drives_response = supabase_client.from_("donation_drive") \
+        .select("*") \
+        .eq("is_closed", True) \
+        .execute()
+    
+    drives = drives_response.data
+    
+    if not drives:
+        return []
+    
+    drive_ids = [drive["drive_id"] for drive in drives]
+    
+    monetary_response = supabase_client.from_("monetary_donation") \
+        .select("drive_id, amount") \
+        .in_("drive_id", drive_ids) \
+        .eq("is_acknowledged", True) \
+        .execute()
+    
+    inkind_response = supabase_client.from_("in_kind_donation") \
+        .select("drive_id") \
+        .in_("drive_id", drive_ids) \
+        .execute()
+    
+    monetary_data = {}
+    for donation in monetary_response.data:
+        drive_id = donation["drive_id"]
+        if drive_id not in monetary_data:
+            monetary_data[drive_id] = {"count": 0, "total": 0}
+        monetary_data[drive_id]["count"] += 1
+        monetary_data[drive_id]["total"] += donation.get("amount", 0)
+    
+    inkind_counts = {}
+    for donation in inkind_response.data:
+        drive_id = donation["drive_id"]
+        if drive_id not in inkind_counts:
+            inkind_counts[drive_id] = 0
+        inkind_counts[drive_id] += 1
+    
+    target_costs_response = supabase_client.from_("donation_drive") \
+        .select("drive_id, target_cost") \
+        .in_("drive_id", drive_ids) \
+        .execute()
+    
+    target_costs = {item["drive_id"]: item.get("target_cost", 0) for item in target_costs_response.data}
+    
+    drive_out_list = []
+    for drive in drives:
+        drive_id = drive["drive_id"]
+        
+        monetary_count = monetary_data.get(drive_id, {}).get("count", 0)
+        total_amount = monetary_data.get(drive_id, {}).get("total", 0)
+        
+        inkind_count = inkind_counts.get(drive_id, 0)
+        
+        total_count = monetary_count + inkind_count
+        
+        # Calculate percentage
+        target_cost = target_costs.get(drive_id, 0)
+        total_percentage = (total_amount / target_cost) * 100 if target_cost else 0
+        remaining_percentage = 100 - total_percentage if total_percentage <= 100 else 0
+        
+        created_at = drive.get("created_at")
+        date_created = None
+        if created_at:
+            created_date = datetime.datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+            date_created = created_date.strftime("%B %d, %Y")
+        
+        drive_out = AdminDonationDriveOut(
+            drive_id=drive_id,
+            title=drive.get("title"),
+            created_at=date_created,
+            donation_count=total_count,
+            percent_funded=round(total_percentage, 2),
+            amount_raised=total_amount,
+            remaining_percent=round(remaining_percentage, 2),
+        )
+        drive_out_list.append(drive_out)
+    
+    return drive_out_list
+
+async def view_donation_drive(supabase_client, drive_id: UUID) -> AdminOneDonationDriveOut:
+    drive_response = supabase_client.from_("donation_drive") \
+        .select("*") \
+        .eq("drive_id", str(drive_id)) \
+        .single() \
+        .execute()
+    
+    drive = drive_response.data
+    
     if not drive:
         return []
     
-    # Calculate total amount raised from acknowledged monetary donations only
-    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(
-        MonetaryDonation.drive_id == drive.drive_id,
-        MonetaryDonation.is_acknowledged == True
-    ).scalar() or 0
+    monetary_response = supabase_client.from_("monetary_donation") \
+        .select("donation_id, amount, date_donated, is_acknowledged, users!inner(first_name, last_name)") \
+        .eq("drive_id", str(drive_id)) \
+        .execute()
     
-    percent_info = get_percent_funded(db, drive.drive_id)
-    total_percentage = percent_info.percent_funded
-    remaining_percentage = percent_info.remaining_percent
-
-    pending_monetary_donations = get_all_pending_monetary_donations(db, drive_id)
-    pending_inkind_donations = get_all_pending_inkind_donations(db, drive_id)
+    inkind_response = supabase_client.from_("in_kind_donation") \
+        .select("donation_id, description, date_donated, is_acknowledged, users!inner(first_name, last_name)") \
+        .eq("drive_id", str(drive_id)) \
+        .execute()
     
-    verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
-    verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
-
-    # Format the pending donations list
-    pending_verifications = []
+    # monetary donations
+    total_amount = 0
+    pending_monetary = []
+    verified_monetary = []
     
-    # Add pending monetary donations to the list
-    for donation in pending_monetary_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "name": donation.name,
-            "donation_details": f"₱{donation.donation_details:,.2f}",
-            "date_donated": date_donated,
-        })
+    for donation in monetary_response.data:
+        user = donation.get("users", {})
+        name = f"{user.get('first_name', '')} {user.get('last_name', '')}"
+        amount = donation.get("amount", 0)
+        date_donated = donation.get("date_donated")
+        formatted_date = None
+        if date_donated:
+            date_obj = datetime.datetime.fromisoformat(date_donated.replace("Z", "+00:00"))
+            formatted_date = date_obj.strftime("%m/%d/%Y")
+        
+        if donation.get("is_acknowledged", False):
+            total_amount += amount
+            verified_monetary.append({
+                "donation_id": donation.get("donation_id"),
+                "date_donated": formatted_date,
+                "name": name,
+                "donation_type": "Monetary",
+                "donation_details": f"₱{amount:,.2f}"
+            })
+        else:
+            pending_monetary.append({
+                "donation_id": donation.get("donation_id"),
+                "name": name,
+                "donation_details": f"₱{amount:,.2f}",
+                "date_donated": formatted_date,
+            })
     
-    # Add pending in-kind donations to the list
-    for donation in pending_inkind_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "name": donation.name,
-            "donation_details": donation.donation_details,
-            "date_donated": date_donated,
-        })
-
-    # Format the verified donations list
-    verified_donations = []
+    # in-kind donations
+    pending_inkind = []
+    verified_inkind = []
     
-    # Add verified monetary donations to the list
-    for donation in verified_monetary_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": date_donated,
-            "name": donation.name,
-            "donation_type": "Monetary",
-            "donation_details": f"₱{donation.donation_details:,.2f}"
-        })
+    for donation in inkind_response.data:
+        user = donation.get("users", {})
+        name = f"{user.get('first_name', '')} {user.get('last_name', '')}"
+        description = donation.get("description", "")
+        date_donated = donation.get("date_donated")
+        formatted_date = None
+        if date_donated:
+            date_obj = datetime.datetime.fromisoformat(date_donated.replace("Z", "+00:00"))
+            formatted_date = date_obj.strftime("%m/%d/%Y")
+        
+        if donation.get("is_acknowledged", False):
+            verified_inkind.append({
+                "donation_id": donation.get("donation_id"),
+                "date_donated": formatted_date,
+                "name": name,
+                "donation_type": "In-kind",
+                "donation_details": description
+            })
+        else:
+            pending_inkind.append({
+                "donation_id": donation.get("donation_id"),
+                "name": name,
+                "donation_details": description,
+                "date_donated": formatted_date,
+            })
     
-    # Add verified in-kind donations to the list
-    for donation in verified_inkind_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": date_donated,
-            "name": donation.name,
-            "donation_type": "In-kind",
-            "donation_details": donation.donation_details
-        })
-
-    return AdminOneDonationDriveOut(
-        drive_id = drive.drive_id,
-        title = drive.title,
-        percent_funded = total_percentage,
-        pending_list = pending_verifications,
-        verified_list = verified_donations,
-        current_amount = total_amount,
-        target_cost = drive.target_cost,
-        is_closed = drive.is_closed,
-        remaining_percent = remaining_percentage,
-    )
-
-# Function to get the percentage statistics of a donation drive
-#
-# Arguments:
-# db: Session - database session
-# drive_id: UUID - ID of the donation drive
-# 
-# Returns: PercentOut object containing percentage statistics
-def get_percent_funded(db: Session, drive_id: UUID) -> PercentOut:
-    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
-
-    if not drive:
-        return []
-
-    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(
-        MonetaryDonation.drive_id == drive.drive_id,
-        MonetaryDonation.is_acknowledged == True
-    ).scalar() or 0 
-
-    # Calculate percentage
-    total_percentage = (total_amount / drive.target_cost) * 100 if drive.target_cost else 0
-
-    # Calculate remaining percent
+    pending_verifications = pending_monetary + pending_inkind
+    verified_donations = verified_monetary + verified_inkind
+    
+    target_cost = drive.get("target_cost", 0)
+    total_percentage = (total_amount / target_cost) * 100 if target_cost else 0
     remaining_percentage = 100 - total_percentage if total_percentage <= 100 else 0
-
-    return PercentOut(
+    
+    return AdminOneDonationDriveOut(
+        drive_id=drive_id,
+        title=drive.get("title"),
         percent_funded=round(total_percentage, 2),
-        remaining_percent=round(remaining_percentage, 2)
+        pending_list=pending_verifications,
+        verified_list=verified_donations,
+        current_amount=total_amount,
+        target_cost=target_cost,
+        is_closed=drive.get("is_closed"),
+        remaining_percent=round(remaining_percentage, 2),
     )
 
-# TODO
-# Update the generic drive statistics
-#
-# Arguments:
-# db: Session - database session
-# drive_id: UUID of the generic drive (hardcoded)
-#
-# Returns: GenericDriveOut object containing the total monetary amount, total in-kind donations, and the number of unverified donations
-# def update_generic_drive_stats(db: Session, drive_id: UUID):
-#     # Get the generic drive by hardcoded ID
-#     generic_drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
-
-#     # Get the total amount of monetary donations for the generic drive
-#     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
-
-#     # Get the total in-kind donations for the generic drive
-#     total_in_kind = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive_id).scalar() or 0
-
-#     # Get the number of unverified donations for the generic drive
-#     number_of_unverified = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == False).scalar() or 0
-
-#     return GenericDriveOut(
-#         total_amount=total_amount,
-#         total_in_kind=total_in_kind,
-#         number_of_unverified=number_of_unverified
-    # )
-
-def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[PendingMonetaryDonationsOut]:
-    pending_monetary_donations = db.query(
-        MonetaryDonation.donation_id,
-        User.first_name,
-        User.last_name,
-        MonetaryDonation.amount,
-        MonetaryDonation.date_donated
-    ).join(
-        User, MonetaryDonation.user_id == User.user_id
-    ).filter(
-        MonetaryDonation.drive_id == drive_id,
-        MonetaryDonation.is_acknowledged == False
-    ).all()
-
-    pending_donations_list = []
-
-    for donation in pending_monetary_donations:
-        pending_out = PendingMonetaryDonationsOut(
-            donation_id=donation[0],
-            date_donated=donation[4],
-            name=f"{donation[1]} {donation[2]}",
-            donation_details=donation[3] or 0
-        )
-        pending_donations_list.append(pending_out)
-
-    return pending_donations_list
-
-def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> list[PendingInKindDonationsOut]:
-    pending_inkind_donations = db.query(
-        InKindDonation.donation_id,
-        User.first_name,
-        User.last_name,
-        InKindDonation.description,
-        InKindDonation.date_donated
-    ).join(
-        User, InKindDonation.user_id == User.user_id
-    ).filter(
-        InKindDonation.drive_id == drive_id,
-        InKindDonation.is_acknowledged == False
-    ).all()
-
-    pending_donations_list = []
-
-    for donation in pending_inkind_donations:
-        pending_out = PendingInKindDonationsOut(
-            donation_id=donation[0],
-            date_donated=donation[4],
-            name=f"{donation[1]} {donation[2]}",
-            donation_details=donation[3]
-        )
-        pending_donations_list.append(pending_out)
-
-    return pending_donations_list
-
-def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[VerifiedMonetaryDonationsOut]:
-    verified_monetary_donations = db.query(
-        MonetaryDonation.donation_id,
-        MonetaryDonation.date_donated,
-        User.first_name,
-        User.last_name,
-        MonetaryDonation.amount
-    ).join(
-        User, MonetaryDonation.user_id == User.user_id
-    ).filter(
-        MonetaryDonation.drive_id == drive_id,
-        MonetaryDonation.is_acknowledged == True
-    ).all()
-
-    verified_donations_list = []
-
-    for donation in verified_monetary_donations:
-        verified_out = VerifiedMonetaryDonationsOut(
-            donation_id=donation[0],
-            date_donated=donation[1],
-            name=f"{donation[2]} {donation[3]}",
-            donation_details=donation[4] or 0
-        )
-        verified_donations_list.append(verified_out)
-
-    return verified_donations_list
-
-def get_all_verified_inkind_donations(db: Session, drive_id: UUID) -> list[VerifiedInKindDonationsOut]:
-    verified_inkind_donations = db.query(
-        InKindDonation.donation_id,
-        InKindDonation.date_donated,
-        User.first_name,
-        User.last_name,
-        InKindDonation.description
-    ).join(
-        User, InKindDonation.user_id == User.user_id
-    ).filter(
-        InKindDonation.drive_id == drive_id,
-        InKindDonation.is_acknowledged == True
-    ).all()
-
-    verified_donations_list = []
-
-    for donation in verified_inkind_donations:
-        verified_out = VerifiedInKindDonationsOut(
-            donation_id=donation[0],
-            date_donated=donation[1],
-            name=f"{donation[2]} {donation[3]}",
-            donation_details=donation[4]
-        )
-        verified_donations_list.append(verified_out)
-
-    return verified_donations_list
-
-def get_all_links_by_drive_id(db: Session, drive_id: UUID) -> list[str]:
-    links = db.query(DonationDriveLink).filter(DonationDriveLink.drive_id == drive_id).all()
-    return [link.link for link in links]
-
-def donation_drive_overview(db: Session, drive_id: UUID) -> AdminOverviewDonationDrive:
-    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
-
-    drive_links = get_all_links_by_drive_id(db, drive_id)
-
+async def donation_drive_overview(supabase_client, drive_id: UUID) -> AdminOverviewDonationDrive:
+    drive_response = supabase_client.from_("donation_drive") \
+        .select("*") \
+        .eq("drive_id", str(drive_id)) \
+        .single() \
+        .execute()
+    
+    drive = drive_response.data
+    
     if not drive:
         return []
-
+    
+    links_response = supabase_client.from_("donation_drive_link") \
+        .select("link") \
+        .eq("drive_id", str(drive_id)) \
+        .execute()
+    
+    drive_links = [link.get("link") for link in links_response.data] if links_response.data else []
+    
+    created_at = None
+    if drive.get("created_at"):
+        created_at = datetime.datetime.fromisoformat(drive.get("created_at").replace("Z", "+00:00"))
+    
     return AdminOverviewDonationDrive(
-        donation_id = drive.drive_id,
-        image = f"{STORAGE_STRING}{drive.image}" if drive.image else None,
-        created_at = drive.created_at,
-        description = drive.description,
-        links = drive_links
+        donation_id=drive.get("drive_id"),
+        image=f"{STORAGE_STRING}{drive.get('image')}" if drive.get("image") else None,
+        created_at=created_at,
+        description=drive.get("description"),
+        links=drive_links
     )
