@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
-import SectionHeader from "../components/sectionheader"; 
+import SectionHeader from "../components/sectionheader";
 import axios from "axios";
 
 function DonationHistoryUser({ userDetails }) {
@@ -26,7 +25,7 @@ function DonationHistoryUser({ userDetails }) {
           },
         });
 
-        setDonationHistory(response.data);
+        setDonationHistory(response.data.data);
       } catch (err) {
         console.error("Error fetching donation history:", err);
         setError(err.response?.data?.message || "Something went wrong.");
@@ -37,8 +36,6 @@ function DonationHistoryUser({ userDetails }) {
 
     fetchDonationHistory();
   }, [token]);
-
-  console.log("Donation History:", donationHistory);
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
@@ -53,24 +50,39 @@ function DonationHistoryUser({ userDetails }) {
       )}
 
       {!loading && !error && donationHistory.length > 0 && (
-        <div className="mt-4 space-y-4">
-          {donationHistory.map((donation) => (
-            <div
-              key={donation.donation_id}
-              className="border p-4 rounded-xl shadow-sm bg-white"
-            >
-              <div className="flex justify-between">
-                <div>
-                  <p className="font-semibold text-gray-800">{donation.drive_title}</p>
-                  <p className="text-sm text-gray-600">
-                    Donated ₱{donation.amount.toLocaleString()} on{" "}
-                    {new Date(donation.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <Check className="text-green-600" />
+        <div className="mt-4 bg-white shadow-sm rounded-xl p-4">
+          {/* Table Header */}
+          <div className="flex font-semibold text-gray-600 border-b pb-2 mb-2">
+            <div className="w-1/3">Date</div>
+            <div className="w-1/3">Donation</div>
+            <div className="w-1/3 text-right">Amount</div>
+          </div>
+
+          {/* Donation Rows */}
+          {donationHistory.map((donation) => {
+            const formattedDate = new Date(donation.date_donated).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            });
+
+            const formattedAmount = new Intl.NumberFormat("en-PH", {
+              style: "currency",
+              currency: "PHP",
+              minimumFractionDigits: 2,
+            }).format(donation.details);
+
+            return (
+              <div
+                key={donation.donation_id}
+                className="border-b py-2 flex justify-between items-center"
+              >
+                <div className="w-1/3 text-gray-800">{formattedDate}</div>
+                <div className="w-1/3 text-gray-700">{donation.donation_drive_title}</div>
+                <div className="w-1/3 text-right text-gray-900">{formattedAmount}</div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
