@@ -20,16 +20,21 @@ function DonationHistoryUser({ userDetails }) {
         setLoading(false);
         return;
       }
-
+    
       try {
         const response = await axios.get(`${API_BASE_URL}/donation-history`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        setDonationHistory(response.data.data);
-        setSortedData(response.data.data);
+    
+        const sortedByLatest = response.data.data.sort(
+          (a, b) => new Date(b.date_donated) - new Date(a.date_donated)
+        );
+    
+        setDonationHistory(sortedByLatest);
+        setSortedData(sortedByLatest);
+        setSortConfig({ key: "date_donated", direction: "desc" });
       } catch (err) {
         console.error("Error fetching donation history:", err);
         setError(err.response?.data?.message || "Something went wrong.");
@@ -37,6 +42,7 @@ function DonationHistoryUser({ userDetails }) {
         setLoading(false);
       }
     };
+    
 
     fetchDonationHistory();
   }, [token]);
@@ -86,7 +92,7 @@ function DonationHistoryUser({ userDetails }) {
       {/* Section Header */}
       <SectionHeader title="DONATIONS" />
 
-      <div className="mt-1 rounded-xl px-4 py-2">
+      <div className="mt-1 rounded-xl  py-2">
         <div className="flex font-semibold text-primary">
           <div className="w-1/3 cursor-pointer flex items-center gap-1" onClick={() => handleSort("date_donated")}>
             Date {getSortIcon("date_donated")}
@@ -106,7 +112,7 @@ function DonationHistoryUser({ userDetails }) {
       )}
 
       {!loading && !error && sortedData.length > 0 && (
-        <div className="px-4">
+        <div>
           {sortedData.map((donation) => {
             const formattedDate = new Date(donation.date_donated).toLocaleDateString("en-US", {
               year: "numeric",
