@@ -36,3 +36,26 @@
     --font-satoshi-black-italic: 'Satoshi-BlackItalic', sans-serif;
 }
 
+/* In your global CSS file */
+@layer utilities {
+  .scrollbar-blue::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scrollbar-blue::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-blue::-webkit-scrollbar-thumb {
+    background-color: #00369C; /* Tailwind's blue-500 */
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  .scrollbar-blue::-webkit-scrollbar-thumb:hover {
+    background-color: #00369C; /* Tailwind's blue-600 on hover */
+  }
+}
+
+

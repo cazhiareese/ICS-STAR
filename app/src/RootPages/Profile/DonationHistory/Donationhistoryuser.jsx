@@ -20,18 +20,18 @@ function DonationHistoryUser({ userDetails }) {
         setLoading(false);
         return;
       }
-    
+
       try {
         const response = await axios.get(`${API_BASE_URL}/donation-history`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-    
+
         const sortedByLatest = response.data.data.sort(
           (a, b) => new Date(b.date_donated) - new Date(a.date_donated)
         );
-    
+
         setDonationHistory(sortedByLatest);
         setSortedData(sortedByLatest);
         setSortConfig({ key: "date_donated", direction: "desc" });
@@ -42,7 +42,6 @@ function DonationHistoryUser({ userDetails }) {
         setLoading(false);
       }
     };
-    
 
     fetchDonationHistory();
   }, [token]);
@@ -58,13 +57,11 @@ function DonationHistoryUser({ userDetails }) {
       let aValue = a[key];
       let bValue = b[key];
 
-      // Handle dates
       if (key === "date_donated") {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
       }
 
-      // Handle amounts (details)
       if (key === "details") {
         aValue = parseFloat(aValue);
         bValue = parseFloat(bValue);
@@ -92,13 +89,20 @@ function DonationHistoryUser({ userDetails }) {
       {/* Section Header */}
       <SectionHeader title="DONATIONS" />
 
-      <div className="mt-1 rounded-xl  py-2 font-satoshi-bold">
+      {/* Table Header */}
+      <div className="mt-1 rounded-xl py-2 font-satoshi-bold">
         <div className="flex font-semibold text-primary">
-          <div className="w-1/3 cursor-pointer flex items-center gap-1" onClick={() => handleSort("date_donated")}>
+          <div
+            className="w-1/3 cursor-pointer flex items-center gap-1"
+            onClick={() => handleSort("date_donated")}
+          >
             Date {getSortIcon("date_donated")}
           </div>
           <div className="w-1/3">Donation</div>
-          <div className="w-1/3 text-right cursor-pointer flex justify-end items-center gap-1" onClick={() => handleSort("details")}>
+          <div
+            className="w-1/3 text-right cursor-pointer flex justify-end items-center gap-1"
+            onClick={() => handleSort("details")}
+          >
             Amount {getSortIcon("details")}
           </div>
         </div>
@@ -111,8 +115,9 @@ function DonationHistoryUser({ userDetails }) {
         <p className="mt-4 text-gray-500">No donation history found.</p>
       )}
 
+      {/* Scrollable Donation List */}
       {!loading && !error && sortedData.length > 0 && (
-        <div className="font-satoshi-medium text-[16px] text-black">
+        <div className="font-satoshi-medium text-[16px] text-black max-h-[525px] overflow-y-auto sm:max-h-[400px] scrollbar-blue">
           {sortedData.map((donation) => {
             const formattedDate = new Date(donation.date_donated).toLocaleDateString("en-US", {
               year: "numeric",
