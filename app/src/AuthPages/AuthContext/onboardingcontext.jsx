@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-const OnboardingContext = createContext();
+//const OnboardingContext = createContext();      please fix this line
 
 export function OnboardingProvider({ children }) {
     const [currentSection, setCurrentSection] = useState(0);
@@ -60,10 +60,10 @@ export function OnboardingProvider({ children }) {
 }
 
 // Ensure function is wrapped properly
-export function useOnboardingContext() {
-    const context = useContext(OnboardingContext);
-    if (!context) {
-        throw new Error("useOnboardingContext must be used within an OnboardingProvider");
-    }
-    return context;
-}
+// export function useOnboardingContext() {           please fix this function
+//     const context = useContext(OnboardingContext);
+//     if (!context) {
+//         throw new Error("useOnboardingContext must be used within an OnboardingProvider");
+//     }
+//     return context;
+// }
