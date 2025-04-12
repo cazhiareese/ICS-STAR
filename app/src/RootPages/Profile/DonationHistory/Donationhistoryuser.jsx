@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import SectionHeader from "../components/sectionheader";
 import axios from "axios";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 function DonationHistoryUser({ userDetails }) {
   const [donationHistory, setDonationHistory] = useState([]);
+  const [sortedData, setSortedData] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -26,6 +29,7 @@ function DonationHistoryUser({ userDetails }) {
         });
 
         setDonationHistory(response.data.data);
+        setSortedData(response.data.data);
       } catch (err) {
         console.error("Error fetching donation history:", err);
         setError(err.response?.data?.message || "Something went wrong.");
@@ -37,30 +41,73 @@ function DonationHistoryUser({ userDetails }) {
     fetchDonationHistory();
   }, [token]);
 
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+
+    const sorted = [...donationHistory].sort((a, b) => {
+      let aValue = a[key];
+      let bValue = b[key];
+
+      // Handle dates
+      if (key === "date_donated") {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      }
+
+      // Handle amounts (details)
+      if (key === "details") {
+        aValue = parseFloat(aValue);
+        bValue = parseFloat(bValue);
+      }
+
+      if (aValue < bValue) return direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return direction === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    setSortedData(sorted);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return <ChevronDown className="inline text-primary w-4 h-4" />;
+    return sortConfig.direction === "asc" ? (
+      <ChevronUp className="inline text-primary w-4 h-4" />
+    ) : (
+      <ChevronDown className="inline text-primary w-4 h-4" />
+    );
+  };
+
   return (
     <div className="w-full max-w-[1100px] mt-6">
       {/* Section Header */}
       <SectionHeader title="DONATIONS" />
-<div className="mt-1  rounded-xl px-4 py-2">
-      <div className="flex font-semibold text-primary">
-            <div className="w-1/3">Date</div>
-            <div className="w-1/3">Donation</div>
-            <div className="w-1/3 text-right">Amount</div>
+
+      <div className="mt-1 rounded-xl px-4 py-2">
+        <div className="flex font-semibold text-primary">
+          <div className="w-1/3 cursor-pointer flex items-center gap-1" onClick={() => handleSort("date_donated")}>
+            Date {getSortIcon("date_donated")}
           </div>
+          <div className="w-1/3">Donation</div>
+          <div className="w-1/3 text-right cursor-pointer flex justify-end items-center gap-1" onClick={() => handleSort("details")}>
+            Amount {getSortIcon("details")}
           </div>
+        </div>
+      </div>
 
       {loading && <p className="mt-4">Loading...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
-      {!loading && !error && donationHistory.length === 0 && (
+      {!loading && !error && sortedData.length === 0 && (
         <p className="mt-4 text-gray-500">No donation history found.</p>
       )}
 
-      {!loading && !error && donationHistory.length > 0 && (
+      {!loading && !error && sortedData.length > 0 && (
         <div className="px-4">
-
-          {/* Donation Rows */}
-          {donationHistory.map((donation) => {
+          {sortedData.map((donation) => {
             const formattedDate = new Date(donation.date_donated).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
