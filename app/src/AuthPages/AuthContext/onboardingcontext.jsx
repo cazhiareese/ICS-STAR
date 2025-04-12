@@ -31,7 +31,6 @@ export function OnboardingProvider({ children }) {
         baseCity:"",
         baseCountry: "",
         sameWorkBase: false,
-        remote: false,
         skillsInterests: [],
         profilePictureFile: null,
         suggestions: [
