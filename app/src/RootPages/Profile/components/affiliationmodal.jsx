@@ -10,9 +10,35 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
     if (!isOpen) {
       setAffiliationInput("");
       setPositionInput("");
-      setErrors({ affiliation: "", position: "" }); // Reset errors
+      setErrors({ affiliation: "", position: "" });
     }
   }, [isOpen]);
+
+  // Debounce timer
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (affiliationInput.trim().length >= 1) {
+        fetchOrgSuggestions(affiliationInput.trim());
+      }
+    }, 400); // wait 400ms after user stops typing
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [affiliationInput]);
+
+  const fetchOrgSuggestions = async (query) => {
+    try {
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+      const url = `${API_BASE_URL}/get-org?q=${encodeURIComponent(query)}&limit=5`;
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch suggestions");
+
+      const data = await response.json();
+      console.log("🔍 Organization suggestions:", data);
+    } catch (error) {
+      console.error("Error fetching org suggestions:", error);
+    }
+  };
 
   const handleSave = () => {
     let newErrors = { affiliation: "", position: "" };
@@ -30,24 +56,19 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
     }
   };
 
-  if (!isOpen) return null; // Hide modal when not open
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50 px-4 sm:px-0">
-      {/* Background Overlay */}
       <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
 
-      {/* Modal Container */}
       <div className="bg-white border border-disabled p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
-        {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
           <h2 className="text-lg font-satoshi-bold sm:text-[24px]">Add affiliations</h2>
-          <XCircle size={24} className="cursor-pointer  text-white bg-error rounded-full hover:bg-red-800" onClick={onClose} />
+          <XCircle size={24} className="cursor-pointer text-white bg-error rounded-full hover:bg-red-800" onClick={onClose} />
         </div>
 
-        {/* Input Fields */}
         <div className="flex flex-col gap-4 mt-4">
-          {/* Affiliation Name */}
           <div className="flex flex-col">
             <label className="text-black font-satoshi-medium">
               Name of organization <span className="text-error">*</span>
@@ -64,7 +85,6 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
             {errors.affiliation && <p className="text-error text-sm mt-1">{errors.affiliation}</p>}
           </div>
 
-          {/* Position */}
           <div className="flex flex-col">
             <label className="text-black font-satoshi-medium">
               Position <span className="text-error">*</span>
@@ -82,7 +102,6 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
           </div>
         </div>
 
-        {/* Save Button */}
         <div className="mt-6 flex justify-end">
           <button
             className="px-5 py-3 bg-primary text-white rounded-full text-sm font-satoshi-medium hover:bg-hover transition"
