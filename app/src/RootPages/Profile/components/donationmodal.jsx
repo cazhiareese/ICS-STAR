@@ -11,6 +11,8 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
   });
 
   const isInKind = donation.type === "In-Kind";
+  const statusText = donation.is_acknowledged ? "Acknowledged" : "Pending Acknowledgement";
+
   const displayAmount = isInKind
     ? donation.details
     : new Intl.NumberFormat("en-PH", {
@@ -21,14 +23,14 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50 px-4 sm:px-0">
-      {/* Background Overlay */}
+      {/* Overlay */}
       <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
 
       {/* Modal Container */}
-      <div className="bg-white border border-disabled p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
+      <div className="bg-white p-6 relative z-10 w-full max-w-[600px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-lg font-satoshi-bold sm:text-[24px]">Donation Details</h2>
+          <h2 className="text-lg font-satoshi-bold sm:text-2xl">Donation Details</h2>
           <XCircle
             size={24}
             className="cursor-pointer text-white bg-error rounded-full hover:bg-red-800"
@@ -37,39 +39,31 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
         </div>
 
         {/* Donation Info */}
-        <div className="flex flex-col gap-4 mt-4 text-[15px] sm:text-[14px]">
-          <div>
-            <span className="font-satoshi-medium text-black">Date Donated:</span>
-            <p className="text-gray-700">{formattedDate}</p>
-          </div>
-
-          <div>
-            <span className="font-satoshi-medium text-black">Donation Drive:</span>
-            <p className="text-gray-700">{donation.donation_drive_title}</p>
-          </div>
-
-          <div>
-            <span className="font-satoshi-medium text-black">
-              {isInKind ? "In-Kind Details:" : "Amount:"}
-            </span>
-            <p className="text-gray-700">{displayAmount}</p>
-          </div>
-
-          {donation.notes && (
-            <div>
-              <span className="font-satoshi-medium text-black">Notes:</span>
-              <p className="text-gray-700">{donation.notes}</p>
+        <div className="mt-6 space-y-3 text-sm sm:text-base">
+          {[
+            { label: "Donation Drive", value: donation.donation_drive_title },
+            { label: "Date", value: formattedDate },
+            { label: "Type", value: donation.type },
+            { label: "Status", value: <span className="text-primary font-semibold">{statusText}</span> },
+            {
+              label: isInKind ? "Details" : "Amount",
+              value: displayAmount,
+            },
+          ].map(({ label, value }, index) => (
+            <div key={index} className="flex gap-4">
+              <div className="w-[40%] text-black font-satoshi-medium">{label}</div>
+              <div className="w-[60%] text-black font-satoshi-black">{value}</div>
             </div>
-          )}
+          ))}
         </div>
 
-        {/* Close Button */}
-        <div className="mt-6 flex justify-end">
+        {/* Footer */}
+        <div className="mt-8 flex justify-end">
           <button
-            className="px-5 py-3 bg-primary text-white rounded-full text-sm font-satoshi hover:bg-hover transition"
             onClick={onClose}
+            className="bg-primary text-white px-6 py-2 rounded-full font-medium hover:bg-hover transition"
           >
-            Close
+            Done
           </button>
         </div>
       </div>
