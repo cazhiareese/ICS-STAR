@@ -92,7 +92,7 @@ function DonationHistoryUser({ userDetails }) {
       {/* Section Header */}
       <SectionHeader title="DONATIONS" />
 
-      <div className="mt-1 rounded-xl  py-2">
+      <div className="mt-1 rounded-xl  py-2 font-satoshi-bold">
         <div className="flex font-semibold text-primary">
           <div className="w-1/3 cursor-pointer flex items-center gap-1" onClick={() => handleSort("date_donated")}>
             Date {getSortIcon("date_donated")}
@@ -112,7 +112,7 @@ function DonationHistoryUser({ userDetails }) {
       )}
 
       {!loading && !error && sortedData.length > 0 && (
-        <div>
+        <div className="font-satoshi-medium text-[16px] text-black">
           {sortedData.map((donation) => {
             const formattedDate = new Date(donation.date_donated).toLocaleDateString("en-US", {
               year: "numeric",
@@ -129,11 +129,11 @@ function DonationHistoryUser({ userDetails }) {
             return (
               <div
                 key={donation.donation_id}
-                className="border-b py-2 flex justify-between items-center"
+                className="border-b py-2 flex justify-between items-center border-disabled"
               >
-                <div className="w-1/3 text-gray-800">{formattedDate}</div>
-                <div className="w-1/3 text-gray-700">{donation.donation_drive_title}</div>
-                <div className="w-1/3 text-right text-gray-900">{formattedAmount}</div>
+                <div className="w-1/3">{formattedDate}</div>
+                <div className="w-1/3">{donation.donation_drive_title}</div>
+                <div className="w-1/3 text-right">{formattedAmount}</div>
               </div>
             );
           })}
