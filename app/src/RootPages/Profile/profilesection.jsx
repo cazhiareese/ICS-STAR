@@ -12,7 +12,6 @@ import SaveConfirmationModal from "./components/savemodal";
 import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
-import { fetchProfile } from "./UserProfileAPI/userProfileApi";
 
 function ProfileSection({
   activeTab,
