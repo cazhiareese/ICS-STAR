@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
 import SectionHeader from "../components/sectionheader"; 
+import axios from "axios";
 
 function DonationHistoryUser({ userDetails }) {
   const [donationHistory, setDonationHistory] = useState([]);
@@ -19,22 +20,16 @@ function DonationHistoryUser({ userDetails }) {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/donation-history`, {
-          method: "GET",
+        const response = await axios.get(`${API_BASE_URL}/donation-history`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch donation history");
-        }
-
-        const data = await response.json();
-        setDonationHistory(data);
+        setDonationHistory(response.data);
       } catch (err) {
         console.error("Error fetching donation history:", err);
-        setError(err.message || "Something went wrong.");
+        setError(err.response?.data?.message || "Something went wrong.");
       } finally {
         setLoading(false);
       }
