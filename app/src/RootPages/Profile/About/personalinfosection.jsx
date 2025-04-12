@@ -50,7 +50,14 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             />
           ) : (
             <span className="text-primary font-satoshi-bold">
-              {userDetails.mobile_number || <CircularLoading />}
+              {userDetails.mobile_number === null ||
+              userDetails.mobile_number === "" ? (
+                <span className="text-gray-500 italic">Not Available</span>
+              ) : userDetails.mobile_number ? (
+                userDetails.mobile_number
+              ) : (
+                <CircularLoading />
+              )}
             </span>
           )}
         </div>
@@ -140,7 +147,14 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             </select>
           ) : (
             <span className="text-primary font-satoshi-bold">
-              {userDetails.marital_status || <CircularLoading />}
+              {userDetails.marital_status === null ||
+              userDetails.marital_status === "" ? (
+                <span className="text-gray-500 italic">Not Available</span>
+              ) : userDetails.marital_status ? (
+                userDetails.marital_status
+              ) : (
+                <CircularLoading />
+              )}
             </span>
           )}
         </div>
