@@ -14,7 +14,13 @@ import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 import { fetchProfile } from "./UserProfileAPI/userProfileApi";
 
-function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
+function ProfileSection({
+  activeTab,
+  editMode,
+  userDetails,
+  setEditMode,
+  handleChange,
+}) {
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
@@ -22,11 +28,9 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
 
   //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
   useEffect(() => {
-
     console.log("Fetching profile picture...");
     fetchProfilePicture();
     setProfilePicture(userDetails.profile_picture);
-    
   }, []);
 
   const fetchProfilePicture = async () => {
@@ -122,27 +126,29 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
 
   return (
     <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
-      {/* Edit / Save Profile Button */}
-      <button
-        onClick={() => {
-          if (editMode) {
-            setShowModal(true);
-          } else {
-            setEditMode(true);
-          }
-        }}
-        className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto 
-        bg-primary text-white hover:bg-hover"
-      >
-        {editMode ? (
-          <Check size={18} className="text-white pointer-events-none" />
-        ) : (
-          <Pencil size={18} className="pointer-events-none" />
-        )}
-        <span className="hidden sm:inline pointer-events-none">
-          {editMode ? "Save Profile" : "Edit Profile"}
-        </span>
-      </button>
+      {/* Edit / Save Profile Button - only visible on "About" tab */}
+      {activeTab === "About" && (
+        <button
+          onClick={() => {
+            if (editMode) {
+              setShowModal(true);
+            } else {
+              setEditMode(true);
+            }
+          }}
+          className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto 
+    bg-primary text-white hover:bg-hover"
+        >
+          {editMode ? (
+            <Check size={18} className="text-white pointer-events-none" />
+          ) : (
+            <Pencil size={18} className="pointer-events-none" />
+          )}
+          <span className="hidden sm:inline pointer-events-none">
+            {editMode ? "Save Profile" : "Edit Profile"}
+          </span>
+        </button>
+      )}
 
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">

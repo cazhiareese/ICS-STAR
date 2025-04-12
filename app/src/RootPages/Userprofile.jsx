@@ -161,6 +161,7 @@ function UserProfile() {
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       {/* Profile Section */}
       <ProfileSection
+        activeTab={activeTab}
         editMode={editMode}
         userDetails={userDetails}
         setEditMode={setEditMode}
