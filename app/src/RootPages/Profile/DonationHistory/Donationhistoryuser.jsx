@@ -1,173 +1,65 @@
-import React, { useEffect, useState } from "react";
-import SectionHeader from "../components/sectionheader";
-import axios from "axios";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import DonationDetailsModal from "../components/donationmodal";
+import React, { useState, useEffect } from "react";
+import { PlusCircle } from "lucide-react";
 
-function DonationHistoryUser({ userDetails }) {
-  const [donationHistory, setDonationHistory] = useState([]);
-  const [sortedData, setSortedData] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const [selectedDonation, setSelectedDonation] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-  const token = localStorage.getItem("token");
-
-  const openModal = (donation) => {
-    setSelectedDonation(donation);
-    setIsModalOpen(true);
-  };
-  
-  const closeModal = () => {
-    setSelectedDonation(null);
-    setIsModalOpen(false);
-  };
+function SectionHeader({ title, buttonText, onButtonClick, onToggleChange }) {
+  const [selectedDonationType, setSelectedDonationType] = useState("Monetary");
 
   useEffect(() => {
-    const fetchDonationHistory = async () => {
-      if (!token) {
-        setError("User not authenticated");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(`${API_BASE_URL}/donation-history`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const sortedByLatest = response.data.data.sort(
-          (a, b) => new Date(b.date_donated) - new Date(a.date_donated)
-        );
-
-        setDonationHistory(sortedByLatest);
-        setSortedData(sortedByLatest);
-        setSortConfig({ key: "date_donated", direction: "desc" });
-      } catch (err) {
-        console.error("Error fetching donation history:", err);
-        setError(err.response?.data?.message || "Something went wrong.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDonationHistory();
-  }, [token]);
-
-  const handleSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
+    // Return selected donation type when component mounts or changes
+    if (title === "DONATIONS" && onToggleChange) {
+      onToggleChange(selectedDonationType);
     }
-    setSortConfig({ key, direction });
+  }, [selectedDonationType]);
 
-    const sorted = [...donationHistory].sort((a, b) => {
-      let aValue = a[key];
-      let bValue = b[key];
-
-      if (key === "date_donated") {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      }
-
-      if (key === "details") {
-        aValue = parseFloat(aValue);
-        bValue = parseFloat(bValue);
-      }
-
-      if (aValue < bValue) return direction === "asc" ? -1 : 1;
-      if (aValue > bValue) return direction === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    setSortedData(sorted);
+  const handleToggle = (type) => {
+    setSelectedDonationType(type);
+    if (onToggleChange) {
+      onToggleChange(type);
+    }
   };
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key) return <ChevronDown className="inline text-primary w-4 h-4" />;
-    return sortConfig.direction === "asc" ? (
-      <ChevronUp className="inline text-primary w-4 h-4" />
-    ) : (
-      <ChevronDown className="inline text-primary w-4 h-4" />
-    );
-  };
-  console.log("Donation History:", donationHistory);
   return (
-    <div className="w-full max-w-[1100px] mt-6">
-      {/* Section Header */}
-      <SectionHeader title="DONATIONS" />
+    <div className="w-full">
+      {/* Title & Button Container */}
+      <div className="flex justify-between items-center">
+        <h2 className="font-satoshi-bold text-[20px] sm:text-[22px] md:text-[24px] leading-tight tracking-[-0.02em] text-gray-800 uppercase">
+          {title}
+        </h2>
 
-      {/* Table Header */}
-      <div className="mt-1 rounded-xl py-2 font-satoshi-bold">
-        <div className="flex font-semibold text-primary">
-          <div
-            className="w-1/3 cursor-pointer flex items-center gap-1"
-            onClick={() => handleSort("date_donated")}
-          >
-            Date {getSortIcon("date_donated")}
+        {/* If Donations, show toggle instead of regular button */}
+        {title === "DONATIONS" ? (
+          <div className="flex gap-2 bg-gray-200 rounded-full p-1">
+            {["Monetary", "In-Kind"].map((type) => (
+              <button
+                key={type}
+                className={`px-3 py-1 text-sm rounded-full transition font-medium ${
+                  selectedDonationType === type
+                    ? "bg-primary text-white"
+                    : "text-gray-700 hover:text-primary"
+                }`}
+                onClick={() => handleToggle(type)}
+              >
+                {type}
+              </button>
+            ))}
           </div>
-          <div className="w-1/3">Donation</div>
-          <div
-            className="w-1/3 text-right cursor-pointer flex justify-end items-center gap-1"
-            onClick={() => handleSort("details")}
-          >
-            Amount {getSortIcon("details")}
-          </div>
-        </div>
+        ) : (
+          onButtonClick && (
+            <button
+              className="flex items-center gap-2 px-1 py-1 sm:px-3 sm:py-1.8 bg-primary text-white rounded-full text-[14px] font-medium hover:bg-hover transition"
+              onClick={onButtonClick}
+            >
+              <PlusCircle size={20} />
+              <span className="hidden sm:inline">{buttonText}</span>
+            </button>
+          )
+        )}
       </div>
 
-      {loading && <p className="mt-4">Loading...</p>}
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-
-      {!loading && !error && sortedData.length === 0 && (
-        <p className="mt-4 text-gray-500">No donation history found.</p>
-      )}
-
-      {/* Scrollable Donation List */}
-      {!loading && !error && sortedData.length > 0 && (
-        <div className="font-satoshi-medium text-[16px] text-black max-h-[525px] overflow-y-auto sm:max-h-[400px] scrollbar-blue">
-          {sortedData.map((donation) => {
-            const formattedDate = new Date(donation.date_donated).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            });
-
-            const formattedAmount = new Intl.NumberFormat("en-PH", {
-              style: "currency",
-              currency: "PHP",
-              minimumFractionDigits: 2,
-            }).format(donation.details);
-
-            return (
-              <div
-                key={donation.donation_id}
-                onClick ={() => openModal(donation)}
-                className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
-                
-              >
-                <div className="w-1/3">{formattedDate}</div>
-                <div className="w-1/3">{donation.donation_drive_title}</div>
-                <div className="w-1/3 text-right">{formattedAmount}</div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-      <DonationDetailsModal
-  isOpen={isModalOpen}
-  onClose={closeModal}
-  donation={selectedDonation}
-/>
-
+      {/* Divider */}
+      <div className="w-full border-t border-disabled mt-1"></div>
     </div>
   );
 }
 
-export default DonationHistoryUser;
+export default SectionHeader;
