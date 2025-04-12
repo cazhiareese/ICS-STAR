@@ -2,7 +2,7 @@ import React from "react";
 
 const tabs = ["About", "Work", "Job Posted", "Donation History"];
 
-function UserProfileTabs({ activeTab, setActiveTab }) {
+function UserProfileTabs({ editmode, activeTab, setActiveTab }) {
   return (
     <div className="w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-2 flex flex-wrap justify-center sm:justify-start gap-7 sm:gap-7 mt-4 px-6">
       {tabs.map((tab) => (
