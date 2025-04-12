@@ -12,6 +12,7 @@ import SaveConfirmationModal from "./components/savemodal";
 import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
+import { fetchProfile } from "./UserProfileAPI/userProfileApi";
 
 function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const [showModal, setShowModal] = useState(false);
@@ -21,36 +22,40 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
 
   //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
   useEffect(() => {
-    const fetchProfilePicture = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("User not authenticated");
-          return;
-        }
 
-        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-        const response = await fetch(`${API_BASE_URL}/profile-picture`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          setProfilePicture(result.profile_picture || defaultimage);
-        } else {
-          console.error("Failed to fetch profile picture");
-        }
-      } catch (err) {
-        console.error("Error while fetching profile picture:", err);
-      }
-    };
-
+    console.log("Fetching profile picture...");
     fetchProfilePicture();
+    setProfilePicture(userDetails.profile_picture);
+    
   }, []);
+
+  const fetchProfilePicture = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("User not authenticated");
+        return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      const response = await fetch(`${API_BASE_URL}/profile-picture`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setProfilePicture(result.profile_picture || defaultimage);
+      } else {
+        console.error("Failed to fetch profile picture");
+      }
+    } catch (err) {
+      console.error("Error while fetching profile picture:", err);
+    }
+  };
 
   const handleSave = () => {
     setShowModal(false);
@@ -112,6 +117,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const handleUpload = (imageUrl) => {
     setProfilePicture(imageUrl);
     console.log("Profile picture updated:", imageUrl);
+    fetchProfilePicture();
   };
 
   return (
