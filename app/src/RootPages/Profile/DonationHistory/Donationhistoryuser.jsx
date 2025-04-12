@@ -41,6 +41,13 @@ function DonationHistoryUser({ userDetails }) {
     <div className="w-full max-w-[1100px] mt-6">
       {/* Section Header */}
       <SectionHeader title="DONATIONS" />
+<div className="mt-1  rounded-xl px-4 py-2">
+      <div className="flex font-semibold text-primary">
+            <div className="w-1/3">Date</div>
+            <div className="w-1/3">Donation</div>
+            <div className="w-1/3 text-right">Amount</div>
+          </div>
+          </div>
 
       {loading && <p className="mt-4">Loading...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
@@ -50,13 +57,7 @@ function DonationHistoryUser({ userDetails }) {
       )}
 
       {!loading && !error && donationHistory.length > 0 && (
-        <div className="mt-4 bg-white shadow-sm rounded-xl p-4">
-          {/* Table Header */}
-          <div className="flex font-semibold text-gray-600 border-b pb-2 mb-2">
-            <div className="w-1/3">Date</div>
-            <div className="w-1/3">Donation</div>
-            <div className="w-1/3 text-right">Amount</div>
-          </div>
+        <div className="px-4">
 
           {/* Donation Rows */}
           {donationHistory.map((donation) => {
