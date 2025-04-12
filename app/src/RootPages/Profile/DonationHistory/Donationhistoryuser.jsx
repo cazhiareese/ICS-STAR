@@ -149,7 +149,7 @@ function DonationHistoryUser({ userDetails }) {
               <div
                 key={donation.donation_id}
                 onClick ={() => openModal(donation)}
-                className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-hover"
+                className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
                 
               >
                 <div className="w-1/3">{formattedDate}</div>
