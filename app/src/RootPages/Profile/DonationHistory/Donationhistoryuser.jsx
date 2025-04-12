@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import SectionHeader from "../components/sectionheader";
 import axios from "axios";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import DonationDetailsModal from "../components/donationmodal";
 
 function DonationHistoryUser({ userDetails }) {
   const [donationHistory, setDonationHistory] = useState([]);
@@ -10,8 +11,21 @@ function DonationHistoryUser({ userDetails }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [selectedDonation, setSelectedDonation] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
+
+  const openModal = (donation) => {
+    setSelectedDonation(donation);
+    setIsModalOpen(true);
+  };
+  
+  const closeModal = () => {
+    setSelectedDonation(null);
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchDonationHistory = async () => {
@@ -134,7 +148,9 @@ function DonationHistoryUser({ userDetails }) {
             return (
               <div
                 key={donation.donation_id}
-                className="border-b py-2 flex justify-between items-center border-disabled"
+                onClick ={() => openModal(donation)}
+                className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-hover"
+                
               >
                 <div className="w-1/3">{formattedDate}</div>
                 <div className="w-1/3">{donation.donation_drive_title}</div>
@@ -144,6 +160,12 @@ function DonationHistoryUser({ userDetails }) {
           })}
         </div>
       )}
+      <DonationDetailsModal
+  isOpen={isModalOpen}
+  onClose={closeModal}
+  donation={selectedDonation}
+/>
+
     </div>
   );
 }
