@@ -125,7 +125,12 @@ function ProfileSection({
   };
 
   return (
-    <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
+    <div
+  className={`relative w-full max-w-[1100px] border border-disabled rounded-[10px] p-6 flex flex-col sm:flex-row items-center sm:justify-between ${
+    userDetails?.is_verified ? "bg-whitey" : "bg-white"
+  }`}
+>
+
       {/* Edit / Save Profile Button - only visible on "About" tab */}
       {activeTab === "About" && (
   <button

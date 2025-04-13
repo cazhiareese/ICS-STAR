@@ -181,7 +181,7 @@ function UserProfile() {
       {userDetails.user_type === "alumni" && (
         <>
           {/* Navigation Tabs */}
-          <UserProfileTabs editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {/* Information Sections */}
         </>
