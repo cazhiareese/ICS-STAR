@@ -40,32 +40,35 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
   </div>
 )}
 
-        {/* Mobile Number */}
-        <div className="flex flex-col items-start text-left">
-          <div className="flex items-center gap-2">
-            <Phone size={20} className="text-black" />
-            <span>Mobile Number</span>
-          </div>
-          {editMode ? (
-            <input
-              type="text"
-              value={userDetails.mobile_number}
-              onChange={(e) => handleChange(e, "mobile_number")}
-              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
-            />
-          ) : (
-            <span className="text-primary font-satoshi-bold">
-              {userDetails.mobile_number === null ||
-              userDetails.mobile_number === "" ? (
-                <span className="text-gray-500 italic">Not Available</span>
-              ) : userDetails.mobile_number ? (
-                userDetails.mobile_number
-              ) : (
-                <CircularLoading />
-              )}
-            </span>
-          )}
-        </div>
+{/* Mobile Number */}
+{userDetails.is_verified && (
+  <div className="flex flex-col items-start text-left">
+    <div className="flex items-center gap-2">
+      <Phone size={20} className="text-black" />
+      <span>Mobile Number</span>
+    </div>
+    {editMode ? (
+      <input
+        type="text"
+        value={userDetails.mobile_number}
+        onChange={(e) => handleChange(e, "mobile_number")}
+        className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
+      />
+    ) : (
+      <span className="text-primary font-satoshi-bold">
+        {userDetails.mobile_number === null ||
+        userDetails.mobile_number === "" ? (
+          <span className="text-gray-500 italic">Not Available</span>
+        ) : userDetails.mobile_number ? (
+          userDetails.mobile_number
+        ) : (
+          <CircularLoading />
+        )}
+      </span>
+    )}
+  </div>
+)}
+
 
         {/* Student Number */}
         <div className="flex flex-col items-start text-left">
@@ -132,36 +135,39 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             </div>
           </div>
         )}
-        {/* Marital Status */}
-        <div className="flex flex-col items-start text-left">
-          <div className="flex items-center gap-2">
-            <span>Marital Status</span>
-          </div>
-          {editMode ? (
-            <select
-              value={userDetails.marital_status}
-              onChange={(e) => handleChange(e, "marital_status")}
-              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
-            >
-              {maritalstat.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span className="text-primary font-satoshi-bold">
-              {userDetails.marital_status === null ||
-              userDetails.marital_status === "" ? (
-                <span className="text-gray-500 italic">Not Available</span>
-              ) : userDetails.marital_status ? (
-                userDetails.marital_status
-              ) : (
-                <CircularLoading />
-              )}
-            </span>
-          )}
-        </div>
+{/* Marital Status */}
+{userDetails.is_verified && (
+  <div className="flex flex-col items-start text-left">
+    <div className="flex items-center gap-2">
+      <span>Marital Status</span>
+    </div>
+    {editMode ? (
+      <select
+        value={userDetails.marital_status}
+        onChange={(e) => handleChange(e, "marital_status")}
+        className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
+      >
+        {maritalstat.map((s) => (
+          <option key={s} value={s}>
+            {s}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <span className="text-primary font-satoshi-bold">
+        {userDetails.marital_status === null ||
+        userDetails.marital_status === "" ? (
+          <span className="text-gray-500 italic">Not Available</span>
+        ) : userDetails.marital_status ? (
+          userDetails.marital_status
+        ) : (
+          <CircularLoading />
+        )}
+      </span>
+    )}
+  </div>
+)}
+
       </div>
     </div>
   );

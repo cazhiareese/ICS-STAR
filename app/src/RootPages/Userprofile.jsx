@@ -54,7 +54,7 @@ function UserProfile() {
           image: data.image, // Added image
           position: data.position, // Added position
           is_banned: data.is_banned, // Added is_banned
-          is_verified: false,
+          is_verified: true,
           standing: data.standing, // Added standing
           graduation_year: data.graduation_year,
           graduation_semester: data.graduation_semester,
