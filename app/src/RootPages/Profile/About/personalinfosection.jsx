@@ -9,31 +9,36 @@ import CircularLoading from "../../../components/LoadingComponents/circularloadi
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
 const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
+  const isVerified = userDetails.is_verified;
+  const isStudent = userDetails.user_type === "student";
+
   return (
     <div className="w-full max-w-[1100px] mt-6">
       <SectionHeader title="PERSONAL INFORMATION" />
 
       {/* Responsive Grid Layout */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4 text-black text-[16px] font-satoshi-medium">
-        {/* Location */}
-        <div className="flex flex-col items-start text-left">
-          <div className="flex items-center gap-2">
-            <MapPin size={20} className="text-black" />
-            <span>Location</span>
-          </div>
-          {editMode ? (
-            <input
-              type="text"
-              value={userDetails.location}
-              onChange={(e) => handleChange(e, "location")}
-              className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
-            />
-          ) : (
-            <span className="text-primary font-satoshi-bold">
-              {userDetails.location || <CircularLoading />}
-            </span>
-          )}
-        </div>
+{/* Location */}
+{userDetails.is_verified && (
+  <div className="flex flex-col items-start text-left">
+    <div className="flex items-center gap-2">
+      <MapPin size={20} className="text-black" />
+      <span>Location</span>
+    </div>
+    {editMode ? (
+      <input
+        type="text"
+        value={userDetails.location}
+        onChange={(e) => handleChange(e, "location")}
+        className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
+      />
+    ) : (
+      <span className="text-primary font-satoshi-bold">
+        {userDetails.location || <CircularLoading />}
+      </span>
+    )}
+  </div>
+)}
 
         {/* Mobile Number */}
         <div className="flex flex-col items-start text-left">
@@ -81,7 +86,6 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             </span>
           )}
         </div>
-        {/* Graduating Class */}
         {/* Graduating Class */}
         {userDetails.user_type === "alumni" && (
           <div className="flex flex-col items-start text-left">
