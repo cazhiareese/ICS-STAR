@@ -1,10 +1,11 @@
 import React from "react";
-import { MapPin, Phone, IdCard, GraduationCap } from "lucide-react";
+import { MapPin, Phone, IdCard, GraduationCap, Heart } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 
 const semester = ["1st Semester", "2nd Semester", "Mid Semester"];
 const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
 const maritalstat = ["Single", "Maried", "Divorced", "Widowed"];
+const standings = ["Freshman", "Sophomore", "Junior", "Senior"];
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
@@ -137,6 +138,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
 {userDetails.is_verified && (
   <div className="flex flex-col items-start text-left">
     <div className="flex items-center gap-2">
+      <Heart size={20} className="text-black" />
       <span>Marital Status</span>
     </div>
     {editMode ? (
