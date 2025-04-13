@@ -74,10 +74,8 @@ function UserProfile() {
 
         // Set skills, scholarships, and affiliations
         setSkills(data.skills || []);
-        console.log(data.skills);
         setScholarships(data.scholarships || []);
         setAffiliations(data.affiliations || []);
-        console.log(data.affiliations);
       } catch (err) {
         setError("Failed to load profile");
       }
