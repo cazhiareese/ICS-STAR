@@ -30,6 +30,7 @@ function UserProfile() {
   const [scholarships, setScholarships] = useState([]);
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   //fetch user details from backend
   useEffect(() => {
@@ -54,7 +55,7 @@ function UserProfile() {
           image: data.image, // Added image
           position: data.position, // Added position
           is_banned: data.is_banned, // Added is_banned
-          is_verified: true,
+          is_verified: false,
           standing: data.standing, // Added standing
           graduation_year: data.graduation_year,
           graduation_semester: data.graduation_semester,
@@ -76,6 +77,7 @@ function UserProfile() {
         setSkills(data.skills || []);
         setScholarships(data.scholarships || []);
         setAffiliations(data.affiliations || []);
+        setIsLoading(false);
       } catch (err) {
         setError("Failed to load profile");
       }
@@ -197,6 +199,7 @@ function UserProfile() {
             skills={skills}
             removeSkill={removeSkill}
             addSkills={addSkills}
+            isLoading={isLoading}
           />
           <AffiliationsSection
             editMode={editMode}
