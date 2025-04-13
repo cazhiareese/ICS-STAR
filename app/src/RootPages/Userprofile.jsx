@@ -213,6 +213,7 @@ function UserProfile() {
             scholarships={scholarships}
             removeScholarship={removeScholarship}
             addScholarship={addScholarship}
+            isLoading={isLoading}
           />
         </>
       )}
