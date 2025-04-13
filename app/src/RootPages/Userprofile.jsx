@@ -55,7 +55,7 @@ function UserProfile() {
           image: data.image, // Added image
           position: data.position, // Added position
           is_banned: data.is_banned, // Added is_banned
-          is_verified: true,
+          is_verified: false,
           standing: data.standing, // Added standing
           graduation_year: data.graduation_year,
           graduation_semester: data.graduation_semester,
@@ -161,7 +161,8 @@ function UserProfile() {
   console.log(localStorage.getItem("token"));
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
-{!userDetails?.is_verified && (
+      
+      {!isLoading && !userDetails?.is_verified && (
   <div className="flex items-center gap-2 w-full max-w-3xl px-4 py-3 rounded-2xl border border-primary bg-blue-50 text-primary sm:max-w-[1100px]">
     <Info className="w-5 h-5 flex-shrink-0" />
     <span className="text-sm sm:text-base font-satoshi-bold text-center sm:text-left">
@@ -169,6 +170,7 @@ function UserProfile() {
     </span>
   </div>
 )}
+
 
       {/* Profile Section */}
       <ProfileSection
