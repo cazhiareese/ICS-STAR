@@ -128,27 +128,31 @@ function ProfileSection({
     <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
       {/* Edit / Save Profile Button - only visible on "About" tab */}
       {activeTab === "About" && (
-        <button
-          onClick={() => {
-            if (editMode) {
-              setShowModal(true);
-            } else {
-              setEditMode(true);
-            }
-          }}
-          className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto 
-    bg-primary text-white hover:bg-hover"
-        >
-          {editMode ? (
-            <Check size={18} className="text-white pointer-events-none" />
-          ) : (
-            <Pencil size={18} className="pointer-events-none" />
-          )}
-          <span className="hidden sm:inline pointer-events-none">
-            {editMode ? "Save Profile" : "Edit Profile"}
-          </span>
-        </button>
-      )}
+  <button
+    onClick={() => {
+      if (userDetails?.is_verified) {
+        if (editMode) {
+          setShowModal(true);
+        } else {
+          setEditMode(true);
+        }
+      }
+    }}
+    disabled={!userDetails?.is_verified}
+    className={`absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto
+      ${userDetails?.is_verified ? "bg-primary text-white hover:bg-hover" : "bg-bg-disabled text-neutral-c cursor-not-allowed"}`}
+  >
+    {editMode ? (
+      <Check size={18} className={`${userDetails?.is_verified ? "text-white" : "text-neutral"} pointer-events-none`} />
+    ) : (
+      <Pencil size={18} className={`${userDetails?.is_verified ? "" : "text-neutral"} pointer-events-none`} />
+    )}
+    <span className="hidden sm:inline pointer-events-none text-neutral">
+      {editMode ? "Save Profile" : "Edit Profile"}
+    </span>
+  </button>
+)}
+
 
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
