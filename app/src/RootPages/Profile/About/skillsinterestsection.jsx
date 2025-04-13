@@ -9,7 +9,7 @@ const SkillsInterestsSection = ({
   skills,
   removeSkill,
   addSkills,
-  isLoading, // <--- now respected in logic
+  isLoading, 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 

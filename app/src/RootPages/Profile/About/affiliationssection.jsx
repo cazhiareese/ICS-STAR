@@ -9,7 +9,7 @@ const AffiliationsSection = ({
   affiliations,
   removeAffiliation,
   addAffiliation,
-  isLoading, // <-- added here
+  isLoading, 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
