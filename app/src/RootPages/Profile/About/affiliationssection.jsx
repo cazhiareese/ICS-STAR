@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PlusCircle, XCircle, X } from "lucide-react";
+import { XCircle } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddAffiliationsModal from "../components/affiliationmodal";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
@@ -9,6 +9,7 @@ const AffiliationsSection = ({
   affiliations,
   removeAffiliation,
   addAffiliation,
+  isLoading, // <-- added here
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -21,10 +22,13 @@ const AffiliationsSection = ({
       />
 
       <div className="flex justify-between items-center mt-4">
-        {/* Affiliation List (Two-column layout) */}
-        {affiliations.length === 0 ? (
+        {isLoading ? (
           <div className="w-full flex justify-center mt-4">
             <CircularLoading />
+          </div>
+        ) : affiliations.length === 0 ? (
+          <div className="w-full flex justify-center mt-4 text-gray-500 italic">
+            No affiliations yet.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 w-full">
@@ -36,7 +40,7 @@ const AffiliationsSection = ({
                     {affiliation.affiliation}
                   </p>
                   {editMode && (
-                    <div className="bg-error  rounded-full flex items-center justify-center hover:bg-red-800">
+                    <div className="bg-error rounded-full flex items-center justify-center hover:bg-red-800">
                       <XCircle
                         size={16}
                         className="text-white cursor-pointer hover:text-white transition"
