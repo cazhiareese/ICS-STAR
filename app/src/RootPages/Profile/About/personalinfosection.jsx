@@ -9,8 +9,6 @@ import CircularLoading from "../../../components/LoadingComponents/circularloadi
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
 const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
-  const isVerified = userDetails.is_verified;
-  const isStudent = userDetails.user_type === "student";
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
