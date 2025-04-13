@@ -94,6 +94,7 @@ function ProfileSection({
       const urlEncodedData = new URLSearchParams(currentFormData).toString();
 
       console.log("🔍 Final Request Body:", urlEncodedData);
+      
 
       const response = await fetch(`${API_BASE_URL}/profile/edit`, {
         method: "PUT",
