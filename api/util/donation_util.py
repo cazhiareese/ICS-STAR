@@ -76,7 +76,8 @@ def get_user_monetary_donations(db: Session, user_id: str) -> list[MonetaryDonat
             is_acknowledged=donation.is_acknowledged,
             donation_drive_title=drive.title if drive else None,
             proof=donation.proof,
-            is_anonymous=donation.is_anonymous
+            is_anonymous=donation.is_anonymous,
+            type="Monetary"
         )
 
         MonetaryDonationOutList.append(mon_donation)
@@ -102,7 +103,8 @@ def get_user_in_kind_donations(db: Session, user_id: str) -> list[InKindDonation
             drive_id=donation.drive_id,
             user_id=donation.user_id,
             is_acknowledged=donation.is_acknowledged,
-            donation_drive_title=drive.title if drive else None
+            donation_drive_title=drive.title if drive else None,
+            type="In-Kind"
         )
 
         InKindDonationOutList.append(in_kind_donation)
@@ -131,7 +133,8 @@ def get_user_monetary_donations_acknowledged(db: Session, user_id: str) -> list[
             is_acknowledged=donation.is_acknowledged,
             donation_drive_title=drive.title if drive else None,
             proof=donation.proof,
-            is_anonymous=donation.is_anonymous
+            is_anonymous=donation.is_anonymous,
+            type="Monetary"
         )
 
         MonetaryDonationOutList.append(mon_donation)
@@ -158,7 +161,8 @@ def get_user_in_kind_donations_acknowledged(db: Session, user_id: str) -> list[I
             drive_id=donation.drive_id,
             user_id=donation.user_id,
             is_acknowledged=donation.is_acknowledged,
-            donation_drive_title=drive.title if drive else None
+            donation_drive_title=drive.title if drive else None,
+            type="In-Kind"
         )
 
         InKindDonationOutList.append(in_kind_donation)

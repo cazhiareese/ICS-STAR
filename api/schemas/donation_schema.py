@@ -43,6 +43,7 @@ class MonetaryDonationOut(BaseModel):
     donation_drive_title: Optional[str] = None
     proof: Optional[str] = None
     is_anonymous: bool = False
+    type: str = "Monetary"
 
     class Config:
         from_attributes = True
@@ -55,6 +56,7 @@ class InKindDonationOut(BaseModel):
     user_id: UUID
     is_acknowledged: bool = False
     donation_drive_title: Optional[str] = None
+    type: str = "In-Kind"
 
     class Config:
         from_attributes = True
