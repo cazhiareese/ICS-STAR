@@ -4,10 +4,12 @@ from config.database import get_db
 from typing import List, Optional
 
 from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding
-from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged
+from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 
 from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum, UserStandingEnum
+
+from uuid import UUID
 
 router = APIRouter()
 
@@ -433,7 +435,7 @@ async def remove_profile_picture(
 # Get the donation history of the user
 # Arguments: db - SQLAlchemy session, user - current user
 # Returns: a list of donations made by the user
-@router.get("/donation-history/")
+@router.get("/donation-history/all")
 async def get_donation_history(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
@@ -505,3 +507,18 @@ async def get_acknowledged_in_kind_donations(
     acknowledged_in_kind_donations = get_user_in_kind_donations_acknowledged(db, user.user_id)
 
     return {"message": "success", "data": acknowledged_in_kind_donations}
+
+# Get the donation history of the user
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of donations made by the user with acknowledgment status
+@router.get("/donation-history")
+async def get_donation_history_me(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    donations = get_user_donation_history_details(db, user.user_id)
+
+    return {"message": "success", "data": donations}

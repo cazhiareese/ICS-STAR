@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from typing import List
+from typing import List, Optional
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from config.database import get_db
-from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive
+from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation
 from util.userutil import get_current_user
 from models.usermodel import User
 from schemas.user import UserTypeEnum
@@ -21,6 +21,7 @@ def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_
     
     drives = db.query(DonationDrive).filter(
         and_(
+            DonationDrive.is_general == False,
             DonationDrive.is_deleted == False,
             DonationDrive.is_closed == False
         )
@@ -38,6 +39,7 @@ def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_
     
     drives = db.query(DonationDrive).filter(
         and_(
+            DonationDrive.is_general == False,
             DonationDrive.is_deleted == False,
             DonationDrive.is_closed == False
         )
@@ -89,3 +91,71 @@ def get_one_drive(
         raise HTTPException(status_code=404, detail="Donation drive not found")
     
     return general_donation_drive(db, drive)
+
+@router.post("/make-donation/{drive_id}")
+async def make_donations(
+    drive_id: UUID,
+    monetary_donation: bool = Form(...),
+    in_kind_donation: bool = Form(...),
+    amount: Optional[float] = Form(None),
+    description: Optional[str] = Form(None),
+    proof: Optional[UploadFile] = File(None),
+    is_anonymous: Optional[bool] = Form(None),
+    is_general: Optional[bool] = Form(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    
+    if user.user_type.value == UserTypeEnum.student:
+        raise HTTPException(status_code=400, detail="For alumni only")
+    
+    drive = db.query(DonationDrive).filter(
+        DonationDrive.drive_id == drive_id,
+        DonationDrive.is_deleted == False,
+        DonationDrive.is_closed == False
+    ).first()
+    
+    
+    if not drive:
+        raise HTTPException(
+            status_code=404,
+            detail="Donation drive not found"
+        )
+    
+    return await make_donation(
+        db, user, drive, monetary_donation, in_kind_donation, amount, description, proof, is_anonymous
+    )
+    
+@router.post("/make-general-donation")
+async def make_donations(
+    monetary_donation: bool = Form(...),
+    in_kind_donation: bool = Form(...),
+    amount: Optional[float] = Form(None),
+    description: Optional[str] = Form(None),
+    proof: Optional[UploadFile] = File(None),
+    is_anonymous: Optional[bool] = Form(None),
+    is_general: Optional[bool] = Form(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    
+    if user.user_type.value == UserTypeEnum.student:
+        raise HTTPException(status_code=400, detail="For alumni only")
+    
+    if is_general:
+        drive = db.query(DonationDrive).filter(
+            DonationDrive.is_general == True,
+            DonationDrive.is_deleted == False,
+            DonationDrive.is_closed == False
+        ).first()
+    
+    
+    if not drive:
+        raise HTTPException(
+            status_code=404,
+            detail="Donation drive not found"
+        )
+    
+    return await make_donation(
+        db, user, drive, monetary_donation, in_kind_donation, amount, description, proof, is_anonymous
+    )
