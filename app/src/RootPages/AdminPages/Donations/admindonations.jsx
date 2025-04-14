@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
 import SortModal from '../../../components/AdminComponents/sortmodal'
+import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 
 function AdminDonations() {
   const navigate = useNavigate()
@@ -18,6 +19,8 @@ function AdminDonations() {
 
   const filters = ['Name', 'Batch', 'Last Update']
   const [sortBy, setSortBy] = useState(filters[0]);
+  const [sortDirection, setSortDirection] = useState('asc');
+
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -102,6 +105,8 @@ function AdminDonations() {
                 <p className='font-satoshi-medium text-primary block'>Name</p>
             </button> */}
             <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/>
+            {/* Order Toggle */}
+            <OrderToggle direction={sortDirection} onToggle={setSortDirection}/>
             {/* Filter */}
             <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
               <Filter className='text-primary'/>
