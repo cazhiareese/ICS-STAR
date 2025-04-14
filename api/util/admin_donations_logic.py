@@ -1,9 +1,9 @@
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
-from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, PendingInKindDonationsOut, PendingMonetaryDonationsOut, VerifiedInKindDonationsOut, VerifiedMonetaryDonationsOut, AdminOverviewDonationDrive
+from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, AdminOverviewDonationDrive, MonetaryDonationOut, InKindDonationOut, GenericDriveOut, ShortenedMonetaryDonationsOut, ShortenedInKindDonationsOut, AdminGenericDriveView
 import datetime
 from uuid import UUID
 
@@ -202,7 +202,7 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     
     # Add pending monetary donations to the list
     for donation in pending_monetary_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
+        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
         pending_verifications.append({
             "donation_id": donation.donation_id,
             "name": donation.name,
@@ -212,7 +212,7 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     
     # Add pending in-kind donations to the list
     for donation in pending_inkind_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
+        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
         pending_verifications.append({
             "donation_id": donation.donation_id,
             "name": donation.name,
@@ -255,6 +255,93 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         target_cost = drive.target_cost,
         is_closed = drive.is_closed,
         remaining_percent = remaining_percentage,
+        image = f"{STORAGE_STRING}{drive.image}" if drive.image else None
+    )
+
+# this is the same as view_donation_drive, except it is hardcoded to the drive_id of the generic drive and we will return total amount
+# of verified monetary, and unverified monetary donations instead of the percent progress 
+def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
+    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+
+    if not drive:
+        return []
+    
+    pending_monetary_donations = get_all_pending_monetary_donations(db, drive_id)
+    pending_inkind_donations = get_all_pending_inkind_donations(db, drive_id)
+    
+    verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
+    verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
+    
+    # Calculate total amount raised from acknowledged monetary donations only
+    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(
+        MonetaryDonation.drive_id == drive.drive_id,
+        or_(
+            MonetaryDonation.is_acknowledged == True,
+            MonetaryDonation.is_acknowledged.is_(None)
+        )
+    ).scalar() or 0
+
+    pending_verifications = []
+    
+    # Add pending monetary donations to the list
+    for donation in pending_monetary_donations:
+        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
+        pending_verifications.append({
+            "donation_id": donation.donation_id,
+            "name": donation.name,
+            "donation_details": f"₱{donation.donation_details:,.2f}",
+            "date_donated": date_donated,
+        })
+    
+    # Add pending in-kind donations to the list
+    for donation in pending_inkind_donations:
+        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
+        pending_verifications.append({
+            "donation_id": donation.donation_id,
+            "name": donation.name,
+            "donation_details": donation.donation_details,
+            "date_donated": date_donated,
+        })
+
+    # Format the verified donations list
+    verified_donations = []
+    
+    # Add verified monetary donations to the list
+    for donation in verified_monetary_donations:
+        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
+        verified_donations.append({
+            "donation_id": donation.donation_id,
+            "date_donated": date_donated,
+            "name": donation.name,
+            "donation_type": "Monetary",
+            "donation_details": f"₱{donation.donation_details:,.2f}"
+        })
+    
+    # Add verified in-kind donations to the list
+    for donation in verified_inkind_donations:
+        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
+        verified_donations.append({
+            "donation_id": donation.donation_id,
+            "date_donated": date_donated,
+            "name": donation.name,
+            "donation_type": "In-kind",
+            "donation_details": donation.donation_details
+        })
+
+    
+    # Get the total amount of monetary donations for the generic drive
+    total_verified_monetary = db.query(func.sum(MonetaryDonation.amount)).filter(
+        MonetaryDonation.drive_id == drive.drive_id,
+        MonetaryDonation.is_acknowledged == True
+    ).scalar() or 0
+
+    return AdminGenericDriveView(
+        drive_id = drive.drive_id,
+        title = drive.title,
+        grand_total = total_amount,
+        pending_list = pending_verifications,
+        verified_list = verified_donations,
+        verified_total = total_verified_monetary,
     )
 
 # Function to get the percentage statistics of a donation drive
@@ -286,7 +373,6 @@ def get_percent_funded(db: Session, drive_id: UUID) -> PercentOut:
         remaining_percent=round(remaining_percentage, 2)
     )
 
-# TODO
 # Update the generic drive statistics
 #
 # Arguments:
@@ -294,26 +380,26 @@ def get_percent_funded(db: Session, drive_id: UUID) -> PercentOut:
 # drive_id: UUID of the generic drive (hardcoded)
 #
 # Returns: GenericDriveOut object containing the total monetary amount, total in-kind donations, and the number of unverified donations
-# def update_generic_drive_stats(db: Session, drive_id: UUID):
-#     # Get the generic drive by hardcoded ID
-#     generic_drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+def update_generic_drive_stats(db: Session, drive_id: UUID):
+    # Get the generic drive by hardcoded ID
+    generic_drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
 
-#     # Get the total amount of monetary donations for the generic drive
-#     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+    # Get the total amount of monetary donations for the generic drive
+    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
 
-#     # Get the total in-kind donations for the generic drive
-#     total_in_kind = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive_id).scalar() or 0
+    # Get the total in-kind donations for the generic drive
+    total_in_kind = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive_id).scalar() or 0
 
-#     # Get the number of unverified donations for the generic drive
-#     number_of_unverified = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == False).scalar() or 0
+    # Get the number of unverified donations for the generic drive
+    number_of_unverified = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == False).scalar() or 0
 
-#     return GenericDriveOut(
-#         total_amount=total_amount,
-#         total_in_kind=total_in_kind,
-#         number_of_unverified=number_of_unverified
-    # )
+    return GenericDriveOut(
+        total_amount=total_amount,
+        total_in_kind=total_in_kind,
+        number_of_unverified=number_of_unverified
+    )
 
-def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[PendingMonetaryDonationsOut]:
+def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[ShortenedMonetaryDonationsOut]:
     pending_monetary_donations = db.query(
         MonetaryDonation.donation_id,
         User.first_name,
@@ -324,13 +410,13 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[Pend
         User, MonetaryDonation.user_id == User.user_id
     ).filter(
         MonetaryDonation.drive_id == drive_id,
-        MonetaryDonation.is_acknowledged == False
+        MonetaryDonation.is_acknowledged.is_(None)
     ).all()
 
     pending_donations_list = []
 
     for donation in pending_monetary_donations:
-        pending_out = PendingMonetaryDonationsOut(
+        pending_out = ShortenedMonetaryDonationsOut(
             donation_id=donation[0],
             date_donated=donation[4],
             name=f"{donation[1]} {donation[2]}",
@@ -340,7 +426,7 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[Pend
 
     return pending_donations_list
 
-def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> list[PendingInKindDonationsOut]:
+def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> list[ShortenedInKindDonationsOut]:
     pending_inkind_donations = db.query(
         InKindDonation.donation_id,
         User.first_name,
@@ -351,13 +437,13 @@ def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> list[Pendin
         User, InKindDonation.user_id == User.user_id
     ).filter(
         InKindDonation.drive_id == drive_id,
-        InKindDonation.is_acknowledged == False
+        InKindDonation.is_acknowledged.is_(None)
     ).all()
 
     pending_donations_list = []
 
     for donation in pending_inkind_donations:
-        pending_out = PendingInKindDonationsOut(
+        pending_out = ShortenedInKindDonationsOut(
             donation_id=donation[0],
             date_donated=donation[4],
             name=f"{donation[1]} {donation[2]}",
@@ -367,7 +453,7 @@ def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> list[Pendin
 
     return pending_donations_list
 
-def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[VerifiedMonetaryDonationsOut]:
+def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[ShortenedMonetaryDonationsOut]:
     verified_monetary_donations = db.query(
         MonetaryDonation.donation_id,
         MonetaryDonation.date_donated,
@@ -384,7 +470,7 @@ def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[Ver
     verified_donations_list = []
 
     for donation in verified_monetary_donations:
-        verified_out = VerifiedMonetaryDonationsOut(
+        verified_out = ShortenedMonetaryDonationsOut(
             donation_id=donation[0],
             date_donated=donation[1],
             name=f"{donation[2]} {donation[3]}",
@@ -394,7 +480,7 @@ def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[Ver
 
     return verified_donations_list
 
-def get_all_verified_inkind_donations(db: Session, drive_id: UUID) -> list[VerifiedInKindDonationsOut]:
+def get_all_verified_inkind_donations(db: Session, drive_id: UUID) -> list[ShortenedInKindDonationsOut]:
     verified_inkind_donations = db.query(
         InKindDonation.donation_id,
         InKindDonation.date_donated,
@@ -411,7 +497,7 @@ def get_all_verified_inkind_donations(db: Session, drive_id: UUID) -> list[Verif
     verified_donations_list = []
 
     for donation in verified_inkind_donations:
-        verified_out = VerifiedInKindDonationsOut(
+        verified_out = ShortenedInKindDonationsOut(
             donation_id=donation[0],
             date_donated=donation[1],
             name=f"{donation[2]} {donation[3]}",
@@ -432,11 +518,73 @@ def donation_drive_overview(db: Session, drive_id: UUID) -> AdminOverviewDonatio
 
     if not drive:
         return []
+    
+    date_started = drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None
 
     return AdminOverviewDonationDrive(
         donation_id = drive.drive_id,
         image = f"{STORAGE_STRING}{drive.image}" if drive.image else None,
-        created_at = drive.created_at,
+        created_at = date_started,
         description = drive.description,
         links = drive_links
     )
+
+def verify_monetary_donation(db: Session, donation_id: UUID, choice: str) -> MonetaryDonationOut:
+    donation = db.query(MonetaryDonation).filter(MonetaryDonation.donation_id == donation_id).first()
+
+    if not donation:
+        return None
+
+    if choice == "approve":
+        donation.is_acknowledged = True
+    elif choice == "disapprove":
+        donation.is_acknowledged = False
+    else:
+        return False
+        
+    db.commit()
+
+    return MonetaryDonationOut(
+        donation_id = donation.donation_id,
+        date_donated = donation.date_donated,
+        amount = donation.amount,
+        drive_id = donation.drive_id,
+        user_id = donation.user_id,
+        is_acknowledged = donation.is_acknowledged
+    )
+
+def verify_inkind_donation(db: Session, donation_id: UUID, choice: str) -> InKindDonationOut:
+    donation = db.query(InKindDonation).filter(InKindDonation.donation_id == donation_id).first()
+
+    if not donation:
+        return None
+
+    if choice == "approve":
+        donation.is_acknowledged = True
+    elif choice == "disapprove":
+        donation.is_acknowledged = False
+    else:
+        return False
+
+    db.commit()
+
+    return InKindDonationOut(
+        donation_id = donation.donation_id,
+        date_donated = donation.date_donated,
+        description = donation.description,
+        drive_id = donation.drive_id,
+        user_id = donation.user_id,
+        is_acknowledged = donation.is_acknowledged
+    )
+
+def close_donation_drive(db: Session, drive_id: UUID) -> bool:
+    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+
+    if not drive:
+        return False
+
+    # Update the is_closed field to True
+    drive.is_closed = True
+    db.commit()
+
+    return True
