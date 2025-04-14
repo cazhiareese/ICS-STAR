@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {MoveLeft} from 'lucide-react'
-import { PieChart, ResponsiveContainer, Pie, Cell, Tooltip } from 'recharts'
+import { PieChart, ResponsiveContainer, Pie, Cell, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid} from 'recharts'
 
 function AdminDonationDriveDemographics() {
   const navigate = useNavigate()
   const [donorsByBatch, setDonorsByBatch] = useState([])
   const [amountByBatch, setAmountByBatch] = useState([])
   const [donationTypeData, setDonationTypeData] = useState([])
+  const [amountTimeData, setAmountTimeData] = useState([])
   
   useEffect(() => {
     setDonorsByBatch([
@@ -25,6 +26,19 @@ function AdminDonationDriveDemographics() {
     setDonationTypeData([
       { type: "Monetary", amount: 50 },
       { type: "In-Kind", amount: 50 },
+    ])
+    setAmountTimeData([
+      { date: '01/01', amount: 84 },
+      { date: '01/07', amount: 67 },
+      { date: '01/14', amount: 25 },
+      { date: '01/21', amount: 87 },
+      { date: '01/28', amount: 44 },
+      { date: '2/04', amount: 12 },
+      { date: '2/11', amount: 12 },
+      { date: '2/14', amount: 10 },
+      { date: '2/21', amount: 27 },
+      { date: '2/28', amount: 77 },
+      { date: '3/07', amount: 88 },
     ])
   }, [])
   
@@ -158,7 +172,24 @@ function AdminDonationDriveDemographics() {
             </div>
           </div>
         </div>
-        <div className='flex-1 border'></div>
+        <div className='flex-1'>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={amountTimeData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip></Tooltip>
+              <Line
+                type="monotone"
+                dataKey="amount"
+                stroke="#007bff"
+                strokeWidth={3}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   )
