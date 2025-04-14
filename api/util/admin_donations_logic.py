@@ -531,7 +531,7 @@ def donation_drive_overview(db: Session, drive_id: UUID) -> AdminOverviewDonatio
     )
 
 def verify_monetary_donation(db: Session, donation_id: UUID, choice: str) -> MonetaryDonationOut:
-    donation = db.query(MonetaryDonation).filter(MonetaryDonation.donation_id == donation_id).first()
+    donation = db.query(MonetaryDonation).filter(MonetaryDonation.donation_id == donation_id, MonetaryDonation.is_acknowledged.is_(None)).first()
 
     if not donation:
         return None
@@ -555,8 +555,8 @@ def verify_monetary_donation(db: Session, donation_id: UUID, choice: str) -> Mon
     )
 
 def verify_inkind_donation(db: Session, donation_id: UUID, choice: str) -> InKindDonationOut:
-    donation = db.query(InKindDonation).filter(InKindDonation.donation_id == donation_id).first()
-
+    donation = db.query(InKindDonation).filter(InKindDonation.donation_id == donation_id, InKindDonation.is_acknowledged.is_(None)).first()
+    
     if not donation:
         return None
 
