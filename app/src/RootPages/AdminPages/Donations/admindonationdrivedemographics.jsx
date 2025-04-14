@@ -7,6 +7,7 @@ function AdminDonationDriveDemographics() {
   const navigate = useNavigate()
   const [donorsByBatch, setDonorsByBatch] = useState([])
   const [amountByBatch, setAmountByBatch] = useState([])
+  const [donationTypeData, setDonationTypeData] = useState([])
   
   useEffect(() => {
     setDonorsByBatch([
@@ -20,6 +21,10 @@ function AdminDonationDriveDemographics() {
       { batch: "2010", amount: 20000 },
       { batch: "2011", amount: 10000 },
       { batch: "Others", amount: 10000 }
+    ])
+    setDonationTypeData([
+      { type: "Monetary", amount: 50 },
+      { type: "In-Kind", amount: 50 },
     ])
   }, [])
   
@@ -125,31 +130,29 @@ function AdminDonationDriveDemographics() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={amountByBatch}
+                    data={donationTypeData}
                     cx="50%"
                     cy="50%"
                     outerRadius="80%"
                     dataKey="amount"
                     stroke="none"
                     >
-                    {amountByBatch.map((entry, index) => (
+                    {donationTypeData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index]} />
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value, name, props) => [`${value}`, `Batch ${props.payload.batch}`]}
+                    formatter={(value, name, props) => [`${value}%`, props.payload.type]}
                     cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className='flex justify-center flex-col'>
-              {amountByBatch.map((entry, index) => (
+              {donationTypeData.map((entry, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm font-satoshi-regular">
                   <div className="w-4 h-4" style={{ backgroundColor: COLORS[index] }} />
-                  <p className="">
-                      Batch {entry.batch}: {entry.amount}
-                  </p>
+                  <p className=""> {entry.type}: {entry.amount} </p>
                 </div>
               ))}
             </div>
