@@ -89,6 +89,7 @@ class AdminOneDonationDriveOut(BaseModel):
     target_cost: float
     is_closed: bool
     remaining_percent: float
+    image: str
 
     class Config:
         from_attributes = True
@@ -108,7 +109,7 @@ class GenericDriveOut(BaseModel):
     class Config:
         from_attributes = True
 
-class PendingMonetaryDonationsOut(BaseModel):
+class ShortenedMonetaryDonationsOut(BaseModel):
     donation_id: UUID
     date_donated: datetime
     name: str
@@ -117,7 +118,7 @@ class PendingMonetaryDonationsOut(BaseModel):
     class Config:
         from_attributes = True
 
-class PendingInKindDonationsOut(BaseModel):
+class ShortenedInKindDonationsOut(BaseModel):
     donation_id: UUID
     date_donated: datetime
     name: str
@@ -125,21 +126,6 @@ class PendingInKindDonationsOut(BaseModel):
 
     class Config:
         from_attributes = True
-
-class VerifiedMonetaryDonationsOut(BaseModel):
-    donation_id: UUID
-    date_donated: datetime
-    name: str
-    donation_details: float
-
-    class Config:
-        from_attributes = True
-
-class VerifiedInKindDonationsOut(BaseModel):
-    donation_id: UUID
-    date_donated: datetime
-    name: str
-    donation_details: str
 
     class Config:
         from_attributes = True
@@ -147,9 +133,20 @@ class VerifiedInKindDonationsOut(BaseModel):
 class AdminOverviewDonationDrive(BaseModel):
     donation_id: UUID
     image: str
-    created_at: datetime
+    created_at: str
     description: str
     links: List[str]
+
+    class Config:
+        from_attributes = True
+
+class AdminGenericDriveView(BaseModel):
+    drive_id: UUID
+    title: str
+    grand_total: float
+    pending_list: list[dict]
+    verified_list: list[dict]
+    verified_total: float
 
     class Config:
         from_attributes = True
