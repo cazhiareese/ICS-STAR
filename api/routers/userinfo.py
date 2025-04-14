@@ -208,8 +208,6 @@ async def get_profile(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    if not user.is_verified:
-        raise HTTPException(status_code=400, detail="For verified users only")
     
     profile_details = {
         "user_id": user.user_id,
@@ -243,6 +241,8 @@ async def get_profile(
         "facebook": user.facebook,
         "linkedin": user.linkedin,
         "github": user.github,
+        "is_verified": user.is_verified,
+        "verification_file": user.verification_file,
         "created_at": user.created_at,
         "updated_at": user.updated_at,
         "skills": [skill.skill for skill in user.skills],
