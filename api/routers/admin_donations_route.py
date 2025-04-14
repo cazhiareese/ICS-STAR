@@ -201,7 +201,7 @@ def verify_inkind(
     results = verify_inkind_donation(db, donation_id, choice)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Donation not found or invalid choice")
+        raise HTTPException(status_code=404, detail="Donation not found or invalid donation.")
     elif results is False:
         raise HTTPException(status_code=400, detail="Invalid choice. Please choose 'approve' or 'disapprove'.")
 
@@ -216,13 +216,13 @@ def verify_monetary(
     results = verify_monetary_donation(db, donation_id, choice)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Donation not found or invalid choice")
+        raise HTTPException(status_code=404, detail="Donation not found or invalid donation.")
     elif results is False:
         raise HTTPException(status_code=400, detail="Invalid choice. Please choose 'approve' or 'disapprove'.")
 
     return results
 
-@router.post("/admin/donations/close-drive/{drive_id}", response_model=AdminDonationDriveOut)
+@router.post("/admin/donations/close-drive/{drive_id}", response_model=dict)
 def close_drive(
     drive_id: UUID,
     db: Session = Depends(get_db)

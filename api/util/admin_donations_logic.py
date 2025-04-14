@@ -578,8 +578,8 @@ def verify_inkind_donation(db: Session, donation_id: UUID, choice: str) -> InKin
         is_acknowledged = donation.is_acknowledged
     )
 
-def close_donation_drive(db: Session, drive_id: UUID) -> bool:
-    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+def close_donation_drive(db: Session, drive_id: UUID) -> dict:
+    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id, DonationDrive.is_closed == False).first()
 
     if not drive:
         return False
@@ -588,4 +588,9 @@ def close_donation_drive(db: Session, drive_id: UUID) -> bool:
     drive.is_closed = True
     db.commit()
 
-    return True
+    return {
+        "drive_id": drive.drive_id,
+        "title": drive.title,
+        "is_closed": drive.is_closed,
+        "created_at": drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None, 
+    }
