@@ -4,6 +4,7 @@ import DonationsTable from '../../../components/AdminComponents/donationstable'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
+import SortModal from '../../../components/AdminComponents/sortmodal'
 
 function AdminDonations() {
   const navigate = useNavigate()
@@ -15,19 +16,29 @@ function AdminDonations() {
   const [donations, setDonations] = useState([])
   const [loading, setLoading] = useState(false)
 
+  const filters = ['Name', 'Batch', 'Last Update']
+  const [sortBy, setSortBy] = useState(filters[0]);
+
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/${donationType}-drives`)      
+      setDonations(response.data)
+      sessionStorage.setItem(`donations-${donationType}`, JSON.stringify(response.data));
+    } catch (error) {
+      console.error("Error fetching donations:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin/donations/${donationType}-drives`)
-        setDonations(response.data)
-      } catch (error) {
-        console.error("Error fetching donations:", error)
-      } finally {
-        setLoading(false)
-      }
+    const cached = sessionStorage.getItem(`donations-${donationType}`);
+    if (cached) {
+      setDonations(JSON.parse(cached));
+      return;
     }
   
     fetchData()
@@ -86,10 +97,11 @@ function AdminDonations() {
           </div>
           {/* Sort by */}
           <div className='flex gap-2'>
-            <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
+            {/* <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
               <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
                 <p className='font-satoshi-medium text-primary block'>Name</p>
-            </button>
+            </button> */}
+            <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/>
             {/* Filter */}
             <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
               <Filter className='text-primary'/>
