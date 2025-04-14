@@ -131,7 +131,8 @@ class ShortenedInKindDonationsOut(BaseModel):
         from_attributes = True
 
 class AdminOverviewDonationDrive(BaseModel):
-    donation_id: UUID
+    drive_id: UUID
+    title: str
     image: str
     created_at: str
     description: str
