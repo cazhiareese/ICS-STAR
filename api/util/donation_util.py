@@ -27,6 +27,8 @@ def get_user_donation_history_details(db: Session, user_id: UUID):
                 type="Monetary",
                 is_acknowledged=donation.is_acknowledged,
                 donation_drive_title=donation.donation_drive_title,
+                proof=donation.proof,
+                is_anonymous=donation.is_anonymous,
             ))
         elif isinstance(donation, InKindDonationOut):
             donation_history_out.append(DonationHistoryOut(
@@ -72,7 +74,9 @@ def get_user_monetary_donations(db: Session, user_id: str) -> list[MonetaryDonat
             drive_id=donation.drive_id,
             user_id=donation.user_id,
             is_acknowledged=donation.is_acknowledged,
-            donation_drive_title=drive.title if drive else None
+            donation_drive_title=drive.title if drive else None,
+            proof=donation.proof,
+            is_anonymous=donation.is_anonymous
         )
 
         MonetaryDonationOutList.append(mon_donation)
@@ -125,7 +129,9 @@ def get_user_monetary_donations_acknowledged(db: Session, user_id: str) -> list[
             drive_id=donation.drive_id,
             user_id=donation.user_id,
             is_acknowledged=donation.is_acknowledged,
-            donation_drive_title=drive.title if drive else None
+            donation_drive_title=drive.title if drive else None,
+            proof=donation.proof,
+            is_anonymous=donation.is_anonymous
         )
 
         MonetaryDonationOutList.append(mon_donation)

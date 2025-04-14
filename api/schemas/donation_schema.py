@@ -41,6 +41,8 @@ class MonetaryDonationOut(BaseModel):
     user_id: UUID
     is_acknowledged: bool = False
     donation_drive_title: Optional[str] = None
+    proof: Optional[str] = None
+    is_anonymous: bool = False
 
     class Config:
         from_attributes = True
