@@ -46,7 +46,10 @@ function AdminDonationInformation() {
   
         const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
         console.log(percentResponse.data)
-  
+
+        const driveStatus = donationResponse.data.is_closed
+        setIsClosed(driveStatus)
+
         setProgressData([
           { name: "progress", value: percentResponse.data.percent_funded },
           { name: "remaining", value: percentResponse.data.remaining_percent }
@@ -94,19 +97,25 @@ function AdminDonationInformation() {
                 </div>
                 {/* Generate Report or close drive */}
                 <div className='h-full gap-5 flex flex-row'>
-                  {/* View Details */}
-                  <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
-                    <p className='font-satoshi-light'>View Details</p>
-                  </button>
                   {isClosed ? (
+                    // For closed
                     <>
+                      {/* View Details */}
+                      <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
+                        <p className='font-satoshi-light'>View Details</p>
+                      </button>
                       {/* Export Donor List */}
                       <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'>
                         <p className='font-satoshi-light'>Export Donor List</p>
                       </button>
                     </>          
                   ) : (
+                    // For open
                     <>
+                      {/* View Statistics */}
+                      <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {navigate(`/admin/donations/donation-drive-demographics/${driveid}`)}}>
+                        <p className='font-satoshi-light'>View Statistics</p>
+                      </button>
                       {/* Close Drive */}
                       <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {setCloseDonation(true)}}>
                         <p className='font-satoshi-light'>Close Drive</p>
