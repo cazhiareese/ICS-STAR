@@ -140,7 +140,6 @@ function AdminDonationDriveDemographics() {
         <div className='flex flex-col flex-1'>
           <h2 className='font-satoshi-medium text-lg '>In-Kind vs Monetary Donation Count</h2>
           <div className='h-full w-full flex flex-row'>
-          <div className='flex-1'>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -161,8 +160,7 @@ function AdminDonationDriveDemographics() {
                   />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
-            <div className='flex justify-center flex-col'>
+              <div className='flex justify-center flex-col w-1/2'>
               {donationTypeData.map((entry, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm font-satoshi-regular">
                   <div className="w-4 h-4" style={{ backgroundColor: COLORS[index] }} />
@@ -172,7 +170,8 @@ function AdminDonationDriveDemographics() {
             </div>
           </div>
         </div>
-        <div className='flex-1'>
+        <div className='flex-1 flex flex-col'>
+          <h2 className='font-satoshi-medium text-lg'>Amount Generated over Time</h2>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={amountTimeData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
