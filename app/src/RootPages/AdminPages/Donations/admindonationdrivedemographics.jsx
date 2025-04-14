@@ -6,6 +6,7 @@ import { PieChart, ResponsiveContainer, Pie, Cell, Tooltip } from 'recharts'
 function AdminDonationDriveDemographics() {
   const navigate = useNavigate()
   const [donorsByBatch, setDonorsByBatch] = useState([])
+  const [amountByBatch, setAmountByBatch] = useState([])
   
   useEffect(() => {
     setDonorsByBatch([
@@ -13,6 +14,12 @@ function AdminDonationDriveDemographics() {
       { batch: "2010", donors: 20 },
       { batch: "2011", donors: 10 },
       { batch: "Others", donors: 10 }
+    ])
+    setAmountByBatch([
+      { batch: "2022", amount: 60000 },
+      { batch: "2010", amount: 20000 },
+      { batch: "2011", amount: 10000 },
+      { batch: "Others", amount: 10000 }
     ])
   }, [])
   
@@ -26,6 +33,7 @@ function AdminDonationDriveDemographics() {
       </button>
       <h1 className='text-4xl font-satoshi-bold mb-3'>Donor Demographics</h1>
       <div className='flex flex-row border border-gray-300 rounded-2xl p-4 h-1/3 w-full'>
+      {/* Donors' Batch Breakdown */}
         <div className='flex-1 h-full w-full flex flex-col'>
           <h2 className='font-satoshi-medium text-lg '>Donors' Batch Breakdown</h2>
           <div className='h-full w-full flex flex-row'>
@@ -63,9 +71,45 @@ function AdminDonationDriveDemographics() {
             </div>
           </div>
         </div>
+        {/* Divider */}
         <div className='border-l border-gray-300 mx-4'></div>
-        <div className='flex-1'>
-
+        {/* Monetary Amount Donated per Batch */}
+        <div className='flex-1 h-full w-full flex flex-col'>
+          <h2 className='font-satoshi-medium text-lg '>Monetary Amount Donated per Batch</h2>
+          <div className='h-full w-full flex flex-row'>
+            <div className='flex-1'>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={amountByBatch}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius="80%"
+                    dataKey="amount"
+                    stroke="none"
+                    >
+                    {amountByBatch.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, name, props) => [`${value}`, `Batch ${props.payload.batch}`]}
+                    cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className='flex justify-center flex-col'>
+              {amountByBatch.map((entry, index) => (
+                <div key={index} className="flex items-center gap-2 text-sm font-satoshi-regular">
+                  <div className="w-4 h-4" style={{ backgroundColor: COLORS[index] }} />
+                  <p className="">
+                      Batch {entry.batch}: {entry.amount}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
