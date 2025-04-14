@@ -522,7 +522,8 @@ def donation_drive_overview(db: Session, drive_id: UUID) -> AdminOverviewDonatio
     date_started = drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None
 
     return AdminOverviewDonationDrive(
-        donation_id = drive.drive_id,
+        drive_id = drive.drive_id,
+        title = drive.title,
         image = f"{STORAGE_STRING}{drive.image}" if drive.image else None,
         created_at = date_started,
         description = drive.description,
