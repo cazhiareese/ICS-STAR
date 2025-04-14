@@ -522,3 +522,25 @@ async def get_donation_history_me(
     donations = get_user_donation_history_details(db, user.user_id)
 
     return {"message": "success", "data": donations}
+
+# Update the facebook, linkedin, and github links of the user
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a message confirming the update
+@router.put("/update-links")
+async def update_links(
+    facebook: str = Form(...),
+    linkedin: str = Form(...),
+    github: str = Form(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    user.facebook = facebook
+    user.linkedin = linkedin
+    user.github = github
+    
+    db.commit()
+    
+    return {"message": "Links updated successfully"}
