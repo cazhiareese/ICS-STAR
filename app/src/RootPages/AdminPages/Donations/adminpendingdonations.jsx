@@ -1,31 +1,19 @@
-import React, {useState} from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, {useEffect, useState} from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { MoveLeft, X } from 'lucide-react'
 import ExpandedPendingDonations from '../../../components/AdminComponents/expandedpendingdonations'
 
 function AdminPendingDonations() {
   const navigate = useNavigate()
+  const location = useLocation()
   const {driveid} = useParams()
-  const [pendingDonations, setPendingDonations] = useState([
-    {
-      date_donated: "2025-04-21",
-      time_donated: "16:30:00",
-      donor: "John Doe",
-      donation_type: "In-kind",
-      donation_details: "Solar Panel",
-      proof_of_payment: "proof_john_doe.png"
-    },
-    {
-      date_donated: "2025-04-09",
-      time_donated: "11:41:00",
-      donor: "Juan Dela Cruz",
-      donation_type: "Monetary",
-      donation_details: "₱5,000",
-      proof_of_payment: "proof_juan_dela_cruz.png"
-    }
-  ]);
+  const { pendingDonations, driveName } = location.state
   const [reviewDetailsModal, setReviewDetailsModal] = useState(false)
   const [selectedDonation, setSelectedDonation] = useState(null)
+
+  useEffect(() => {
+    console.log(pendingDonations)
+  })
   
   return (
     <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
@@ -33,7 +21,7 @@ function AdminPendingDonations() {
         <MoveLeft className='text-primary'/> 
         <p className='text-primary font-satoshi-medium text-lg'>Back to Donations List</p>
       </button>
-      <h1 className='text-primary text-5xl font-satoshi-bold'>New ICS Aircon</h1>
+      <h1 className='text-primary text-5xl font-satoshi-bold'>{driveName}</h1>
       <h2 className='text-black text-3xl font-satoshi-medium mb-10'>Pending Verifications</h2>
       <div className='border border-gray-300 rounded-2xl h-full overflow-auto'>
       <ExpandedPendingDonations 
@@ -65,7 +53,7 @@ function AdminPendingDonations() {
             {/* Donor */}
             <div className='flex justify-between w-full'>
               <p className='font-satoshi-light'>Donor: </p>
-              <p className='font-satoshi-medium'>{selectedDonation.donor}</p>
+              <p className='font-satoshi-medium'>{selectedDonation.name}</p>
             </div>
             {/* Donation Type */}
             <div className='flex justify-between w-full'>

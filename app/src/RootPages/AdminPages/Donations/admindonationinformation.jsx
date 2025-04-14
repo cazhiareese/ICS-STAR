@@ -26,41 +26,41 @@ function AdminDonationInformation() {
   const [donation, setDonation] = useState()
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
+  const fetchData = async () => {
+    setLoading(true)
 
-      try {
-        const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`)
-        console.log(donationResponse.data)   
-        setDonation(donationResponse.data)
-  
-        // Set pending donations first before checking its length
-        const pendingList = donationResponse.data.pending_list
-        setPendingDonations(pendingList)
-        setNoPendingDonations(Object.keys(pendingList).length === 0)
+    try {
+      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`)
+      console.log(donationResponse.data)   
+      setDonation(donationResponse.data)
 
-        const verifiedList = donationResponse.data.verified_list
-        // console.log(verifiedList)
-        setVerifiedDonations(verifiedList)
-  
-        const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
-        console.log(percentResponse.data)
+      // Set pending donations first before checking its length
+      const pendingList = donationResponse.data.pending_list
+      setPendingDonations(pendingList)
+      setNoPendingDonations(Object.keys(pendingList).length === 0)
 
-        const driveStatus = donationResponse.data.is_closed
-        setIsClosed(driveStatus)
+      const verifiedList = donationResponse.data.verified_list
+      // console.log(verifiedList)
+      setVerifiedDonations(verifiedList)
 
-        setProgressData([
-          { name: "progress", value: percentResponse.data.percent_funded },
-          { name: "remaining", value: percentResponse.data.remaining_percent }
-        ])
+      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
+      console.log(percentResponse.data)
 
-      } catch (error) {
-        console.error("Failed to fetch donation data", error)
-      } finally {
-        setLoading(false)
-      }
+      const driveStatus = donationResponse.data.is_closed
+      setIsClosed(driveStatus)
+
+      setProgressData([
+        { name: "progress", value: percentResponse.data.percent_funded },
+        { name: "remaining", value: percentResponse.data.remaining_percent }
+      ])
+
+    } catch (error) {
+      console.error("Failed to fetch donation data", error)
+    } finally {
+      setLoading(false)
     }
+  }
+  useEffect(() => {
   
     fetchData()
   }, [])
@@ -179,7 +179,10 @@ function AdminDonationInformation() {
                 {noPendingDonations ? (
                   <></>
                 ) : (
-                  <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {navigate(`/admin/donations/pending-donations/${driveid}`)}}>
+                  <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {
+                    navigate(`/admin/donations/pending-donations/${driveid}`, 
+                    {state: {pendingDonations, driveName: donation.title}})
+                    }}>
                     <p className='font-satoshi-light'> View all pending verifications </p>
                     <MoveRight/>
                   </button>
