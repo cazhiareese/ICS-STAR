@@ -65,16 +65,21 @@ function AdminHelpIcs() {
                 <div className='overflow-auto flex-1'>
                     <PendingDonationsTable data={pendingDonations}/>
                 </div>
-                <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {}}> 
+                <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {
+                  navigate(`/admin/donations/pending-donations/${driveid}`, 
+                  {state: {pendingDonations, driveName: driveData.title}})                 
+                }}> 
                     {/* TODO: Add HELP ICS Donation id navigation */}
-                    <p className='font-satoshi-light'> View all pending verifications </p>
-                    <MoveRight/>
-                </button>
-            </div>
+                  <p className='font-satoshi-light'> View all pending verifications </p>
+                  <MoveRight/>
+              </button>
+          </div>
         </div>
         <div className='flex flex-row justify-between items-center'>
           <h2 className='font-satoshi-medium text-black text-4xl my-5'>List of Donations</h2>
-          <button className='bg-primary rounded-3xl text-white px-4 py-3 h-fit cursor-pointer' onClick={() => {navigate(`/admin/donations/donation-drive-demographics/${driveid}`)}}> View Statistics </button>
+          <button className='bg-primary rounded-3xl text-white px-4 py-3 h-fit cursor-pointer' onClick={() => {
+            navigate(`/admin/donations/donation-drive-demographics/${driveid}`)
+          }}> View Statistics </button>
         </div>
         <div className=' h-3/5 w-full border border-gray-300 rounded-2xl overflow-auto'>
             <VerifiedDonationsTable data={verifiedDonations}/>
