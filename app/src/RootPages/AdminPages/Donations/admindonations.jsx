@@ -16,7 +16,7 @@ function AdminDonations() {
   const [totalPages, setTotalPages] = useState(10)
   const [donations, setDonations] = useState([])
   const [loading, setLoading] = useState(false)
-  const [genericDriveDetails, setGenericDriveDetails] = useState()
+  const [genericDriveDetails, setGenericDriveDetails] = useState({})
 
   const filters = ['Name', 'Batch', 'Last Update']
   const [sortBy, setSortBy] = useState(filters[0]);
@@ -32,9 +32,9 @@ function AdminDonations() {
       setDonations(response.data)
       // sessionStorage.setItem(`donations-${donationType}`, JSON.stringify(response.data));
 
-      const genericDriveDetailsRes = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`)
-      console.log(genericDriveDetailsRes)
-      setGenericDriveDetails(genericDriveDetailsRes)
+      const genDriveResponse = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`)
+      console.log(genDriveResponse.data)
+      setGenericDriveDetails(genDriveResponse.data)
 
     } catch (error) {
       console.error("Error fetching donations:", error)
@@ -55,6 +55,11 @@ function AdminDonations() {
   
     
     return (
+      loading ? (
+        <div className='flex flex-row justify-center items-center h-screen'>
+          <CircularLoading/>
+        </div>
+      ) : (
       <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
       {/* Header and add donation button */}
       <div className='flex justify-between items-center mb-4'>
@@ -77,19 +82,19 @@ function AdminDonations() {
         <div className='flex flex-1'>
           {/* Monetary Donations */}
           <div className='flex flex-col items-center justify-center flex-1'>
-            <h3 className='font-satoshi-bold text-2xl text-primary'> P123,456</h3>
+            <h3 className='font-satoshi-bold text-2xl text-primary'> Php {genericDriveDetails.total_amount}</h3>
             <p className='font-satoshi-light '>Monetary Donations</p>
           </div>
           {/* In-kind Donations */}
           <div className='flex flex-col items-center justify-center flex-1'>
-            <h3 className='font-satoshi-bold text-2xl text-primary'> 12 </h3>
+            <h3 className='font-satoshi-bold text-2xl text-primary'> {genericDriveDetails.total_in_kind} </h3>
             <p className='font-satoshi-light '>In-kind Donations</p>
           </div>
         </div>
         {/* Divider */}
         <div className='border-l border-gray-300 '></div>
         <div className='flex flex-col items-center justify-center flex-1'>
-          <h3 className='font-satoshi-bold text-2xl text-primary'> 10 </h3>
+          <h3 className='font-satoshi-bold text-2xl text-primary'> {genericDriveDetails.number_of_unverified} </h3>
           <p className='font-satoshi-medium '>Unverified Donations</p>
         </div>
       </div>
@@ -143,6 +148,7 @@ function AdminDonations() {
           )}
         </div>
     </div>
+    )
   )
 }
 
