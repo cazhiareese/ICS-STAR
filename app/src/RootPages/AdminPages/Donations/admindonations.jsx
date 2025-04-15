@@ -16,6 +16,7 @@ function AdminDonations() {
   const [totalPages, setTotalPages] = useState(10)
   const [donations, setDonations] = useState([])
   const [loading, setLoading] = useState(false)
+  const [genericDriveDetails, setGenericDriveDetails] = useState()
 
   const filters = ['Name', 'Batch', 'Last Update']
   const [sortBy, setSortBy] = useState(filters[0]);
@@ -29,7 +30,12 @@ function AdminDonations() {
     try {
       const response = await axios.get(`${API_BASE_URL}/admin/donations/${donationType}-drives`)      
       setDonations(response.data)
-      sessionStorage.setItem(`donations-${donationType}`, JSON.stringify(response.data));
+      // sessionStorage.setItem(`donations-${donationType}`, JSON.stringify(response.data));
+
+      const genericDriveDetailsRes = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`)
+      console.log(genericDriveDetailsRes)
+      setGenericDriveDetails(genericDriveDetailsRes)
+
     } catch (error) {
       console.error("Error fetching donations:", error)
     } finally {
@@ -38,11 +44,11 @@ function AdminDonations() {
   }
 
   useEffect(() => {
-    const cached = sessionStorage.getItem(`donations-${donationType}`);
-    if (cached) {
-      setDonations(JSON.parse(cached));
-      return;
-    }
+    // const cached = sessionStorage.getItem(`donations-${donationType}`);
+    // if (cached) {
+    //   setDonations(JSON.parse(cached));
+    //   return;
+    // }
   
     fetchData()
   }, [donationType])
