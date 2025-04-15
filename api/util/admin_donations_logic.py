@@ -423,7 +423,7 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[Shor
             date_donated=donation[4],
             name=f"{donation[1]} {donation[2]}",
             donation_details=donation[3] or 0,
-            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else None
+            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided."
         )
         pending_donations_list.append(pending_out)
 
