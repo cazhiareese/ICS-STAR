@@ -93,6 +93,7 @@ class AdminOneDonationDriveOut(BaseModel):
     target_cost: float
     is_closed: bool
     remaining_percent: float
+    image: str
 
     class Config:
         from_attributes = True
@@ -108,6 +109,49 @@ class GenericDriveOut(BaseModel):
     total_amount: float
     total_in_kind: int
     number_of_unverified: int
+
+    class Config:
+        from_attributes = True
+
+class ShortenedMonetaryDonationsOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    name: str
+    donation_details: float
+
+    class Config:
+        from_attributes = True
+
+class ShortenedInKindDonationsOut(BaseModel):
+    donation_id: UUID
+    date_donated: datetime
+    name: str
+    donation_details: str
+
+    class Config:
+        from_attributes = True
+
+    class Config:
+        from_attributes = True
+
+class AdminOverviewDonationDrive(BaseModel):
+    drive_id: UUID
+    title: str
+    image: str
+    created_at: str
+    description: str
+    links: List[str]
+
+    class Config:
+        from_attributes = True
+
+class AdminGenericDriveView(BaseModel):
+    drive_id: UUID
+    title: str
+    grand_total: float
+    pending_list: list[dict]
+    verified_list: list[dict]
+    verified_total: float
 
     class Config:
         from_attributes = True
