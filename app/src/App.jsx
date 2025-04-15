@@ -150,7 +150,7 @@ function App() {
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
               <Route path="help-ics/" element={<AdminHelpIcs/>}/>
               <Route path="pending-donations/:driveid" element={<AdminPendingDonations/>}/>
-              <Route path="donation-drive-demographics/:driveid/" element={<AdminDonationDriveDemographics/>} />
+              <Route path="donation-drive-demographics/:driveid" element={<AdminDonationDriveDemographics/>} />
             </Route>
           </Route>
         </>
