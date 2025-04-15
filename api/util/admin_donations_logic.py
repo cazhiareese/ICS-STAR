@@ -208,6 +208,7 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
             "name": donation.name,
             "donation_details": f"₱{donation.donation_details:,.2f}",
             "date_donated": date_donated,
+            "proof": donation.proof
         })
     
     # Add pending in-kind donations to the list
@@ -217,7 +218,7 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
             "donation_id": donation.donation_id,
             "name": donation.name,
             "donation_details": donation.donation_details,
-            "date_donated": date_donated,
+            "date_donated": date_donated
         })
 
     # Format the verified donations list
@@ -231,7 +232,8 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
             "date_donated": date_donated,
             "name": donation.name,
             "donation_type": "Monetary",
-            "donation_details": f"₱{donation.donation_details:,.2f}"
+            "donation_details": f"₱{donation.donation_details:,.2f}",
+            "proof": donation.proof
         })
     
     # Add verified in-kind donations to the list
@@ -254,8 +256,7 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         current_amount = total_amount,
         target_cost = drive.target_cost,
         is_closed = drive.is_closed,
-        remaining_percent = remaining_percentage,
-        image = f"{STORAGE_STRING}{drive.image}" if drive.image else None
+        remaining_percent = remaining_percentage
     )
 
 # this is the same as view_donation_drive, except it is hardcoded to the drive_id of the generic drive and we will return total amount
@@ -405,7 +406,8 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[Shor
         User.first_name,
         User.last_name,
         MonetaryDonation.amount,
-        MonetaryDonation.date_donated
+        MonetaryDonation.date_donated,
+        MonetaryDonation.proof
     ).join(
         User, MonetaryDonation.user_id == User.user_id
     ).filter(
@@ -420,7 +422,8 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[Shor
             donation_id=donation[0],
             date_donated=donation[4],
             name=f"{donation[1]} {donation[2]}",
-            donation_details=donation[3] or 0
+            donation_details=donation[3] or 0,
+            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided."
         )
         pending_donations_list.append(pending_out)
 
@@ -459,7 +462,8 @@ def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[Sho
         MonetaryDonation.date_donated,
         User.first_name,
         User.last_name,
-        MonetaryDonation.amount
+        MonetaryDonation.amount,
+        MonetaryDonation.proof
     ).join(
         User, MonetaryDonation.user_id == User.user_id
     ).filter(
@@ -474,7 +478,8 @@ def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[Sho
             donation_id=donation[0],
             date_donated=donation[1],
             name=f"{donation[2]} {donation[3]}",
-            donation_details=donation[4] or 0
+            donation_details=donation[4] or 0,
+            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided."
         )
         verified_donations_list.append(verified_out)
 

@@ -93,7 +93,6 @@ class AdminOneDonationDriveOut(BaseModel):
     target_cost: float
     is_closed: bool
     remaining_percent: float
-    image: str
 
     class Config:
         from_attributes = True
@@ -118,6 +117,7 @@ class ShortenedMonetaryDonationsOut(BaseModel):
     date_donated: datetime
     name: str
     donation_details: float
+    proof: str
 
     class Config:
         from_attributes = True
