@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react"; 
 import axios from 'axios';
 import React, {useState, useEffect, useRef} from 'react';
+import SeeAllModal from "./seeAllModal";
 
 
 const AlumniAffiliationFilter = ({
@@ -11,10 +12,13 @@ const AlumniAffiliationFilter = ({
   setAffiliationInput,
   affiliationList,
   setAffiliationList,
-  setIsLocationExpanded
+  setIsLocationExpanded,
+  isSeeAllAffiliationOpen,
+  setIsSeeAllAffiliationOpen
 }) => {
   const [affiliations, setAffiliations] = useState([]); 
-  
+  // const [isOpen, setIsOpen] = useState(false);
+
   // cache reference
   const cache = useRef({});
 
@@ -81,9 +85,6 @@ const AlumniAffiliationFilter = ({
   const filteredaffiliations = affiliations.filter(affiliation => affiliation.toLowerCase().includes(affiliationInput.toLowerCase()));
 
   return (
-
-    
-
     <div className="flex flex-col shadow-md mt-5 rounded-lg bg-white lg:bg-transparent">
       <div className="flex flex-row px-5 py-3" onClick={() => setIsAffiliationExpanded(!isAffiliationExpanded)}>
         <motion.h1
@@ -147,7 +148,7 @@ const AlumniAffiliationFilter = ({
 
         <div className="flex flex-row px-12 pb-3 pt-5">
           <h1 className="flex-1 text-gray-400">Suggestions</h1>
-          <button>
+          <button onClick={() => setIsSeeAllAffiliationOpen(true)}>
             <h1 className="underline text-primary">See all</h1>
           </button>
         </div>

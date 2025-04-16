@@ -19,12 +19,18 @@ import {
   removeScholarship as apiRemoveScholarship,
   fetchPublicProfileById as apiFetchPublicProfile
 } from "./Profile/UserProfileAPI/userProfileApi"; 
-import { useParams } from "next/navigation";
+import { useParams } from "react-router-dom";
+import OtherProfileSection from "./Profile/otherprofilesection";
+import OtherSkillsInterestsSection from "./Profile/About/othersskillsandinterestsection";
+import OtherAffiliationsSection from "./Profile/About/otheraffiliationsection";
+import OtherScholarshipsSection from "./Profile/About/otherscholarshipsection";
 
 const token = localStorage.getItem("token");
 
 function OtherUserProfile() {
-  const user_id = useParams();
+  const params = useParams();
+  const userId = params?.userId;
+
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState("About");
   const [skills, setSkills] = useState([]);
@@ -35,9 +41,14 @@ function OtherUserProfile() {
 
   //fetch user details from backend
   useEffect(() => {
+    if (!userId){
+      console.log("nothing")
+      return;
+    } 
+
     const fetchProfile = async () => {
       try {
-        const data = await apiFetchProfile(user_id); // Correctly access 'data.data'
+        const data = await apiFetchPublicProfile({ userId }); // Correctly access 'data.data'
 
         setUserDetails({
           first_name: data.first_name,
@@ -73,6 +84,8 @@ function OtherUserProfile() {
           github: data.github, // Added github
         });
 
+        console.log(userDetails)
+
         // Set skills, scholarships, and affiliations
         setSkills(data.skills || []);
         console.log(data.skills);
@@ -85,7 +98,7 @@ function OtherUserProfile() {
     };
 
     fetchProfile();
-  }, []);
+  }, [userId]);
 
   const addSkills = async (newSkills) => {
     try {
@@ -163,11 +176,12 @@ function OtherUserProfile() {
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       {/* Profile Section */}
-      <ProfileSection
+      <OtherProfileSection
         editMode={editMode}
         userDetails={userDetails}
         setEditMode={setEditMode}
         handleChange={handleChange}
+        userPicture={userDetails.image}
       />
       {userDetails.user_type === "alumni" && (
         <>
@@ -185,19 +199,19 @@ function OtherUserProfile() {
             userDetails={userDetails}
             handleChange={handleChange}
           />
-          <SkillsInterestsSection
+          <OtherSkillsInterestsSection
             editMode={editMode}
             skills={skills}
             removeSkill={removeSkill}
             addSkills={addSkills}
           />
-          <AffiliationsSection
+          <OtherAffiliationsSection
             editMode={editMode}
             affiliations={affiliations}
             removeAffiliation={removeAffiliation}
             addAffiliation={addAffiliation}
           />
-          <ScholarshipsSection
+          <OtherScholarshipsSection
             editMode={editMode}
             scholarships={scholarships}
             removeScholarship={removeScholarship}
