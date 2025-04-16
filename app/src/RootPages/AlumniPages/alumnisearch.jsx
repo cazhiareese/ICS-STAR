@@ -850,6 +850,7 @@ function AlumniSearch() {
               location={alumnus.location}
               email={alumnus.email}
               picture={alumnus.picture}
+              user_id={alumnus.user_id}
             />
             ))}
           </div>
