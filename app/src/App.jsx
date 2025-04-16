@@ -45,6 +45,8 @@ import AdminPendingDonations from "./RootPages/AdminPages/Donations/adminpending
 
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
+import OtherUserProfileWrapper from "./RootPages/OtherUserProfileWrapper";
+import OtherUserProfile from "./RootPages/OtherUserprofile";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -97,9 +99,12 @@ function App() {
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
+            <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
+            
+
             <Route path="*" element={<Unauthorized />} />
 
             <Route
