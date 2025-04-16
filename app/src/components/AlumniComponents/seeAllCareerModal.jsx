@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, X } from 'lucide-react';
 import axios from 'axios';
+import CircularLoading from '../LoadingComponents/circularloading';
 
 const SeeAllCareerModal = ({ isOpen, setIsOpen, setCareerList, CareerList  }) => {
     if (!isOpen) return null;
@@ -9,6 +10,7 @@ const SeeAllCareerModal = ({ isOpen, setIsOpen, setCareerList, CareerList  }) =>
     const [careers, setCareers] = useState([]);
     const [subCareerList, setsubCareerList] = useState(CareerList);
     const [careerInput, setCareerInput] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const closeModal = () => {
         setIsOpen(false);
@@ -34,25 +36,28 @@ const SeeAllCareerModal = ({ isOpen, setIsOpen, setCareerList, CareerList  }) =>
     
     // Without caching
     useEffect(() => {
+        setLoading(true);
         const fetchData = async () => {            
             try {
                 const response = await axios.get(`${API_BASE_URL}/suggestions/all-job-titles`);
                 setCareers(response.data);
                 console.log("Fetched all jobs:", response.data);
+                setLoading(false);
             } catch (error) {
                 console.error("Error fetching jobs data:", error);
+                setLoading(false);
             }
             
         };
     
         fetchData();
-    }, [careerInput]);
+    }, []);
     
 
     return (
-        <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 h-auto">
+        <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-100 h-auto">
             <motion.div
-                className="bg-white w-11/12 md:w-auto rounded-lg shadow-lg overflow-hidden"
+                className="bg-white md:w-xl rounded-lg shadow-lg overflow-hidden md:max-w-3/5 max-w-4/5"
                 initial={{ opacity: 0, y: -100 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 100 }}
@@ -63,9 +68,14 @@ const SeeAllCareerModal = ({ isOpen, setIsOpen, setCareerList, CareerList  }) =>
                         <X size={26} />
                     </button>
                 </div>
-
+                
+                {loading ? (
+                    <div className="flex justify-center items-center h-96 md:w-xl w-xs bg-white">
+                        <CircularLoading /> 
+                    </div>
+                ) : (
                 <div className="p-4 max-h-[100vh]">
-                    <div className="px-5 flex items-center justify-center flex-row gap-2">
+                    <div className="px-5 flex items-center justify-center flex-row gap-2 border-b-1 border-gray-300 pb-5">
                     <div className="relative w-full flex items-center justify-center">
                         <input
                             type="search"
@@ -97,14 +107,14 @@ const SeeAllCareerModal = ({ isOpen, setIsOpen, setCareerList, CareerList  }) =>
                     )}
 
                     {/* Career Suggestions (Scrollable) */}
-                    <div className="flex my-5 max-h-100 overflow-y-auto pr-2 px-10 items-center justify-center">
+                    <div className="flex my-5 max-h-100 overflow-y-auto px-10 items-center justify-center">
                         <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
                             {careerInput === "" ? (
                                 careers.map((career, index) => (
                                     !subCareerList.includes(career) && (
                                         <div key={index} className="cursor-pointer py-2 bg-gray-100 mb-3 rounded-full h-10">
                                             <button
-                                                className="pl-5 font-satoshi-medium w-full h-full text-left cursor-pointer truncate max-w-full"
+                                                className="px-3 font-satoshi-medium w-full h-full text-left cursor-pointer truncate max-w-full"
                                                 onClick={() => setsubCareerList([...subCareerList, career])}
                                             >
                                                 {career}
@@ -135,7 +145,7 @@ const SeeAllCareerModal = ({ isOpen, setIsOpen, setCareerList, CareerList  }) =>
 
 
                     {/* Buttons for clear and confirm */}
-                    <div className="flex items-center justify-center px-5">
+                    <div className="flex items-center justify-center px-5 border-t-1 border-gray-300 pt-5">
                         {/* Confirm */}
                         <button onClick={() => {
                             setCareerList(subCareerList);
@@ -144,7 +154,7 @@ const SeeAllCareerModal = ({ isOpen, setIsOpen, setCareerList, CareerList  }) =>
                             Confirm
                         </button>
                     </div>
-                </div>
+                </div>)}
             </motion.div>
         </div>
     );

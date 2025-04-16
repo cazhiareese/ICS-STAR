@@ -15,6 +15,8 @@ import axios from 'axios';
 import SeeAllAffiliationModal from "../../components/AlumniComponents/seeAllModal";
 import SeeAllLocationModal from "../../components/AlumniComponents/seeAllLocationModal";
 import SeeAllCareerModal from "../../components/AlumniComponents/seeAllCareerModal";
+import SeeAllIndustryModal from "../../components/AlumniComponents/seeAllIndustryModal";
+import SeeAllSkillsModal from "../../components/AlumniComponents/seeAllSkillsModal";
 
 
 
@@ -62,10 +64,12 @@ function AlumniSearch() {
 
   const [loading, setLoading] = useState(false);
 
+  // For see all modal opener
   const [isSeeAllAffiliationOpen, setIsSeeAllAffiliationOpen] = useState(false);
   const [isSeeAllLocationOpen, setIsSeeAllLocationOpen] = useState(false);
   const [isSeeAllCareerOpen, setIsSeeAllCareerOpen] = useState(false);
-
+  const [isSeeAllIndustryOpen, setIsSeeAllIndustryOpen] = useState(false);
+  const [isSeeAllSkillOpen, setIsSeeAllSkillOpen] = useState(false);
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -243,6 +247,16 @@ function AlumniSearch() {
       setIsOpen={setIsSeeAllCareerOpen}
       setCareerList={setCareerList}
       CareerList={careerList}/>
+
+      <SeeAllIndustryModal isOpen={isSeeAllIndustryOpen}
+      setIsOpen={setIsSeeAllIndustryOpen}
+      setIndustryList={setIndustryList}
+      IndustryList={industryList}/>
+
+      <SeeAllSkillsModal isOpen={isSeeAllSkillOpen}
+      setIsOpen={setIsSeeAllSkillOpen}
+      setSkillList={setSkillsList}
+      SkillList={skillsList}/>
       
 
       <motion.div
@@ -438,7 +452,7 @@ function AlumniSearch() {
                 setIsAlumniProfessionExpanded={setIsAlumniProfessionExpanded}
                 setIsCareerExpanded={setIsCareerExpanded}
                 setIsAlumniInfoExpanded={setIsAlumniInfoExpanded}
-                setIsSeeAllAffiliationOpen={setIsSeeAllLocationOpen}
+                setIsSeeAllLocationOpen={setIsSeeAllLocationOpen}
               />
             </motion.div>
           </div>
@@ -490,6 +504,7 @@ function AlumniSearch() {
                 setIndustryList={setIndustryList}
                 setIsSkillsExpanded={setIsSkillsExpanded}
                 setIsAlumniProfessionExpanded={setIsAlumniProfessionExpanded}
+                setIsSeeAllIndustryOpen={setIsSeeAllIndustryOpen}
               />
             </motion.div>
           </div>  
@@ -501,6 +516,7 @@ function AlumniSearch() {
             skillsList={skillsList}
             setSkillsList={setSkillsList}
             setIsLocationExpanded={setIsLocationExpanded}
+            setIsSeeAllSkillOpen={setIsSeeAllSkillOpen}
           />
         </div>
         {/* Buttons for clear and confirm */}
@@ -770,6 +786,7 @@ function AlumniSearch() {
                   setIndustryInput={setIndustryInput}
                   industryList={industryList}
                   setIndustryList={setIndustryList}
+                  setIsSeeAllIndustryOpen={setIsSeeAllIndustryOpen}
                 />
               </motion.div>
           </div>
@@ -781,6 +798,7 @@ function AlumniSearch() {
             setSkillsInput={setSkillsInput}
             skillsList={skillsList}
             setSkillsList={setSkillsList}
+            setIsSeeAllSkillOpen={setIsSeeAllSkillOpen}
           />
 
         </div>
