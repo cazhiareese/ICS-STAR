@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Search, X } from 'lucide-react';
 import axios from 'axios';
 
-const SeeAllModal = ({ isOpen, setIsOpen, setAffiliationList, affiliationList  }) => {
+const SeeAllAffiliationModal = ({ isOpen, setIsOpen, setAffiliationList, affiliationList  }) => {
     if (!isOpen) return null;
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const [affiliations, setAffiliations] = useState([]);
@@ -95,33 +95,34 @@ const SeeAllModal = ({ isOpen, setIsOpen, setAffiliationList, affiliationList  }
     return (
         <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 h-auto">
             <motion.div
-                className="bg-white w-11/12 md:w-2/3 rounded-lg shadow-lg overflow-hidden"
+                className="bg-white w-11/12 md:w-auto rounded-lg shadow-lg overflow-hidden"
                 initial={{ opacity: 0, y: -100 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 100 }}
                 transition={{ duration: 0.3 }}
             >
                 <div className="flex justify-between items-center p-4">
-                    <button className="ml-auto outline-1 outline-gray-400 rounded-full p-2" onClick={closeModal}>
+                    <button className="ml-auto outline-1 outline-gray-400 rounded-full p-2 cursor-pointer" onClick={closeModal}>
                         <X size={26} />
                     </button>
                 </div>
 
                 <div className="p-4 max-h-[100vh]">
                     <div className="px-5 flex items-center justify-center flex-row gap-2">
-                        <div className="relative w-full justify-center items-center flex">
-                            <input
-                                type="search"
-                                className="bg-white text-black border h-12 border-gray-300 focus:border-primary focus:outline-none rounded-2xl w-11/12 pl-10 pr-4 py-2"
-                                placeholder="Enter type of Affiliation"
-                                value={affiliationInput}
-                                onChange={(e) => setAffiliationInput(e.target.value)} // Update input value
-                                onKeyDown={handleAffiliationSearch} // Handle enter key press
-                            />
-                            <span className="absolute md:left-12 left-6 top-1/2 transform -translate-y-1/2 text-primary">
-                                <Search size={18} strokeWidth={2} />
-                            </span>
+                    <div className="relative w-full flex items-center justify-center">
+                        <input
+                            type="search"
+                            className="bg-white text-black border h-12 border-gray-300 focus:border-primary focus:outline-none rounded-2xl w-full pl-10 pr-4 py-2"
+                            placeholder="Enter type of Affiliation"
+                            value={affiliationInput}
+                            onChange={(e) => setAffiliationInput(e.target.value)}
+                            onKeyDown={handleAffiliationSearch}
+                        />
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary">
+                            <Search size={18} strokeWidth={2} />
+                        </span>
                         </div>
+
                     </div>
 
                     {/* Affiliation Tags */}
@@ -130,8 +131,8 @@ const SeeAllModal = ({ isOpen, setIsOpen, setAffiliationList, affiliationList  }
                         {subAffiliationList.map((Affiliation, index) => (
                             <div key={index} className="flex flex-row bg-primary rounded-full h-auto items-center px-2">
                             <h1 className="text-white font-satoshi-light truncate text-sm">{Affiliation}</h1>
-                            <button onClick={() => removeAffiliation(index)}>
-                                <X className="text-white ml-2" size={20} />
+                            <button className='cursor-pointer' onClick={() => removeAffiliation(index)}>
+                                <X className="text-white ml-2 cursor-pointer" size={20} />
                             </button>
                             </div>
                         ))}
@@ -192,4 +193,4 @@ const SeeAllModal = ({ isOpen, setIsOpen, setAffiliationList, affiliationList  }
     );
 };
 
-export default SeeAllModal;
+export default SeeAllAffiliationModal;

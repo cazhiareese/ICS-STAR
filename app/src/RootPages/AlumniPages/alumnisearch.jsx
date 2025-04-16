@@ -12,9 +12,9 @@ import "./datepicker.css";
 import YearPicker from "../../components/AlumniComponents/datepicker";
 import { motion } from "framer-motion";
 import axios from 'axios';
-import AddSkillsModal from "../Profile/components/skillmodal";
-import Modal from "../../components/modal";
-import SeeAllModal from "../../components/AlumniComponents/seeAllModal";
+import SeeAllAffiliationModal from "../../components/AlumniComponents/seeAllModal";
+import SeeAllLocationModal from "../../components/AlumniComponents/seeAllLocationModal";
+import SeeAllCareerModal from "../../components/AlumniComponents/seeAllCareerModal";
 
 
 
@@ -63,7 +63,8 @@ function AlumniSearch() {
   const [loading, setLoading] = useState(false);
 
   const [isSeeAllAffiliationOpen, setIsSeeAllAffiliationOpen] = useState(false);
-  
+  const [isSeeAllLocationOpen, setIsSeeAllLocationOpen] = useState(false);
+  const [isSeeAllCareerOpen, setIsSeeAllCareerOpen] = useState(false);
 
 
   const toggleFilter = () => {
@@ -228,11 +229,22 @@ function AlumniSearch() {
   return (
     <div className="flex flex-col ">
       {/* See all modals */}
-      <SeeAllModal isOpen={isSeeAllAffiliationOpen}
+      <SeeAllAffiliationModal isOpen={isSeeAllAffiliationOpen}
       setIsOpen={setIsSeeAllAffiliationOpen}
       setAffiliationList={setAffiliationList}
       affiliationList={affiliationList}/>
+
+      <SeeAllLocationModal isOpen={isSeeAllLocationOpen}
+      setIsOpen={setIsSeeAllLocationOpen}
+      setLocationList={setLocation}
+      locationList={location}/>
+
+      <SeeAllCareerModal isOpen={isSeeAllCareerOpen}
+      setIsOpen={setIsSeeAllCareerOpen}
+      setCareerList={setCareerList}
+      CareerList={careerList}/>
       
+
       <motion.div
         className="fixed bottom-0 left-0 w-full bg-gray-100 z-50 p-5 shadow-lg rounded-t-2xl lg:hidden overflow-y-auto"
         style={{ maxHeight: "100vh", height: "100%" }}
@@ -426,6 +438,7 @@ function AlumniSearch() {
                 setIsAlumniProfessionExpanded={setIsAlumniProfessionExpanded}
                 setIsCareerExpanded={setIsCareerExpanded}
                 setIsAlumniInfoExpanded={setIsAlumniInfoExpanded}
+                setIsSeeAllAffiliationOpen={setIsSeeAllLocationOpen}
               />
             </motion.div>
           </div>
@@ -465,6 +478,7 @@ function AlumniSearch() {
                 careerList={careerList}
                 setCareerList={setCareerList}
                 setIsIndustryExpanded={setIsIndustryExpanded}
+                setIsSeeAllCareerOpen={setIsSeeAllCareerOpen}
               />
 
               <AlumniIndustryFilter
@@ -704,6 +718,7 @@ function AlumniSearch() {
                     setLocationInput={setLocationInput}
                     location={location}
                     setLocation={setLocation}
+                    setIsSeeAllLocationOpen={setIsSeeAllLocationOpen}
                   />
                 </motion.div>
             </div>
@@ -745,6 +760,7 @@ function AlumniSearch() {
                   setCareerInput={setCareerInput}
                   careerList={careerList}
                   setCareerList={setCareerList}
+                  setIsSeeAllCareerOpen={setIsSeeAllCareerOpen}
                 />  
 
                 <AlumniIndustryFilter

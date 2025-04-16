@@ -12,7 +12,8 @@ const AlumniLocationFilter = ({
   setLocation,
   setIsAlumniProfessionExpanded,
   setIsCareerExpanded,
-  setIsAlumniInfoExpanded
+  setIsAlumniInfoExpanded,
+  setIsSeeAllLocationOpen
 }) => {
   const [locations, setLocations] = useState([]); 
   // cache reference
@@ -147,7 +148,7 @@ const AlumniLocationFilter = ({
 
         <div className="flex flex-row px-12 pb-3 pt-5">
           <h1 className="flex-1 text-gray-400">Suggestions</h1>
-          <button>
+          <button onClick={() => setIsSeeAllLocationOpen(true)}>
             <h1 className="underline text-primary">See all</h1>
           </button>
         </div>
