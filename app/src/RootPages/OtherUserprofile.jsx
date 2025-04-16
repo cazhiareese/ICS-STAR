@@ -20,6 +20,10 @@ import {
   fetchPublicProfileById as apiFetchPublicProfile
 } from "./Profile/UserProfileAPI/userProfileApi"; 
 import { useParams } from "next/navigation";
+import OtherProfileSection from "./Profile/otherprofilesection";
+import OtherSkillsInterestsSection from "./Profile/About/othersskillsandinterestsection";
+import OtherAffiliationsSection from "./Profile/About/otheraffiliationsection";
+import OtherScholarshipsSection from "./Profile/About/otherscholarshipsection";
 
 const token = localStorage.getItem("token");
 
@@ -163,7 +167,7 @@ function OtherUserProfile() {
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       {/* Profile Section */}
-      <ProfileSection
+      <OtherProfileSection
         editMode={editMode}
         userDetails={userDetails}
         setEditMode={setEditMode}
@@ -185,19 +189,19 @@ function OtherUserProfile() {
             userDetails={userDetails}
             handleChange={handleChange}
           />
-          <SkillsInterestsSection
+          <OtherSkillsInterestsSection
             editMode={editMode}
             skills={skills}
             removeSkill={removeSkill}
             addSkills={addSkills}
           />
-          <AffiliationsSection
+          <OtherAffiliationsSection
             editMode={editMode}
             affiliations={affiliations}
             removeAffiliation={removeAffiliation}
             addAffiliation={addAffiliation}
           />
-          <ScholarshipsSection
+          <OtherScholarshipsSection
             editMode={editMode}
             scholarships={scholarships}
             removeScholarship={removeScholarship}
