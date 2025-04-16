@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
+import axios from "axios";
 
 export default function Step4Onboarding() {
   const suggestions = [
@@ -17,7 +18,7 @@ export default function Step4Onboarding() {
   const [inputValue, setInputValue] = useState([]);
   const [customSkills, setCustomSkills] = useState([]); // Store only manually added skills
 
-  const {setCurrentSection, userData, updateUserData} = useOnboardingContext();
+  const {setCurrentSection, userData, updateUserData, userType} = useOnboardingContext();
 
   // Toggle suggestion skills (only highlight, don't create a bubble)
   const toggleSuggestion = (skill) => {
@@ -49,39 +50,58 @@ export default function Step4Onboarding() {
     // setCustomSkills(customSkills.filter((s) => s !== skill));
     updateUserData("skillsInterests",userData.skillsInterests.filter((s) => s !== skill));
   };
-  const submitStep4 = async (e) => {
-    try {
-        const baseURL = "https://ics-star-api.vercel.app/";
-        const token = localStorage.getItem("token");
-
-        const SIParams = new URLSearchParams();
-        userData.skillsInterests.forEach(item => SIParams.append("skills", item));
-
-        const response = await fetch(`${baseURL}add-skills?${SIParams.toString()}`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        const data = await response.json();
-        console.log("Add-skills response:", data);
-
-        if (response.ok) {
-            alert("Submission Successful!");
-            setCurrentSection(5);
-        } else {
-            alert(data.message || JSON.stringify(data) || "skillsInterests submission failed!");
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Something went wrong!");
-    }
+  const submitStep4 = () => {
+    submitOnboardingInfo();
+    // setCurrentSection(5)
 };
-
-
+  const baseURL = "https://ics-star-api.vercel.app";
+  const token = localStorage.getItem("token"); // or however you're storing it
+    const submitOnboardingInfo = async () => {
+        try {
+            
+            const endpoint = userType === "student"
+              ? `${baseURL}/onboarding-info-student`
+              : `${baseURL}/onboarding-info-alum`;
+            const payload = userType === "student" 
+              ? {
+              standing: userData.standing,
+              ...(userData.scholarshipList.length > 0 && { scholarships: userData.scholarshipList }),
+              ...(userData.affiliationList.length > 0 && { affiliations: userData.affiliationList }),
+              ...(userData.roleList.length > 0 && { roles: userData.roleList }),
+              ...(userData.skillsInterests.length > 0 && { skills: userData.skillsInterests }),
+              }
+              : {
+              ...(userData.scholarshipList.length > 0 && { scholarships: userData.scholarshipList }),
+              ...(userData.affiliationList.length > 0 && { affiliations: userData.affiliationList }),
+              ...(userData.roleList.length > 0 && { roles: userData.roleList }),
+              ...(userData.skillsInterests.length > 0 && { skills: userData.skillsInterests }),
+              ...(userData.employmentType === "employed" && { 
+              industry: userData.industrySector,
+              ...(userData.companyName && { company_name: userData.companyName }),
+              job_title: userData.jobTitle,
+              country: userData.workCountry,
+              city: userData.workCity,
+              work_mode: userData.workType,
+              employer_class: userData.workType,          // Employer_class
+              tenured_status: userData.tenureStatus,
+              salary_grade: userData.salaryRange,
+              }),
+              ...(userData.employmentType === "unemployed" && { reasons: userData.reason }),
+              employment_status: userData.employmentType,
+              };
+              await axios.post(endpoint, payload, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+            console.log("Onboarding information submitted successfully.");
+            setCurrentSection(5); 
+        } catch (error) {
+            console.error("Error submitting onboarding information:", error);
+        }
+    };
   return (
-    <div className="flex flex-col items-center p-6 px-15">
+    <div className="flex flex-col items-center p-6 px-15 w-[50%] m-auto">
       <h2 className="text-4xl font-semibold mb-3">Skills and Interests</h2>
 
       {/* Search Bar - Add new skill when pressing Enter */}
@@ -95,8 +115,8 @@ export default function Step4Onboarding() {
       />
       
 
-      <h3 className="text-2xl font-satoshi-light my-10 mr-auto ">Suggestions</h3>
-      <div className="flex flex-wrap gap-3 w-[90%] items-center justify-center">
+      <h3 className="text-xl font-satoshi-bold mb-6 mt-4 mr-auto ">Suggestions</h3>
+      <div className="flex flex-wrap gap-3 w-[80%] mr-auto">
         {userData.suggestions.map((skill) => (
           <button
             key={skill}
@@ -136,7 +156,8 @@ export default function Step4Onboarding() {
         <div className="w-[70%]"></div> 
 
         <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
-          onClick={submitStep4}>
+          onClick={submitStep4}
+          >
           <label className="font-satoshi-bold cursor-pointer">Proceed</label>
         </div>
       </div>

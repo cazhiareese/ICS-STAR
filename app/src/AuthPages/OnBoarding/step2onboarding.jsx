@@ -62,63 +62,64 @@ function Step2Onboarding() {
         updateUserData("roleList", userData.roleList.filter((role) => role !== item));
     };
 
-    const submitStep2 = async (e) => {
-        try {
-            const baseURL = "https://ics-star-api.vercel.app/"
-            const token = localStorage.getItem("token");
+    const submitStep2 = () => {
+        setCurrentSection(userType === "student" ? 4 : 3);
+        // try {
+        //     const baseURL = "https://ics-star-api.vercel.app/"
+        //     const token = localStorage.getItem("token");
             
 
-                    // Build query string for affiliations + roles
-            if (affiliations === true && userData.affiliationList.length > 0 && userData.roleList.length > 0) {
-                const affiliationParams = new URLSearchParams();
-                userData.affiliationList.forEach(item => affiliationParams.append("affiliations", item));
-                userData.roleList.forEach(item => affiliationParams.append("roles", item));
+        //             // Build query string for affiliations + roles
+        //     if (affiliations === true && userData.affiliationList.length > 0 && userData.roleList.length > 0) {
+        //         const affiliationParams = new URLSearchParams();
+        //         userData.affiliationList.forEach(item => affiliationParams.append("affiliations", item));
+        //         userData.roleList.forEach(item => affiliationParams.append("roles", item));
 
-                const response = await fetch(`${baseURL}add-affiliations?${affiliationParams.toString()}`, {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        //         const response = await fetch(`${baseURL}add-affiliations?${affiliationParams.toString()}`, {
+        //             method: "POST",
+        //             headers: {
+        //                 Authorization: `Bearer ${token}`,
+        //             },
+        //         });
 
-                const data = await response.json();
-                console.log("Affiliations response:", data);
+        //         const data = await response.json();
+        //         console.log("Affiliations response:", data);
 
-                if (!response.ok) {
-                    alert(data.message || JSON.stringify(data) || "Affiliation submission failed!");
-                    return;
-                }
-            }
+        //         if (!response.ok) {
+        //             alert(data.message || JSON.stringify(data) || "Affiliation submission failed!");
+        //             return;
+        //         }
+        //     }
 
-            // Build query string for scholarships
-            if (scholarships === true && userData.scholarshipList.length > 0) {
-                const scholarshipParams = new URLSearchParams();
-                userData.scholarshipList.forEach(item => scholarshipParams.append("scholarships", item));
+        //     // Build query string for scholarships
+        //     if (scholarships === true && userData.scholarshipList.length > 0) {
+        //         const scholarshipParams = new URLSearchParams();
+        //         userData.scholarshipList.forEach(item => scholarshipParams.append("scholarships", item));
 
-                const response = await fetch(`${baseURL}add-scholarships?${scholarshipParams.toString()}`, {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        //         const response = await fetch(`${baseURL}add-scholarships?${scholarshipParams.toString()}`, {
+        //             method: "POST",
+        //             headers: {
+        //                 Authorization: `Bearer ${token}`,
+        //             },
+        //         });
 
-                const data = await response.json();
-                console.log("Scholarships response:", data);
+        //         const data = await response.json();
+        //         console.log("Scholarships response:", data);
 
-                if (response.ok) {
-                    alert("Submission Successful!");
-                    setCurrentSection(userType === "student" ? 4 : 3);
-                } else {
-                    alert(data.message || JSON.stringify(data) || "Scholarship submission failed!");
-                }
-            }
+        //         if (response.ok) {
+        //             alert("Submission Successful!");
+                    
+        //         } else {
+        //             alert(data.message || JSON.stringify(data) || "Scholarship submission failed!");
+        //         }
+        //     }
 
            
             
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Something went wrong!");
-        }
+        // } catch (error) {
+        //     console.error("Error:", error);
+        //     alert("Something went wrong!");
+        // }
     };
 
     return (
@@ -169,11 +170,11 @@ function Step2Onboarding() {
                             onClick={() => {if (!scholarships && !affiliations) {
                                 if (userType == "student"){
                                     console.log(userType)
-                                    setCurrentSection(3)
+                                    setCurrentSection(4)
                                 } else {
                                     console.log(userType)
 
-                                    setCurrentSection(4)
+                                    setCurrentSection(3)
                                 }
                             
                             } else {

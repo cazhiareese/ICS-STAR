@@ -20,7 +20,7 @@ export function OnboardingProvider({ children }) {
         companyName: "",
         industrySector: "",
         workType: "",
-        employmentType: "",
+        employmentType: "employed",
         tenureStatus: "",
         sameAsBase: false,
         salaryRange: 11,
@@ -33,6 +33,8 @@ export function OnboardingProvider({ children }) {
         sameWorkBase: false,
         skillsInterests: [],
         profilePictureFile: null,
+        workMode: "Onsite",     // Onsite or Remote
+        employerclass: "",
         suggestions: [
             "Artificial Intelligence",
             "Cybersecurity",

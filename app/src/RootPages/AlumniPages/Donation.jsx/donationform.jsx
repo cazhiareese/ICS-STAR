@@ -10,6 +10,8 @@ import check from "../../../assets/check.png";
 import axios from "axios";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
 import { useParams } from "react-router-dom";
+import DonationMainView from "../../../components/donationMainView";
+// import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
     //const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
@@ -32,6 +34,7 @@ function Donationform() {
     const [submitting, setSubmitting] = useState(false);
     const [summary, setSummary] = useState({});
     const [summaryLoading, setSummaryLoading] = useState(true);
+    const [driveDetails, setDriveDetails] = useState(null);
 
     const formatDate = (date) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -45,7 +48,29 @@ function Donationform() {
         if (summary.donation_drive && summary.date && summary.user && summary.status) {
             setSummaryLoading(false); // Stop loading once summary data is available
         }
+
+        
     }, [summary]);
+
+        
+    
+        useEffect(() => {
+            const token = localStorage.getItem("token");
+    
+            fetch(`https://ics-star-api.vercel.app/one-donation-drive/${drive_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setDriveDetails(data);
+                    console.log("Drive details:", data);
+                })
+                .catch((err) => {
+                    console.error("Error fetching drive details:", err);
+                });
+        }, [drive_id]);
 
     // Submitting Monetary Donations
     const submitMonetaryDonation = async () => {
@@ -132,7 +157,7 @@ function Donationform() {
     return (
         <>
             {!donationSuccess ? (
-                <div className='flex lg:flex-row flex-col md:mx-48 mx-12 my-16 gap-5'>
+                <div className='flex lg:flex-row flex-col xl:mx-48 mx-12 my-16 gap-20'>
                     {/* Make a Donation Part */}
                     <div className='flex flex-col lg:w-7/12 w-full'>
                         {/* Back button */}
@@ -183,7 +208,20 @@ function Donationform() {
                                     onFileSubmit={handleFileSubmit}
                                 />
                                 <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous} />
+                                
+                                {/* Small screen support */}
+                                <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:hidden block">
+                                    {/* <DonationDeets/> */}
+                                    {isMonetaryType && (
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary"/>
+                                    )}
 
+                                    {!isMonetaryType && (
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id}/>
+                                    )}
+                                    
+                                </div>
+                                
                                 {/* Submit Button */}
                                 {submitting ? (
                                     <div className="ml-auto">
@@ -208,7 +246,20 @@ function Donationform() {
                                 />
                                 <DonationInstructions donationType={"inKind"} />
 
+                                {/* Small screen support */}
+                                <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:hidden block">
+                                    {/* <DonationDeets/> */}
+                                    {isMonetaryType && (
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary"/>
+                                    )}
+
+                                    {!isMonetaryType && (
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id}/>
+                                    )}
+                                    
+                                </div>
                                 {/* Submit Button */}
+                                
                                 {submitting ? (
                                     <div className="ml-auto">
                                         <CircularLoading />
@@ -225,8 +276,16 @@ function Donationform() {
                         )}
                     </div>
                     {/* PLACEHOLDER FOR MAR's COMPONENT */}
-                    <div className="outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-1/3 h-full">
-                        SAMPLE
+                    <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:block hidden">
+                        {/* <DonationDeets/> */}
+                        {isMonetaryType && (
+                            <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary"/>
+                        )}
+
+                        {!isMonetaryType && (
+                            <DonationMainView driveDetails={driveDetails} driveId = {drive_id}/>
+                        )}
+                        
                     </div>
                 </div>
             ) : (

@@ -5,8 +5,12 @@ import { OnboardingProvider, useOnboardingContext } from "../AuthContext/onboard
 import { useNavigate } from 'react-router-dom';
 
 function FinalOnboarding() {
-    const {userType} = useOnboardingContext();
+    const {userType, } = useOnboardingContext();
     const navigate = useNavigate();
+
+
+
+
     return (
     <>
         <div className="flex flex-col bg-white items-center justify-start font-satoshi-regular text-3xl space-y-6 -mt-20 overflow-hidden">
@@ -29,9 +33,9 @@ function FinalOnboarding() {
             onClick={()=> {
 
                 if (userType == "student"){
-                    navigate('/student')
+                    navigate('/student/dashboard')
                 } else {
-                    navigate('/alumni')
+                    navigate('/alumni/dashboard')
                 }
             }}>
                 <label className="font-satoshi-bold">Start Exploring!</label>

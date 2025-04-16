@@ -6,6 +6,7 @@ import Employed from "../../assets/onBoardingAssets/Employed.png"
 import Unemployed from "../../assets/onBoardingAssets/Unemployed.png"
 import SelfEmployed from "../../assets/onBoardingAssets/SelfEmployed.png"
 import Cloud from "../../assets/onBoardingAssets/Cloud.png"
+import Location from "../../assets/onBoardingAssets/location.png"
 import { MapPin } from "lucide-react";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 
@@ -103,59 +104,61 @@ function Step3Onboarding() {
     }
   };
 
-  const updateEmployment = async () => {
-    const token = localStorage.getItem("token");
+  const updateEmployment = () => {
+    setCurrentSection(4)
+
+    // const token = localStorage.getItem("token");
   
-    if (!token) {
-      console.error("No token found. Please log in.");
-      return;
-    }
+    // if (!token) {
+    //   console.error("No token found. Please log in.");
+    //   return;
+    // }
   
-    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    // const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   
-    // Create FormData instance
-    const formData = new FormData();
-    formData.append("industry", "Technology");
-    formData.append("employment_status", userData.typeEmployed || "employed");
-    formData.append("company_name", userData.companyName ||"OpenAI");
-    formData.append("job_title", userData.jobTitle || "Software Engineer");
-    formData.append("country", userData.workCountry || "USA");
-    formData.append("city", userData.workCity || "San Francisco");
-    formData.append("work_mode", userData.workType || "remote");
-    formData.append("employer_class", userData.employmentType || "private");
-    formData.append("tenured_status", userData.tenureStatus || "permanent");
-    formData.append("salary_grade", userData.salaryRange || "1");
+    // // Create FormData instance
+    // const formData = new FormData();
+    // formData.append("industry", "Technology");
+    // formData.append("employment_status", userData.typeEmployed || "employed");
+    // formData.append("company_name", userData.companyName ||"OpenAI");
+    // formData.append("job_title", userData.jobTitle || "Software Engineer");
+    // formData.append("country", userData.workCountry || "USA");
+    // formData.append("city", userData.workCity || "San Francisco");
+    // formData.append("work_mode", userData.workType || "remote");
+    // formData.append("employer_class", userData.employmentType || "private");
+    // formData.append("tenured_status", userData.tenureStatus || "permanent");
+    // formData.append("salary_grade", userData.salaryRange || "1");
   
-    // Append reasons (array of strings)
-    if (selectedOptions && Array.isArray(selectedOptions)) {
-      selectedOptions.forEach(reason => {
-        formData.append("reasons", reason); // Backend must accept multiple "reasons"
-      });
-    }
+    // // Append reasons (array of strings)
+    // if (selectedOptions && Array.isArray(selectedOptions)) {
+    //   selectedOptions.forEach(reason => {
+    //     formData.append("reasons", reason); // Backend must accept multiple "reasons"
+    //   });
+    // }
   
-    try {
-      const response = await fetch(`https://ics-star-api.vercel.app/update-employment`, {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          // Do NOT set "Content-Type", browser will set it to multipart/form-data with boundary
-        },
-        body: formData,
-      });
+    // try {
+    //   const response = await fetch(`https://ics-star-api.vercel.app/update-employment`, {
+    //     method: "PUT",
+    //     headers: {
+    //       "Authorization": `Bearer ${token}`,
+    //       // Do NOT set "Content-Type", browser will set it to multipart/form-data with boundary
+    //     },
+    //     body: formData,
+    //   });
   
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error updating employment:", errorData);
-        return;
-      }
+    //   if (!response.ok) {
+    //     const errorData = await response.json();
+    //     console.error("Error updating employment:", errorData);
+    //     return;
+    //   }
   
-      const result = await response.json();
-      console.log("Employment updated:", result.message);
-      setCurrentSection(4)
+    //   const result = await response.json();
+    //   console.log("Employment updated:", result.message);
+    //   setCurrentSection(4)
   
-    } catch (err) {
-      console.error("Failed to update employment:", err);
-    }
+    // } catch (err) {
+    //   console.error("Failed to update employment:", err);
+    // }
   };
 
   useEffect(() => {
@@ -163,8 +166,6 @@ function Step3Onboarding() {
       updateUserData("workCity", userData.baseCity)
       updateUserData("workCountry", userData.baseCountry)
     } else {
-      updateUserData("workCity", "")
-      updateUserData("workCountry", "")
     }
   }, [userData.sameWorkBase])
 
@@ -174,11 +175,11 @@ function Step3Onboarding() {
     <>
       {step==1 ? (<div className="flex flex-col justify-center md:mx-30 mx-10">
         {/* Step 1 check employment type */}
-        <img src={peersIcon} className="lg:h-20 lg:w-20 h-10 w-10 xl:mt-0 mb-5 "></img>
-        <label className="font-satoshi-black lg:text-5xl md:text-4xl sm:text-3xl text-2xl"> Employment Status</label>
-        <label className="font-satoshi-light lg:text-3xl md:text-2xl sm:text-xl text-lg"> Select the option that best describes your current situation.</label>
+        <img src={peersIcon} className="lg:h-12 lg:w-12 h-10 w-10 xl:mt-0 mb-5 "></img>
+        <label className="font-satoshi-black lg:text-4xl md:text-3xl sm:text-2xl text-xl"> Employment Status</label>
+        <label className="font-satoshi-light lg:text-2xl md:text-xl sm:text-lg text-md"> Select the option that best describes your current situation.</label>
 
-        <div className="flex flex-col flex-wrap lg:pt-15 items-center justify-center">
+        <div className="flex flex-col flex-wrap items-center justify-center">
             <div className={`flex flex-row space-x-5 items-center mt-10 md:w-100 w-[100%] border h-25 pl-10 rounded-2xl ${userData.employmentType=="employed" ? "bg-secondary": "bg-white"}`}
             onClick={handleEmployedClick}>
               <img className="w-10 h-10" src={Employed}/>
@@ -299,241 +300,239 @@ function Step3Onboarding() {
       // Employed Part
 
 
-      (step!=3 ?  (<> <div className="flex flex-col items-center p-10">
-        {/* Icon and Title */}
-        <div className="flex items-center space-x-2 mb-4">
-          <MapPin className="text-blue-500 w-6 h-6" />
-          <h2 className="text-2xl font-semibold">Where are you currently based?</h2>
-        </div>
-  
-        {/* Input Fields */}
-        <div className="flex flex-col w-96 space-y-4">
-          <div>
-            <label className="text-gray-700 font-medium">Country</label>
-            <input
-              type="text"
-              name="country"
-              value={userData.baseCountry}
-              onChange={(e) => updateUserData("baseCountry", e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1"
-              placeholder="Enter your country"
-            />
+      (step!=3 ?  (<> <div className="flex flex-col items-center p-15">
+          {/* Icon and Title */}
+          <div className="flex flex-col  space-x-2 mb-4 mr-auto">
+            <img src={Location} className="w-12 h-12" alt="Cloud Icon" />
+            <h2 className="text-4xl font-semibold pb-10">Where are you currently based?</h2>
           </div>
-  
-          <div>
-            <label className="text-gray-700 font-medium">City/State</label>
-            <input
-              type="text"
-              name="cityState"
-              value={userData.baseCity}
-              onChange={(e) => updateUserData("baseCity", e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1"
-              placeholder="Enter your city/state"
-            />
+    
+          {/* Input Fields */}
+          <div className="flex flex-col w-full max-w-2xl space-y-6">
+            <div>
+              <label className="text-gray-700 font-medium text-lg">Country</label>
+              <select
+                name="country"
+                value={userData.baseCountry}
+                onChange={(e) => updateUserData("baseCountry", e.target.value)}
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+              >
+                <option value="" disabled>Select your country</option>
+                <option value="USA">United States</option>
+                <option value="Canada">Canada</option>
+                <option value="Philippines">Philippines</option>
+                <option value="India">India</option>
+                <option value="Australia">Australia</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Germany">Germany</option>
+                <option value="France">France</option>
+                <option value="Japan">Japan</option>
+                <option value="China">China</option>
+                {/* Add more countries as needed */}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-gray-700 font-medium text-lg">City/State</label>
+              <input
+                type="text"
+                name="cityState"
+                value={userData.baseCity}
+                onChange={(e) => updateUserData("baseCity", e.target.value)}
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+                placeholder="Enter your city/state"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-row items-center justify-center my-10 space-x-20 w-full">
-        
-              <div className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl text-2xl"
-                    onClick={()=>setStep(1)}
-              >
-                      <label className="font-satoshi-italic"> &lt; Previous </label>
-              </div> 
+          <div className="flex flex-row items-center justify-center my-10 space-x-20 w-full">
+            <div
+              className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
+              onClick={() => setStep(1)}
+            >
+              <label className="font-satoshi-italic"> &lt; Previous </label>
+            </div>
 
-              <div className="w-[70%]">
+            <div className="w-[70%]"></div>
 
-              </div> 
-              <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
-                  onClick={()=>setStep(3)}
-              >
-                      <label className="font-satoshi-bold cursor-pointer">Proceed</label>
-              </div>
-        
+            <div
+              className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
+              onClick={() => setStep(3)}
+            >
+              <label className="font-satoshi-bold cursor-pointer">Proceed</label>
+            </div>
           </div>
         </div>
       </>) : 
       
-      // For third employed Step
+      // For third employed Step 
       (<>
       
-        <div className="flex flex-col p-6 w-full max-w-3xl mx-auto">
-      {/* Header */}
-      <h2 className="text-2xl font-semibold">Current Work Details</h2>
-      <p className="text-gray-500 mb-4">We'd love to know what path you have taken.</p>
+        <div className="flex flex-col p-6 w-full px-20 ">
+        {/* Header */}
+        <h2 className="text-4xl font-semibold mr-auto">Current Work Details</h2>
+        <p className="text-gray-500 mb-4">We'd love to know what path you have taken.</p>
 
-      {/* Grid Layout */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Job Title */}
-        <div>
-          <label className="text-gray-700 font-medium">Job Title</label>
-          
-          <input
-            type="text"
-            name="jobTitle"
-            value={userData.jobTitle}
-            onChange={(e)=>updateUserData( "jobTitle", e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-          />
-        </div>
-
-        {/* Industry Sector */}
-        <div>
-          <label className="text-gray-700 font-medium">Industry Sector</label>
-          <input
-            type="text"
-            name="industrySector"
-            value={userData.industrySector}
-            onChange={(e)=>updateUserData( "industrySector", e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-          />
-        </div>
-
-        {/* Company Name */}
-        <div>
-          <label className="text-gray-700 font-medium">Company Name (optional)</label>
-          <input
-            type="text"
-            name="companyName"
-            value={userData.companyName}
-            onChange={(e)=>updateUserData( "companyName", e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-          />
-          
-          <div className="flex items-center mt-2">
-            <input
-              type="checkbox"
-              name="remote"
-              value={userData.remote}
-              onChange={()=>updateUserData( "remote", !userData.remote)}
-              className="mr-2"
-            />
-            <label className="text-gray-600">I work remotely</label>
-          </div>
-
-        </div>
-
-        {/* Work Type */}
-        <div>
-          <label className="text-gray-700 font-medium">Work Type</label>
-          <select
-            name="workType"
-            value={userData.workType}
-            onChange={(e)=>updateUserData( "workType", e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-          >
-            <option>NGO</option>
-            <option>Corporate</option>
-            <option>Startup</option>
-            <option>Freelance</option>
-          </select>
-        </div>
-
-        {/* Employment Type */}
-        <div>
-          <label className="text-gray-700 font-medium">Employment Type</label>
-          <select
-            name="employmentType"
-            value={userData.employmentType}
-            onChange={(e)=>updateUserData("employmentType", e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-          >
-            <option>Full-Time</option>
-            <option>Part-Time</option>
-            <option>Contract</option>
-          </select>
-        </div>
-
-        {/* Tenure Status */}
-        <div>
-          <label className="text-gray-700 font-medium">Tenure Status</label>
-          <select
-            name="tenureStatus"
-            value={userData.tenureStatus}
-            onChange={(e)=>updateUserData( "tenureStatus", e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-          >
-            <option>Permanent</option>
-            <option>Temporary</option>
-            <option>Internship</option>
-          </select>
-        </div>
-
-        {/* Work Location */}
-        <div className="col-span-2">
-          <label className="text-gray-700 font-medium">Work Location</label>
-          <div className="flex gap-3">
-            <input
-              type="text"
-              name="country"
-              value={userData.workCountry}
-              onChange={(e)=>updateUserData("workCountry", e.target.value)}
-              placeholder="Country"
-              className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-            />
-            <input
-              type="text"
-              name="city"
-              value={userData.workCity}
-              onChange={(e)=>updateUserData("workCity", e.target.value)}
-              placeholder="City"
-              className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-            />
-          </div>
-          <div className="flex items-center mt-2">
-            <input
-              type="checkbox"
-              name="sameAsBase"
-              checked={userData.sameWorkBase}
-              onChange={()=>updateUserData("sameWorkBase", !userData.sameWorkBase)}
-              className="mr-2"
-            />
-            <label className="text-gray-600">Same as base</label>
-          </div>
-        </div>
-
-        {/* Salary Range */}
-        <div className="col-span-2">
-          {/* <label className="text-gray-700 font-medium">Salary Range (optional)</label> */}
+        {/* Grid Layout */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Job Title */}
           <div>
-              <label className="text-gray-700 font-medium">Tenure Status</label>
-              <select
-                name="tenureStatus"
-                value={userData.salaryRange}
-                onChange={(e)=>updateUserData( "salaryRange", e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
-              >
-                <option value ="1">Less than ₱9,100</option>
-                <option value ="2">₱9,100 to ₱18,199</option>
-                <option value ="3">₱18,200 to ₱36,399</option>
-                <option value="4">₱63,700 to ₱109,199</option>
-                <option value = "5">₱63,700 to ₱109,199</option>
-                <option value="6">₱109,200 to ₱181,999</option>
-                <option value="7">At least ₱182,000 and up</option>
-              </select>
+            <label className="text-gray-700 font-medium">Job Title</label>
+            
+            <input
+              type="text"
+              name="jobTitle"
+              value={userData.jobTitle}
+              onChange={(e)=>updateUserData( "jobTitle", e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+            />
+          </div>
+
+          {/* Industry Sector */}
+          <div>
+            <label className="text-gray-700 font-medium">Industry Sector</label>
+            <input
+              type="text"
+              name="industrySector"
+              value={userData.industrySector}
+              onChange={(e)=>updateUserData( "industrySector", e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+            />
+          </div>
+
+          {/* Company Name */}
+          <div>
+            <label className="text-gray-700 font-medium">Company Name (optional)</label>
+            <input
+              type="text"
+              name="companyName"
+              value={userData.companyName}
+              onChange={(e)=>updateUserData( "companyName", e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+            />
+            
+            
+
+          </div>
+          <div className="flex items-center m-auto mt-10">
+              <input
+                type="checkbox"
+                name="remote"
+                value={userData.remote}
+                onChange={()=>updateUserData( "remote", !userData.remote)}
+                className="mr-2"
+              />
+              <label className="text-gray-600">I work remotely</label>
+          </div>
+  
+
+          {/* Employment Type */}
+          <div className="pt-10">
+            <label className="text-gray-700 font-medium">Employer Classification</label>
+            <select
+              name="employmentType"
+              value={userData.employmentType}
+              onChange={(e)=>updateUserData("employerclass", e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+            >
+              <option>NGO</option>
+              <option>Government</option>
+              <option>Charitable</option>
+            </select>
+          </div>
+
+          {/* Tenure Status */}
+          <div className="pt-10">
+            <label className="text-gray-700 font-medium">Tenure Status</label>
+            <select
+              name="tenureStatus"
+              value={userData.tenureStatus}
+              onChange={(e)=>updateUserData( "tenureStatus", e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+            >
+              <option>Permanent</option>
+              <option>Temporary</option>
+              <option>Internship</option>
+            </select>
+          </div>
+
+          {/* Work Location */}
+          <div className="">
+            <label className="text-gray-700 font-medium">Work Location</label>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                name="country"
+                value={userData.workCountry}
+                onChange={(e)=>updateUserData("workCountry", e.target.value)}
+                placeholder="Country"
+                className={`w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1 ${userData.sameWorkBase ? "bg-gray-200 text-gray-500" : ""}`}
+                disabled = {userData.sameWorkBase}
+              />
+              <input
+                type="text"
+                name="city"
+                value={userData.workCity}
+                onChange={(e)=>updateUserData("workCity", e.target.value)}
+                placeholder="City"
+                className={`w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1 ${userData.sameWorkBase ? "bg-gray-200 text-gray-500" : ""}`}
+                disabled={userData.sameWorkBase}
+              />
             </div>
+            <div className="flex items-center mt-2">
+              <input
+                type="checkbox"
+                name="sameAsBase"
+                checked={userData.sameWorkBase}
+                onChange={()=>updateUserData("sameWorkBase", !userData.sameWorkBase)}
+                className="mr-2"
+              />
+              <label className="text-gray-600">Same as base</label>
+            </div>
+          </div>
+
+          {/* Salary Range */}
+          <div className="">
+            {/* <label className="text-gray-700 font-medium">Salary Range (optional)</label> */}
+            <div>
+                <label className="text-gray-700 font-medium">Tenure Status</label>
+                <select
+                  name="tenureStatus"
+                  value={userData.salaryRange}
+                  onChange={(e)=>updateUserData( "salaryRange", e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+                >
+                  <option value ="1">Less than ₱9,100</option>
+                  <option value ="2">₱9,100 to ₱18,199</option>
+                  <option value ="3">₱18,200 to ₱36,399</option>
+                  <option value="4">₱63,700 to ₱109,199</option>
+                  <option value = "5">₱63,700 to ₱109,199</option>
+                  <option value="6">₱109,200 to ₱181,999</option>
+                  <option value="7">At least ₱182,000 and up</option>
+                </select>
+              </div>
+          </div>
+        </div>
+
+        <div className="flex flex-row items-center justify-center my-10 space-x-20 w-full">
+          
+                <div className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl text-2xl"
+                      onClick={()=>setStep(2)}
+                >
+                        <label className="font-satoshi-italic " > &lt; Previous </label>
+                </div> 
+
+                <div className="w-[70%]">
+
+                </div> 
+                <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
+                    onClick = {()=>{updateEmployment()}}
+                >
+                        <label className="font-satoshi-bold cursor-pointer">Proceed</label>
+                </div>
+          
         </div>
       </div>
-
-      <div className="flex flex-row items-center justify-center my-10 space-x-20 w-full">
-        
-              <div className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl text-2xl"
-                    onClick={()=>setStep(2)}
-              >
-                      <label className="font-satoshi-italic " > &lt; Previous </label>
-              </div> 
-
-              <div className="w-[70%]">
-
-              </div> 
-              <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
-                  onClick = {()=>{updateEmployment()}}
-              >
-                      <label className="font-satoshi-bold cursor-pointer">Proceed</label>
-              </div>
-        
-      </div>
-    </div>
       
       </>))
         

@@ -7,7 +7,7 @@ import AffiliationsSection from "./Profile/About/affiliationssection";
 import ScholarshipsSection from "./Profile/About/scholarshipsection";
 import WorkSection from "./Profile/Work/worksection";
 import DonationHistoryUser from "./Profile/DonationHistory/Donationhistoryuser";
-
+import { useParams } from "next/navigation";
 
 import {
   fetchProfile as apiFetchProfile,
@@ -19,7 +19,7 @@ import {
   removeScholarship as apiRemoveScholarship,
   fetchPublicProfileById as apiFetchPublicProfile
 } from "./Profile/UserProfileAPI/userProfileApi"; 
-import { useParams } from "next/navigation";
+
 
 const token = localStorage.getItem("token");
 
