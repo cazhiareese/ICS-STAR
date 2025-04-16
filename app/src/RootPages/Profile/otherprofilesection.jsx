@@ -13,44 +13,44 @@ import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 
-function OtherProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
+function OtherProfileSection({ editMode, userDetails, setEditMode, handleChange, userPicture }) {
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
-  //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
-  useEffect(() => {
-    const fetchProfilePicture = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("User not authenticated");
-          return;
-        }
+  // //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
+  // useEffect(() => {
+  //   const fetchProfilePicture = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         console.error("User not authenticated");
+  //         return;
+  //       }
 
-        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  //       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-        const response = await fetch(`${API_BASE_URL}/profile-picture`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  //       const response = await fetch(`${API_BASE_URL}/profile-picture`, {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
 
-        if (response.ok) {
-          const result = await response.json();
-          setProfilePicture(result.profile_picture || defaultimage);
-        } else {
-          console.error("Failed to fetch profile picture");
-        }
-      } catch (err) {
-        console.error("Error while fetching profile picture:", err);
-      }
-    };
+  //       if (response.ok) {
+  //         const result = await response.json();
+  //         setProfilePicture(result.profile_picture || defaultimage);
+  //       } else {
+  //         console.error("Failed to fetch profile picture");
+  //       }
+  //     } catch (err) {
+  //       console.error("Error while fetching profile picture:", err);
+  //     }
+  //   };
 
-    fetchProfilePicture();
-  }, []);
+  //   fetchProfilePicture();
+  // }, []);
 
   const handleSave = () => {
     setShowModal(false);
@@ -144,7 +144,7 @@ function OtherProfileSection({ editMode, userDetails, setEditMode, handleChange 
         <span className="relative">
           <span className="w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] rounded-full border border-black flex items-center justify-center overflow-hidden">
             <img
-              src={profilePicture || defaultimage}
+              src={userPicture || defaultimage}
               alt="Profile"
               className="w-full h-full object-cover"
             />

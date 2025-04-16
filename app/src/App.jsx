@@ -45,7 +45,6 @@ import AdminPendingDonations from "./RootPages/AdminPages/Donations/adminpending
 
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
-import OtherUserProfileWrapper from "./RootPages/OtherUserProfileWrapper";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
 const isSignedIn = !!localStorage.getItem("token");
 
