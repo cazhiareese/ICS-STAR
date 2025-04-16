@@ -93,6 +93,9 @@ class AdminOneDonationDriveOut(BaseModel):
     target_cost: float
     is_closed: bool
     remaining_percent: float
+    links: List[str]
+    created_at: str
+    description: str
 
     class Config:
         from_attributes = True
@@ -114,17 +117,20 @@ class GenericDriveOut(BaseModel):
 
 class ShortenedMonetaryDonationsOut(BaseModel):
     donation_id: UUID
-    date_donated: datetime
+    donation_date: str
+    donation_time: str
     name: str
     donation_details: float
     proof: str
+    type: str
 
     class Config:
         from_attributes = True
 
 class ShortenedInKindDonationsOut(BaseModel):
     donation_id: UUID
-    date_donated: datetime
+    donation_date: str
+    donation_time: str
     name: str
     donation_details: str
 
