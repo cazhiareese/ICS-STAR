@@ -12,6 +12,9 @@ import "./datepicker.css";
 import YearPicker from "../../components/AlumniComponents/datepicker";
 import { motion } from "framer-motion";
 import axios from 'axios';
+import AddSkillsModal from "../Profile/components/skillmodal";
+import Modal from "../../components/modal";
+import SeeAllModal from "../../components/AlumniComponents/seeAllModal";
 
 
 
@@ -58,6 +61,9 @@ function AlumniSearch() {
   const hasMounted = useRef(false);
 
   const [loading, setLoading] = useState(false);
+
+  const [isSeeAllAffiliationOpen, setIsSeeAllAffiliationOpen] = useState(false);
+  
 
 
   const toggleFilter = () => {
@@ -221,6 +227,12 @@ function AlumniSearch() {
   
   return (
     <div className="flex flex-col ">
+      {/* See all modals */}
+      <SeeAllModal isOpen={isSeeAllAffiliationOpen}
+      setIsOpen={setIsSeeAllAffiliationOpen}
+      setAffiliationList={setAffiliationList}
+      affiliationList={affiliationList}/>
+      
       <motion.div
         className="fixed bottom-0 left-0 w-full bg-gray-100 z-50 p-5 shadow-lg rounded-t-2xl lg:hidden overflow-y-auto"
         style={{ maxHeight: "100vh", height: "100%" }}
@@ -399,7 +411,8 @@ function AlumniSearch() {
                 affiliationList={affiliationList}
                 setAffiliationList={setAffiliationList}
                 setIsLocationExpanded={setIsLocationExpanded}
-
+                isSeeAllAffiliationOpen={isSeeAllAffiliationOpen}
+                setIsSeeAllAffiliationOpen={setIsSeeAllAffiliationOpen}
               />
 
               <AlumniLocationFilter
@@ -680,6 +693,8 @@ function AlumniSearch() {
                     setAffiliationInput={setAffiliationInput}
                     affiliationList={affiliationList}
                     setAffiliationList={setAffiliationList}
+                    isSeeAllAffiliationOpen={isSeeAllAffiliationOpen}
+                    setIsSeeAllAffiliationOpen={setIsSeeAllAffiliationOpen}
                   />
 
                   <AlumniLocationFilter
