@@ -197,39 +197,34 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
     verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
 
+    drive_links = get_all_links_by_drive_id(db, drive_id)
+
     # Format the pending donations list
     pending_verifications = []
     
     # Add pending monetary donations to the list
     for donation in pending_monetary_donations:
-        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
         pending_verifications.append({
             "donation_id": donation.donation_id,
+            "date_donated": donation.donation_date,
             "name": donation.name,
+            "donation_type": "Monetary",
             "donation_details": f"₱{donation.donation_details:,.2f}",
-            "date_donated": date_donated,
             "proof": donation.proof
         })
     
     # Add pending in-kind donations to the list
     for donation in pending_inkind_donations:
-        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "name": donation.name,
-            "donation_details": donation.donation_details,
-            "date_donated": date_donated
-        })
+        pending_verifications.append(donation)
 
     # Format the verified donations list
     verified_donations = []
     
     # Add verified monetary donations to the list
     for donation in verified_monetary_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
         verified_donations.append({
             "donation_id": donation.donation_id,
-            "date_donated": date_donated,
+            "date_donated": donation.donation_date,
             "name": donation.name,
             "donation_type": "Monetary",
             "donation_details": f"₱{donation.donation_details:,.2f}",
@@ -238,14 +233,15 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     
     # Add verified in-kind donations to the list
     for donation in verified_inkind_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
         verified_donations.append({
             "donation_id": donation.donation_id,
-            "date_donated": date_donated,
+            "date_donated": donation.donation_date,
             "name": donation.name,
             "donation_type": "In-kind",
             "donation_details": donation.donation_details
         })
+
+    date_started = drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None
 
     return AdminOneDonationDriveOut(
         drive_id = drive.drive_id,
@@ -256,7 +252,10 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         current_amount = total_amount,
         target_cost = drive.target_cost,
         is_closed = drive.is_closed,
-        remaining_percent = remaining_percentage
+        remaining_percent = remaining_percentage,
+        links = drive_links,
+        created_at = date_started,
+        description = drive.description
     )
 
 # this is the same as view_donation_drive, except it is hardcoded to the drive_id of the generic drive and we will return total amount
@@ -418,12 +417,17 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[Shor
     pending_donations_list = []
 
     for donation in pending_monetary_donations:
+        # Separate date and time
+        donation_date = donation[4].strftime("%m/%d/%Y") if donation[4] else None
+        donation_time = donation[4].strftime("%I:%M %p") if donation[4] else None
         pending_out = ShortenedMonetaryDonationsOut(
             donation_id=donation[0],
-            date_donated=donation[4],
+            donation_date=donation_date,
+            donation_time=donation_time,
             name=f"{donation[1]} {donation[2]}",
             donation_details=donation[3] or 0,
-            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided."
+            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided.",
+            type="Monetary"
         )
         pending_donations_list.append(pending_out)
 
@@ -446,11 +450,15 @@ def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> list[Shorte
     pending_donations_list = []
 
     for donation in pending_inkind_donations:
+        donation_date = donation[4].strftime("%m/%d/%Y") if donation[4] else None
+        donation_time = donation[4].strftime("%I:%M %p") if donation[4] else None
         pending_out = ShortenedInKindDonationsOut(
             donation_id=donation[0],
-            date_donated=donation[4],
+            donation_date=donation_date,
+            donation_time=donation_time,
             name=f"{donation[1]} {donation[2]}",
-            donation_details=donation[3]
+            donation_details=donation[3],
+            type="In-kind"
         )
         pending_donations_list.append(pending_out)
 
@@ -474,12 +482,16 @@ def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[Sho
     verified_donations_list = []
 
     for donation in verified_monetary_donations:
+        donation_date = donation[1].strftime("%m/%d/%Y") if donation[1] else None
+        donation_time = donation[1].strftime("%I:%M %p") if donation[1] else None
         verified_out = ShortenedMonetaryDonationsOut(
             donation_id=donation[0],
-            date_donated=donation[1],
+            donation_date=donation_date,
+            donation_time=donation_time,
             name=f"{donation[2]} {donation[3]}",
             donation_details=donation[4] or 0,
-            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided."
+            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided.",
+            type="Monetary"
         )
         verified_donations_list.append(verified_out)
 
@@ -502,11 +514,15 @@ def get_all_verified_inkind_donations(db: Session, drive_id: UUID) -> list[Short
     verified_donations_list = []
 
     for donation in verified_inkind_donations:
+        donation_date = donation[1].strftime("%m/%d/%Y") if donation[1] else None
+        donation_time = donation[1].strftime("%I:%M %p") if donation[1] else None
         verified_out = ShortenedInKindDonationsOut(
             donation_id=donation[0],
-            date_donated=donation[1],
+            donation_date=donation_date,
+            donation_time=donation_time,
             name=f"{donation[2]} {donation[3]}",
-            donation_details=donation[4]
+            donation_details=donation[4],
+            type="In-kind"
         )
         verified_donations_list.append(verified_out)
 
