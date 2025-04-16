@@ -26,6 +26,11 @@ function AdminDonationInformation() {
   const [donation, setDonation] = useState()
   const [loading, setLoading] = useState(true)
 
+  async function handleCloseDrive() {
+    const closeDriveResponse = await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`)
+    console.log(closeDriveResponse)
+  }
+
   const fetchData = async () => {
     setLoading(true)
 
@@ -117,7 +122,7 @@ function AdminDonationInformation() {
                         <p className='font-satoshi-light'>View Statistics</p>
                       </button>
                       {/* Close Drive */}
-                      <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {setCloseDonation(true)}}>
+                      <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {handleCloseDrive()}}>
                         <p className='font-satoshi-light'>Close Drive</p>
                       </button>
                     </>
@@ -212,17 +217,21 @@ function AdminDonationInformation() {
                         </button>
                       </div>
                       {/* Image */}
-                      <div className='bg-primary h-1/3 w-full rounded-xl'>
-
-                      </div> 
+                      <div className="bg-primary h-1/3 w-full rounded-xl overflow-hidden">
+                        <img
+                          src={donation.image}
+                          alt="Donation image"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                       <div className='mb-5 flex flex-col w-full'>
-                        <h1 className='font-satoshi-bold text-2xl'>Donation title</h1>
-                        <p className='font-satoshi-light '>Date Started: 01/01/25</p>
+                        <h1 className='font-satoshi-bold text-2xl'>{donation.title}</h1>
+                        <p className='font-satoshi-light '>Date Started: {donation.created_at}</p>
                       </div>
                       <div className='flex flex-col w-full'>
                         <h2 className='font-satoshi-light text-sm'>Description</h2>
                         <p className='font-satoshi-regular text-sm'>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis velit at ligula tristique, ac aliquet lorem vehicula. Sed facilisis, ante sed consequat dictum, ante est tempor magna, vel condimentum justo ipsum non tortor. Morbi pharetra sapien at est tincidunt, et auctor lectus auctor. Duis ac erat non tortor efficitur malesuada.
+                          {donation.description}
                         </p>
                       </div>
 
@@ -231,16 +240,18 @@ function AdminDonationInformation() {
                         <h2>Relevant Links</h2>
                         <div className='border border-t-gray-300'></div>
                         {/* Iterate over links */}
-                        <div className="ml-6 flex gap-2 overflow-auto">
-                          <Link/>
-                          <a
-                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs0gcJCX4JAYcqIYzv"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className='text-primary text-sm'
-                          >
-                            https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs0gcJCX4JAYcqIYzv
-                          </a>
+                        <div className="ml-6 flex gap-2 overflow-auto flex-col">
+                          {donation.relevant_links?.map((link, index) => (
+                            <a
+                              key={index}
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className='text-primary text-sm break-all'
+                            >
+                              {link}
+                            </a>
+                          ))}
                         </div>
                       </div>
 
@@ -293,7 +304,7 @@ function AdminDonationInformation() {
                             </button>
                             <button
                               className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
-                              onClick={() => {}} //TODO: Add close donation drive
+                              onClick={() => {handleCloseDrive()}}
                             >
                               Confirm
                             </button>
