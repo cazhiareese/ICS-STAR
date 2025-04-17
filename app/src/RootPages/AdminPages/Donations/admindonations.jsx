@@ -4,6 +4,8 @@ import DonationsTable from '../../../components/AdminComponents/donationstable'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
+import SortModal from '../../../components/AdminComponents/sortmodal'
+import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 
 function AdminDonations() {
   const navigate = useNavigate()
@@ -14,27 +16,50 @@ function AdminDonations() {
   const [totalPages, setTotalPages] = useState(10)
   const [donations, setDonations] = useState([])
   const [loading, setLoading] = useState(false)
+  const [genericDriveDetails, setGenericDriveDetails] = useState({})
+
+  const filters = ['Name', 'Batch', 'Last Update']
+  const [sortBy, setSortBy] = useState(filters[0]);
+  const [sortDirection, setSortDirection] = useState('asc');
+
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin/donations/${donationType}-drives`)
-        setDonations(response.data)
-      } catch (error) {
-        console.error("Error fetching donations:", error)
-      } finally {
-        setLoading(false)
-      }
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/${donationType}-drives`)      
+      setDonations(response.data)
+      // sessionStorage.setItem(`donations-${donationType}`, JSON.stringify(response.data));
+
+      const genDriveResponse = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`)
+      console.log(genDriveResponse.data)
+      setGenericDriveDetails(genDriveResponse.data)
+
+    } catch (error) {
+      console.error("Error fetching donations:", error)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
+    // const cached = sessionStorage.getItem(`donations-${donationType}`);
+    // if (cached) {
+    //   setDonations(JSON.parse(cached));
+    //   return;
+    // }
   
     fetchData()
   }, [donationType])
   
     
     return (
+      loading ? (
+        <div className='flex flex-row justify-center items-center h-screen'>
+          <CircularLoading/>
+        </div>
+      ) : (
       <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
       {/* Header and add donation button */}
       <div className='flex justify-between items-center mb-4'>
@@ -57,19 +82,19 @@ function AdminDonations() {
         <div className='flex flex-1'>
           {/* Monetary Donations */}
           <div className='flex flex-col items-center justify-center flex-1'>
-            <h3 className='font-satoshi-bold text-2xl text-primary'> P123,456</h3>
+            <h3 className='font-satoshi-bold text-2xl text-primary'> Php {genericDriveDetails.total_amount}</h3>
             <p className='font-satoshi-light '>Monetary Donations</p>
           </div>
           {/* In-kind Donations */}
           <div className='flex flex-col items-center justify-center flex-1'>
-            <h3 className='font-satoshi-bold text-2xl text-primary'> 12 </h3>
+            <h3 className='font-satoshi-bold text-2xl text-primary'> {genericDriveDetails.total_in_kind} </h3>
             <p className='font-satoshi-light '>In-kind Donations</p>
           </div>
         </div>
         {/* Divider */}
         <div className='border-l border-gray-300 '></div>
         <div className='flex flex-col items-center justify-center flex-1'>
-          <h3 className='font-satoshi-bold text-2xl text-primary'> 10 </h3>
+          <h3 className='font-satoshi-bold text-2xl text-primary'> {genericDriveDetails.number_of_unverified} </h3>
           <p className='font-satoshi-medium '>Unverified Donations</p>
         </div>
       </div>
@@ -86,10 +111,13 @@ function AdminDonations() {
           </div>
           {/* Sort by */}
           <div className='flex gap-2'>
-            <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
+            {/* <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
               <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
                 <p className='font-satoshi-medium text-primary block'>Name</p>
-            </button>
+            </button> */}
+            <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/>
+            {/* Order Toggle */}
+            <OrderToggle direction={sortDirection} onToggle={setSortDirection}/>
             {/* Filter */}
             <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
               <Filter className='text-primary'/>
@@ -120,6 +148,7 @@ function AdminDonations() {
           )}
         </div>
     </div>
+    )
   )
 }
 
