@@ -1,0 +1,298 @@
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft } from 'lucide-react';
+import DonationType from '../../../components/AlumniComponents/DonationComponents/donationtype';
+import MonetaryAmountInput from "../../../components/AlumniComponents/DonationComponents/monetaryAmountInput";
+import DonationInstructions from "../../../components/AlumniComponents/DonationComponents/donationInstructions";
+import PaymentProof from "../../../components/AlumniComponents/DonationComponents/paymentProof";
+import DonationOptions from "../../../components/AlumniComponents/DonationComponents/donationOptions";
+import DonationDetailsInput from "../../../components/AlumniComponents/DonationComponents/donationDetailsInput";
+import check from "../../../assets/check.png";
+import axios from "axios";
+import CircularLoading from "../../../components/LoadingComponents/circularloading";
+import Curve from "../../../assets/curve.png";
+import { useParams, useNavigate } from "react-router-dom";
+
+function Donationform() {
+    //const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
+    const id = useParams(); // Get the drive_id from the URL params
+    const drive_id = id.driveid; // Extract the drive_id from the params
+    const formattedDate = new Date().toLocaleDateString();
+    console.log(drive_id)
+    // UseState for checking if the buttons are activated
+    const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
+    const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
+    const [isMonetaryType, setIsMonetaryType] = useState(true);
+    const [isInKindType, setIsInKindType] = useState(false);
+    const [monetaryAmountInput, setMonetaryAmountInput] = useState(0);
+    const fileInputRef = useRef(null);
+    const [fileName, setFileName] = useState('');
+    const [file, setFile] = useState(null);
+    const [isAnonymous, setIsAnonymous] = useState(false);
+    const [donationDetailsInput, setDonationDetailsInput] = useState(null);
+    const [donationSuccess, setDonationSuccess] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [summary, setSummary] = useState({});
+    const [summaryLoading, setSummaryLoading] = useState(true);
+
+    const formatDate = (date) => {
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        return new Date(date).toLocaleDateString(undefined, options);
+    };
+    const handleFileSubmit = (file) => {
+        setFile(file);
+    };
+
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate(`/alumni/donations`);
+    };
+
+    useEffect(() => {
+        if (summary.donation_drive && summary.date && summary.user && summary.status) {
+            setSummaryLoading(false); // Stop loading once summary data is available
+        }
+    }, [summary]);
+
+    // Submitting Monetary Donations
+    const submitMonetaryDonation = async () => {
+        // Ensure that all required fields are not empty
+        if (monetaryAmountInput <= 0 || file == null) {
+            alert("Please enter a valid amount and upload a proof of payment.");
+            return;
+        }
+        setSubmitting(true);
+        const formData = new FormData();
+        const token = localStorage.getItem("token");
+
+        formData.append('monetary_donation', true);
+        formData.append('in_kind_donation', false);
+        formData.append('amount', monetaryAmountInput);
+        formData.append('is_anonymous', isAnonymous);
+
+        if (file != null) {
+            formData.append('proof', file);
+        }
+
+        try {
+            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                setDonationSuccess(true);
+                setSummaryLoading(true); // Start loading for the summary
+                setSummary(response.data); // Set summary after successful donation
+                setIsMonetaryTypeOpen(false);
+                setIsInKindTypeOpen(false);
+                setSubmitting(false);
+            } else {
+                setSubmitting(false);
+            }
+        } catch (error) {
+            console.error("Error submitting donation:", error);
+            setSubmitting(false);
+        }
+    };
+
+    const submitInKindDonation = async () => {
+        // Ensure that all required fields are not empty
+        if (donationDetailsInput == null) {
+            alert("Please enter a donation description.");
+            return;
+        }
+        setSubmitting(true);
+        const formData = new FormData();
+        const token = localStorage.getItem("token");
+
+        formData.append('monetary_donation', false);
+        formData.append('in_kind_donation', true);
+        formData.append('description', donationDetailsInput);
+
+        try {
+            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                setDonationSuccess(true);
+                setSummaryLoading(true); // Start loading for the summary
+                setSummary(response.data); // Set summary after successful donation
+                setIsMonetaryTypeOpen(false);
+                setIsInKindTypeOpen(false);
+                setSubmitting(false);
+            } else {
+                setSubmitting(false);
+            }
+        } catch (error) {
+            console.error("Error submitting donation:", error);
+            setSubmitting(false);
+        }
+    };
+
+    return (
+        <>
+            {!donationSuccess ? (
+                <div className='flex lg:flex-row flex-col md:mx-48 mx-12 my-16 gap-5'>
+                    {/* Make a Donation Part */}
+                    <div className='flex flex-col lg:w-7/12 w-full'>
+                        {/* Back button */}
+                        <button className='text-primary flex gap-5 cursor-pointer'>
+                            <ArrowLeft size={25} />
+                            <span className='font-satoshi-medium text-primary text-xl'>Back</span>
+                        </button>
+
+                        {/* Make a donation title */}
+                        <h1 className='font-satoshi-bold text-black text-4xl pt-10'>Make a donation</h1>
+
+                        {/* Donation Type Picker */}
+                        <h1 className='font-satoshi-bold text-black text-lg pt-10 pb-5'>Donation Type</h1>
+                        {/* Buttons for Donation Types */}
+                        <div className='flex flex-row gap-7 pb-5'>
+                            {/* Monetary Donation Type Button */}
+                            <DonationType donationType={"monetary"}
+                                isInKindTypeOpen={isInKindTypeOpen}
+                                isMonetaryTypeOpen={isMonetaryTypeOpen}
+                                setIsInKindTypeOpen={setIsInKindTypeOpen}
+                                setIsMonetaryTypeOpen={setIsMonetaryTypeOpen}
+                                setIsInKindType={setIsInKindType}
+                                setIsMonetaryType={setIsMonetaryType}
+                            />
+
+                            {/* In-kind Donation Type Button */}
+                            <DonationType donationType={"inKind"}
+                                isInKindTypeOpen={isInKindTypeOpen}
+                                isMonetaryTypeOpen={isMonetaryTypeOpen}
+                                setIsInKindTypeOpen={setIsInKindTypeOpen}
+                                setIsMonetaryTypeOpen={setIsMonetaryTypeOpen}
+                                setIsInKindType={setIsInKindType}
+                                setIsMonetaryType={setIsMonetaryType}
+                            />
+                        </div>
+
+                        {isMonetaryTypeOpen && (
+                            <div className='flex flex-col gap-5'>
+                                <MonetaryAmountInput
+                                    monetaryAmountInput={monetaryAmountInput}
+                                    setMonetaryAmountInput={setMonetaryAmountInput}
+                                />
+                                <DonationInstructions donationType={"monetary"} />
+                                <PaymentProof
+                                    fileInputRef={fileInputRef}
+                                    fileName={fileName}
+                                    setFileName={setFileName}
+                                    onFileSubmit={handleFileSubmit}
+                                />
+                                <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous} />
+
+                                {/* Submit Button */}
+                                {submitting ? (
+                                    <div className="ml-auto">
+                                        <CircularLoading />
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={submitMonetaryDonation}
+                                        className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer"
+                                    >
+                                        Submit
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {isInKindTypeOpen && (
+                            <div className='flex flex-col gap-5'>
+                                <DonationDetailsInput
+                                    donationDetailsInput={donationDetailsInput}
+                                    setDonationDetailsInput={setDonationDetailsInput}
+                                />
+                                <DonationInstructions donationType={"inKind"} />
+
+                                {/* Submit Button */}
+                                {submitting ? (
+                                    <div className="ml-auto">
+                                        <CircularLoading />
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={submitInKindDonation}
+                                        className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer"
+                                    >
+                                        Submit
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    {/* PLACEHOLDER FOR MAR's COMPONENT */}
+                    <div className="outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-1/3 h-full">
+                        SAMPLE
+                    </div>
+                </div>
+            ) : (
+                <div className="flex justify-center items-center w-full h-full my-30">
+                    <div className="flex flex-col md:w-1/2 w-2/3 items-center relative">
+                        <img className="z-0 w-full md:h-full h-24" src={Curve} alt="check" />
+
+                        <div className="flex flex-col md:w-10/12 w-11/12 items-center absolute z-10 top-2/3">
+                            <img className="w-15 h-15 rounded-full" src={check} alt="check" />
+                            <h1 className="font-satoshi-bold text-3xl pt-5 text-center">Donation Submitted</h1>
+                            <p className="font-satoshi-light text-lg pt-5 md:w-2/3 w-full text-center">Your donation will be reflected once it has been reviewed and verified by our admin team.</p>
+
+                            <div className="flex flex-col w-full items-start mx-10">
+                                <h1 className="font-satoshi-bold md:text-xl text-lg pt-5 md:text-left text-center border-b-1 border-neutral-300 w-full pb-3 ">Donation Summary</h1>
+
+                                <div className="flex flex-col w-full pt-5 md:pl-20 space-y-4">
+                                {summaryLoading ? (
+                                    <div className="flex justify-center items-center">
+                                        <CircularLoading />
+                                    </div>
+                                    ) : (
+                                        <>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">Donation Drive</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{summary.donation_drive}</div>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">Date</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{formatDate(summary.date)}</div>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">User</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{summary.user}</div>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">Status</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{summary.status}</div>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{isMonetaryType ? "Amount" : "Description"}</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">
+                                                    {isMonetaryType ? `₱ ${monetaryAmountInput}` : donationDetailsInput}
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center justify-center w-full mb-16">
+                                    <button onClick={handleClick} className="mt-10 rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md md:w-1/4 w-1/3 h-12 md:ml-auto cursor-pointer">
+                                        Done
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}
+
+export default Donationform;

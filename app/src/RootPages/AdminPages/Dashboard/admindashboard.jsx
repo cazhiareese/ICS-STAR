@@ -1,27 +1,40 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Home, FileText, Calendar, Newspaper, BriefcaseBusiness, Heart, LogOut, CircleUserRound, FileUser, ShieldUser, TriangleAlert, HandCoins, MoveRight, Users, Wallet } from "lucide-react";
 import { 
   PieChart, Pie, Cell, Tooltip, Legend, 
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid
 } from "recharts";
+import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios'
+import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
-import SidebarItem from "../../components/AdminComponents/sidebaritem";
 
-function AdminLanding() {
-  // To apply selected on sidebar item
-  const [selected, setSelected] = useState('dashboard')
+function AdminDashboard() {
+  const navigate = useNavigate()
 
-  // Items for the sidebar
-  const sidebarItems = [
-    { id: "dashboard", title: "Dashboard", icon: <Home size={24} /> },
-    { id: "records", title: "Records", icon: <FileText size={24} /> },
-    { id: "events", title: "Events", icon: <Calendar size={24} /> },
-    { id: "newsletter", title: "Newsletter", icon: <Newspaper size={24} /> },
-    { id: "career", title: "Career", icon: <BriefcaseBusiness size={24} /> },
-    { id: "donations", title: "Donations", icon: <Heart size={24} /> },    
-  ];
-  
-  const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4";
+  const [loading, setLoading] = useState(true)
+  const [pendingVerifications, setPendingVerifications] = useState()
+
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const pendingVerificationCount = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
+        console.log(pendingVerificationCount.data.count);
+        setPendingVerifications(pendingVerificationCount.data.count);
+      } catch (error) {
+        console.log(error);
+        // setUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  },[])
+
+  const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
 
   // SAMPLE DATA
 
@@ -32,6 +45,7 @@ function AdminLanding() {
     fundingRequests: 10,
     registeredAlumni: 542,
   }
+
 
   const events = [
     {
@@ -90,29 +104,11 @@ function AdminLanding() {
   ];
 
   return <>
-  <div className="flex flex-row">
-    {/* Sidebar */}
-    <div className="bg-white h-screen flex flex-col gap-3 px-4 pt-20 w-2/12">
-      {/* Sidebar items */}
-      {sidebarItems.map((item) => (
-          <SidebarItem
-            key={item.id}
-            title={item.title}
-            icon={item.icon}
-            isSelected={selected === item.id}
-            onClick={() => setSelected(item.id)}
-          />
-        ))}
-        {/* Log out */}
-      <div className={`flex flex-row p-2 rounded-r-3xl items-center ml-2 mt-16 cursor-pointer`}>
-        <span className="mr-3"><LogOut /></span>
-        <p className="text-lg font-satoshi-medium">Log out</p>
-      </div>
-    </div>
-
+  <div className="">
     {/* Dashboard area */}
-    <div className="bg-[#F3F1F4] flex-1 max-h-screen overflow-auto">
-      <div className=" p-4 flex flex-col max-w-7xl mx-auto">
+    <div className="bg-[rgb(243,241,244)] flex-1 lg:max-h-screen overflow-auto">
+      <div className="p-4 flex flex-col max-w-7xl mx-auto">
+        {/* Welcome admin div */}
         <div className="flex flex-row mb-3 items-center">
           <CircleUserRound size={32}/>
           <p className="ml-2 text-3xl">
@@ -121,62 +117,70 @@ function AdminLanding() {
           </p>
         </div>
         {/* Grid */}
-        <div className="flex-1 grid grid-cols-4 grid-rows-[0.5fr_0.7fr_0.7fr_1.7fr_0.2fr_2fr] gap-4">
+        <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 grid-rows-[5em_7em_7em_14em_28em_1em_29em_19em] lg:grid-rows-[5em_7em_7em_14em_1em_18em] gap-4">
         {/* Dashboard Banner */}
-          <div className="col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
+          <div className="col-start-1 col-span-2 lg:col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
             <p className="text-white font-satoshi-bold text-2xl ml-5"> Dashboard </p>
-            <p className="text-white font-satoshi-light mr-52"> Bridging Alumni across the Cosmos </p>
+            <p className="text-white font-satoshi-light mr-3 lg:mr-52 hidden lg:block"> Bridging Alumni across the Cosmos </p>
           </div> 
         {/* Pending Verifications */}
-          <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-row justify-between`}> 
-            <div className="flex flex-col">
-              <p className="font-satoshi-light text-sm"> Pending Verifications </p>
-              <p className="text-5xl"> {response.pendingVerifications} </p>
-            </div>
-            <div className="">
-              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-                <FileUser className="w-6 h-6 text-white" />
+          <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-col justify-between`}> 
+            {loading ? (
+              <div className="flex items-center justify-center h-full">
+                <SkeletonLoading/>
               </div>
-            </div>
+            ) : (
+            <>
+              <div className="flex flex-row justify-between">
+                <p className="text-5xl"> {pendingVerifications} </p>
+                <div className="">
+                  <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <FileUser className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              </div>
+              <p className="font-satoshi-light text-sm "> Pending Verifications </p>
+            </>
+            )}
           </div> 
         {/* Reported Postings */}
-          <div className={`${dashboardCard} cols-start-2 row-start-2 flex flex-row justify-between`}>
-            <div className="flex flex-col">
-              <p className="font-satoshi-light text-sm"> Reported Postings </p>
+        <div className={`${dashboardCard} col-start-2 row-start-2 flex flex-col justify-between`}> 
+            <div className="flex flex-row justify-between">
               <p className="text-5xl"> {response.reportedPostings} </p>
-            </div>
-            <div className="">
-              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-                <TriangleAlert className="w-6 h-6 text-white" />
+              <div className="">
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <TriangleAlert className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
+              <p className="font-satoshi-light text-sm "> Reported Postings </p>
           </div> 
         {/* Reported Users */}
-          <div className={`${dashboardCard} cols-start-1 row-start-3 flex flex-row justify-between`}>
-            <div className="flex flex-col">
-              <p className="font-satoshi-light text-sm"> Reported Users </p>
+        <div className={`${dashboardCard} col-start-1 row-start-3 flex flex-col justify-between`}> 
+            <div className="flex flex-row justify-between">
               <p className="text-5xl"> {response.reportedUsers} </p>
-            </div>
-            <div className="">
-              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-                <ShieldUser className="w-6 h-6 text-white" />
+              <div className="">
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <ShieldUser className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
+              <p className="font-satoshi-light text-sm "> Reported Users </p>
           </div> 
         {/* Funding Requests */}
-          <div className={`${dashboardCard} cols-start-2 row-start-3 flex flex-row justify-between`}>
-            <div className="flex flex-col">
-              <p className="font-satoshi-light text-sm"> Funding Requests </p>
+        <div className={`${dashboardCard} col-start-2 row-start-3 flex flex-col justify-between`}> 
+            <div className="flex flex-row justify-between">
               <p className="text-5xl"> {response.fundingRequests} </p>
-            </div>
-            <div className="">
-              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-white" />
+              <div className="">
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <Wallet className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
+              <p className="font-satoshi-light text-sm "> Funding Requests </p>
           </div> 
         {/* Upcoming Events */}
-          <div className={`${dashboardCard} col-span-2 row-span-2`}> 
+          <div className={`${dashboardCard} col-start-1 lg:col-start-3 col-span-2 row-start-4 lg:row-start-2 lg:row-span-2`}> 
             <div className="flex flex-row justify-between">
               <p className="font-satoshi-medium text-2xl"> Upcoming Events </p> 
                 <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light">View All Events</p> <MoveRight/></button>
@@ -188,7 +192,6 @@ function AdminLanding() {
                   <div className="bg-secondary text-black font-medium px-4 py-2 rounded-full text-sm whitespace-nowrap min-w-24 flex items-center justify-center">
                     {event.dateLabel}
                   </div>
-
                   {/* Event Details */}
                   <div className="flex flex-col gap-3 flex-1 mt-1">
                     {event.items.map((item, idx) => (
@@ -203,7 +206,7 @@ function AdminLanding() {
             </div>
           </div> 
         {/* Donations Card */}
-          <div className={`${dashboardCard} col-span-4 row-span-1 flex flex-row gap-6`}> 
+          <div className={`${dashboardCard} col-span-2 col-start-1 lg:col-span-4 flex flex-col lg:flex-row gap-6`}> 
           {/* Donations */}
             <div className="flex-1 flex flex-col">
               <div className="flex items-center justify-between mb-2">
@@ -260,10 +263,12 @@ function AdminLanding() {
               </table>
             </div>
           </div> 
-          {/* Alumni part */}
-          <h2 className="col-span-4 text-2xl font-satoshi-medium -mb-4">More about your Alumni</h2>
+        {/* Alumni part */}
+        <div className="row-start-6 col-span-2 lg:row-start-5 lg:col-span-4 text-2xl font-satoshi-medium -mb-4">
+          <h2 className="">More about your Alumni</h2>
+        </div>
         {/* Registered Alumni */}
-          <div className={`${dashboardCard} col-span-2 row-span-2 flex flex-col`}>
+          <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 flex flex-col`}>
             {/* Alumni header */}
             <div className="flex flex-row justify-between">
               {/* Registed Alumni count */}
@@ -278,11 +283,14 @@ function AdminLanding() {
               </div>
               {/* View Alumni Statistics */}
               <div>
-                <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light text-sm">View All Events</p> <MoveRight/></button>      
+                <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => {navigate("/admin/dashboard/alumni-report")}}> 
+                  <p className="font-satoshi-light text-sm">View your Alumni</p> 
+                  <MoveRight/>
+                </button>      
               </div>
             </div>
             {/* Alumni Locations and Industries */}
-            <div className="mt-3 flex flex-row gap-2">
+            <div className="mt-3 flex flex-col lg:flex-row gap-2">
               {/* Alumni Locations */}
               <div className="flex-1">
                 <div className="bg-secondary rounded-2xl px-4 py-1">
@@ -340,13 +348,15 @@ function AdminLanding() {
             </div>
           </div> 
         {/* System Engagement */}
-          <div className={`${dashboardCard} col-span-2 row-span-2 flex flex-col`}> 
+          <div className={`${dashboardCard} col-start-1 row-start-8 lg:row-start-6 lg:col-start-3 col-span-2 flex flex-col`}> 
             <div className="flex flex-row justify-between">
               <div className="flex flex-col">
                 <h2 className="font-satoshi-medium text-2xl"> System Engagement</h2>  
                 <p className="font-satoshi-light text-xs">User visit for the last 30 days</p>
               </div>
-              <button className="flex flex-row gap-4 cursor-pointer mt-2"> <p className="font-satoshi-light text-sm">View User Information Reports</p> <MoveRight/></button>      
+              <button className="flex flex-row gap-4 cursor-pointer mt-2"> 
+                <p className="font-satoshi-light text-sm">View User Information Reports</p> <MoveRight/>
+              </button>      
             </div>
             <div className="flex items-center mt-2">
               <ResponsiveContainer width="90%" height={200}>
@@ -376,4 +386,4 @@ function AdminLanding() {
   </>;
 }
 
-export default AdminLanding;
+export default AdminDashboard;

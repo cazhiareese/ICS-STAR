@@ -37,11 +37,10 @@ uvicorn main:app --reload
 ## Folder Structure & Purpose
 ```sh
 backend/
- ┣ 📂 api/        # (General API logic)
  ┣ 📂 config/     # (Configuration settings, database, and environment variables)
  ┣ 📂 models/     # (Database models using SQLAlchemy)
  ┣ 📂 routers/    # (API route definitions for different modules)
- ┣ 📂 schemas/    # (Schemas for request & response validation)
+ ┣ 📂 schemas/    # (Schemas for request & response validation **USE THIS IN API REQUESTS**)
  ┣ 📂 util/       # (Helper functions like security, JWT handling)
  ┣ 📜 .gitignore  # (Ignored files for version control)
  ┣ 📜 main.py     # (Entry point of the application)

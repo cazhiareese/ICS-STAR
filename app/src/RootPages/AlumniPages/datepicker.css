@@ -1,0 +1,63 @@
+.react-datepicker__year-wrapper {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Creates 4 equal columns */
+    justify-content: center; /* Centers items horizontally */
+    align-items: center; /* Centers items vertically */
+    gap: 12px;
+    padding: 12px;
+    width: 250px;
+    max-width: 300px; /* Adjust width if necessary */
+    margin: 0 auto; /* Centers the entire grid in the parent */
+    text-align: center; /* Ensures text alignment */
+    max-width: 250px; 
+  }
+
+  
+
+.react-datepicker {
+    width: 350px !important; /* Adjust width */
+    max-width: 100%; /* Ensures responsiveness */
+    border-radius: 12px; /* Makes the calendar rounded */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Optional: Adds a subtle shadow */
+    padding: 10px; /* Adds some spacing inside */
+    border: none;
+    z-index: 9999 !important; 
+}
+
+
+
+
+/* Year button styles */
+.react-datepicker__year-text {
+    width: 56px;
+    height: 30px;
+    padding-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1D2939;
+    font-size: 1rem; /* text-lg */
+    font-weight: 500; /* font-medium */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Hover effect */
+.react-datepicker__year-text:hover {
+    background-color: #1D2939 !important;
+    color: white !important;
+}
+
+
+/* Selected year styles */
+.react-datepicker__year-text--selected {
+    background-color: #1D2939 !important;
+    color: white !important;
+}
+
+.react-datepicker__header {
+    background-color: #FFFFFF !important; 
+    color: white !important; /* White text */
+    height: 65px;
+}

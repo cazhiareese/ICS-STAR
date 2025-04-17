@@ -2,21 +2,81 @@ from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel
 from datetime import datetime
+from enum import Enum
+
+# Enums (same as SQLAlchemy models)
+class GenderEnum(str, Enum):
+    M = "M"
+    F = "F"
+
+class UserTypeEnum(str, Enum):
+    admin = "admin"
+    student = "student"
+    alumni = "alumni"
+
+class UserStandingEnum(str, Enum):
+    freshman = "freshman"
+    old_freshman = "old freshman"
+    sophomore = "sophomore"
+    junior = "junior"
+    senior = "senior"
+    graduating = "graduating"
+    
+class UserEmploymentStatus(str, Enum):
+    employed = "employed"
+    self_employed = "self-employed"
+    unemployed = "unemployed"
+    unemployed_no_exp = "unemployed_no_experience"
+    
+class UserGradSemEnum(str, Enum):
+    first_sem = "1st Semester"
+    second_sem = "2nd Semester"
+    midyear = "Midyear"
+    
+class UnemploymentReasonEnum(str, Enum):
+   training = "Undergoing professional training"
+   academics = "Currently pursuing academic studies"
+   seek = "Still seeking work"
+   cannot_start = "Cannot start working at present"
+   other = "Other"
 
 class UserOut(BaseModel):
     user_id: UUID
     first_name: str
     last_name: str
     email: str
-    mobile: Optional[str] = None
-    age: int
-    gender: str
-    city: str
-    state: str
-    country: str
+    mobile_number: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[GenderEnum] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
     marital_status: Optional[str] = None
-    user_type: str
+    image: Optional[str] = None
+    verification_file: Optional[str] = None
+    is_verified: bool
     is_banned: Optional[bool] = None
+    user_type: UserTypeEnum
+    position: Optional[str] = None
+    student_number: Optional[str] = None
+    standing: Optional[UserStandingEnum] = None
+    graduation_year: Optional[int] = None
+    graduation_semester: Optional[str] = None
+    industry: Optional[str] = None
+    employment_status: Optional[str] = None
+    industry: Optional[str] = None
+    job_title: Optional[str] = None
+    work_location: Optional[str] = None
+    work_mode: Optional[str] = None
+    employer_class: Optional[str] = None
+    tenured_status: Optional[str] = None
+    salary_grade: Optional[str] = None
+    facebook: Optional[str] = None
+    linkedin: Optional[str] = None
+    github: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    
 
     class Config:
         from_attributes = True
