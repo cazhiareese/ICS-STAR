@@ -1,5 +1,6 @@
 import React from 'react'
 import { Briefcase, GraduationCap, MapIcon, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function AlumniSearchCard({
     full_name,
@@ -8,10 +9,18 @@ function AlumniSearchCard({
     skills,
     location,
     email,
-    picture
+    picture,
+    user_id
   }) {
+
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/alumni/profile/${user_id}`);
+  };
+
   return (
-    <div className='flex flex-col shadow-lg lg:w-4/12 w-full items-center rounded-2xl py-10 min-w-80'>
+    <div onClick={handleClick} className='flex flex-col shadow-lg lg:w-4/12 w-full items-center rounded-2xl py-10 min-w-80'>
         <img src={picture} alt="Avatar" class="md:w-35 md:h-35 w-32 h-32 rounded-full border-2 border-gray-300 shadow-md"/>
         <h1 className='md:text-2xl text-2xl font-satoshi-bold pt-5'>{full_name}</h1>
         <h2 className='md:text-md text-md font-satoshi-medium pt-2'>{email}</h2>

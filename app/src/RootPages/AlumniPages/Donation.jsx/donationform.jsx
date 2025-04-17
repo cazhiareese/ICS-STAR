@@ -9,7 +9,8 @@ import DonationDetailsInput from "../../../components/AlumniComponents/DonationC
 import check from "../../../assets/check.png";
 import axios from "axios";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
-import { useParams } from "react-router-dom";
+import Curve from "../../../assets/curve.png";
+import { useParams, useNavigate } from "react-router-dom";
 
 function Donationform() {
     //const drive_id = "fe78d9ab-8baa-4872-80fa-94b0ffae0b97" //TODO: To be removed later
@@ -39,6 +40,11 @@ function Donationform() {
     };
     const handleFileSubmit = (file) => {
         setFile(file);
+    };
+
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate(`/alumni/donations`);
     };
 
     useEffect(() => {
@@ -231,45 +237,56 @@ function Donationform() {
                 </div>
             ) : (
                 <div className="flex justify-center items-center w-full h-full my-30">
-                    <div className="flex flex-col w-1/2 items-center">
-                        <img className="w-15 h-15 rounded-full" src={check} alt="check" />
-                        <h1 className="font-satoshi-bold text-3xl pt-5">Donation Submitted</h1>
-                        <p className="font-satoshi-light text-lg pt-5 w-2/3 text-center">Your donation will be reflected once it has been reviewed and verified by our admin team.</p>
+                    <div className="flex flex-col md:w-1/2 w-2/3 items-center relative">
+                        <img className="z-0 w-full md:h-full h-24" src={Curve} alt="check" />
 
-                        <div className="flex flex-col w-full items-start mx-10">
-                            <h1 className="font-satoshi-bold text-xl pt-5 text-left border-b-1 border-neutral-300 w-full pb-3">Donation Summary</h1>
+                        <div className="flex flex-col md:w-10/12 w-11/12 items-center absolute z-10 top-2/3">
+                            <img className="w-15 h-15 rounded-full" src={check} alt="check" />
+                            <h1 className="font-satoshi-bold text-3xl pt-5 text-center">Donation Submitted</h1>
+                            <p className="font-satoshi-light text-lg pt-5 md:w-2/3 w-full text-center">Your donation will be reflected once it has been reviewed and verified by our admin team.</p>
 
-                            <div className="flex flex-row w-full pt-5 items-center pl-20">
-                                <div className="w-1/2">
-                                    <ol className="font-satoshi-regular space-y-4">
-                                        <li>Donation Drive</li>
-                                        <li>Date</li>
-                                        <li>User</li>
-                                        <li>Status</li>
-                                        <li>{isMonetaryType ? "Amount" : "Description"}</li>
-                                    </ol>
-                                </div>
+                            <div className="flex flex-col w-full items-start mx-10">
+                                <h1 className="font-satoshi-bold md:text-xl text-lg pt-5 md:text-left text-center border-b-1 border-neutral-300 w-full pb-3 ">Donation Summary</h1>
 
-                                <div className="w-1/2">
-                                    {!summaryLoading ? (
-                                        <ol className="font-satoshi-regular space-y-4">
-                                            <li>{summary.donation_drive}</li>
-                                            <li>{formatDate(summary.date)}</li>
-                                            <li>{summary.user}</li>
-                                            <li>{summary.status}</li>
-                                            <li>{isMonetaryType ? `₱ ${monetaryAmountInput}` : donationDetailsInput}</li>
-                                        </ol>
+                                <div className="flex flex-col w-full pt-5 md:pl-20 space-y-4">
+                                {summaryLoading ? (
+                                    <div className="flex justify-center items-center">
+                                        <CircularLoading />
+                                    </div>
                                     ) : (
-                                        <div className="flex justify-center items-center">
-                                            <CircularLoading />
-                                        </div>
+                                        <>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">Donation Drive</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{summary.donation_drive}</div>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">Date</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{formatDate(summary.date)}</div>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">User</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{summary.user}</div>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">Status</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{summary.status}</div>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">{isMonetaryType ? "Amount" : "Description"}</div>
+                                                <div className="w-1/2 font-satoshi-regular md:text-md text-sm">
+                                                    {isMonetaryType ? `₱ ${monetaryAmountInput}` : donationDetailsInput}
+                                                </div>
+                                            </div>
+                                        </>
                                     )}
                                 </div>
-                            </div>
 
-                            <button className="mt-10 rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/4 h-12 ml-auto cursor-pointer">
-                                Done
-                            </button>
+                                <div className="flex items-center justify-center w-full mb-16">
+                                    <button onClick={handleClick} className="mt-10 rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md md:w-1/4 w-1/3 h-12 md:ml-auto cursor-pointer">
+                                        Done
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
