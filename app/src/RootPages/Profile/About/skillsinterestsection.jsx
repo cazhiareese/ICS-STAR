@@ -9,9 +9,11 @@ const SkillsInterestsSection = ({
   skills,
   removeSkill,
   addSkills,
-  isLoading, 
+  isLoading,
+  isVerified, 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log(isVerified);
 
   return (
     <div className="w-full max-w-[1100px] mt-6">

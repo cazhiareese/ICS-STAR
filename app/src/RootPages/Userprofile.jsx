@@ -202,6 +202,7 @@ function UserProfile() {
             removeSkill={removeSkill}
             addSkills={addSkills}
             isLoading={isLoading}
+            isVerified={userDetails?.is_verified}
           />
           <AffiliationsSection
             editMode={editMode}
