@@ -15,14 +15,12 @@ const AffiliationsSection = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="w-full max-w-[1100px] mt-6">
-<SectionHeader
-  title="AFFILIATIONS"
-  {...(isVerified && {
-    buttonText: "Add affiliations",
-    onButtonClick: () => setIsModalOpen(true),
-  })}
-/>
+    <div className="w-full max-w-[1100px] mt-10">
+      <SectionHeader
+        title="AFFILIATIONS"
+        buttonText="Add affiliations"
+        onButtonClick={() => setIsModalOpen(true)}
+      />
 
 
       <div className="flex justify-between items-center mt-4">
