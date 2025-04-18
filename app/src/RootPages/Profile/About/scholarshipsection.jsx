@@ -20,6 +20,7 @@ const ScholarshipsSection = ({
         title="SCHOLARSHIPS"
         buttonText="Add scholarships"
         onButtonClick={() => setIsModalOpen(true)}
+        isVerified={isVerified}
       />
 
 

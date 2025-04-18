@@ -20,6 +20,7 @@ const AffiliationsSection = ({
         title="AFFILIATIONS"
         buttonText="Add affiliations"
         onButtonClick={() => setIsModalOpen(true)}
+        isVerified={isVerified}
       />
 
 

@@ -22,6 +22,7 @@ const SkillsInterestsSection = ({
         title="SKILLS AND INTERESTS"
         buttonText="Add skills/interests"
         onButtonClick={() => setIsModalOpen(true)}
+        isVerified={isVerified} 
       />
 
         {isVerified && (
