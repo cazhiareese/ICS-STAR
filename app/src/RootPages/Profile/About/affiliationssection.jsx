@@ -26,6 +26,9 @@ const AffiliationsSection = ({
 
 
       <div className="flex justify-between items-center mt-4">
+        {isVerified && (
+
+        <>
         {isLoading ? (
           <div className="w-full flex justify-center mt-4">
             <CircularLoading />
@@ -60,7 +63,7 @@ const AffiliationsSection = ({
               </div>
             ))}
           </div>
-        )}
+        )}</>)}
       </div>
 
       {/* Add Affiliations Modal */}
