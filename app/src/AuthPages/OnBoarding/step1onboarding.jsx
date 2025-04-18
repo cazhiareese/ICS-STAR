@@ -3,6 +3,7 @@ import "../../index.css";
 import {User}  from 'lucide-react'
 import Camera from "../../assets/onBoardingAssets/camera.png";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
+import Unathorized from "../Unauthorized";
 function Step1Onboarding() {
   const canvasRef = useRef(null);
   const [file, setFile] = useState(null);

@@ -4,12 +4,11 @@ import Constellation from "../../assets/SignupAssets/constellationMain.png"
 import { OnboardingProvider, useOnboardingContext } from "../AuthContext/onboardingcontext";
 import { useNavigate } from 'react-router-dom';
 
+
+
 function FinalOnboarding() {
     const {userType, } = useOnboardingContext();
     const navigate = useNavigate();
-
-
-
 
     return (
     <>

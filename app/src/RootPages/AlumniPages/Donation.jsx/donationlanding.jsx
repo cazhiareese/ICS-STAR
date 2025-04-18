@@ -123,7 +123,7 @@ function DonationLanding() {
         {/* Right column: Announcements */}
         <div className="order-1 lg:order-2 lg:basis-[900px] px-4 rounded-xl text-center h-fit pb-10 ">
           {generalDrive ? (
-            <div className="-mt-20">
+            <div className="-mt-5">
 
             <DonationInfo generalDrive={generalDrive}/>
             </div>

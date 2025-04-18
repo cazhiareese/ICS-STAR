@@ -18,8 +18,8 @@ import {
   addScholarship as apiAddScholarship,
   removeScholarship as apiRemoveScholarship,
   fetchPublicProfileById as apiFetchPublicProfile
-} from "./Profile/UserProfileAPI/userProfileApi"; 
-import { useParams } from "react-router-dom";
+} from "./Profile/UserProfileAPI/userProfileApi";
+
 import OtherProfileSection from "./Profile/otherprofilesection";
 import OtherSkillsInterestsSection from "./Profile/About/othersskillsandinterestsection";
 import OtherAffiliationsSection from "./Profile/About/otheraffiliationsection";

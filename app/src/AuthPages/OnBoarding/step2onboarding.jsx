@@ -3,6 +3,7 @@ import "../../index.css";
 import peersIcon from "../../assets/onBoardingAssets/peersIcon.png";
 import { CirclePlus } from "lucide-react";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
+import Unathorized from "../Unauthorized";
 
 function Step2Onboarding() {
     const [scholarships, setScholarships] = useState(false);
