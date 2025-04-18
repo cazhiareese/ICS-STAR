@@ -686,3 +686,44 @@ def get_total_donors_for_drive(db: Session, drive_id: UUID):
     ).scalar()
 
     return total_donors
+
+def get_top_and_other_donor_batches_monetary_amount(db: Session, drive_id: UUID):
+    # Query for total amounts per batch, grouped by batch (first 4 digits of student_number)
+    batch_counts = db.query(
+        func.substr(User.student_number, 1, 4).label("batch"),
+        func.sum(MonetaryDonation.amount).label("total_amount")
+    ).join(
+        User, MonetaryDonation.user_id == User.user_id
+    ).filter(
+        MonetaryDonation.drive_id == drive_id
+    ).group_by(
+        func.substr(User.student_number, 1, 4)
+    ).order_by(
+        func.sum(MonetaryDonation.amount).desc()
+    ).all()
+
+    # Total amount across all batches
+    total_amount = db.query(
+        func.sum(MonetaryDonation.amount)
+    ).filter(
+        MonetaryDonation.drive_id == drive_id
+    ).scalar()
+
+    # Calculate percentage of total amount for each batch
+    batches_with_percentage = [
+        {
+            "batch": row.batch,
+            "total_amount": row.total_amount or 0,  # Ensure no null value for amount
+            "percentage_amount": (row.total_amount / total_amount) * 100 if total_amount > 0 else 0
+        }
+        for row in batch_counts
+    ]
+
+    # Slice into top 3 and the rest
+    top_3 = batches_with_percentage[:3]
+    others = batches_with_percentage[3:]
+
+    return {
+        "top_3": top_3,
+        "others": others
+    }
