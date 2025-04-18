@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
 
-function SectionHeader({ title, buttonText, onButtonClick, onToggleChange }) {
+function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVerified }) {
   const [selectedDonationType, setSelectedDonationType] = useState("Monetary");
 
   useEffect(() => {
-    // Return selected donation type when component mounts or changes
     if (title === "DONATIONS" && onToggleChange) {
       onToggleChange(selectedDonationType);
     }
@@ -26,7 +25,6 @@ function SectionHeader({ title, buttonText, onButtonClick, onToggleChange }) {
           {title}
         </h2>
 
-        {/* If Donations, show toggle instead of regular button */}
         {title === "DONATIONS" ? (
           <div className="flex gap-2 bg-gray-200 rounded-full p-1">
             {["Monetary", "In-Kind"].map((type) => (
@@ -46,10 +44,18 @@ function SectionHeader({ title, buttonText, onButtonClick, onToggleChange }) {
         ) : (
           onButtonClick && (
             <button
-              className="flex items-center gap-2 px-1 py-1 sm:px-3 sm:py-1.8 bg-primary text-white rounded-full text-[14px] font-medium hover:bg-hover transition"
-              onClick={onButtonClick}
+              onClick={isVerified ? onButtonClick : undefined}
+              disabled={!isVerified}
+              className={`flex items-center gap-2 px-1 py-1 sm:px-3 sm:py-1.8 rounded-full text-[14px] font-medium transition
+                ${isVerified
+                  ? "bg-primary text-white hover:bg-hover"
+                  : "bg-bg-disabled text-neutral-c cursor-not-allowed"}
+              `}
             >
-              <PlusCircle size={20} />
+              <PlusCircle
+                size={20}
+                className={`${isVerified ? "text-white" : "text-neutral-c"}`}
+              />
               <span className="hidden sm:inline">{buttonText}</span>
             </button>
           )
