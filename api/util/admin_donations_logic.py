@@ -1,6 +1,6 @@
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import func, or_, union_all
+from sqlalchemy import String, func, or_, union_all
 from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
@@ -759,3 +759,44 @@ def get_donation_totals_with_percentages(db: Session, drive_id: UUID):
         "percentage_inkind": percentage_inkind,
         "overall_total_donations": overall_total_donations
     }
+
+def get_weekly_donation_amounts(db: Session, drive_id: UUID):
+    # Get the range of donation dates
+    min_date, max_date = db.query(
+        func.min(MonetaryDonation.date_donated),
+        func.max(MonetaryDonation.date_donated)
+    ).filter(MonetaryDonation.drive_id == drive_id).first()
+
+    if not min_date or not max_date:
+        return []
+
+    # Align start date to Monday
+    start_week = min_date - datetime.timedelta(days=min_date.weekday())
+    end_week = max_date - datetime.timedelta(days=max_date.weekday())
+
+    # Fetch donation totals grouped by week
+    week_start = func.date_trunc('week', MonetaryDonation.date_donated).label("week_start")
+    donations = db.query(
+        week_start,
+        func.sum(MonetaryDonation.amount).label("total_amount")
+    ).filter(
+        MonetaryDonation.drive_id == drive_id
+    ).group_by(week_start).order_by(week_start).all()
+
+    # Map donations by week for lookup
+    donation_map = {
+        week_start.date(): total_amount for week_start, total_amount in donations
+    }
+
+    # Build weekly output from start to end week
+    result = []
+    current = start_week
+    while current <= end_week:
+        amount = donation_map.get(current.date(), 0)
+        result.append({
+            "week": current.strftime("%m/%d"),
+            "amount_in_thousands": round(amount / 1000, 2) if amount else 0
+        })
+        current += datetime.timedelta(weeks=1)
+
+    return result

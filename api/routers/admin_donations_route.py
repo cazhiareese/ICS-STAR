@@ -33,7 +33,8 @@ from util.admin_donations_logic import (search_donation_drives,
                                         get_donor_counts_by_batch_for_drive,
                                         get_total_donors_for_drive,
                                         get_top_and_other_donor_batches_monetary_amount,
-                                        get_donation_totals_with_percentages
+                                        get_donation_totals_with_percentages,
+                                        get_weekly_donation_amounts
                                         )
 import datetime
 from uuid import UUID
@@ -292,3 +293,6 @@ def donation_totals_with_percentages(
 
     return results
     
+@router.get("/donations/{drive_id}/weekly-amounts", tags=["Donations"])
+def weekly_monetary_donations(drive_id: UUID, db: Session = Depends(get_db)):
+    return get_weekly_donation_amounts(db, drive_id)
