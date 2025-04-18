@@ -29,7 +29,9 @@ from util.admin_donations_logic import (search_donation_drives,
                                         verify_monetary_donation,
                                         close_donation_drive,
                                         update_generic_drive_stats,
-                                        view_generic_drive
+                                        view_generic_drive,
+                                        get_donor_counts_by_batch_for_drive,
+                                        get_total_donors_for_drive
                                         )
 import datetime
 from uuid import UUID
@@ -232,4 +234,18 @@ def close_drive(
     if not results:
         raise HTTPException(status_code=404, detail="Drive not found")
 
+    return results
+
+# Get the donor counts per batch for a specific drive
+@router.get("/admin/donations/drive-donor-counts", tags=["Donations"])
+def donor_counts(
+    drive_id: UUID = None,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_donor_counts_by_batch_for_drive(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No donor counts found")
+    
     return results

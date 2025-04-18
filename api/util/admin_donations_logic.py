@@ -1,6 +1,7 @@
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, union_all
+from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, AdminOverviewDonationDrive, MonetaryDonationOut, InKindDonationOut, GenericDriveOut, ShortenedMonetaryDonationsOut, ShortenedInKindDonationsOut, AdminGenericDriveView
@@ -615,3 +616,54 @@ def close_donation_drive(db: Session, drive_id: UUID) -> dict:
         "is_closed": drive.is_closed,
         "created_at": drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None, 
     }
+
+
+# Get the donor counts per batch per donation drive
+def get_donor_counts_by_batch_for_drive(db: Session, drive_id: UUID):
+    monetary_q = db.query(
+        MonetaryDonation.drive_id.label("drive_id"),
+        MonetaryDonation.user_id.label("user_id")
+    ).filter(MonetaryDonation.drive_id == drive_id)
+
+    in_kind_q = db.query(
+        InKindDonation.drive_id.label("drive_id"),
+        InKindDonation.user_id.label("user_id")
+    ).filter(InKindDonation.drive_id == drive_id)
+
+    combined_subq = union_all(monetary_q, in_kind_q).subquery()
+
+    batch_counts = db.query(
+        func.substr(User.student_number, 1, 4).label("batch"),
+        func.count(distinct(combined_subq.c.user_id)).label("total_donors")
+    ).join(
+        User, combined_subq.c.user_id == User.user_id
+    ).group_by(
+        func.substr(User.student_number, 1, 4)
+    ).order_by(
+        func.count(distinct(combined_subq.c.user_id)).desc()
+    ).all()
+
+
+    total_donors = db.query(
+        func.count(distinct(combined_subq.c.user_id))
+    ).scalar()
+
+    # Calculate percentage for each batch
+    batches_with_percentage = [
+        {
+            "batch": row.batch,
+            "total_donors": row.total_donors,
+            "percentage": (row.total_donors / total_donors) * 100 if total_donors > 0 else 0
+        }
+        for row in batch_counts
+    ]
+
+    # Slice into top 3 and the rest
+    top_3 = batches_with_percentage[:3]
+    others = batches_with_percentage[3:]
+
+    return {
+        "top_3": top_3,
+        "others": others
+    }
+    
