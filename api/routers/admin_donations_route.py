@@ -32,7 +32,8 @@ from util.admin_donations_logic import (search_donation_drives,
                                         view_generic_drive,
                                         get_donor_counts_by_batch_for_drive,
                                         get_total_donors_for_drive,
-                                        get_top_and_other_donor_batches_monetary_amount
+                                        get_top_and_other_donor_batches_monetary_amount,
+                                        get_donation_totals_with_percentages
                                         )
 import datetime
 from uuid import UUID
@@ -278,3 +279,16 @@ def donor_batch_breakdown_with_amount_only(
         raise HTTPException(status_code=404, detail="No donor batches found")
 
     return results    
+
+@router.get("/admin/donations/donation-totals", tags=["Donations"])
+def donation_totals_with_percentages(
+    drive_id: UUID, 
+    db: Session = Depends(get_db)
+):
+    results = get_donation_totals_with_percentages(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No donation totals found")
+
+    return results
+    

@@ -727,3 +727,35 @@ def get_top_and_other_donor_batches_monetary_amount(db: Session, drive_id: UUID)
         "top_3": top_3,
         "others": others
     }
+
+def get_donation_totals_with_percentages(db: Session, drive_id: UUID):
+    # Query for the total number of monetary donations
+    total_monetary_donations = db.query(
+        func.count(MonetaryDonation.donation_id)
+    ).filter(
+        MonetaryDonation.drive_id == drive_id
+    ).scalar()
+
+    # Query for the total number of in-kind donations
+    total_inkind_donations = db.query(
+        func.count(InKindDonation.donation_id)
+    ).filter(
+        InKindDonation.drive_id == drive_id
+    ).scalar()
+
+    # Calculate the overall total donations (monetary + in-kind)
+    overall_total_donations = total_monetary_donations + total_inkind_donations
+
+    # Calculate the percentage of monetary donations
+    percentage_monetary = (total_monetary_donations / overall_total_donations) * 100 if overall_total_donations > 0 else 0
+
+    # Calculate the percentage of in-kind donations
+    percentage_inkind = (total_inkind_donations / overall_total_donations) * 100 if overall_total_donations > 0 else 0
+
+    return {
+        "total_monetary_donations": total_monetary_donations,
+        "total_inkind_donations": total_inkind_donations,
+        "percentage_monetary": percentage_monetary,
+        "percentage_inkind": percentage_inkind,
+        "overall_total_donations": overall_total_donations
+    }
