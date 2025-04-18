@@ -26,7 +26,8 @@ const SkillsInterestsSection = ({
         })}
       />
 
-
+        {isVerified && (
+          <>
       {/* Loading State */}
       {isLoading ? (
         <div className="w-full flex justify-center mt-4">
@@ -63,6 +64,7 @@ const SkillsInterestsSection = ({
           ))}
         </div>
       )}
+      </>)}
 
       {/* Add Skills Modal */}
       <AddSkillsModal
