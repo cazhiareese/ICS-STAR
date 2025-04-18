@@ -281,6 +281,7 @@ def donor_batch_breakdown_with_amount_only(
 
     return results    
 
+# Get the total donations of a drive
 @router.get("/admin/donations/donation-totals", tags=["Donations"])
 def donation_totals_with_percentages(
     drive_id: UUID, 
@@ -292,7 +293,16 @@ def donation_totals_with_percentages(
         raise HTTPException(status_code=404, detail="No donation totals found")
 
     return results
+
+# Get the weekly monetary donations for a specific drive
+@router.get("/admin/donations/weekly-amounts", tags=["Donations"])
+def weekly_monetary_donations(
+    drive_id: UUID, 
+    db: Session = Depends(get_db)
+):
+    results = get_weekly_donation_amounts(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No weekly amounts found")
     
-@router.get("/donations/{drive_id}/weekly-amounts", tags=["Donations"])
-def weekly_monetary_donations(drive_id: UUID, db: Session = Depends(get_db)):
-    return get_weekly_donation_amounts(db, drive_id)
+    return results
