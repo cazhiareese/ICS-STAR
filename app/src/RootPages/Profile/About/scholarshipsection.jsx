@@ -28,6 +28,8 @@ const ScholarshipsSection = ({
       <div className="flex justify-between items-center mt-4">
         {/* Scholarship List */}
         <div className="w-full">
+          {isVerified && (
+          <>
           {isLoading ? (
             <div className="flex justify-center mt-4">
               <CircularLoading />
@@ -61,7 +63,7 @@ const ScholarshipsSection = ({
                 <div className="w-full border-b border-disabled"></div>
               </div>
             ))
-          )}
+          )}</>)}
         </div>
       </div>
 
