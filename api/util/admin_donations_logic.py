@@ -667,3 +667,22 @@ def get_donor_counts_by_batch_for_drive(db: Session, drive_id: UUID):
         "others": others
     }
     
+# Get the total number of donors for a specific donation drive
+def get_total_donors_for_drive(db: Session, drive_id: UUID):
+    monetary_q = db.query(
+        MonetaryDonation.drive_id.label("drive_id"),
+        MonetaryDonation.user_id.label("user_id")
+    ).filter(MonetaryDonation.drive_id == drive_id)
+
+    in_kind_q = db.query(
+        InKindDonation.drive_id.label("drive_id"),
+        InKindDonation.user_id.label("user_id")
+    ).filter(InKindDonation.drive_id == drive_id)
+
+    combined_subq = union_all(monetary_q, in_kind_q).subquery()
+
+    total_donors = db.query(
+        func.count(distinct(combined_subq.c.user_id)).label("total_donors")
+    ).scalar()
+
+    return total_donors

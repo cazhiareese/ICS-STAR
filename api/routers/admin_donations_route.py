@@ -249,3 +249,17 @@ def donor_counts(
         raise HTTPException(status_code=404, detail="No donor counts found")
     
     return results
+
+# Get the total number of donors for a specific drive
+@router.get("/admin/donations/drive-total-donors", tags=["Donations"])
+def total_donors(
+    drive_id: UUID = None,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_total_donors_for_drive(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No donor counts found")
+    
+    return results
