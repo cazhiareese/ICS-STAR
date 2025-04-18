@@ -210,6 +210,7 @@ function UserProfile() {
             removeAffiliation={removeAffiliation}
             addAffiliation={addAffiliation}
             isLoading={isLoading}
+            isVerified={userDetails?.is_verified}
           />
           <ScholarshipsSection
             editMode={editMode}
