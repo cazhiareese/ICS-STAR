@@ -45,7 +45,7 @@ import AdminPendingDonations from "./RootPages/AdminPages/Donations/adminpending
 
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
-import OtherUserProfileWrapper from "./RootPages/OtherUserProfileWrapper";
+import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
 const isSignedIn = !!localStorage.getItem("token");
 
@@ -154,6 +154,7 @@ function App() {
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
               <Route path="help-ics/" element={<AdminHelpIcs/>}/>
               <Route path="pending-donations/:driveid" element={<AdminPendingDonations/>}/>
+              <Route path="donation-drive-demographics/:driveid" element={<AdminDonationDriveDemographics/>} />
             </Route>
           </Route>
         </>

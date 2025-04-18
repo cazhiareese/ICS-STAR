@@ -10,7 +10,8 @@ const AlumniCareerFilter = ({
   setCareerInput,
   careerList,
   setCareerList,
-  setIsIndustryExpanded
+  setIsIndustryExpanded,
+  setIsSeeAllCareerOpen
 }) => {
     const [jobs, setJobs] = useState([]); 
     // cache reference
@@ -144,7 +145,7 @@ const AlumniCareerFilter = ({
 
         <div className="flex flex-row px-12 pb-3 pt-5">
           <h1 className="flex-1 text-gray-400">Suggestions</h1>
-          <button>
+          <button onClick={() => setIsSeeAllCareerOpen(true)}>
             <h1 className="underline text-primary">See all</h1>
           </button>
         </div>

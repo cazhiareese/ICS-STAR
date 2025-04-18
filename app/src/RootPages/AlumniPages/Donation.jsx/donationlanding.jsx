@@ -9,7 +9,7 @@ function DonationLanding() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [generalDrive, setGeneralDrive] = useState(null);
-  console.log(generalDrive);
+  // console.log(generalDrive);
 
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;

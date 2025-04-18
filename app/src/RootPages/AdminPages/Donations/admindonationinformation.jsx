@@ -26,38 +26,46 @@ function AdminDonationInformation() {
   const [donation, setDonation] = useState()
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
+  async function handleCloseDrive() {
+    const closeDriveResponse = await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`)
+    console.log(closeDriveResponse)
+  }
 
-      try {
-        const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`)
-        console.log(donationResponse.data)   
-        setDonation(donationResponse.data)
-  
-        // Set pending donations first before checking its length
-        const pendingList = donationResponse.data.pending_list
-        setPendingDonations(pendingList)
-        setNoPendingDonations(Object.keys(pendingList).length === 0)
+  const fetchData = async () => {
+    setLoading(true)
 
-        const verifiedList = donationResponse.data.verified_list
-        // console.log(verifiedList)
-        setVerifiedDonations(verifiedList)
-  
-        const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
-        console.log(percentResponse.data)
-  
-        setProgressData([
-          { name: "progress", value: percentResponse.data.percent_funded },
-          { name: "remaining", value: percentResponse.data.remaining_percent }
-        ])
+    try {
+      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`)
+      console.log(donationResponse.data)   
+      setDonation(donationResponse.data)
 
-      } catch (error) {
-        console.error("Failed to fetch donation data", error)
-      } finally {
-        setLoading(false)
-      }
+      // Set pending donations first before checking its length
+      const pendingList = donationResponse.data.pending_list
+      setPendingDonations(pendingList)
+      setNoPendingDonations(Object.keys(pendingList).length === 0)
+
+      const verifiedList = donationResponse.data.verified_list
+      // console.log(verifiedList)
+      setVerifiedDonations(verifiedList)
+
+      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
+      console.log(percentResponse.data)
+
+      const driveStatus = donationResponse.data.is_closed
+      setIsClosed(driveStatus)
+
+      setProgressData([
+        { name: "progress", value: percentResponse.data.percent_funded },
+        { name: "remaining", value: percentResponse.data.remaining_percent }
+      ])
+
+    } catch (error) {
+      console.error("Failed to fetch donation data", error)
+    } finally {
+      setLoading(false)
     }
+  }
+  useEffect(() => {
   
     fetchData()
   }, [])
@@ -94,21 +102,27 @@ function AdminDonationInformation() {
                 </div>
                 {/* Generate Report or close drive */}
                 <div className='h-full gap-5 flex flex-row'>
-                  {/* View Details */}
-                  <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
-                    <p className='font-satoshi-light'>View Details</p>
-                  </button>
                   {isClosed ? (
+                    // For closed
                     <>
+                      {/* View Details */}
+                      <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
+                        <p className='font-satoshi-light'>View Details</p>
+                      </button>
                       {/* Export Donor List */}
                       <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'>
                         <p className='font-satoshi-light'>Export Donor List</p>
                       </button>
                     </>          
                   ) : (
+                    // For open
                     <>
+                      {/* View Statistics */}
+                      <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {navigate(`/admin/donations/donation-drive-demographics/${driveid}`)}}>
+                        <p className='font-satoshi-light'>View Statistics</p>
+                      </button>
                       {/* Close Drive */}
-                      <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {setCloseDonation(true)}}>
+                      <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {handleCloseDrive()}}>
                         <p className='font-satoshi-light'>Close Drive</p>
                       </button>
                     </>
@@ -170,7 +184,10 @@ function AdminDonationInformation() {
                 {noPendingDonations ? (
                   <></>
                 ) : (
-                  <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {navigate(`/admin/donations/pending-donations/${driveid}`)}}>
+                  <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {
+                    navigate(`/admin/donations/pending-donations/${driveid}`, 
+                    {state: {pendingDonations, driveName: donation.title}})
+                    }}>
                     <p className='font-satoshi-light'> View all pending verifications </p>
                     <MoveRight/>
                   </button>
@@ -200,17 +217,21 @@ function AdminDonationInformation() {
                         </button>
                       </div>
                       {/* Image */}
-                      <div className='bg-primary h-1/3 w-full rounded-xl'>
-
-                      </div> 
+                      <div className="bg-primary h-1/3 w-full rounded-xl overflow-hidden">
+                        <img
+                          src={donation.image}
+                          alt="Donation image"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                       <div className='mb-5 flex flex-col w-full'>
-                        <h1 className='font-satoshi-bold text-2xl'>Donation title</h1>
-                        <p className='font-satoshi-light '>Date Started: 01/01/25</p>
+                        <h1 className='font-satoshi-bold text-2xl'>{donation.title}</h1>
+                        <p className='font-satoshi-light '>Date Started: {donation.created_at}</p>
                       </div>
                       <div className='flex flex-col w-full'>
                         <h2 className='font-satoshi-light text-sm'>Description</h2>
                         <p className='font-satoshi-regular text-sm'>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis velit at ligula tristique, ac aliquet lorem vehicula. Sed facilisis, ante sed consequat dictum, ante est tempor magna, vel condimentum justo ipsum non tortor. Morbi pharetra sapien at est tincidunt, et auctor lectus auctor. Duis ac erat non tortor efficitur malesuada.
+                          {donation.description}
                         </p>
                       </div>
 
@@ -219,16 +240,18 @@ function AdminDonationInformation() {
                         <h2>Relevant Links</h2>
                         <div className='border border-t-gray-300'></div>
                         {/* Iterate over links */}
-                        <div className="ml-6 flex gap-2 overflow-auto">
-                          <Link/>
-                          <a
-                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs0gcJCX4JAYcqIYzv"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className='text-primary text-sm'
-                          >
-                            https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs0gcJCX4JAYcqIYzv
-                          </a>
+                        <div className="ml-6 flex gap-2 overflow-auto flex-col">
+                          {donation.relevant_links?.map((link, index) => (
+                            <a
+                              key={index}
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className='text-primary text-sm break-all'
+                            >
+                              {link}
+                            </a>
+                          ))}
                         </div>
                       </div>
 
@@ -281,7 +304,7 @@ function AdminDonationInformation() {
                             </button>
                             <button
                               className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
-                              onClick={() => {}} //TODO: Add close donation drive
+                              onClick={() => {handleCloseDrive()}}
                             >
                               Confirm
                             </button>

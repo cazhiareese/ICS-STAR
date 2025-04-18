@@ -21,10 +21,10 @@ export const fetchProfile = async () => {
 };
 
 //Fetch other's profile data
-export const fetchPublicProfileById = async (userId) => {
+export const fetchPublicProfileById = async ({userId}) => {
   const token = localStorage.getItem("token");
-
-  const response = await fetch(`${API_BASE_URL}/public/profile/${userId}`, {
+  console.log(`${API_BASE_URL}/profile/${userId}`);
+  const response = await fetch(`${API_BASE_URL}/profile/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`, // Include auth token if required
       "Content-Type": "application/json",
