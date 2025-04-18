@@ -20,9 +20,12 @@ const SkillsInterestsSection = ({
       {/* Section Header with Button */}
       <SectionHeader
         title="SKILLS AND INTERESTS"
-        buttonText="Add skills/interests"
-        onButtonClick={() => setIsModalOpen(true)}
+        {...(isVerified && {
+          buttonText: "Add skills/interests",
+          onButtonClick: () => setIsModalOpen(true),
+        })}
       />
+
 
       {/* Loading State */}
       {isLoading ? (
