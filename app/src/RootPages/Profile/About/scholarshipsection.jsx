@@ -16,13 +16,11 @@ const ScholarshipsSection = ({
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
-<SectionHeader
-  title="SCHOLARSHIPS"
-  {...(isVerified && {
-    buttonText: "Add scholarships",
-    onButtonClick: () => setIsModalOpen(true),
-  })}
-/>
+      <SectionHeader
+        title="SCHOLARSHIPS"
+        buttonText="Add scholarships"
+        onButtonClick={() => setIsModalOpen(true)}
+      />
 
 
       <div className="flex justify-between items-center mt-4">
