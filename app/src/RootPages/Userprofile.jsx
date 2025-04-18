@@ -218,6 +218,7 @@ function UserProfile() {
             removeScholarship={removeScholarship}
             addScholarship={addScholarship}
             isLoading={isLoading}
+            isVerified={userDetails?.is_verified}
           />
         </>
       )}
