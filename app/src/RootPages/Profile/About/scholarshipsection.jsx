@@ -10,16 +10,20 @@ const ScholarshipsSection = ({
   removeScholarship,
   addScholarship,
   isLoading, // <-- added this prop
+  isVerified, // <-- added this prop
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
-      <SectionHeader
-        title="SCHOLARSHIPS"
-        buttonText="Add scholarships"
-        onButtonClick={() => setIsModalOpen(true)}
-      />
+<SectionHeader
+  title="SCHOLARSHIPS"
+  {...(isVerified && {
+    buttonText: "Add scholarships",
+    onButtonClick: () => setIsModalOpen(true),
+  })}
+/>
+
 
       <div className="flex justify-between items-center mt-4">
         {/* Scholarship List */}
