@@ -3,6 +3,7 @@ import "../../index.css";
 import {User}  from 'lucide-react'
 import Camera from "../../assets/onBoardingAssets/camera.png";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
+import Unathorized from "../Unauthorized";
 function Step1Onboarding() {
   const canvasRef = useRef(null);
   const [file, setFile] = useState(null);
@@ -161,7 +162,6 @@ function Step1Onboarding() {
               alert("Profile Submission Successful!");
               setCurrentSection(2)
           } else {
-              console.log("SFDSDF")
               alert(data.message || JSON.stringify(data) || "Registration failed!");
           }
       } catch (error) {
@@ -225,7 +225,11 @@ function Step1Onboarding() {
 
           </div> 
           <div className="w-70 sm:h-17 h-14 bg-primary text-white flex items-center justify-center rounded-3xl cursor-pointer"
-              onClick={submitStep1}
+              onClick={()=>{if (file !=null){
+                submitStep1()
+              } else {
+                setCurrentSection(2)
+              }}}
           >
                   <label className="font-satoshi-bold cursor-pointer">Proceed</label>
           

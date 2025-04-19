@@ -23,6 +23,7 @@ export const fetchProfile = async () => {
 //Fetch other's profile data
 export const fetchPublicProfileById = async ({userId}) => {
   const token = localStorage.getItem("token");
+  console.log(userId)
   console.log(`${API_BASE_URL}/profile/${userId}`);
   const response = await fetch(`${API_BASE_URL}/profile/${userId}`, {
     headers: {

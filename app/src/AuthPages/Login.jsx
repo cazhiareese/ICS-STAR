@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "../index.css";
 import { PersonStanding } from "lucide-react";
 import loginBg from "../assets/login_gradientbg.jpeg";
@@ -24,6 +24,10 @@ function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
 
     const [codeError, setCodeError] = useState(false);
+
+    const emailRef = useRef(null);
+
+    const passwordRef = useRef(null);
 
     const login = async (e) => {
       // setIsLoading(true);
@@ -186,12 +190,19 @@ function LoginPage() {
                     <div className="flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 cursor-pointer w-[60%] sm:w-[70%]">
 
                         
-                        <label className="block overflow-x-scroll whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg -mb-0" onClick={() => setActiveEmail(!activeEmail)}>
-                        {!activeEmail ? (
-                            email ? `Email: ${email}` : <span className="text-gray-600">Email</span>
-                        ) : (
-                            "Email"
-                        )}
+                        <label className= "block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
+                                setActiveEmail(true);
+                                setTimeout(() => {
+                                    emailRef.current?.focus();
+                                }, 0);
+                               
+                            }
+                            }>
+                            {!activeEmail ? (
+                                email ? `Email: ${email}` : <span className="text-gray-600">Email</span>
+                            ) : (
+                                "Email"
+                            )}
                         </label>
                         
                             
@@ -211,13 +222,9 @@ function LoginPage() {
                                 
                                 : <input 
                                 type="email"
+                                ref={emailRef}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                onBlur={() => {
-                                    if (email === "") {
-                                      setActiveEmail(false);
-                                    }
-                                }}
                                 className="inputLine w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-variable"
                                 placeholder="Enter Email Here"
                                 /> }
@@ -229,7 +236,13 @@ function LoginPage() {
                     <div className="flex flex-col justify-end  h-[15%] -passwordButton mb-18 cursor-pointer w-[60%] sm:w-[70%]">
 
                         
-                        <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => setActivePassword(!activePassword)}>
+                        <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
+                            setActivePassword(true); // only set to true, don't toggle
+                            setTimeout(() => {
+                                passwordRef.current?.focus();
+                            }, 0);
+                            
+                            }}>
                             {!activePassword ? (
                                 password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="text-gray-600">Password</span>
                             ) : (
@@ -250,7 +263,12 @@ function LoginPage() {
                                 {!activePassword ? 
                                     <>
                                     <div className="inputLine w-full border-b-2 border-gray-400 focus-within:border-blue-500 outline-none py-2" 
-                                    onClick={() => setActivePassword(!activePassword)}>
+                                    onClick={() => {
+                                        setActivePassword(!activePassword);
+                                        
+                                    }
+                                        
+                                        }>
                                     </div>
                                     <span className="absolute right-2 -top-6 text-gray-500 cursor-pointer "onClick={() => setShowPassword(!showPassword)}>
                                         
@@ -267,13 +285,9 @@ function LoginPage() {
                                     <input 
                                         type={showPassword ? "text" : "password"}
                                         value={password}
+                                        ref={passwordRef}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        onBlur={() => {
-                                            if (password === "") {
-                                              setActivePassword(false);
-                                            }
-                                        }}
-                                        className="inputLine w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
+                                        className="inputLine  w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
                                         placeholder="Enter Password Here"
                                     /> 
 
