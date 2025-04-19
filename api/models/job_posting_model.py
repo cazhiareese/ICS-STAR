@@ -5,7 +5,7 @@ from models.usermodel import User
 from config.config import Base
 
 class JobPosting(Base):
-    __tablename__ = 'job_postings'
+    __tablename__ = 'job_posting'
 
     post_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(255))
@@ -13,6 +13,7 @@ class JobPosting(Base):
     link = Column(Text)
     image = Column(Text)
     employment_type = Column(String(255))
+    description = Column(Text)
     is_deleted = Column(Boolean, default=False)
     is_closed = Column(Boolean, default=False)
     date_posted = Column(DateTime(timezone=True), server_default=func.now())
@@ -32,7 +33,7 @@ class JobPosting(Base):
 class JobPostingTag(Base):
     __tablename__ = 'job_posting_tag'
 
-    post_id = Column(UUID(as_uuid=True), ForeignKey('job_postings.post_id'), primary_key=True)
+    post_id = Column(UUID(as_uuid=True), ForeignKey('job_posting.post_id'), primary_key=True)
     tag = Column(String(255), primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -42,7 +43,7 @@ class JobPostingTag(Base):
 class JobPostingInterestedIn(Base):
     __tablename__ = 'job_posting_interested_in'
 
-    post_id = Column(UUID(as_uuid=True), ForeignKey('job_postings.post_id'), primary_key=True)
+    post_id = Column(UUID(as_uuid=True), ForeignKey('job_posting.post_id'), primary_key=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -53,7 +54,7 @@ class JobPostingInterestedIn(Base):
 class AppliesFor(Base):
     __tablename__ = 'applies_for'
 
-    post_id = Column(UUID(as_uuid=True), ForeignKey('job_postings.post_id'), primary_key=True)
+    post_id = Column(UUID(as_uuid=True), ForeignKey('job_posting.post_id'), primary_key=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

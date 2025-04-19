@@ -3,8 +3,8 @@ from fastapi import Depends, HTTPException, APIRouter, Form, UploadFile, File
 from typing import Optional, List
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from api.models.usermodel import User
-from api.schemas.job_posting_schema import JobPostingOut
+from models.usermodel import User
+from schemas.job_posting_schema import JobPostingOut
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
 from util.job_posting_util import create_job_posting
 from config.database import get_db
@@ -100,24 +100,24 @@ def close_job_posting_endpoint(
 def get_job_postings(db: Session = Depends(get_db)):
     # Query to get job postings with required information
     query_result = db.query(
-        JobPosting.id,
+        JobPosting.post_id,
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
-        User, JobPosting.user_id == User.id
+        User, JobPosting.user_id == User.user_id
     ).outerjoin(
-        JobPostingInterestedIn, JobPosting.id == JobPostingInterestedIn.post_id
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
     ).group_by(
-        JobPosting.id, JobPosting.title, JobPosting.company, JobPosting.description, 'user_name'
+        JobPosting.post_id, JobPosting.title, JobPosting.company, JobPosting.description, 'user_name'
     ).all()
     
     # Now we need to get tags for each job posting
     result = []
     for row in query_result:
-        job_id = row.id
+        job_id = row.post_id
         tags = db.query(JobPostingTag.tag).filter(JobPostingTag.post_id == job_id).all()
         tag_list = [tag[0] for tag in tags]
         
@@ -140,20 +140,20 @@ def get_job_posting(
 ):
     # Query to get a specific job posting with required information
     query_result = db.query(
-        JobPosting.id,
+        JobPosting.post_id,
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
-        User, JobPosting.user_id == User.id
+        User, JobPosting.user_id == User.user_id
     ).outerjoin(
-        JobPostingInterestedIn, JobPosting.id == JobPostingInterestedIn.post_id
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
     ).filter(
-        JobPosting.id == job_id
+        JobPosting.post_id == job_id
     ).group_by(
-        JobPosting.id, JobPosting.title, JobPosting.company, JobPosting.description, 'user_name'
+        JobPosting.post_id, JobPosting.title, JobPosting.company, JobPosting.description, 'user_name'
     ).first()
     
     # If no job posting is found, raise a 404 error

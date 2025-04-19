@@ -19,9 +19,7 @@ class Report(Base):
     report_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     reporter_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False)
     reported_user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=True)
-
-    reported_post_id = Column(UUID(as_uuid=True), ForeignKey("job_postings.post_id"), nullable=True)
-
+    reported_post_id = Column(UUID(as_uuid=True), ForeignKey("job_posting.post_id"), nullable=True)
 
     reason = Column(String, nullable=False)
     status = Column(Enum(ReportStatusEnum), default=ReportStatusEnum.pending, nullable=False)
@@ -33,6 +31,7 @@ class Report(Base):
     reported_post = relationship("JobPosting", foreign_keys=[reported_post_id], back_populates="reported_posts")
 
     attachments = relationship("ReportAttachment", back_populates="report")
+
 
 # Report Attachment Model
 class ReportAttachment(Base):
