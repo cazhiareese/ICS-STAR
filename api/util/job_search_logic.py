@@ -62,9 +62,27 @@ def search_job(
 def view_interested_in(
         db: Session,
         post_id: UUID
-) -> list[UserInterestedOut]:
+) -> tuple[list[UserInterestedOut], dict]:
     
-    # Base query
+    # Query to get the overview info about the job (title, company, job poster, job poster's location, total number of interested users, date of creation)
+    job_info_query = db.query(
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.created_at,
+        func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
+        func.concat(User.state, ', ', User.country).label("poster_location"),
+        func.count(JobPostingInterestedIn.post_id).label("total_interested")
+    ).join(
+        User, User.user_id == JobPosting.user_id
+    ).outerjoin(
+        JobPostingInterestedIn, JobPostingInterestedIn.post_id == JobPosting.post_id
+    ).filter(
+        JobPosting.post_id == post_id
+    ).group_by(
+        JobPosting.post_id, User.first_name, User.last_name, User.state, User.country
+    ).first()
+    
+    # Base query for interested users
     query = db.query(
         User.user_id,
         func.concat(User.first_name, ' ', User.last_name).label("name"),
@@ -85,7 +103,7 @@ def view_interested_in(
     interested_users = query.all()
 
     if not interested_users:
-        return []
+        return [], {}
 
     interested_out_list = []
 
@@ -102,4 +120,13 @@ def view_interested_in(
         )
         interested_out_list.append(user_out)
 
-    return interested_out_list
+    job_summary = {
+        "title": job_info_query.title if job_info_query else None,
+        "company": job_info_query.company if job_info_query else None,
+        "posted_by": job_info_query.posted_by if job_info_query else None,
+        "poster_location": job_info_query.poster_location if job_info_query else None,
+        "total_interested": job_info_query.total_interested if job_info_query else 0,
+        "created_at": job_info_query.created_at.strftime("%B %d, %Y") if job_info_query else None
+    }
+
+    return interested_out_list, job_summary

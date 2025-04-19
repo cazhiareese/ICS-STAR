@@ -18,7 +18,7 @@ class UserInterestedOut(BaseModel):
     id: UUID
     name: str
     batch: str
-    image: str
+    image: Optional[str] = None
     location: Optional[str] = None
     title: str
     industry: Optional[str] = None

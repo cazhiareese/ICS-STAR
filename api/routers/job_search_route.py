@@ -21,7 +21,7 @@ def job_search(
     
     return results
 
-@router.get("/job/interested_in/{post_id}", response_model=List[UserInterestedOut])
+@router.get("/job/interested_in/{post_id}", response_model=tuple[list[UserInterestedOut], dict])
 def interested_in(
     post_id: str,
     db: Session = Depends(get_db)
