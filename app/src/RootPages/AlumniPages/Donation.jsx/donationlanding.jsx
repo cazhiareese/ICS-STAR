@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DonationCard from "./Donationcomponent/Donationcard"; // Adjust the import path as necessary
+import DonationInfo from "../../../components/donationInfo";
 
 function DonationLanding() {
   const [donationData, setDonationData] = useState([]);
@@ -8,7 +9,7 @@ function DonationLanding() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [generalDrive, setGeneralDrive] = useState(null);
-  console.log(generalDrive);
+  // console.log(generalDrive);
 
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -120,16 +121,19 @@ function DonationLanding() {
         </div>
 
         {/* Right column: Announcements */}
-        <div className="order-1 lg:order-2 lg:basis-[900px] bg-gray-100 p-4 rounded-xl shadow text-center h-fit">
-  <h2 className="text-xl font-semibold mb-2">DONATE TO ICS</h2>
-  {generalDrive ? (
-    <DonationCard drive={generalDrive} />
-  ) : (
-    <p className="text-sm text-gray-600">
-      No general donation drive is currently available.
-    </p>
-  )}
-</div>
+        <div className="order-1 lg:order-2 lg:basis-[900px] px-4 rounded-xl text-center h-fit pb-10 ">
+          {generalDrive ? (
+            <div className="-mt-5">
+
+            <DonationInfo generalDrive={generalDrive}/>
+            </div>
+            // <DonationCard drive={generalDrive} />
+          ) : (
+            <p className="text-sm text-gray-600">
+              No general donation drive is currently available.
+            </p>
+          )}
+        </div>
 
       </div>
     </div>

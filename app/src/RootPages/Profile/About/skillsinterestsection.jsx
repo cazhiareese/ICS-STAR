@@ -3,15 +3,17 @@ import { XCircle } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddSkillsModal from "../components/skillmodal";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
-import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
 const SkillsInterestsSection = ({
   editMode,
   skills,
   removeSkill,
   addSkills,
+  isLoading,
+  isVerified, 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log(isVerified);
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
@@ -20,14 +22,22 @@ const SkillsInterestsSection = ({
         title="SKILLS AND INTERESTS"
         buttonText="Add skills/interests"
         onButtonClick={() => setIsModalOpen(true)}
+        isVerified={isVerified} 
       />
 
-      {/* Skills List */}
-      {skills.length === 0 ? (
+        {isVerified && (
+          <>
+      {/* Loading State */}
+      {isLoading ? (
         <div className="w-full flex justify-center mt-4">
           <CircularLoading />
         </div>
+      ) : skills.length === 0 ? (
+        <div className="w-full flex justify-center mt-4 text-gray-500 italic">
+          No skills or interests yet.
+        </div>
       ) : (
+        // Skills List
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
           {skills.map((skill, index) => (
             <div key={index} className="relative">
@@ -53,6 +63,7 @@ const SkillsInterestsSection = ({
           ))}
         </div>
       )}
+      </>)}
 
       {/* Add Skills Modal */}
       <AddSkillsModal
