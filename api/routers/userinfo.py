@@ -89,7 +89,7 @@ async def add_skills(
     
     db.add_all(new_skills)
     db.commit()
-    
+    primt(new_skills)
     return {"message": "skills added successfully"}
 
 @router.post("/onboarding-info-student")
@@ -251,6 +251,7 @@ async def get_profile(
             {"affiliation": aff.affiliation, "role": aff.role} for aff in user.affiliations
         ],
     }
+    print(profile_details)
     
     return {"message": "success", "data": profile_details}
 
@@ -271,6 +272,7 @@ async def get_profile_by_id(
     if not profile_details:
         raise HTTPException(status_code=404, detail="User not found")
     
+    print(profile_details)
     return {"message": "success", "data": profile_details}
 
 # Update user profile details
