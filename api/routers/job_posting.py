@@ -4,8 +4,9 @@ from fastapi import Depends, HTTPException, APIRouter, Form, UploadFile, File
 from typing import Optional, List
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+from util.userutil import get_current_user
 from models.usermodel import User
-from schemas.job_posting_schema import JobPostingOut
+from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
 from util.job_posting_util import create_job_posting, edit_job_posting
 from config.database import get_db
@@ -23,9 +24,12 @@ async def create_job_posting_endpoint(
     description: str = Form(...),
     employment_type: str = Form(...),
     image: UploadFile = None, 
-    user_id: UUID = Form(...),
+    user: get_current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    
+    user_id = user.user_id
+
     # Parse tags from string to list
     tag_list = None
     if tags:
@@ -196,4 +200,69 @@ def get_job_posting(
     }
     
     return response
+
+# Get job postings that are open
+@router.get("/admin/job-postings/open", response_model=List[JobPostingForAdminOut])
+def get_open_job_postings(
+    db: Session = Depends(get_db)
+):
+    query_result = db.query(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.date_posted, 
+        func.concat(User.first_name, ' ', User.last_name).label('user_name'),
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
+    ).join(
+        User, JobPosting.user_id == User.user_id
+    ).outerjoin(
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPosting.is_closed == False,
+        JobPosting.is_deleted == False
+    ).group_by(
+        JobPosting.post_id, JobPosting.title, JobPosting.date_posted, 'user_name' 
+    ).all()
     
+    result = []
+    for row in query_result:
+        result.append({
+            "date_posted": row.date_posted,
+            "title": row.title,
+            "user_name": row.user_name,
+            "interested_count": row.interested_count
+        })
+    
+    return result
+
+# Get job postings that are closed
+@router.get("/admin/job-postings/closed", response_model=List[JobPostingForAdminOut])
+def get_closed_job_postings(
+    db: Session = Depends(get_db)
+):
+    query_result = db.query(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.date_posted, 
+        func.concat(User.first_name, ' ', User.last_name).label('user_name'),
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
+    ).join(
+        User, JobPosting.user_id == User.user_id
+    ).outerjoin(
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPosting.is_closed == True,
+        JobPosting.is_deleted == False
+    ).group_by(
+        JobPosting.post_id, JobPosting.title, JobPosting.date_posted, 'user_name' 
+    ).all()
+    
+    result = []
+    for row in query_result:
+        result.append({
+            "date_posted": row.date_posted,
+            "title": row.title,
+            "user_name": row.user_name,
+            "interested_count": row.interested_count
+        })
+    
+    return result
