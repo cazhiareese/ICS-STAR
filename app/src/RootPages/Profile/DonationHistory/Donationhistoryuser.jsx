@@ -34,20 +34,34 @@ function DonationHistoryUser({ userDetails }) {
         setLoading(false);
         return;
       }
-
+  
       try {
-        const response = await axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const sortedByLatest = response.data.data.sort(
+        const [monetaryRes, inKindRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${API_BASE_URL}/donation-history/in-kind-donations`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+  
+        const monetary = monetaryRes.data.data.map((d) => ({
+          ...d,
+          type: "Monetary",
+        }));
+  
+        const inKind = inKindRes.data.data.map((d) => ({
+          ...d,
+          type: "In-Kind",
+          amount: 0, // optional: set to 0 if there's no monetary value
+        }));
+  
+        const combined = [...monetary, ...inKind].sort(
           (a, b) => new Date(b.date_donated) - new Date(a.date_donated)
         );
-
-        setDonationHistory(sortedByLatest);
-        setSortedData(sortedByLatest);
+  
+        setDonationHistory(combined);
+        setSortedData(combined);
         setSortConfig({ key: "date_donated", direction: "desc" });
       } catch (err) {
         console.error("Error fetching donation history:", err);
@@ -56,7 +70,7 @@ function DonationHistoryUser({ userDetails }) {
         setLoading(false);
       }
     };
-
+  
     fetchDonationHistory();
   }, [token]);
 
