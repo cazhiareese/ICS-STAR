@@ -6,7 +6,7 @@ import CircularLoading from '../../../components/LoadingComponents/circularloadi
 import UsersTable from '../../../components/AdminComponents/userstable';
 import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
-import FilterModal from '../../../components/AdminComponents/filter';
+import FilterModal from '../../../components/AdminComponents/UserFilter';
 
 function AdminRecords() {
   const navigate = useNavigate()
@@ -19,13 +19,13 @@ function AdminRecords() {
   const [maxRows, setMaxRows] = useState(12)
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false)
-  // For the search
+ 
+  // For the search and filtering
   const sorters = [
     { label: 'Name', value: 'name' },
     { label: 'Batch', value: 'batch' },
     { label: 'Last Update', value: 'updated' },
   ];
-
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
   const [sortBy, setSortBy] = useState(sorters[0].value);
@@ -38,12 +38,10 @@ function AdminRecords() {
     { label: 'Alumni Career', value: 'job_title' },
     { label: 'Alumni Location', value: 'city' }
   ]
-
   const studentFilters = [
     {label: 'Student Batch', value: 'batch'},
     {label: 'Student Standing', value: 'standing'}
   ]
-
 
   const [selectedFilters, setSelectedFilters] = useState([])
 
@@ -73,16 +71,19 @@ function AdminRecords() {
         selectedFilters.forEach(({ field, value }) => {
             params.append(field, value);
         });
-        if (query) params.append('name', query);
+        if (query) {
+          params.append('name', query);
+        }else{
+          params.delete('name');
+        }
         if (orderBy) {
           params.append('order_by', orderBy);
         }
-
         const queryString = params.toString();
         const url = `${API_BASE_URL}/admin/filter/${userType}?${queryString}`
         const response = await axios.get(url);
         setUsers(response.data);
-        console.log(response.data);
+
       } catch (error) {
         console.log('Error getting users');
         setUsers([]);

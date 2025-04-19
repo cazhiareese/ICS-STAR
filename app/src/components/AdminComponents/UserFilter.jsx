@@ -32,6 +32,7 @@ function FilterModal({filters, setterFunction}){
         "senior",
         "graduating"
       ];
+    const [standingOpen, setStandingOpen] = useState(false)
     const [selectedStanding, setSelectedStanding] = useState('')
     const [filterList, setFilterList] = useState([]);
 
@@ -234,8 +235,9 @@ function FilterModal({filters, setterFunction}){
                         return (
                             <div key={`filter-${value}-${index}`}>
                                 <h1>{label}</h1>
-                                <button onClick={() => setJobOpen(!standingOpen)}>Toggle</button>
-                                <div className="flex flex-wrap gap-3">
+                                <button onClick={() => setStandingOpen(!standingOpen)}>Toggle</button>
+                                {
+                                    standingOpen && <div className="flex flex-wrap gap-3">
                                     {standings.map((standing) => (
                                         <button
                                         key={standing}
@@ -250,7 +252,9 @@ function FilterModal({filters, setterFunction}){
                                         {standing}
                                         </button>
                                     ))}
+                                
                                     </div>
+                                }
                             </div>
                         )
                     }
