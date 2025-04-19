@@ -71,6 +71,7 @@ def view_interested_in(
         User.student_number,
         func.concat(User.state, ', ', User.country).label("location"),
         User.industry,
+        User.image,
         JobPosting.title,
         JobPostingInterestedIn.created_at
     ).join(
@@ -93,6 +94,7 @@ def view_interested_in(
             id=user.user_id,
             name=user.name,
             batch=user.student_number[:4],
+            image=f"{STORAGE_STRING}{user.image}" if user.image else None,
             location=user.location,
             title=user.title,
             industry=user.industry,
