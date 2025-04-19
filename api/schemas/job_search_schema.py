@@ -13,3 +13,15 @@ class JobSearchOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UserInterestedOut(BaseModel):
+    id: UUID
+    name: str
+    batch: str
+    location: Optional[str] = None
+    title: str
+    industry: Optional[str] = None
+    date_of_interest: str
+
+    class Config:
+        from_attributes = True
