@@ -2,9 +2,8 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from jose import JWTError
 import uuid
-import supabase
-from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends, HTTPException, status, UploadFile, File
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
