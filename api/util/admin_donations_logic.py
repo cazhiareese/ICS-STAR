@@ -59,6 +59,10 @@ def search_donation_drives(
     
     drive_out_list = []
     for drive in drives:
+        # If generic drive, skip it
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -205,42 +209,22 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     
     # Add pending monetary donations to the list
     for donation in pending_monetary_donations:
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "date_donated": donation.donation_date,
-            "name": donation.name,
-            "donation_type": "Monetary",
-            "donation_details": f"₱{donation.donation_details:,.2f}",
-            "proof": donation.proof
-        })
+        pending_verifications.append(donation.dict())
     
     # Add pending in-kind donations to the list
     for donation in pending_inkind_donations:
-        pending_verifications.append(donation)
+        pending_verifications.append(donation.dict())
 
     # Format the verified donations list
     verified_donations = []
     
     # Add verified monetary donations to the list
     for donation in verified_monetary_donations:
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": donation.donation_date,
-            "name": donation.name,
-            "donation_type": "Monetary",
-            "donation_details": f"₱{donation.donation_details:,.2f}",
-            "proof": donation.proof
-        })
+        verified_donations.append(donation.dict())
     
     # Add verified in-kind donations to the list
     for donation in verified_inkind_donations:
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": donation.donation_date,
-            "name": donation.name,
-            "donation_type": "In-kind",
-            "donation_details": donation.donation_details
-        })
+        verified_donations.append(donation.dict())
 
     date_started = drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None
 
@@ -286,48 +270,22 @@ def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     
     # Add pending monetary donations to the list
     for donation in pending_monetary_donations:
-        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "name": donation.name,
-            "donation_details": f"₱{donation.donation_details:,.2f}",
-            "date_donated": date_donated,
-        })
+        pending_verifications.append(donation.dict())
     
     # Add pending in-kind donations to the list
     for donation in pending_inkind_donations:
-        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "name": donation.name,
-            "donation_details": donation.donation_details,
-            "date_donated": date_donated,
-        })
+        pending_verifications.append(donation.dict())
 
     # Format the verified donations list
     verified_donations = []
     
     # Add verified monetary donations to the list
     for donation in verified_monetary_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": date_donated,
-            "name": donation.name,
-            "donation_type": "Monetary",
-            "donation_details": f"₱{donation.donation_details:,.2f}"
-        })
+        verified_donations.append(donation.dict())
     
     # Add verified in-kind donations to the list
     for donation in verified_inkind_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": date_donated,
-            "name": donation.name,
-            "donation_type": "In-kind",
-            "donation_details": donation.donation_details
-        })
+        verified_donations.append(donation.dict())
 
     
     # Get the total amount of monetary donations for the generic drive
