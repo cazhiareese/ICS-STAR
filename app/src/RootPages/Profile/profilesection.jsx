@@ -13,7 +13,13 @@ import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 
-function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
+function ProfileSection({
+  activeTab,
+  editMode,
+  userDetails,
+  setEditMode,
+  handleChange,
+}) {
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
@@ -21,36 +27,38 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
 
   //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
   useEffect(() => {
-    const fetchProfilePicture = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("User not authenticated");
-          return;
-        }
-
-        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-        const response = await fetch(`${API_BASE_URL}/profile-picture`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          setProfilePicture(result.profile_picture || defaultimage);
-        } else {
-          console.error("Failed to fetch profile picture");
-        }
-      } catch (err) {
-        console.error("Error while fetching profile picture:", err);
-      }
-    };
-
+    console.log("Fetching profile picture...");
     fetchProfilePicture();
+    setProfilePicture(userDetails.profile_picture);
   }, []);
+
+  const fetchProfilePicture = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("User not authenticated");
+        return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      const response = await fetch(`${API_BASE_URL}/profile-picture`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setProfilePicture(result.profile_picture || defaultimage);
+      } else {
+        console.error("Failed to fetch profile picture");
+      }
+    } catch (err) {
+      console.error("Error while fetching profile picture:", err);
+    }
+  };
 
   const handleSave = () => {
     setShowModal(false);
@@ -86,6 +94,7 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
       const urlEncodedData = new URLSearchParams(currentFormData).toString();
 
       console.log("🔍 Final Request Body:", urlEncodedData);
+      
 
       const response = await fetch(`${API_BASE_URL}/profile/edit`, {
         method: "PUT",
@@ -112,31 +121,43 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
   const handleUpload = (imageUrl) => {
     setProfilePicture(imageUrl);
     console.log("Profile picture updated:", imageUrl);
+    fetchProfilePicture();
   };
 
   return (
-    <div className="relative w-full max-w-[1100px] border border-disabled rounded-[10px] bg-whitey p-6 flex flex-col sm:flex-row items-center sm:justify-between">
-      {/* Edit / Save Profile Button */}
-      <button
-        onClick={() => {
-          if (editMode) {
-            setShowModal(true);
-          } else {
-            setEditMode(true);
-          }
-        }}
-        className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto 
-        bg-primary text-white hover:bg-hover"
-      >
-        {editMode ? (
-          <Check size={18} className="text-white pointer-events-none" />
-        ) : (
-          <Pencil size={18} className="pointer-events-none" />
-        )}
-        <span className="hidden sm:inline pointer-events-none">
-          {editMode ? "Save Profile" : "Edit Profile"}
-        </span>
-      </button>
+    <div
+  className={`relative w-full max-w-[1100px] border border-disabled rounded-[10px] p-6 flex flex-col sm:flex-row items-center sm:justify-between ${
+    userDetails?.is_verified ? "bg-whitey" : "bg-white"
+  }`}
+>
+
+      {/* Edit / Save Profile Button - only visible on "About" tab */}
+      {activeTab === "About" && (
+  <button
+    onClick={() => {
+      if (userDetails?.is_verified) {
+        if (editMode) {
+          setShowModal(true);
+        } else {
+          setEditMode(true);
+        }
+      }
+    }}
+    disabled={!userDetails?.is_verified}
+    className={`absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto
+      ${userDetails?.is_verified ? "bg-primary text-white hover:bg-hover" : "bg-bg-disabled text-neutral-c cursor-not-allowed"}`}
+  >
+    {editMode ? (
+      <Check size={18} className={`${userDetails?.is_verified ? "text-white" : "text-neutral"} pointer-events-none`} />
+    ) : (
+      <Pencil size={18} className={`${userDetails?.is_verified ? "" : "text-neutral"} pointer-events-none`} />
+    )}
+    <span className="hidden sm:inline pointer-events-none text-neutral">
+      {editMode ? "Save Profile" : "Edit Profile"}
+    </span>
+  </button>
+)}
+
 
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
@@ -149,11 +170,13 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
               className="w-full h-full object-cover"
             />
           </span>
-          <Camera
-            size={32}
-            className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
-            onClick={() => setShowUploadModal(true)}
-          />
+          {userDetails?.is_verified && (
+    <Camera
+      size={32}
+      className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black w-8 h-8 rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
+      onClick={() => setShowUploadModal(true)}
+    />
+  )}
         </span>
 
         {/* Name, Email, and Social Icons */}
@@ -195,21 +218,22 @@ function ProfileSection({ editMode, userDetails, setEditMode, handleChange }) {
             </>
           )}
 
-          {/* Social Icons */}
-          <div className="flex gap-3 mt-1">
-            <Facebook
-              size={22}
-              className="text-black cursor-pointer hover:text-hover"
-            />
-            <Github
-              size={22}
-              className="text-black cursor-pointer hover:text-hover"
-            />
-            <Linkedin
-              size={22}
-              className="text-black cursor-pointer hover:text-hover"
-            />
-          </div>
+{/* Social Icons */}
+{userDetails?.is_verified && (
+  <div className="flex gap-3 mt-1">
+    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+      <Facebook size={20} className="text-white" />
+    </span>
+    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+      <Github size={20} className="text-white" />
+    </span>
+    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+      <Linkedin size={20} className="text-white" />
+    </span>
+  </div>
+)}
+
+
         </div>
       </div>
 

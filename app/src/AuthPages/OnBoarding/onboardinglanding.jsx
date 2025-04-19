@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import "../../index.css";
 import Constellation from "../../assets/SignupAssets/constellationMain.png"
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
-// import
+import Unathorized from "../Unauthorized";
+
 function OnBoarding() {
     const { currentSection, setCurrentSection, name, setName, setEmail , setUserType} = useOnboardingContext();
     const [first_name, setFirstName] = useState("");
     const [error, setError] = useState(null); // State to handle errors
+    
 
     useEffect(() => {
         const fetchName = async () => {

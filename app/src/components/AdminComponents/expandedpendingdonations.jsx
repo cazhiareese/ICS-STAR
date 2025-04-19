@@ -19,14 +19,12 @@ function ExpandedPendingDonations({ data, onReview }) {
           {data.map((donation, index) => (
             <tr key={index} className="hover:bg-secondary cursor-pointer">
               <td className="py-3 px-4">
-                {donation.date_donated} <br /> {donation.time_donated}
+                {donation.date_donated}
               </td>
-              <td className="py-3 px-4">{donation.donor}</td>
+              <td className="py-3 px-4">{donation.name}</td>
               <td className="py-3 px-4">{donation.donation_type}</td>
               <td className="py-3 px-4">
-                {donation.donation_type === "Monetary"
-                  ? donation.donation_amount
-                  : donation.donation_description}
+                {donation.donation_details}
               </td>
               <td className="py-3 px-4">
                 <button
