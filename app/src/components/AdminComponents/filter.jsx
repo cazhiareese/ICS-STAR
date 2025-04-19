@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import YearPicker from '../AlumniComponents/datepicker';
-import { Calendar, Filter, Search } from 'lucide-react';
+import { Calendar, Filter, Search, X } from 'lucide-react';
 
 function FilterModal({filters, setterFunction}){
     const [open, setOpen] = useState(false);
@@ -23,6 +23,16 @@ function FilterModal({filters, setterFunction}){
     const [locationInput, setLocationInput] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
 
+    //standing filter
+    const standings = [
+        "freshman",
+        "old freshman",
+        "sophomore",
+        "junior",
+        "senior",
+        "graduating"
+      ];
+    const [selectedStanding, setSelectedStanding] = useState('')
     const [filterList, setFilterList] = useState([]);
 
     const handleFilterChange = (newFilter) => {
@@ -53,6 +63,9 @@ function FilterModal({filters, setterFunction}){
     useEffect(() => {
         handleFilterChange({field:'job_title', value: selectedJob})
     }, [selectedJob])
+    useEffect(() => {
+        handleFilterChange({field:'standing', value: selectedStanding})
+    }, [selectedStanding])
 
 
     useEffect(() => {
@@ -70,6 +83,28 @@ function FilterModal({filters, setterFunction}){
           setSelectedJob(jobInput);
         }
     };
+
+    const handleRemove = (field) =>{
+        switch (field){
+            case 'batch':
+                setSelectedBatchYear('');
+                break;
+            case 'graduation_year':
+                setSelectedGraduationYear('');
+                break;
+            case 'job_title':
+                setSelectedJob('');
+                break;
+            case 'city':
+                setSelectedLocation('');
+                break;
+            case 'standing':
+                setSelectedStanding('');
+                break;
+            default:
+                break;
+        }
+    }
 
     const handleClearAll = (e) =>{
         setSelectedBatchYear('');
@@ -98,7 +133,12 @@ function FilterModal({filters, setterFunction}){
                     filterList.map(({field,value})=>{
                         const fieldLabel = filters.find((f) => f.value === field)?.label || field;
                         return (
+                            <div>
                             <p>{fieldLabel}: {value}</p>
+                            <button onClick={() => handleRemove(field)}>
+                                <X  size={20} />
+                            </button>
+                            </div>
                         )
                     })
                 }
@@ -190,6 +230,29 @@ function FilterModal({filters, setterFunction}){
                                 }
                             </div>
                         );
+                    }else if (value==='standing'){
+                        return (
+                            <div key={`filter-${value}-${index}`}>
+                                <h1>{label}</h1>
+                                <button onClick={() => setJobOpen(!standingOpen)}>Toggle</button>
+                                <div className="flex flex-wrap gap-3">
+                                    {standings.map((standing) => (
+                                        <button
+                                        key={standing}
+                                        onClick={() => setSelectedStanding(standing)}
+                                        className={`px-4 py-2 rounded-full border transition-colors duration-200
+                                            ${
+                                            selectedStanding === standing
+                                                ? 'bg-primary text-white border-primary'
+                                                : 'bg-white text-black border-gray-300 hover:border-primary'
+                                            }`}
+                                        >
+                                        {standing}
+                                        </button>
+                                    ))}
+                                    </div>
+                            </div>
+                        )
                     }
                 }
             )

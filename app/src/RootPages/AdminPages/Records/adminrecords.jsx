@@ -39,6 +39,11 @@ function AdminRecords() {
     { label: 'Alumni Location', value: 'city' }
   ]
 
+  const studentFilters = [
+    {label: 'Student Batch', value: 'batch'},
+    {label: 'Student Standing', value: 'standing'}
+  ]
+
 
   const [selectedFilters, setSelectedFilters] = useState([])
 
@@ -56,19 +61,7 @@ function AdminRecords() {
   };
 
   const handleFilterChange = (filterList) => {
-    // setSelectedFilters((prevFilters) => {
-    //   const existingIndex = prevFilters.findIndex(f => f.field === newFilter.field);
-  
-    //   if (existingIndex !== -1) {
-    //     const updated = [...prevFilters];
-    //     updated[existingIndex] = newFilter;
-    //     return updated;
-    //   } else {
-    //     return [...prevFilters, newFilter];
-    //   }
-    // });
     setSelectedFilters(filterList);
-
   };
 
 
@@ -89,6 +82,7 @@ function AdminRecords() {
         const url = `${API_BASE_URL}/admin/filter/${userType}?${queryString}`
         const response = await axios.get(url);
         setUsers(response.data);
+        console.log(response.data);
       } catch (error) {
         console.log('Error getting users');
         setUsers([]);
@@ -155,7 +149,9 @@ function AdminRecords() {
             <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
 
             {/* Filter */}
-            <FilterModal filters={alumniFilters} setterFunction={handleFilterChange}/>
+           { userType === 'alum' ? <FilterModal filters={alumniFilters} setterFunction={handleFilterChange}/>:
+              <FilterModal filters={studentFilters} setterFunction={handleFilterChange}/>
+           }
             {/* View changer */}
             <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
               {/* List View Button */}
