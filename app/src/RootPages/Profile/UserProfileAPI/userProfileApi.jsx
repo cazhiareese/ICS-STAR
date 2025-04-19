@@ -20,6 +20,30 @@ export const fetchProfile = async () => {
   return result.data;
 };
 
+//Fetch other's profile data
+export const fetchPublicProfileById = async ({userId}) => {
+  const token = localStorage.getItem("token");
+  console.log(`${API_BASE_URL}/profile/${userId}`);
+  const response = await fetch(`${API_BASE_URL}/profile/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include auth token if required
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) throw new Error("User not found");
+    throw new Error("Failed to fetch public profile");
+    
+  }
+
+  const result = await response.json();
+  return result.data;
+};
+
+
+
+
 // Add new skills to the user's profile
 export const addSkills = async (newSkills) => {
   const queryParams = new URLSearchParams();
