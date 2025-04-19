@@ -14,12 +14,12 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
   const statusText = donation.is_acknowledged ? "Acknowledged" : "Pending Acknowledgement";
 
   const displayAmount = isInKind
-    ? donation.details
+    ? donation.amount
     : new Intl.NumberFormat("en-PH", {
         style: "currency",
         currency: "PHP",
         minimumFractionDigits: 2,
-      }).format(parseFloat(donation.details));
+      }).format(parseFloat(donation.amount));
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50 px-4 sm:px-0">

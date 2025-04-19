@@ -36,7 +36,7 @@ function DonationHistoryUser({ userDetails }) {
       }
 
       try {
-        const response = await axios.get(`${API_BASE_URL}/donation-history`, {
+        const response = await axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -76,7 +76,7 @@ function DonationHistoryUser({ userDetails }) {
         bValue = new Date(bValue);
       }
 
-      if (key === "details") {
+      if (key === "amount") {
         aValue = parseFloat(aValue);
         bValue = parseFloat(bValue);
       }
@@ -121,9 +121,9 @@ function DonationHistoryUser({ userDetails }) {
           <div className="w-1/3">Donation</div>
           <div
             className="w-1/3 text-right cursor-pointer flex justify-end items-center gap-1"
-            onClick={() => handleSort("details")}
+            onClick={() => handleSort("amount")}
           >
-            Amount {getSortIcon("details")}
+            Amount {getSortIcon("amount")}
           </div>
         </div>
       </div>
@@ -151,7 +151,7 @@ function DonationHistoryUser({ userDetails }) {
               style: "currency",
               currency: "PHP",
               minimumFractionDigits: 2,
-            }).format(donation.details);
+            }).format(donation.amount);
 
             return (
               <div
