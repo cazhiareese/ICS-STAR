@@ -103,7 +103,10 @@ class User(Base):
    reasons = relationship("UnemploymentReason", back_populates="user")
    monetary_donations = relationship("MonetaryDonation", foreign_keys="[MonetaryDonation.user_id]", back_populates="user", lazy="joined")
    in_kind_donations = relationship("InKindDonation", foreign_keys="[InKindDonation.user_id]", back_populates="user", lazy="joined")
-
+   job_postings = relationship("JobPosting", foreign_keys="[JobPosting.user_id]", back_populates="user", lazy="joined")
+   interested_job_postings = relationship("JobPostingInterestedIn", foreign_keys="[JobPostingInterestedIn.user_id]", back_populates="user", lazy="joined")
+   applied_job_postings = relationship("AppliesFor", foreign_keys="[AppliesFor.user_id]", back_populates="user", lazy="joined")
+   
    
    
 class UnemploymentReason(Base):
