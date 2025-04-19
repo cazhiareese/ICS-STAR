@@ -7,6 +7,7 @@ from models.report_model import Report
 from sqlalchemy import func, case, or_, text, desc,asc
 from datetime import datetime, timedelta
 
+
 def get_all_alumni(db: Session):
 
     one_year_ago = datetime.now() - timedelta(days=365)
@@ -479,3 +480,4 @@ def get_student_filter(
         student_list.append(student_data)
 
     return student_list
+

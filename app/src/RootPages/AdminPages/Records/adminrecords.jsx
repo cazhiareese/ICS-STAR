@@ -6,6 +6,7 @@ import CircularLoading from '../../../components/LoadingComponents/circularloadi
 import UsersTable from '../../../components/AdminComponents/userstable';
 import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
+import FilterModal from '../../../components/AdminComponents/filter';
 
 function AdminRecords() {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ function AdminRecords() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false)
   // For the search
-  const filters = [
+  const sorters = [
     { label: 'Name', value: 'name' },
     { label: 'Batch', value: 'batch' },
     { label: 'Last Update', value: 'updated' },
@@ -27,9 +28,20 @@ function AdminRecords() {
 
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
-  const [sortBy, setSortBy] = useState(filters[0].value);
+  const [sortBy, setSortBy] = useState(sorters[0].value);
   const [sortDirection, setSortDirection] = useState('asc');
   const [orderBy, setOrderBy] = useState('name_asc');
+  
+  const alumniFilters = [
+    { label: 'Alumni Batch', value: 'batch' },
+    { label: 'Alumni Graduation Year', value: 'graduation_year' },
+    { label: 'Alumni Career', value: 'job_title' },
+    { label: 'Alumni Location', value: 'city' }
+  ]
+
+
+  const [selectedFilters, setSelectedFilters] = useState([])
+
 
   const handleSortFieldChange = (field) => {
     setSortBy(field);
@@ -42,17 +54,38 @@ function AdminRecords() {
     const newParam = `${sortBy}_${newDirection}`;
     setOrderBy(newParam);
   };
+
+  const handleFilterChange = (filterList) => {
+    // setSelectedFilters((prevFilters) => {
+    //   const existingIndex = prevFilters.findIndex(f => f.field === newFilter.field);
   
-  const params = {
-    name: query,
-    order_by: orderBy, 
+    //   if (existingIndex !== -1) {
+    //     const updated = [...prevFilters];
+    //     updated[existingIndex] = newFilter;
+    //     return updated;
+    //   } else {
+    //     return [...prevFilters, newFilter];
+    //   }
+    // });
+    setSelectedFilters(filterList);
+
   };
+
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const queryString = new URLSearchParams(params).toString();
+        const params = new URLSearchParams();
+        selectedFilters.forEach(({ field, value }) => {
+            params.append(field, value);
+        });
+        if (query) params.append('name', query);
+        if (orderBy) {
+          params.append('order_by', orderBy);
+        }
+
+        const queryString = params.toString();
         const url = `${API_BASE_URL}/admin/filter/${userType}?${queryString}`
         const response = await axios.get(url);
         setUsers(response.data);
@@ -65,7 +98,7 @@ function AdminRecords() {
     };
   
     fetchData();
-  }, [userType, sortBy, sortDirection, query]);
+  }, [userType, sortBy, sortDirection, query, selectedFilters]);
   
   // Initial fetch
   useEffect(() => {
@@ -116,16 +149,13 @@ function AdminRecords() {
           {/* Sort by */}
           <div className='flex gap-2'>
             
-            <SortModal filters={filters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
+            <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
           
             {/* Order by */}
             <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
 
             {/* Filter */}
-            <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
-              <Filter className='text-primary'/>
-              <p className='text-primary fsont-satoshi-medium text-sm'> Filter</p>
-            </button>
+            <FilterModal filters={alumniFilters} setterFunction={handleFilterChange}/>
             {/* View changer */}
             <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
               {/* List View Button */}
@@ -181,6 +211,7 @@ function AdminRecords() {
             </div>
           ))}
       </div>
+      
     </div>
   )
 }
