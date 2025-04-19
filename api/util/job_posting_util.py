@@ -19,6 +19,7 @@ async def create_job_posting(
         tags: Optional[List[str]],
         link: str,
         description: str,
+        employment_type: str,
         image: Optional[UploadFile],
         db: Session,
         user_id: UUID
@@ -51,6 +52,7 @@ async def create_job_posting(
         salary=salary,
         link=link,
         description=description,
+        employment_type=employment_type,
         image=image_url,
         user_id=user_id
     )
@@ -62,7 +64,7 @@ async def create_job_posting(
     if tags:
         for tag in tags:
             job_posting_tag = JobPostingTag(
-                job_posting_id=job_posting.job_posting_id,
+                post_id=job_posting.post_id,
                 tag=tag
             )
             db.add(job_posting_tag)

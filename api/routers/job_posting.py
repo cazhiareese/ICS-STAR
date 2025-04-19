@@ -1,3 +1,4 @@
+import json
 from uuid import UUID
 from fastapi import Depends, HTTPException, APIRouter, Form, UploadFile, File
 from typing import Optional, List
@@ -13,25 +14,36 @@ router = APIRouter()
 
 # Create job posting
 @router.post("/create-job-postings")
-def create_job_posting_endpoint(
+async def create_job_posting_endpoint(
     title: str = Form(...),
     company: str = Form(...),
     salary: Optional[float] = Form(None),
-    tags: Optional[List[str]] = Form(None),
+    tags: str = Form(None), 
     link: str = Form(...),
     description: str = Form(...),
-    image: Optional[UploadFile] = File(None),
+    employment_type: str = Form(...),
+    image: UploadFile = None, 
+    user_id: UUID = Form(...),
     db: Session = Depends(get_db)
 ):
+    # Parse tags from string to list
+    tag_list = None
+    if tags:
+        try:
+            tag_list = json.loads(tags) 
+        except json.JSONDecodeError:
+            tag_list = [tag.strip() for tag in tags.split(',')]  
     
-    return create_job_posting(
+    return await create_job_posting(
         job_title=title,
         company=company,
         salary=salary,
-        tags=tags,
+        tags=tag_list,
         link=link,
         description=description,
+        employment_type=employment_type,
         image=image,
+        user_id=user_id,
         db=db
     )
 
