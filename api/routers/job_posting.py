@@ -67,7 +67,7 @@ def delete_job_posting_endpoint(
     job_posting_id: UUID,
     db: Session = Depends(get_db)
 ):
-    job_posting = db.query(JobPosting).filter(JobPosting.id == job_posting_id).first()
+    job_posting = db.query(JobPosting).filter(JobPosting.post_id == job_posting_id).first()
     
     if not job_posting:
         raise HTTPException(status_code=404, detail="Job posting not found")
@@ -84,7 +84,7 @@ def close_job_posting_endpoint(
     job_posting_id: UUID,
     db: Session = Depends(get_db)
 ):
-    job_posting = db.query(JobPosting).filter(JobPosting.id == job_posting_id).first()
+    job_posting = db.query(JobPosting).filter(JobPosting.post_id == job_posting_id).first()
     
     if not job_posting:
         raise HTTPException(status_code=404, detail="Job posting not found")
