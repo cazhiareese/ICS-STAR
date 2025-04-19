@@ -31,8 +31,6 @@ function AdminRecords() {
   const [sortDirection, setSortDirection] = useState('asc');
   const [orderBy, setOrderBy] = useState('name_asc');
 
-  
-
   const handleSortFieldChange = (field) => {
     setSortBy(field);
     const newParam = `${field}_${sortDirection}`;
@@ -46,6 +44,7 @@ function AdminRecords() {
   };
   
   const params = {
+    name: query,
     order_by: orderBy, 
   };
 
@@ -53,16 +52,9 @@ function AdminRecords() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        console.log(orderBy)
-        console.log(params)
         const queryString = new URLSearchParams(params).toString();
-        console.log(queryString)
         const url = `${API_BASE_URL}/admin/filter/${userType}?${queryString}`
-        
-
-        console.log(url)
         const response = await axios.get(url);
-        console.log(response.data);
         setUsers(response.data);
       } catch (error) {
         console.log('Error getting users');
@@ -73,7 +65,7 @@ function AdminRecords() {
     };
   
     fetchData();
-  }, [userType, sortBy, sortDirection]);
+  }, [userType, sortBy, sortDirection, query]);
   
   // Initial fetch
   useEffect(() => {
@@ -81,12 +73,7 @@ function AdminRecords() {
     setUserType('alum')
   }, []);
   
-  return (
-    loading ? (
-      <div className='flex justify-center items-center h-screen'>
-        <CircularLoading size={90} />
-      </div>
-    ) : 
+  return ( 
       <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
         {/* Records, search, view pending */}
         <div className='justify-between mt-2 lg:mb-8 flex relative'>
@@ -167,9 +154,17 @@ function AdminRecords() {
           </div>
         </div>
         {/* Table for desktop*/}
-        <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
-          <UsersTable data={users}/>
-        </div>
+        {
+          loading ? (
+            <div className="flex justify-center items-center h-screen">
+              <CircularLoading size={90} />
+            </div>
+          ) : (
+            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto">
+              <UsersTable data={users} />
+            </div>
+          )
+        }
       {/* Table for mobile */}
       <div className='flex flex-col lg:hidden overflow-auto'>
         {/* User Card */}
