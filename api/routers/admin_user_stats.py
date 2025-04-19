@@ -1,9 +1,10 @@
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from fastapi import Depends, APIRouter, HTTPException, Query, status
-from sqlalchemy import func
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 from config.database import get_db
-from models.usermodel import User
+from models.usermodel import User, UserTypeEnum
 from routers.admin_account_management import isAdmin
 
 from util.user_information_stats import  employment_class_util, get_active_alumni_stats, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, grouped_by_industry, salary_grade_util, tenure_status_util, unemployment_reason_util, work_mode_util
@@ -25,6 +26,44 @@ async def get_active_batch(db: Session= Depends(get_db), order:Optional[str] = N
     active_batch = get_active_alumni_stats(db, order=order, alumni_general=False)
 
     return{"message": "success", "data": active_batch}
+
+@router.get("/admin/stats/get_active/{batch}")
+async def get_active_batch(db: Session= Depends(get_db), batch:Optional[str] = None):
+    one_year_ago = datetime.now() - timedelta(days=365)
+    query = db.query(
+            func.count().label("total_users"),
+            func.sum(
+                case(
+                    (User.updated_at >= one_year_ago, 1),
+                    else_=0
+                )
+            ).label("active_users"),
+            func.sum(
+                case(
+                    (User.updated_at < one_year_ago, 1),
+                    else_=0
+                )
+            ).label("inactive_users")
+        ).where(User.is_verified == True, User.user_type == 'alumni', func.split_part(User.student_number, '-', 1) == batch, User.student_number.is_not(None)).first()
+
+
+    active_batch = {
+        "total_users": query.total_users,
+        "active_users" : query.active_users,
+        "active_percentage": round((query.active_users/query.total_users)*100, 2) if query.total_users else 0,
+        "inactive_users": query.inactive_users,
+        "inactive_percentage": round((query.inactive_users/query.total_users)*100, 2) if query.total_users else 0,
+    }
+    return{"message": "success", "data": active_batch}
+
+@router.get("/admin/stats/getAllYears")
+async def get_all_years(db: Session=Depends(get_db)):
+    query = db.query(
+        func.split_part(User.student_number, '-', 1).label("batch")
+    ).filter(User.user_type == UserTypeEnum.alumni).distinct().order_by('batch').all()
+    print(query)
+
+    return {"message": "success", "data": [batch[0] for batch in query if batch[0] is not None]}
 
 @router.get("/admin/stats/get_batch_employment")
 async def get_batch_employment(db:Session=Depends(get_db), batch:str=""):

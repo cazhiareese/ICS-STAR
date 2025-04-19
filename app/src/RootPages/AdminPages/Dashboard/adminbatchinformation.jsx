@@ -1,179 +1,296 @@
 import React, {useState, useEffect} from 'react'
-import { useNavigate } from 'react-router-dom'
-import { MoveLeft } from 'lucide-react'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
+import { List, LayoutGrid, MoveLeft, MoveRight} from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { BarChart, Bar, XAxis, YAxis, LabelList } from 'recharts';
 import UsersTable from '../../../components/AdminComponents/userstable';
 import axios from 'axios'
+import SortModal from '../../../components/AdminComponents/sortmodal';
+import OrderToggle from '../../../components/AdminComponents/ordertoggle';
 
 function AdminBatchInformation() {
     const navigate = useNavigate()
+    const { batch } = useParams();
+    const { state } = useLocation(); // From navigate
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  const { count, active, active_percentage, inactive, inactive_percentage } = state || {};
 
+  const [viewStyle, setViewStye] = useState('List')
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(48)
     const [years, setYears] = useState([
-      "2022", "2021", "2020"
     ])
 
     const [employmentData, setEmploymentData]  = useState([
-      { name: 'Employed', value: 78 },
-      { name: 'Self-Employed', value: 25 },
-      { name: 'Unemployed', value: 10 },
-      { name: 'Unemployed with no previous work experience', value: 5 },
+      // { name: 'Employed', value: 78 },
+      // { name: 'Self-Employed', value: 25 },
+      // { name: 'Unemployed', value: 10 },
+      // { name: 'Unemployed with no previous work experience', value: 5 },
     ])
 
     const [unemploymentData, setUnemploymentData]  = useState([
-      { name: 'Cannot Work at Present', value: 25 },
-      { name: 'Pursuing Studies', value: 25 },
-      { name: 'Undergoing training', value: 25 },
-      { name: 'Still looking for work', value: 25 },
+      // { name: 'Cannot Work at Present', value: 25 },
+      // { name: 'Pursuing Studies', value: 25 },
+      // { name: 'Undergoing training', value: 25 },
+      // { name: 'Still looking for work', value: 25 },
     ])
 
     const [jobTitles, setJobTitles] = useState([
-        { title: 'Full-Stack Developer', count: 4578, percent: 3.3 },
-        { title: 'Front-end Developer', count: 3500, percent: 2.5 },
-        { title: 'Back-end Developer', count: 3000, percent: 2.2 },
-        { title: 'Data Scientist', count: 6000, percent: 4.1 },
-        { title: 'Researcher', count: 7000, percent: 5.0 }
+        // { title: 'Full-Stack Developer', count: 4578, percent: 3.3 },
+        // { title: 'Front-end Developer', count: 3500, percent: 2.5 },
+        // { title: 'Back-end Developer', count: 3000, percent: 2.2 },
+        // { title: 'Data Scientist', count: 6000, percent: 4.1 },
+        // { title: 'Researcher', count: 7000, percent: 5.0 }
       ])
 
     const [topIndustries, setTopIndustries] = useState([
-      { title: 'Services', count: 4578, percent: 3.3 },
-      { title: 'Manufacturing', count: 9809, percent: 2.5 },
-      { title: 'Finance', count: 1293, percent: 2.2 },
-      { title: 'Retail', count: 5646, percent: 4.1 },
-      { title: 'Whole Sale', count: 2313, percent: 5.0 }
+      // { title: 'Services', count: 4578, percent: 3.3 },
+      // { title: 'Manufacturing', count: 9809, percent: 2.5 },
+      // { title: 'Finance', count: 1293, percent: 2.2 },
+      // { title: 'Retail', count: 5646, percent: 4.1 },
+      // { title: 'Whole Sale', count: 2313, percent: 5.0 }
     ])
 
     const [topCountries, setTopCountries] = useState([
-      { title: 'Australia', count: 3453, percent: 3.3 },
-      { title: 'Philippines', count: 8976, percent: 2.5 },
-      { title: 'USA', count: 3454, percent: 2.2 },
-      { title: 'France', count: 5675, percent: 4.1 },
-      { title: 'Netherlands', count: 1233, percent: 5.0 }
+      // { title: 'Australia', count: 3453, percent: 3.3 },
+      // { title: 'Philippines', count: 8976, percent: 2.5 },
+      // { title: 'USA', count: 3454, percent: 2.2 },
+      // { title: 'France', count: 5675, percent: 4.1 },
+      // { title: 'Netherlands', count: 1233, percent: 5.0 }
     ])
 
     const [batchUsers, setBatchUsers] = useState([
-      {
-        id: 1,
-        name: "Kiefer Tayawa",
-        batch: 2022,
-        location_base: "Manila, PH",
-        job_title: "Full-Stack Developer",
-        industry: "Full-Stack Developer",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: false,
-      },
-      {
-        id: 2,
-        name: "Alan Turing",
-        batch: 2022,
-        location_base: "Wilmslow, Cheshire",
-        job_title: "Data Science",
-        industry: "Data Science",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: true,
-      },
-      {
-        id: 3,
-        name: "Ada Lovelace",
-        batch: 2022,
-        location_base: "London, England",
-        job_title: "Web Development",
-        industry: "Web Development",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: false,
-      },
-      {
-        id: 4,
-        name: "Alan Turing",
-        batch: 2022,
-        location_base: "Wilmslow, Cheshire",
-        job_title: "Data Science",
-        industry: "Data Science",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: false,
-      },
-      {
-        id: 5,
-        name: "Ada Lovelace",
-        batch: 2022,
-        location_base: "London, England",
-        job_title: "Web Development",
-        industry: "Web Development",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: false,
-      },
-      {
-        id: 6,
-        name: "Alan Turing",
-        batch: 2022,
-        location_base: "Wilmslow, Cheshire",
-        job_title: "Data Science",
-        industry: "Data Science",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: false,
-      },
-      {
-        id: 7,
-        name: "Ada Lovelace",
-        batch: 2022,
-        location_base: "London, England",
-        job_title: "Web Development",
-        industry: "Web Development",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: false,
-      },
-      {
-        id: 8,
-        name: "Alan Turing",
-        batch: 2022,
-        location_base: "Wilmslow, Cheshire",
-        job_title: "Data Science",
-        industry: "Data Science",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: true,
-      },
-      {
-        id: 9,
-        name: "Ada Lovelace",
-        batch: 2022,
-        location_base: "London, England",
-        job_title: "Web Development",
-        industry: "Web Development",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: false,
-      },
-      {
-        id: 10,
-        name: "Ada Lovelace",
-        batch: 2022,
-        location_base: "London, England",
-        job_title: "Web Development",
-        industry: "Web Development",
-        last_updated: "1/1/2020",
-        status: "Inactive",
-        badge: false,
-      },
+      // {
+      //   id: 1,
+      //   name: "Kiefer Tayawa",
+      //   batch: 2022,
+      //   location_base: "Manila, PH",
+      //   job_title: "Full-Stack Developer",
+      //   industry: "Full-Stack Developer",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: false,
+      // },
+      // {
+      //   id: 2,
+      //   name: "Alan Turing",
+      //   batch: 2022,
+      //   location_base: "Wilmslow, Cheshire",
+      //   job_title: "Data Science",
+      //   industry: "Data Science",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: true,
+      // },
+      // {
+      //   id: 3,
+      //   name: "Ada Lovelace",
+      //   batch: 2022,
+      //   location_base: "London, England",
+      //   job_title: "Web Development",
+      //   industry: "Web Development",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: false,
+      // },
+      // {
+      //   id: 4,
+      //   name: "Alan Turing",
+      //   batch: 2022,
+      //   location_base: "Wilmslow, Cheshire",
+      //   job_title: "Data Science",
+      //   industry: "Data Science",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: false,
+      // },
+      // {
+      //   id: 5,
+      //   name: "Ada Lovelace",
+      //   batch: 2022,
+      //   location_base: "London, England",
+      //   job_title: "Web Development",
+      //   industry: "Web Development",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: false,
+      // },
+      // {
+      //   id: 6,
+      //   name: "Alan Turing",
+      //   batch: 2022,
+      //   location_base: "Wilmslow, Cheshire",
+      //   job_title: "Data Science",
+      //   industry: "Data Science",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: false,
+      // },
+      // {
+      //   id: 7,
+      //   name: "Ada Lovelace",
+      //   batch: 2022,
+      //   location_base: "London, England",
+      //   job_title: "Web Development",
+      //   industry: "Web Development",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: false,
+      // },
+      // {
+      //   id: 8,
+      //   name: "Alan Turing",
+      //   batch: 2022,
+      //   location_base: "Wilmslow, Cheshire",
+      //   job_title: "Data Science",
+      //   industry: "Data Science",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: true,
+      // },
+      // {
+      //   id: 9,
+      //   name: "Ada Lovelace",
+      //   batch: 2022,
+      //   location_base: "London, England",
+      //   job_title: "Web Development",
+      //   industry: "Web Development",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: false,
+      // },
+      // {
+      //   id: 10,
+      //   name: "Ada Lovelace",
+      //   batch: 2022,
+      //   location_base: "London, England",
+      //   job_title: "Web Development",
+      //   industry: "Web Development",
+      //   last_updated: "1/1/2020",
+      //   status: "Inactive",
+      //   badge: false,
+      // },
     ])
 
-    const [selectedYear, setSelectedYear] = useState()
-    const [batchTotalCount, setBatchTotalCount] = useState(100)
-    const [batchActiveCount, setBatchActiveCount] = useState(80)
-    const [batchActivePercentage, setBatchActivePercentage] = useState(80)
-    const [batchInactiveCount, setBatchInactiveCount] = useState(20)
-    const [batchInactivePercentage, setBatchInactivePercentage] = useState(20)
+    
+
+    const [selectedYear, setSelectedYear] = useState(batch)
+    const [batchTotalCount, setBatchTotalCount] = useState(count)
+    const [batchActiveCount, setBatchActiveCount] = useState(active)
+    const [batchActivePercentage, setBatchActivePercentage] = useState(active_percentage)
+    const [batchInactiveCount, setBatchInactiveCount] = useState(inactive)
+    const [batchInactivePercentage, setBatchInactivePercentage] = useState(inactive_percentage)
 
     const [statsOrUser, setStatsOrUser] = useState('stats')
 
     const COLORS = ['#0a3d91', '#5a78c8', '#a3b9ec', '#d8e4fa'];
+
+    //sorters
+    const sorters = [
+      { label: 'Name', value: 'name' },
+      { label: 'Batch', value: 'batch' },
+      { label: 'Last Update', value: 'updated' },
+    ];
+    const [sortBy, setSortBy] = useState(sorters[0].value);
+    const [sortDirection, setSortDirection] = useState('asc');
+    const [orderBy, setOrderBy] = useState('name_asc');
+    
+    const handleSortFieldChange = (field) => {
+      setSortBy(field);
+      const newParam = `${field}_${sortDirection}`;
+      setOrderBy(newParam);
+    };
+  
+    const handleDirectionToggle = (newDirection) => {
+      setSortDirection(newDirection);
+      const newParam = `${sortBy}_${newDirection}`;
+      setOrderBy(newParam);
+    };
+
+    useEffect(()=>{
+      const fetchData = async () =>{
+      const allYears = await axios.get(`${API_BASE_URL}/admin/stats/getAllYears`);
+      setYears(allYears.data.data);
+      
+
+      const getActivityCount = await axios.get(`${API_BASE_URL}/admin/stats/get_active/${selectedYear}`);
+      setBatchTotalCount(getActivityCount.data.data.total_users)
+      setBatchActiveCount(getActivityCount.data.data.active_users)
+      setBatchActivePercentage(getActivityCount.data.data.active_percentage)
+      setBatchInactiveCount(getActivityCount.data.data.inactive_users)
+      setBatchInactiveCount(getActivityCount.data.data.inactive_percentage)
+      
+      try {
+        const getemploymentData = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_employment?batch=${selectedYear}`);
+        setEmploymentData(getemploymentData.data?.data || []);
+      } catch (error) {
+          console.warn("No data found for this batch.");
+          setEmploymentData([]); 
+      }
+
+      try{
+      const getunemploymentData = await axios.get(`${API_BASE_URL}/admin/stats/batch/unemployment?batch=${selectedYear}`);
+      setUnemploymentData(getunemploymentData.data.data)
+      }catch (error){
+        console.warn("No data found for this batch.");
+        setUnemploymentData([]); 
+      }
+     
+      try{
+      const getJobTitles = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_jobs?batch=${selectedYear}`)
+      setJobTitles(getJobTitles.data.data)
+      }catch (error){
+        setJobTitles([])
+      }
+
+      try{
+        const getTopIndustries = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_industries?batch=${selectedYear}`)
+        setTopIndustries(getTopIndustries.data.data)
+        }catch (error){
+          setTopIndustries([])
+        }
+      
+        try{
+          const getTopCountries = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_countries?batch=${selectedYear}`)
+          setTopCountries(getTopCountries.data.data)
+          }catch (error){
+            setTopCountries([])
+          }
+        try {
+          const batchParams = new URLSearchParams();
+          batchParams.append('order_by', orderBy);
+          const queryString = batchParams.toString();
+          const getBatchUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_batch_filter?batch=${selectedYear}&${queryString}`)
+          setBatchUsers(getBatchUsers.data.data)
+        }catch (error) {
+          setBatchUsers([])
+        }
+
+    }
+      fetchData();
+    }, [batch])
+
+    useEffect(() => {
+      setSelectedYear(batch)
+    }, [])
+
+    useEffect (() => {
+
+      const fetchUsers = async () => {
+        try {
+          const batchParams = new URLSearchParams();
+          batchParams.append('order_by', orderBy);
+          const queryString = batchParams.toString();
+          const getBatchUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_batch_filter?batch=${selectedYear}&${queryString}`)
+          setBatchUsers(getBatchUsers.data.data)
+        }catch (error) {
+          setBatchUsers([])
+        }
+      } 
+      fetchUsers();
+    }, [sortBy, sortDirection])
+    
+
 
     return (
     <div className='py-6 px-25 overflow-auto max-h-screen'>
@@ -189,7 +306,10 @@ function AdminBatchInformation() {
           {/* Batch selector */}
           <select
             value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
+            onChange={(e) => {
+              setSelectedYear(e.target.value);
+              navigate(`/admin/dashboard/batch-reports/${e.target.value}`)
+            }}
             className="block w-fit px-4 py-2 text-2xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
           >
             <option value="" disabled>Select a year</option>
@@ -235,7 +355,7 @@ function AdminBatchInformation() {
         {statsOrUser === 'stats' ? (
         <div className='flex flex-col gap-2 mt-2'>
           {/* Employment Status */}
-          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {employmentData && employmentData.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Employment Status </h2>
             <div className='flex flex-row h-full'>
               {/* Pie chart */}
@@ -247,7 +367,7 @@ function AdminBatchInformation() {
                       cx="50%"
                       cy="50%"
                       outerRadius="80%"
-                      dataKey="value"
+                      dataKey="count"
                       stroke="none"
                       >
                       {employmentData.map((entry, index) => (
@@ -266,16 +386,16 @@ function AdminBatchInformation() {
                       style={{ backgroundColor: COLORS[index] }}
                       ></span>
                     <span>
-                      {entry.name}
-                      <span className="text-[#0a3d91] ml-1">({entry.value}%)</span>
+                      {entry.status}
+                      <span className="text-[#0a3d91] ml-1">({entry.percentage}%)</span>
                     </span>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
+          </div> : null}
           {/* Reason for unemployment */}
-          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {unemploymentData && unemploymentData.length > 0   ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Employment Status </h2>
             <div className='flex flex-row h-full'>
               {/* Pie chart */}
@@ -287,7 +407,7 @@ function AdminBatchInformation() {
                       cx="50%"
                       cy="50%"
                       outerRadius="80%"
-                      dataKey="value"
+                      dataKey="count"
                       stroke="none"
                       >
                       {unemploymentData.map((entry, index) => (
@@ -306,21 +426,22 @@ function AdminBatchInformation() {
                       style={{ backgroundColor: COLORS[index] }}
                       ></span>
                     <span>
-                      {entry.name}
-                      <span className="text-[#0a3d91] ml-1">({entry.value}%)</span>
+                      {entry.work_mode}
+                      <span className="text-[#0a3d91] ml-1">({entry.percentage}%)</span>
                     </span>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
+          </div> : null }
           {/* Brief statistics divider */}
+          { jobTitles && jobTitles.length > 0 && topIndustries && topIndustries.length > 0  ?
           <div className='w-full flex flex-row items-center'>
             <h3 className='font-satoshi-medium text-xl'> Brief Work Statistics </h3>
             <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
-          </div>
+          </div> :  null }
           {/* Top Job Titles */}
-          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {jobTitles && jobTitles.length > 0  ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Job Titles </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -332,7 +453,7 @@ function AdminBatchInformation() {
                   <XAxis type="number" hide />
                   <YAxis
                     type="category"
-                    dataKey="title"
+                    dataKey="job_title"
                     tick={{ fill: "#5A5673", fontSize:10}}
                     axisLine={false}
                     tickLine={false}
@@ -347,13 +468,15 @@ function AdminBatchInformation() {
                       <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
                     ))}
                     {/* <LabelList dataKey="count" position="right" fill="#000" fontSize={14} /> */}
+
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div> : null
+          }
           {/* Top Industries */}
-          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          { topIndustries && topIndustries.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Industries </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -365,7 +488,7 @@ function AdminBatchInformation() {
                   <XAxis type="number" hide />
                   <YAxis
                     type="category"
-                    dataKey="title"
+                    dataKey="industry"
                     tick={{ fill: "#5A5673", fontSize:10}}
                     axisLine={false}
                     tickLine={false}
@@ -384,13 +507,14 @@ function AdminBatchInformation() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div>: null }
           {/* Brief location statistics divider */}
-          <div className='w-full flex flex-row items-center'>
+          {topCountries && topCountries.length > 0? <div className='w-full flex flex-row items-center'>
             <h3 className='font-satoshi-medium text-xl'> Brief Location Statistics </h3>
             <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
-          </div>
+          </div> : null }
           {/* Top Counties */}
+          {topCountries && topCountries.length > 0? 
           <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Countries </h2>
             <div className='h-full w-full '>
@@ -403,7 +527,7 @@ function AdminBatchInformation() {
                   <XAxis type="number" hide />
                   <YAxis
                     type="category"
-                    dataKey="title"
+                    dataKey="country"
                     tick={{ fill: "#5A5673", fontSize:10}}
                     axisLine={false}
                     tickLine={false}
@@ -422,12 +546,47 @@ function AdminBatchInformation() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div>: null }
         </div>
-        ) : ( 
+        ) : (
+          <>
+          <div className='flex gap-2'>
+            
+            <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
+          
+            {/* Order by */}
+            <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
+           
+            {/* View changer */}
+            <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
+              {/* List View Button */}
+              <button className="px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
+                <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
+              </button>
+              <div className="h-6 w-px bg-disabled"></div>
+              {/* Grid View Button */}
+              <button className="px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
+                <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
+              </button>
+            </div>
+            {/* Page */}
+            <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
+              <MoveLeft className='cursor-pointer' onClick={() => {}}/>
+                <p> Page </p>
+                <input
+                  type="text"
+                  value={page}
+                  onChange={() => {}}
+                  className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
+                />
+              <p>of {totalPages}</p>
+              <MoveRight className='cursor-pointer' onClick={() => {}}/>
+            </div>
+          </div>
           <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
             <UsersTable data={batchUsers}/>
           </div>
+          </>
         )}
       </div>
     </div>

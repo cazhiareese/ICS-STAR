@@ -300,7 +300,17 @@ function AdminAlumniInfo() {
                   const inactivePercentage = ((row.inactive_users / row.total_users) * 100).toFixed(0);
                   
                   return (
-                    <tr key={index} className="text-sm cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`)}}>
+                    <tr key={index} className="text-sm cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`, 
+                      {
+                        state: {
+                          batch: row.batch,
+                          count: row.total_users,
+                          active: row.active_users,
+                          active_percentage: row.active_users_percentage,
+                          inactive: row.inactive_users,
+                          inactive_percentage: row.inactive_users_percentage
+                        },
+                    })}}>
                       <td className="p-2">{row.batch}</td>
                       <td className="p-2">{row.total_users}</td>
                       <td className="p-2">
