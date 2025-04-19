@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import UsersTable from '../../../components/AdminComponents/userstable';
+import SortModal from '../../../components/AdminComponents/sortmodal';
+import OrderToggle from '../../../components/AdminComponents/ordertoggle';
 
 function AdminRecords() {
   const navigate = useNavigate()
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const [userType, setUserType] = useState('alum')
   const [page, setPage] = useState(1)
@@ -15,18 +18,50 @@ function AdminRecords() {
   const [maxRows, setMaxRows] = useState(12)
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false)
-
   // For the search
+  const filters = [
+    { label: 'Name', value: 'name' },
+    { label: 'Batch', value: 'batch' },
+    { label: 'Last Update', value: 'updated' },
+  ];
+
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
+  const [sortBy, setSortBy] = useState(filters[0].value);
+  const [sortDirection, setSortDirection] = useState('asc');
+  const [orderBy, setOrderBy] = useState('name_asc');
 
-  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   
+
+  const handleSortFieldChange = (field) => {
+    setSortBy(field);
+    const newParam = `${field}_${sortDirection}`;
+    setOrderBy(newParam);
+  };
+
+  const handleDirectionToggle = (newDirection) => {
+    setSortDirection(newDirection);
+    const newParam = `${sortBy}_${newDirection}`;
+    setOrderBy(newParam);
+  };
+  
+  const params = {
+    order_by: orderBy, 
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/filter/${userType}`);
+        console.log(orderBy)
+        console.log(params)
+        const queryString = new URLSearchParams(params).toString();
+        console.log(queryString)
+        const url = `${API_BASE_URL}/admin/filter/${userType}?${queryString}`
+        
+
+        console.log(url)
+        const response = await axios.get(url);
         console.log(response.data);
         setUsers(response.data);
       } catch (error) {
@@ -38,7 +73,7 @@ function AdminRecords() {
     };
   
     fetchData();
-  }, [userType]);
+  }, [userType, sortBy, sortDirection]);
   
   // Initial fetch
   useEffect(() => {
@@ -93,10 +128,12 @@ function AdminRecords() {
           </div>
           {/* Sort by */}
           <div className='flex gap-2'>
-            <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
-              <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
-                <p className='font-satoshi-medium text-primary block'>Name</p>
-            </button>
+            
+            <SortModal filters={filters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
+          
+            {/* Order by */}
+            <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
+
             {/* Filter */}
             <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
               <Filter className='text-primary'/>
