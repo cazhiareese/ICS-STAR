@@ -146,6 +146,11 @@ def process_alumni_onboarding(
             new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
             db.add_all(new_skills)
         
+        if employment_status.value == "unemployed":
+            new_reasons = [UnemploymentReason(user_id=user.user_id, reason=reason) for reason in reasons]
+            db.add_all(new_reasons)
+
+        
         user.industry = industry
         user.employment_status = employment_status if employment_status else None
         user.company_name = company_name
