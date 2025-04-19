@@ -83,10 +83,11 @@ async def edit_job_posting(
         tags: Optional[List[str]],
         link: str,
         description: str,
+        employment_type: str,
         image: Optional[UploadFile],
         db: Session
 ):
-    job_posting = db.query(JobPosting).filter(JobPosting.job_posting_id == job_posting_id).first()
+    job_posting = db.query(JobPosting).filter(JobPosting.post_id == job_posting_id).first()
 
     if not job_posting:
         raise HTTPException(status_code=404, detail="Job posting not found.")
@@ -116,18 +117,19 @@ async def edit_job_posting(
     job_posting.salary = salary
     job_posting.link = link
     job_posting.description = description
+    job_posting.employment_type = employment_type
     job_posting.image = image_url
 
     db.commit()
     db.refresh(job_posting)
 
     # Clear existing tags and add new ones
-    db.query(JobPostingTag).filter(JobPostingTag.job_posting_id == job_posting.job_posting_id).delete()
+    db.query(JobPostingTag).filter(JobPostingTag.post_id == job_posting.post_id).delete()
     
     if tags:
         for tag in tags:
             job_posting_tag = JobPostingTag(
-                job_posting_id=job_posting.job_posting_id,
+                post_id=job_posting.post_id,
                 tag=tag
             )
             db.add(job_posting_tag)

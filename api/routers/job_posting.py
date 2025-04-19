@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from models.usermodel import User
 from schemas.job_posting_schema import JobPostingOut
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
-from util.job_posting_util import create_job_posting
+from util.job_posting_util import create_job_posting, edit_job_posting
 from config.database import get_db
 
 router = APIRouter()
@@ -49,26 +49,35 @@ async def create_job_posting_endpoint(
 
 # Edit job posting
 @router.put("/edit-job-postings/{job_posting_id}")
-def edit_job_posting_endpoint(
+async def edit_job_posting_endpoint(
     job_posting_id: UUID,
     title: str = Form(...),
     company: str = Form(...),
     salary: Optional[float] = Form(None),
-    tags: Optional[List[str]] = Form(None),
+    tags: str = Form(None), 
     link: str = Form(...),
     description: str = Form(...),
-    image: Optional[UploadFile] = File(None),
+    employment_type: str = Form(...),
+    image: Optional[UploadFile] = None,  
     db: Session = Depends(get_db)
 ):
-    
-    return create_job_posting(
+    # Parse tags from string to list
+    tag_list = None
+    if tags:
+        try:
+            tag_list = json.loads(tags)
+        except json.JSONDecodeError:
+            tag_list = [tag.strip() for tag in tags.split(',')]
+
+    return await edit_job_posting(
         job_posting_id=job_posting_id,
         job_title=title,
         company=company,
         salary=salary,
-        tags=tags,
+        tags=tag_list,
         link=link,
         description=description,
+        employment_type=employment_type,
         image=image,
         db=db
     )
