@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from config.database import get_db
-from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, get_confirmed_events_by_user
+from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, get_confirmed_events_by_user, cancel_event_rsvp
 from uuid import UUID
 from models.usermodel import User
 from util.userutil import get_current_user
@@ -30,6 +30,18 @@ def rsvp_to_event(event_id: UUID, user: User = Depends(get_current_user), db: Se
         return rsvp
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@router.delete("/events/{event_id}/cancel-rsvp", status_code=200)
+def cancel_rsvp(event_id: UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+
+    if user.user_type != user.user_type.alumni:
+        raise HTTPException(status_code=400, detail="For alumni only")
+    
+    try:
+        result = cancel_event_rsvp(db, user_id=user.user_id, event_id=event_id)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/events/confirmed", response_model=List[EventOut])
 def get_user_confirmed_events(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
