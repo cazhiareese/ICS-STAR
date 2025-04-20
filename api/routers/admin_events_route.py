@@ -166,7 +166,7 @@ async def edit_event(
 @event_router.get("/{eventId}")
 async def get_event_by_id(eventId: UUID, db:Session=Depends(get_db)):
     try:
-        event = db.query(Event.event_id, Event.title, Event.image, Event.location, Event.description).filter(Event.event_id==eventId).first()
+        event = db.query(Event.event_id, Event.title, Event.image, Event.location, Event.description, Event.is_closed, Event.is_concluded).filter(Event.event_id==eventId).first()
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Event not found: {e}")
     
@@ -204,5 +204,24 @@ async def get_event_by_id(eventId: UUID, db:Session=Depends(get_db)):
         "description": event.description, 
         "datetime": dates_list,
         "links": links_list,
-        "tags": tags_list
+        "tags": tags_list,
+        "is_closed": event.is_closed,
+        "is_concluded": event.is_concluded
     }}
+
+@event_router.put("/close/{event_id}")
+async def close_event(event_id: UUID, db: Session = Depends(get_db)):
+
+    event = db.query(Event).filter(Event.event_id == event_id).first()
+    event.is_closed = True
+    db.commit()
+    db.refresh(event)
+    return {"message": "success closing event", "id": event.event_id}
+
+@event_router.put("/delete/{event_id}")
+async def delete_event(event_id: UUID, db: Session=Depends(get_db)):
+    event = db.query(Event).filter(Event.event_id == event_id).first()
+    event.is_deleted= True
+    db.commit()
+    db.refresh(event)
+    return {"message": "success deleting event", "id": event.event_id}
