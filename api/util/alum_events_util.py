@@ -59,6 +59,7 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
         .join(EventConfirmedBy, Event.event_id == EventConfirmedBy.event_id)
         .filter(EventConfirmedBy.user_id == user_id)
         .filter(Event.is_deleted == False)
+        .filter(Event.is_concluded == False)
         .all()
     )
 
