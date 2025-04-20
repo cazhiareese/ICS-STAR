@@ -1,9 +1,11 @@
+from fastapi import HTTPException
 from typing import List
 from sqlalchemy import distinct, or_, asc, func
 from sqlalchemy.orm import Session
 from models.event_model import Event, EventConfirmedBy, EventDate
 from uuid import UUID
 from datetime import datetime, timezone
+from schemas.events_schema import OneEventOut
 
 
 def fetch_event_suggestions(db: Session, query_text: str, limit: int = 5) -> List[str]:
@@ -78,3 +80,28 @@ def get_confirmed_events_by_user(user_id: str, db: Session):
     )
 
     return query.all()
+
+def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
+    event = (
+        db.query(Event)
+        .filter(Event.event_id == event_id)
+        .filter(Event.is_deleted == False)
+        .filter(Event.is_closed == False)
+        .first()
+    )
+
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    dates = event.dates
+
+    return OneEventOut(
+        event_id=event.event_id,
+        title=event.title,
+        description=event.description,
+        image=event.image,
+        location=event.location,
+        datetimes=[d.date for d in dates],
+        links=[link.link for link in event.links],
+        tags=[tag.tag for tag in event.tags],
+    )
