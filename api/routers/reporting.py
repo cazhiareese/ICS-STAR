@@ -1,9 +1,11 @@
+from typing import Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
+from util.job_posting_util import create_report_with_attachment
 from schemas.report_schema import ReportOut, ReportAttachmentOut
 from models.report_model import Report, ReportAttachment
 from config.database import get_db
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, File
 from util.userutil import get_current_active_user
 from uuid import UUID
 
@@ -39,19 +41,6 @@ async def read_user_reports(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No user reports found")
     return [ReportOut.model_validate(report) for report in reports]
 
-
-# TODO: Implement this route when the Post model is created
-
-# Get all reports that are for posts
-# Arguments: db - SQLAlchemy session
-# Returns: a list of all reports that are for posts
-# @router.get("/reports/posts", response_model=list[ReportOut])
-# async def read_post_reports(db: Session = Depends(get_db)):
-#     reports = db.query(Report).filter(Report.reported_post_id.isnot(None)).all()
-#     if reports is None:
-#         raise HTTPException(status_code=404, detail="No post reports found")
-#     return [ReportOut.model_validate(report) for report in reports]
-
 # Get all attachments for a report
 # Arguments: db - SQLAlchemy session, report_id - the report ID
 # Returns: a list of all attachments for the report
@@ -84,28 +73,26 @@ async def report_user(
     db.refresh(new_report)
     return {"message": "User reported", "report_id": new_report.report_id}
 
-# TODO: Implement this route when the Post model is created
 # Report a post
 # Arguments: db - SQLAlchemy session, report - the report
 # Returns: a message confirming the report
-# @router.post("/reports/report-post")
-# async def report_post(
-#     reported_post_id: UUID,
-#     reason: str,
-#     reporter_id: get_current_active_user = Depends(get_current_active_user),
-#     status: str = "pending",
-#     db: Session = Depends(get_db)
-#     ):
-#     new_report = Report(
-#         reporter_id=reporter_id,
-#         reported_post_id=reported_post_id,
-#         reason=reason,
-#         status=status
-#     )
-#     db.add(new_report)
-#     db.commit()
-#     db.refresh(new_report)
-#     return {"message": "Post reported", "report_id": new_report.report_id}
+@router.post("/reports/report-job-post", response_model=ReportOut, status_code=201)
+async def report_job_post(
+    post_id: UUID = Form(...),
+    reason: str = Form(...),
+    attachment: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db),
+    # current_user = Depends(JWTBearer())
+    current_user = UUID
+):
+
+    return await create_report_with_attachment(
+        db=db,
+        reporter_id=current_user,
+        reported_post_id=post_id,
+        reason=reason,
+        attachment=attachment
+    )
 
 # Add an attachment to a report
 # Arguments: db - SQLAlchemy session, attachment - the attachment
