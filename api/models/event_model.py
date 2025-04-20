@@ -18,6 +18,7 @@ class Event(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     confirmed_by = relationship("EventConfirmedBy", foreign_keys="[EventConfirmedBy.event_id]", back_populates="event")
+    dates = relationship("EventDate", foreign_keys="[EventDate.event_id]", back_populates="event")
 
 class EventConfirmedBy(Base):
     __tablename__ = "event_confirmed_by"
@@ -29,3 +30,13 @@ class EventConfirmedBy(Base):
 
     event = relationship("Event", foreign_keys=[event_id], back_populates="confirmed_by")
     user = relationship("User", foreign_keys=[user_id], back_populates="confirmed_events")
+    
+class EventDate(Base):
+    __tablename__ = "event_date"
+
+    event_id = Column(UUID(as_uuid=True), ForeignKey("event.event_id"), primary_key=True)
+    date = Column(DateTime(timezone=True), primary_key=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    event = relationship("Event", foreign_keys=[event_id], back_populates="dates")
