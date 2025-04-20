@@ -79,6 +79,7 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
             "image": event.image,
             "description": event.description,
             "location": event.location,
+            "is_closed": event.is_closed,
             "dates": [d.isoformat() for d in future_dates],
             "tags": tags
         })
@@ -106,7 +107,55 @@ def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
         description=event.description,
         image=event.image,
         location=event.location,
+        is_closed=event.is_closed,
         datetimes=[d.date for d in dates],
         links=[link.link for link in event.links],
         tags=[tag.tag for tag in event.tags],
     )
+
+def get_visible_events_for_user(user_id: UUID, db: Session):
+    now = datetime.now(timezone.utc)
+
+    visible_event_ids = (
+        db.query(EventVisibleTo.event_id)
+        .filter(EventVisibleTo.user_id == user_id)
+        .subquery()
+    )
+
+    events = (
+        db.query(Event)
+        .filter(Event.is_deleted == False)
+        .filter(
+            or_(
+                Event.is_all == True,
+                Event.event_id.in_(visible_event_ids.select())
+            )
+        )
+        .all()
+    )
+
+    event_list = []
+
+    for event in events:
+        future_dates = sorted(
+            [dt.date for dt in event.dates if dt.date >= now]
+        )
+        if not future_dates:
+            continue
+
+        tags = [tag.tag for tag in event.tags]
+
+        event_list.append({
+            "event_id": event.event_id,
+            "title": event.title,
+            "image": event.image,
+            "description": event.description,
+            "location": event.location,
+            "is_closed": event.is_closed,
+            "dates": [d for d in future_dates],
+            "tags": tags
+        })
+
+    sorted_events = sorted(event_list, key=lambda e: e["dates"][0])
+
+    return [EventOut(**e) for e in sorted_events]
