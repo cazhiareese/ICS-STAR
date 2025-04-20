@@ -17,7 +17,8 @@ const AlumniAffiliationFilter = ({
   setIsSeeAllAffiliationOpen
 }) => {
   const [affiliations, setAffiliations] = useState([]); 
-  // const [isOpen, setIsOpen] = useState(false);
+
+  // BASE URL ENV
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   // cache reference
   const cache = useRef({});
@@ -149,7 +150,7 @@ const AlumniAffiliationFilter = ({
         <div className="flex flex-row px-12 pb-3 pt-5">
           <h1 className="flex-1 text-gray-400">Suggestions</h1>
           <button onClick={() => setIsSeeAllAffiliationOpen(true)}>
-            <h1 className="underline text-primary">See all</h1>
+            <h1 className="underline text-primary hover:text-blue-700 cursor-pointer">See all</h1>
           </button>
         </div>
 

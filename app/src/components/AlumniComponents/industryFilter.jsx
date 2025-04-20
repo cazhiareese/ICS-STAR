@@ -148,7 +148,7 @@ const AlumniIndustryFilter = ({
         <div className="flex flex-row px-12 pb-3 pt-5">
           <h1 className="flex-1 text-gray-400">Suggestions</h1>
           <button onClick={() => setIsSeeAllIndustryOpen(true)}>
-            <h1 className="underline text-primary">See all</h1>
+            <h1 className="underline text-primary hover:text-blue-700 cursor-pointer">See all</h1>
           </button>
         </div>
 
