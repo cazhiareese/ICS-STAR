@@ -8,7 +8,7 @@ from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, Ev
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from util.admin_events_util import create_event_util, edit_event_util
+from util.admin_events_util import create_event_util, edit_event_util, get_demographics
 from config.database import get_db
 
 event_router = APIRouter(
@@ -376,3 +376,11 @@ def rsvp_clicks_count(event_id: UUID, db: Session = Depends(get_db)):
     rsvp_count = db.query(EventConfirmedBy.user_id).filter(EventConfirmedBy.event_id == event_id).count()
     
     return {"rsvp_count": rsvp_count}
+
+@event_router.get("/demographics/{event_id}")
+def demographics_by_batch(event_id: UUID, db: Session = Depends(get_db)):
+    try:
+        result = get_demographics(event_id, db)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
