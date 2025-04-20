@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from config.database import get_db
-from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, get_confirmed_events_by_user, cancel_event_rsvp, get_event_by_id
+from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, get_confirmed_events_by_user, cancel_event_rsvp, get_event_by_id, get_visible_events_for_user
 from uuid import UUID
 from models.usermodel import User
 from util.userutil import get_current_user
@@ -55,3 +55,11 @@ def get_user_confirmed_events(user: User = Depends(get_current_user), db: Sessio
 @router.get("/one-event/{event_id}", response_model=OneEventOut)
 def get_event(event_id: UUID, db: Session = Depends(get_db)):
     return get_event_by_id(event_id, db)
+
+@router.get("/events-visible-to", response_model=List[EventOut])
+def get_visible_events(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    
+    if user.user_type != user.user_type.alumni:
+        raise HTTPException(status_code=400, detail="For alumni only")
+    
+    return get_visible_events_for_user(user.user_id, db)
