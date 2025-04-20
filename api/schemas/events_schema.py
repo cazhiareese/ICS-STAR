@@ -29,3 +29,7 @@ class OneEventOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class DemographicsOut(BaseModel):
+    batch: str
+    rsvp_count: int
