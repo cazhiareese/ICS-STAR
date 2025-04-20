@@ -7,6 +7,7 @@ from models.usermodel import User, UserAffiliation
 from config.config import STORAGE_STRING, supabase_client
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
+from schemas.events_schema import DemographicsOut
 from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, EventTag, EventVisibleTo
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -298,14 +299,20 @@ async def edit_event_util (
     return event
 
 
+def get_demographics(event_id: str, db: Session) -> List[DemographicsOut]:
+    batch_year_expr = func.substr(User.student_number, 1, 4)
 
+    query = (
+        db.query(
+            batch_year_expr.label("batch"),
+            func.count(EventConfirmedBy.user_id).label("rsvp_count")
+        )
+        .join(EventConfirmedBy, EventConfirmedBy.user_id == User.user_id)
+        .filter(EventConfirmedBy.event_id == event_id)
+        .filter(User.student_number.isnot(None))
+        .group_by(batch_year_expr)
+        .order_by(batch_year_expr)
+    )
+    results = query.all()
 
-
-        
-   
-
-
-    
-
-    
-    
+    return [{"batch": r.batch, "rsvp_count": r.rsvp_count} for r in results]
