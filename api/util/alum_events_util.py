@@ -2,10 +2,10 @@ from fastapi import HTTPException
 from typing import List
 from sqlalchemy import distinct, or_, asc, func
 from sqlalchemy.orm import Session
-from models.event_model import Event, EventConfirmedBy, EventDate
+from models.event_model import Event, EventConfirmedBy, EventDate, EventVisibleTo
 from uuid import UUID
 from datetime import datetime, timezone
-from schemas.events_schema import OneEventOut
+from schemas.events_schema import OneEventOut, EventOut
 
 
 def fetch_event_suggestions(db: Session, query_text: str, limit: int = 5) -> List[str]:
@@ -51,35 +51,41 @@ def cancel_event_rsvp(db: Session, user_id: UUID, event_id: UUID):
 
     return {"success": True, "message": "RSVP cancelled"}
 
-def get_confirmed_events_by_user(user_id: str, db: Session):
+def get_confirmed_events_by_user(user_id: UUID, db: Session):
     now = datetime.now(timezone.utc)
 
-    subquery = (
-        db.query(
-            EventDate.event_id,
-            func.min(EventDate.date).label("next_event_date")
-        )
-        .filter(EventDate.date >= now)
-        .group_by(EventDate.event_id)
-        .subquery()
-    )
-
-    query = (
-        db.query(
-            Event.event_id,
-            Event.title,
-            Event.description,
-            Event.location,
-            subquery.c.next_event_date.label("event_datetime")
-        )
+    events = (
+        db.query(Event)
         .join(EventConfirmedBy, Event.event_id == EventConfirmedBy.event_id)
-        .join(subquery, Event.event_id == subquery.c.event_id)
         .filter(EventConfirmedBy.user_id == user_id)
         .filter(Event.is_deleted == False)
-        .order_by(asc(subquery.c.next_event_date))
+        .all()
     )
 
-    return query.all()
+    event_list = []
+
+    for event in events:
+        future_dates = sorted(
+            [dt.date for dt in event.dates if dt.date >= now]
+        )
+        if not future_dates:
+            continue
+
+        tags = [tag.tag for tag in event.tags]
+
+        event_list.append({
+            "event_id": event.event_id,
+            "title": event.title,
+            "image": event.image,
+            "description": event.description,
+            "location": event.location,
+            "dates": [d.isoformat() for d in future_dates],
+            "tags": tags
+        })
+
+    sorted_events = sorted(event_list, key=lambda e: e["dates"][0])
+
+    return [EventOut(**e) for e in sorted_events]
 
 def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
     event = (
