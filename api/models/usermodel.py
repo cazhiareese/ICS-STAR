@@ -106,8 +106,7 @@ class User(Base):
    job_postings = relationship("JobPosting", foreign_keys="[JobPosting.user_id]", back_populates="user", lazy="joined")
    interested_job_postings = relationship("JobPostingInterestedIn", foreign_keys="[JobPostingInterestedIn.user_id]", back_populates="user", lazy="joined")
    applied_job_postings = relationship("AppliesFor", foreign_keys="[AppliesFor.user_id]", back_populates="user", lazy="joined")
-   
-   
+   confirmed_events = relationship("EventConfirmedBy", foreign_keys="[EventConfirmedBy.user_id]",back_populates="user", lazy="joined")   
    
 class UnemploymentReason(Base):
    __tablename__ = 'unemployment_reason'
