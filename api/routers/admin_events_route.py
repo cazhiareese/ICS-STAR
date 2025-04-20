@@ -15,6 +15,13 @@ user_router = APIRouter(
     tags=["Admin Events"],
     responses={404: {"description": "Not found"}},
 )
+def clean_input(value):
+    if isinstance(value, list) and len(value) == 1:
+        if "," in value[0]:
+            return [v.strip() for v in value[0].split(",") if v.strip()]
+        else:
+            return [value[0].strip()] if value[0].strip() else []
+    return value
 
 @user_router.post( "/create")
 # INCLUDE TIME
@@ -63,13 +70,11 @@ async def create_event(
             raise HTTPException(status_code=400, detail=f"Invalid date/time format: {e}")
             
         
-        if tags and isinstance(tags, list) and len(tags) == 1:
-            if "," in tags[0]:
-                tags = [tag.strip() for tag in tags[0].split(",") if tag.strip()]
+        tags = clean_input(tags)
+        links = clean_input(links)
+        job = clean_input(job)
+        affliation = clean_input(affliation)
 
-        if links and isinstance(links, list) and len(links) == 1:
-            if "," in links[0]:
-                links = [link.strip() for link in links[0].split(",") if link.strip()]
         await create_event_util(
                         db=db, 
                         title=title, 

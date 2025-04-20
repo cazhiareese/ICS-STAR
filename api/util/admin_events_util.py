@@ -25,6 +25,9 @@ async def create_event_util(
     job: Optional[List[str]], #can handle multi jobs  
     db: Session 
 ):
+    print(batch)
+    print(affliation)
+    print(job)
     if image:
         file = image.file.read()
         if len(file) > MAX_FILE_SIZE:
@@ -97,6 +100,7 @@ async def create_event_util(
     visibleSet = set()
 
     if batch and len(batch) > 0:
+        print("Entered batch")
         query = db.query(User.user_id)\
             .filter(func.split_part(User.student_number, '-', 1) == batch)\
             .distinct()\
@@ -105,6 +109,7 @@ async def create_event_util(
         visibleSet.update(batchFiltered)
 
     if affliation and len(affliation) > 0:
+        print(affliation)
         affiliation_subquery = db.query(UserAffiliation.user_id)\
             .filter(or_(*[UserAffiliation.affiliation.ilike(f"%{a}%") for a in affliation]))\
             .distinct()\
@@ -113,6 +118,7 @@ async def create_event_util(
         visibleSet.update(affliationFiltered)
 
     if job and len(job) > 0:
+        print("Entered job")
         job_subquery = db.query(User.user_id)\
             .filter(or_(*[User.job_title == j for j in job]))\
             .distinct()\
@@ -121,6 +127,7 @@ async def create_event_util(
         visibleSet.update(jobFiltered)
 
     if employmentStatus and len(employmentStatus) > 0:
+        print("Entered employment")
         status_subQuery = db.query(User.user_id)\
             .filter(User.employment_status == employmentStatus)\
             .distinct()\
@@ -130,7 +137,7 @@ async def create_event_util(
 
     visibleList = list(visibleSet)
     
-
+    print(visibleList)
     if visibleList and len(visibleList)>0:
         for userId in visibleList:
             available_rsvp = EventVisibleTo(
