@@ -82,13 +82,12 @@ async def report_job_post(
     reason: str = Form(...),
     attachment: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
-    # current_user = Depends(JWTBearer())
-    current_user = UUID
+    current_user = Depends(get_current_active_user)
 ):
 
     return await create_report_with_attachment(
         db=db,
-        reporter_id=current_user,
+        reporter_id=current_user.user_id,
         reported_post_id=post_id,
         reason=reason,
         attachment=attachment

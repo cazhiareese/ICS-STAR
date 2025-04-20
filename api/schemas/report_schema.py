@@ -34,3 +34,14 @@ class ReportAttachmentOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ReportedJobPostingOut(BaseModel):
+    post_id: UUID
+    title: str
+    date_posted: datetime
+    user_name: str
+    interested_count: int
+    report_count: int
+    
+    class Config:
+        from_attributes = True

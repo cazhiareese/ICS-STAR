@@ -2,11 +2,13 @@ import json
 from uuid import UUID
 from fastapi import Depends, HTTPException, APIRouter, Form, UploadFile, File
 from typing import Optional, List
-from sqlalchemy import func
+from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
 from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut
+from schemas.report_schema import ReportedJobPostingOut
+from models.report_model import Report
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
 from util.job_posting_util import create_job_posting, edit_job_posting
 from config.database import get_db
@@ -263,6 +265,43 @@ def get_closed_job_postings(
             "title": row.title,
             "user_name": row.user_name,
             "interested_count": row.interested_count
+        })
+    
+    return result
+
+@router.get("/admin/job-postings/reported", response_model=List[ReportedJobPostingOut])
+def get_reported_job_postings(
+    db: Session = Depends(get_db),
+):
+    
+    query_result = db.query(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.date_posted, 
+        func.concat(User.first_name, ' ', User.last_name).label('user_name'),
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count'),
+        func.count(func.distinct(Report.report_id)).label('report_count')
+    ).join(
+        User, JobPosting.user_id == User.user_id
+    ).join(
+        Report, Report.reported_post_id == JobPosting.post_id
+    ).outerjoin(
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPosting.is_deleted == False
+    ).group_by(
+        JobPosting.post_id, JobPosting.title, JobPosting.date_posted, 'user_name' 
+    ).all()
+    
+    result = []
+    for row in query_result:
+        result.append({
+            "post_id": row.post_id,
+            "date_posted": row.date_posted,
+            "title": row.title,
+            "user_name": row.user_name,
+            "interested_count": row.interested_count,
+            "report_count": row.report_count
         })
     
     return result
