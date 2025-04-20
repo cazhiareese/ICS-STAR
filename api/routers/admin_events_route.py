@@ -1,5 +1,3 @@
-
-
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
 from datetime import date, datetime
@@ -370,3 +368,11 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
         })
     
     return {"message": "success", "data": processed_events}
+
+
+@event_router.get("/rsvp-clicks-count/{event_id}")
+def rsvp_clicks_count(event_id: UUID, db: Session = Depends(get_db)):
+    
+    rsvp_count = db.query(EventConfirmedBy.user_id).filter(EventConfirmedBy.event_id == event_id).count()
+    
+    return {"rsvp_count": rsvp_count}
