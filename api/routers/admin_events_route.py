@@ -1,5 +1,5 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
+from typing import List, Optional, Literal
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, Query
 from datetime import date, datetime
 import pytz
 from sqlalchemy import asc, desc, func
@@ -378,9 +378,14 @@ def rsvp_clicks_count(event_id: UUID, db: Session = Depends(get_db)):
     return {"rsvp_count": rsvp_count}
 
 @event_router.get("/demographics/{event_id}")
-def demographics_by_batch(event_id: UUID, db: Session = Depends(get_db)):
+def demographics_by_batch(
+    event_id: UUID,
+    db: Session = Depends(get_db),
+    sort_by: Literal["batch", "rsvp"] = Query("batch", description="Sort by batch or rsvp"),
+    order: Literal["asc", "desc"] = Query("asc", description="Sort order asc or desc")
+):
     try:
-        result = get_demographics(event_id, db)
+        result = get_demographics(event_id, db, sort_by, order)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
