@@ -6,9 +6,11 @@ from typing import List
 class EventOut(BaseModel):
     event_id: UUID
     title: str
+    image: str
     description: str
     location: str
-    event_datetime: datetime
+    dates: List[datetime]
+    tags: List[str]
 
     class Config:
         from_attributes = True
