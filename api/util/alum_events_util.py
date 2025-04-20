@@ -1,9 +1,9 @@
 from typing import List
-from sqlalchemy import distinct, or_
+from sqlalchemy import distinct, or_, asc, func
 from sqlalchemy.orm import Session
-from models.event_model import Event, EventConfirmedBy
-from sqlalchemy.exc import IntegrityError
+from models.event_model import Event, EventConfirmedBy, EventDate
 from uuid import UUID
+from datetime import datetime, timezone
 
 
 def fetch_event_suggestions(db: Session, query_text: str, limit: int = 5) -> List[str]:
@@ -37,3 +37,33 @@ def confirm_event_rsvp(db: Session, user_id: UUID, event_id: UUID) -> EventConfi
     db.refresh(rsvp)
     
     return {"success": True, "message": "RSVP confirmed"}
+
+def get_confirmed_events_by_user(user_id: str, db: Session):
+    now = datetime.now(timezone.utc)
+
+    subquery = (
+        db.query(
+            EventDate.event_id,
+            func.min(EventDate.date).label("next_event_date")
+        )
+        .filter(EventDate.date >= now)
+        .group_by(EventDate.event_id)
+        .subquery()
+    )
+
+    query = (
+        db.query(
+            Event.event_id,
+            Event.title,
+            Event.description,
+            Event.location,
+            subquery.c.next_event_date.label("event_datetime")
+        )
+        .join(EventConfirmedBy, Event.event_id == EventConfirmedBy.event_id)
+        .join(subquery, Event.event_id == subquery.c.event_id)
+        .filter(EventConfirmedBy.user_id == user_id)
+        .filter(Event.is_deleted == False)
+        .order_by(asc(subquery.c.next_event_date))
+    )
+
+    return query.all()
