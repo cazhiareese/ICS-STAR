@@ -170,7 +170,7 @@ function Donationform() {
                     {/* Make a Donation Part */}
                     <div className='flex flex-col lg:w-7/12 w-full'>
                         {/* Back button */}
-                        <button className='text-primary flex gap-5 cursor-pointer'>
+                        <button onClick={handleClick} className='text-primary flex gap-5 cursor-pointer'>
                             <ArrowLeft size={25} />
                             <span className='font-satoshi-medium text-primary text-xl'>Back</span>
                         </button>
