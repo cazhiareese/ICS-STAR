@@ -18,7 +18,7 @@ const AlumniAffiliationFilter = ({
 }) => {
   const [affiliations, setAffiliations] = useState([]); 
   // const [isOpen, setIsOpen] = useState(false);
-
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   // cache reference
   const cache = useRef({});
 
@@ -33,7 +33,7 @@ const AlumniAffiliationFilter = ({
         }
 
         try {
-          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-affiliations");
+          const response = await axios.get(`${API_BASE_URL}/suggestions/top-affiliations`);
           setAffiliations(response.data);
           cache.current["top-affiliations"] = response.data; // Cache the result
           console.log("Fetched top affiliations:", response.data);
@@ -51,7 +51,7 @@ const AlumniAffiliationFilter = ({
         }
 
         try {
-          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/affiliations?q=${encodeURIComponent(query)}&limit=5`);
+          const response = await axios.get(`${API_BASE_URL}/autocomplete/affiliations?q=${encodeURIComponent(query)}&limit=5`);
           setAffiliations(response.data);
           cache.current[query] = response.data; // Cache the result for future use
           console.log("Fetched affiliations for input:", query, response.data);

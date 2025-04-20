@@ -14,9 +14,10 @@ const AlumniIndustryFilter = ({
   setIsAlumniProfessionExpanded,
   setIsSeeAllIndustryOpen
 }) => {
-
+  // BASE URL ENV
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const [industries, setIndustries] = useState([]); 
-   const cache = useRef({}); //cache reference
+  const cache = useRef({}); //cache reference
   useEffect(() => {
     const fetchData = async () => {
       if (!industryInput) {
@@ -28,7 +29,7 @@ const AlumniIndustryFilter = ({
         }
 
         try {
-          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-industries");
+          const response = await axios.get(`${API_BASE_URL}/suggestions/top-industries`);
           setIndustries(response.data);
           cache.current["top-industries"] = response.data; // Cache the result
           console.log("Fetched top industries:", response.data);
@@ -46,7 +47,7 @@ const AlumniIndustryFilter = ({
         }
 
         try {
-          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/industries?q=${encodeURIComponent(query)}&limit=5`);
+          const response = await axios.get(`${API_BASE_URL}/autocomplete/industries?q=${encodeURIComponent(query)}&limit=5`);
           setIndustries(response.data);
           cache.current[query] = response.data; // Cache the result for future use
           console.log("Fetched industries for input:", query, response.data);

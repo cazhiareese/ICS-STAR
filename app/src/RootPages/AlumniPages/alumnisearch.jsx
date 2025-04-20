@@ -76,20 +76,9 @@ function AlumniSearch() {
     setIsAlumniInfoExpanded(true);
     setIsBatchExpanded(true);
   };
-  //Dummy data
-  // const alumni = 
-  // {
-  //   full_name: "Kiefer Tayawa",
-  //   graduation_year: 2022,
-  //   job_title: "Software Engineer",
-  //   skills: [
-  //     "Machine Learning",
-  //     "Python Programming"
-  //   ],
-  //   location: "Cebu",
-  //   email: "kiper@gmail.com",
-  //   image: "https://i.pinimg.com/originals/09/f3/3e/09f33ecb3753807c45c29a3155aa1773.jpg"
-  // }
+  
+  // BASE URL 
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   //Function in generating search api request
   const search = () => {
@@ -169,7 +158,7 @@ function AlumniSearch() {
 
   // API url builder
   const buildSearchUrl = (filters) => {
-      let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
+      let baseUrl = `${API_BASE_URL}/alumni/search`;
       let queryParams = new URLSearchParams(filters).toString();
       return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
   }

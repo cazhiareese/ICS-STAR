@@ -37,6 +37,9 @@ function Donationform() {
     const [summaryLoading, setSummaryLoading] = useState(true);
     const [driveDetails, setDriveDetails] = useState(null);
 
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
     const formatDate = (date) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         return new Date(date).toLocaleDateString(undefined, options);
@@ -63,7 +66,7 @@ function Donationform() {
         useEffect(() => {
             const token = localStorage.getItem("token");
     
-            fetch(`https://ics-star-api.vercel.app/one-donation-drive/${drive_id}`, {
+            fetch(`${API_BASE_URL}/one-donation-drive/${drive_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -99,7 +102,7 @@ function Donationform() {
         }
 
         try {
-            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -137,7 +140,7 @@ function Donationform() {
         formData.append('description', donationDetailsInput);
 
         try {
-            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
