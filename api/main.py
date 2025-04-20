@@ -17,7 +17,7 @@ app.include_router(alum_donation.router)
 app.include_router(admin_donation_drive.router)
 app.include_router(admin_donations_route.router)
 app.include_router(job_posting.router)
-app.include_router(admin_events_route.user_router)
+app.include_router(admin_events_route.event_router)
 
 @app.get("/")
 def read_root():
