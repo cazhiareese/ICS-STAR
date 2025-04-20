@@ -38,6 +38,17 @@ def confirm_event_rsvp(db: Session, user_id: UUID, event_id: UUID) -> EventConfi
     
     return {"success": True, "message": "RSVP confirmed"}
 
+def cancel_event_rsvp(db: Session, user_id: UUID, event_id: UUID):
+    rsvp = db.query(EventConfirmedBy).filter_by(user_id=user_id, event_id=event_id).first()
+
+    if not rsvp:
+        raise ValueError("RSVP does not exist.")
+
+    db.delete(rsvp)
+    db.commit()
+
+    return {"success": True, "message": "RSVP cancelled"}
+
 def get_confirmed_events_by_user(user_id: str, db: Session):
     now = datetime.now(timezone.utc)
 
