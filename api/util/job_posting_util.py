@@ -1,14 +1,15 @@
 from typing import List, Optional
 from models.job_posting_model import JobPosting, JobPostingTag
+from models.report_model import Report, ReportAttachment
+from models.report_model import ReportStatusEnum
 from config.config import STORAGE_STRING, supabase_client
-from config.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi import HTTPException
-from fastapi import UploadFile, File, Depends 
+from fastapi import UploadFile
 from uuid import UUID
 
-ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png"}
+ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
 # Function util to create a new job posting
@@ -137,3 +138,73 @@ async def edit_job_posting(
     db.commit()
     
     return job_posting
+
+async def create_report_with_attachment(
+    db: Session,
+    reporter_id: UUID,
+    reported_post_id: UUID,
+    reason: str,
+    attachment: Optional[UploadFile] = None
+):
+    # Check if job post exists
+    job_post = db.query(JobPosting).filter_by(post_id=reported_post_id).first()
+    if not job_post:
+        raise HTTPException(status_code=404, detail="Job post not found")
+    
+    # Create report record
+    new_report = Report(
+        reporter_id=reporter_id,
+        reported_post_id=reported_post_id,
+        reason=reason,
+        status=ReportStatusEnum.pending
+    )
+    
+    db.add(new_report)
+    db.flush()  # Get the report_id before committing
+    
+    # Process attachment if provided
+    if attachment:
+        await handle_attachment_upload(db, new_report.report_id, attachment)
+    
+    # Commit the transaction
+    db.commit()
+    db.refresh(new_report)
+    
+    return new_report
+
+async def handle_attachment_upload(
+    db: Session,
+    report_id: UUID,
+    attachment: UploadFile
+):
+    
+    file = await attachment.read()
+    
+    # Validate file size
+    if len(file) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="File size exceeds the limit of 10MB.")
+    
+    # Validate file extension
+    file_extension = attachment.filename.split(".")[-1].lower()
+    if file_extension not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="File type not allowed. Supported types: jpg, jpeg, png, pdf")
+    
+    # Create unique filename
+    file_name = f"reports/{report_id}/.{file_extension}"
+    
+    try:
+        # Upload file to storage
+        supabase_client.storage.from_("128storage").upload(file_name, file)
+        
+        # Get public URL
+        file_url = f"{STORAGE_STRING}{file_name}"
+        
+        # Create attachment record
+        new_attachment = ReportAttachment(
+            report_id=report_id,
+            file_url=file_url
+        )
+        db.add(new_attachment)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload attachment. Error: {str(e)}")

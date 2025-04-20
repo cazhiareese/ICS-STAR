@@ -35,7 +35,7 @@ class Report(Base):
 
 # Report Attachment Model
 class ReportAttachment(Base):
-    __tablename__ = "report_attachment"
+    __tablename__ = "report_attachments"
 
     attachment_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     report_id = Column(UUID(as_uuid=True), ForeignKey("report.report_id"), nullable=False)
