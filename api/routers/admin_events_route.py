@@ -4,7 +4,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
 from datetime import date, datetime
 import pytz
-
+from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, EventTag, EventVisibleTo
 from uuid import UUID
 from sqlalchemy.orm import Session
 
@@ -93,7 +93,7 @@ async def create_event(
     except Exception as e:
         return {"message": str(e)}
 
-@event_router.put("/edit")
+@event_router.put("/edit/{event_id}")
 async def edit_event(
     event_id: UUID,
     title: str = Form(...),
@@ -162,3 +162,47 @@ async def edit_event(
         return {"message": "success", "data": event}
     except Exception as e:
         return {"message": str(e)}
+
+@event_router.get("/{eventId}")
+async def get_event_by_id(eventId: UUID, db:Session=Depends(get_db)):
+    try:
+        event = db.query(Event.event_id, Event.title, Event.image, Event.location, Event.description).filter(Event.event_id==eventId).first()
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Event not found: {e}")
+    
+    try:
+        event_dates = db.query(EventDate.date).filter(EventDate.event_id == event.event_id).all()
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Event date not found: {e}")
+    
+    try: 
+        event_links= db.query(EventLink.link).filter(EventLink.event_id == event.event_id).all()
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Event link not found: {e}")
+    
+    try: 
+        event_tags = db.query(EventTag.tag).filter(EventTag.event_id == event.event_id).all()
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Event link not found: {e}")
+
+    dates_list = []
+    for date in event_dates:
+        # print(date[0])
+        dt = datetime.fromisoformat(str(date[0]))
+        formatted = dt.strftime("%Y-%m-%d %H:%M")
+        dates_list.append(formatted)
+
+    links_list= [link[0] for link in event_links]
+    tags_list = [tag[0] for tag in event_tags]
+
+
+    return {"message": "success", "data": {
+        "event_id": event.event_id, 
+        "title": event.title, 
+        "image": event.image,
+        "location": event.location, 
+        "description": event.description, 
+        "datetime": dates_list,
+        "links": links_list,
+        "tags": tags_list
+    }}
