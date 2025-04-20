@@ -162,23 +162,6 @@ async def search_alumni(
     
     return results
 
-@router.get("/admin/filter/unverified/alum")
-async def search_alumni_unverified(
-    name: Optional[str] = None,
-    graduation_year: Optional[int] = None,
-    batch: Optional[str] = None,
-    order_by: list[str]=Query([]),
-    db: Session = Depends(get_db)
-):
-    
-    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=None, city=None, skill=None, industry=None, batch=batch, affiliation=None, order_by=order_by, needs_verified=False)
-
-    
-    # Raise 404 if no results found
-    if not results:
-        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
-    
-    return results
 
 @router.get("/admin/filter/unverified/alum")
 async def search_alumni_unverified(
