@@ -9,6 +9,7 @@ class EventOut(BaseModel):
     image: str
     description: str
     location: str
+    is_closed: bool
     dates: List[datetime]
     tags: List[str]
 
@@ -21,6 +22,7 @@ class OneEventOut(BaseModel):
     description: str
     image: str
     location: str
+    is_closed: bool
     datetimes: List[datetime]
     links: List[str]
     tags: List[str]
