@@ -22,7 +22,8 @@ async def create_event_util(
     batch: Optional[str],
     affliation:Optional[List[str]],
     employmentStatus: Optional[str],
-    job: Optional[List[str]], #can handle multi jobs  
+    job: Optional[List[str]], #can handle multi jobs
+    sendEmail: Optional[bool],  
     db: Session 
 ):
     print(batch)
@@ -100,9 +101,10 @@ async def create_event_util(
     visibleSet = set()
 
     if batch and len(batch) > 0:
+        
         print("Entered batch")
         query = db.query(User.user_id)\
-            .filter(func.split_part(User.student_number, '-', 1) == batch)\
+            .filter(or_(*[func.split_part(User.student_number, '-', 1) == b for b in batch]))\
             .distinct()\
             .all()
         batchFiltered = {q[0] for q in query if q[0] is not None}
@@ -248,7 +250,7 @@ async def edit_event_util (
     if batch and len(batch) > 0:
         print("Entered batch")
         query = db.query(User.user_id)\
-            .filter(func.split_part(User.student_number, '-', 1) == batch)\
+            .filter(or_(*[func.split_part(User.student_number, '-', 1) == b for b in batch]))\
             .distinct()\
             .all()
         batchFiltered = {q[0] for q in query if q[0] is not None}
