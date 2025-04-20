@@ -68,8 +68,9 @@ class EventVisibleTo(Base):
     __tablename__ = 'event_visible_to'
 
     event_id = Column(UUID(as_uuid=True), ForeignKey('event.event_id'), primary_key=True)
-    user_id = Column(UUID(as_uuid=True), primary_key=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), primary_key=True)
     created_at = Column('created_at', DateTime(timezone=True), server_default=func.now())
     updated_at = Column('updated_at', DateTime(timezone=True),server_default=func.now(), onupdate=func.now())
 
     event = relationship("Event", back_populates="visible_to_users")
+    user = relationship("User", foreign_keys=[user_id], back_populates="visible_events")
