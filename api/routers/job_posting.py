@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
 from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut
-from schemas.report_schema import ReportedJobPostingOut
-from models.report_model import Report
+from schemas.report_schema import ReportedJobPostingOut, PostReportDetailOut
+from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
 from util.job_posting_util import create_job_posting, edit_job_posting
 from config.database import get_db
@@ -304,4 +304,42 @@ def get_reported_job_postings(
             "report_count": row.report_count
         })
     
+    return result
+
+@router.get("/admin/job-posts/{post_id}/reports", response_model=List[PostReportDetailOut])
+def get_post_reports(post_id: str, db: Session = Depends(get_db)):
+    # Get reports for the post
+    reports = db.query(
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.user_id.label("poster_id"),
+        Report.created_at.label("date_reported"),
+        func.concat(User.first_name, " ", User.last_name).label("reporter_name"),
+        Report.reason,
+        Report.report_id
+    ).join(
+        Report, JobPosting.post_id == Report.reported_post_id
+    ).join(
+        User, User.user_id == Report.reporter_id
+    ).filter(
+        JobPosting.post_id == post_id
+    ).all()
+
+    result = []
+
+    for report in reports:
+        attachment = db.query(ReportAttachment.file_url).filter(
+            ReportAttachment.report_id == report.report_id
+        ).first()
+
+        result.append({
+            "title": report.title,
+            "company": report.company,
+            "user_id": report.poster_id,
+            "date_reported": report.date_reported,
+            "reporter_name": report.reporter_name,
+            "reason": report.reason,
+            "attachment": attachment.file_url if attachment else None
+        })
+
     return result
