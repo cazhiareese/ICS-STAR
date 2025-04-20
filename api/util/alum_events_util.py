@@ -86,7 +86,6 @@ def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
         db.query(Event)
         .filter(Event.event_id == event_id)
         .filter(Event.is_deleted == False)
-        .filter(Event.is_closed == False)
         .first()
     )
 
