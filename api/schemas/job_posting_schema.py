@@ -1,6 +1,21 @@
+from enum import Enum
 from pydantic import BaseModel
 from typing import List
 from datetime import datetime
+
+
+class EmploymentTypeEnum(str, Enum):
+    full_time = "full-time"
+    part_time = "part-time"
+    contractual = "contractual"
+    freelance = "freelance"
+    internship = "internship"
+    apprenticeship = "apprenticeship"
+
+class JobModeEnum(str, Enum):
+    onsite = "onsite"
+    remote = "remote"
+    hybrid = "hybrid"
 
 class JobPostingOut(BaseModel):
     title: str
@@ -9,6 +24,8 @@ class JobPostingOut(BaseModel):
     user_name: str
     tags: List[str]
     interested_count: int
+    employment_type: EmploymentTypeEnum
+    job_mode: JobModeEnum
     
     class Config:
         from_attributes = True

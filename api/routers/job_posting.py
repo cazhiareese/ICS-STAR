@@ -25,6 +25,7 @@ async def create_job_posting_endpoint(
     link: str = Form(...),
     description: str = Form(...),
     employment_type: str = Form(...),
+    job_mode: str = Form(...),
     image: UploadFile = None, 
     user: get_current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -48,6 +49,7 @@ async def create_job_posting_endpoint(
         link=link,
         description=description,
         employment_type=employment_type,
+        job_mode=job_mode,
         image=image,
         user_id=user_id,
         db=db
@@ -64,6 +66,7 @@ async def edit_job_posting_endpoint(
     link: str = Form(...),
     description: str = Form(...),
     employment_type: str = Form(...),
+    job_mode: str = Form(...),
     image: Optional[UploadFile] = None,  
     db: Session = Depends(get_db)
 ):
@@ -84,6 +87,7 @@ async def edit_job_posting_endpoint(
         link=link,
         description=description,
         employment_type=employment_type,
+        job_mode=job_mode,
         image=image,
         db=db
     )
@@ -171,6 +175,9 @@ def get_job_posting(
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.job_mode,
+        JobPosting.salary,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -197,6 +204,9 @@ def get_job_posting(
         "company": query_result.company,
         "description": query_result.description,
         "user_name": query_result.user_name,
+        "employment_type": query_result.employment_type,
+        "job_mode": query_result.job_mode,
+        "salary": query_result.salary,
         "tags": tag_list,
         "interested_count": query_result.interested_count
     }
