@@ -28,7 +28,7 @@ function JobTable({ data }) {
               <td className="py-3 px-4">{job.interested}</td>
               <td className="py-3 px-4">
                 <button
-                  className="text-blue-500 hover:underline"
+                  className="text-primary hover:text-hover cursor-pointer underline"
                   onClick={() => setSelectedJob(job)}
                 >
                   View
