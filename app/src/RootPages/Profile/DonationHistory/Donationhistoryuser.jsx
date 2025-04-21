@@ -5,12 +5,16 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import DonationDetailsModal from "../components/donationmodal";
 
 function DonationHistoryUser({ userDetails }) {
-  const [donationHistory, setDonationHistory] = useState([]);
-  const [sortedData, setSortedData] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [monetaryDonations, setMonetaryDonations] = useState([]);
+  const [inKindDonations, setInKindDonations] = useState([]);
+  const [sortedDataMonetary, setSortedDataMonetary] = useState([]);
+  const [sortedDataInKind, setSortedDataInKind] = useState([]);
+  const [sortConfigMonetary, setSortConfigMonetary] = useState({ key: null, direction: "asc" });
+  const [sortConfigInKind, setSortConfigInKind] = useState({ key: null, direction: "asc" });
+  const [selectedType, setSelectedType] = useState("Monetary");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -34,7 +38,7 @@ function DonationHistoryUser({ userDetails }) {
         setLoading(false);
         return;
       }
-  
+
       try {
         const [monetaryRes, inKindRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
@@ -44,25 +48,27 @@ function DonationHistoryUser({ userDetails }) {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
-  
+
         const monetary = monetaryRes.data.data.map((d) => ({
           ...d,
           type: "Monetary",
         }));
-  
+
         const inKind = inKindRes.data.data.map((d) => ({
           ...d,
           type: "In-Kind",
-          amount: 0, // optional: set to 0 if there's no monetary value
+          amount: 0,
         }));
-  
-        const combined = [...monetary, ...inKind].sort(
-          (a, b) => new Date(b.date_donated) - new Date(a.date_donated)
-        );
-  
-        setDonationHistory(combined);
-        setSortedData(combined);
-        setSortConfig({ key: "date_donated", direction: "desc" });
+
+        const sortedMonetary = [...monetary].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
+        const sortedInKind = [...inKind].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
+
+        setMonetaryDonations(monetary);
+        setInKindDonations(inKind);
+        setSortedDataMonetary(sortedMonetary);
+        setSortedDataInKind(sortedInKind);
+        setSortConfigMonetary({ key: "date_donated", direction: "desc" });
+        setSortConfigInKind({ key: "date_donated", direction: "desc" });
       } catch (err) {
         console.error("Error fetching donation history:", err);
         setError(err.response?.data?.message || "Something went wrong.");
@@ -70,18 +76,24 @@ function DonationHistoryUser({ userDetails }) {
         setLoading(false);
       }
     };
-  
+
     fetchDonationHistory();
   }, [token]);
 
-  const handleSort = (key) => {
+  const handleSort = (key, type) => {
+    const currentSortConfig = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
+    const setSortConfig = type === "Monetary" ? setSortConfigMonetary : setSortConfigInKind;
+    const dataToSort = type === "Monetary" ? [...monetaryDonations] : [...inKindDonations];
+    const setSortedData = type === "Monetary" ? setSortedDataMonetary : setSortedDataInKind;
+
     let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
+    if (currentSortConfig.key === key && currentSortConfig.direction === "asc") {
       direction = "desc";
     }
+
     setSortConfig({ key, direction });
 
-    const sorted = [...donationHistory].sort((a, b) => {
+    const sorted = dataToSort.sort((a, b) => {
       let aValue = a[key];
       let bValue = b[key];
 
@@ -103,41 +115,42 @@ function DonationHistoryUser({ userDetails }) {
     setSortedData(sorted);
   };
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key)
+  const getSortIcon = (key, type) => {
+    const config = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
+    if (config.key !== key)
       return <ChevronDown className="inline text-primary w-4 h-4" />;
-    return sortConfig.direction === "asc" ? (
+    return config.direction === "asc" ? (
       <ChevronUp className="inline text-primary w-4 h-4" />
     ) : (
       <ChevronDown className="inline text-primary w-4 h-4" />
     );
   };
-  console.log("Donation History:", donationHistory);
+
+  const currentSortedData = selectedType === "Monetary" ? sortedDataMonetary : sortedDataInKind;
+
   return (
     <div className="w-full max-w-[1100px] mt-6">
-      {/* Section Header */}
       <SectionHeader
         title="DONATIONS"
         onToggleChange={(type) => {
-          console.log("Selected donation type:", type);
+          setSelectedType(type);
         }}
       />
 
-      {/* Table Header */}
       <div className="mt-1 rounded-xl py-2 font-satoshi-bold">
         <div className="flex font-semibold text-primary">
           <div
             className="w-1/3 cursor-pointer flex items-center gap-1"
-            onClick={() => handleSort("date_donated")}
+            onClick={() => handleSort("date_donated", selectedType)}
           >
-            Date {getSortIcon("date_donated")}
+            Date {getSortIcon("date_donated", selectedType)}
           </div>
           <div className="w-1/3">Donation</div>
           <div
             className="w-1/3 text-right cursor-pointer flex justify-end items-center gap-1"
-            onClick={() => handleSort("amount")}
+            onClick={() => handleSort("amount", selectedType)}
           >
-            Amount {getSortIcon("amount")}
+            Amount {getSortIcon("amount", selectedType)}
           </div>
         </div>
       </div>
@@ -145,14 +158,13 @@ function DonationHistoryUser({ userDetails }) {
       {loading && <p className="mt-4">Loading...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
-      {!loading && !error && sortedData.length === 0 && (
+      {!loading && !error && currentSortedData.length === 0 && (
         <p className="mt-4 text-gray-500">No donation history found.</p>
       )}
 
-      {/* Scrollable Donation List */}
-      {!loading && !error && sortedData.length > 0 && (
+      {!loading && !error && currentSortedData.length > 0 && (
         <div className="font-satoshi-medium text-[16px] text-black max-h-[525px] overflow-y-auto sm:max-h-[400px] scrollbar-blue">
-          {sortedData.map((donation) => {
+          {currentSortedData.map((donation) => {
             const formattedDate = new Date(
               donation.date_donated
             ).toLocaleDateString("en-US", {
@@ -181,6 +193,7 @@ function DonationHistoryUser({ userDetails }) {
           })}
         </div>
       )}
+
       <DonationDetailsModal
         isOpen={isModalOpen}
         onClose={closeModal}
