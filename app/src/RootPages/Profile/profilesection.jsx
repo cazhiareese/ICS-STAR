@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { updateLinks } from "./UserProfileAPI/userProfileApi";
+import { updateSocialLinks } from "./UserProfileAPI/userProfileApi";
 import {
   Camera,
   Facebook,
@@ -37,7 +37,7 @@ function ProfileSection({
 
   const handleSocialLinksSave = async (links) => {
     try {
-      await updateLinks(links);
+      await updateSocialLinks(links);
       // Optionally update local state or refetch profile
       console.log("Social links updated");
     } catch (err) {

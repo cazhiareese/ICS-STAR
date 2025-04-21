@@ -119,24 +119,40 @@ export const removeScholarship = async (scholarshipToRemove) => {
   return await response.json();
 };
 
-export const updateLinks = async ({ facebook, linkedin, github }) => {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("User not authenticated");
+export const updateSocialLinks = async (facebook, linkedin, github) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("User not authenticated");
+    }
 
-  const formData = new URLSearchParams({ facebook, linkedin, github });
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  const response = await fetch(`${API_BASE_URL}/update-links`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  });
+    const body = new URLSearchParams({
+      facebook: facebook || "",
+      linkedin: linkedin || "",
+      github: github || "",
+    }).toString();
 
-  if (!response.ok) {
-    throw new Error("Failed to update social links");
+    console.log("🔍 Final Request Body:", body);
+
+    const response = await fetch(`${API_BASE_URL}/update-links`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${token}`,
+      },
+      body,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update social links");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
-
-  return await response.json();
 };
+
