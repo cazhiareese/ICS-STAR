@@ -6,7 +6,7 @@ from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
-from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut
+from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut, EmploymentTypeEnum, JobModeEnum
 from schemas.report_schema import ReportedJobPostingOut, PostReportDetailOut
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
@@ -25,7 +25,7 @@ async def create_job_posting_endpoint(
     link: str = Form(...),
     description: str = Form(...),
     employment_type: str = Form(...),
-    job_mode: str = Form(...),
+    mode: str = Form(...),
     image: UploadFile = None, 
     user: get_current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -49,7 +49,7 @@ async def create_job_posting_endpoint(
         link=link,
         description=description,
         employment_type=employment_type,
-        job_mode=job_mode,
+        mode=mode,
         image=image,
         user_id=user_id,
         db=db
@@ -66,7 +66,7 @@ async def edit_job_posting_endpoint(
     link: str = Form(...),
     description: str = Form(...),
     employment_type: str = Form(...),
-    job_mode: str = Form(...),
+    mode: str = Form(...),
     image: Optional[UploadFile] = None,  
     db: Session = Depends(get_db)
 ):
@@ -87,7 +87,7 @@ async def edit_job_posting_endpoint(
         link=link,
         description=description,
         employment_type=employment_type,
-        job_mode=job_mode,
+        mode=mode,
         image=image,
         db=db
     )
@@ -135,6 +135,8 @@ def get_job_postings(db: Session = Depends(get_db)):
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -153,9 +155,12 @@ def get_job_postings(db: Session = Depends(get_db)):
         tag_list = [tag[0] for tag in tags]
         
         result.append({
+            "post_id": row.post_id,
             "title": row.title,
             "company": row.company,
             "description": row.description,
+            "employment_type": row.employment_type,
+            "mode": row.mode,
             "user_name": row.user_name,
             "tags": tag_list,
             "interested_count": row.interested_count
@@ -176,7 +181,7 @@ def get_job_posting(
         JobPosting.company,
         JobPosting.description,
         JobPosting.employment_type,
-        JobPosting.job_mode,
+        JobPosting.mode,
         JobPosting.salary,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
@@ -200,12 +205,13 @@ def get_job_posting(
     
     # Construct the response
     response = {
+        "post_id": query_result.post_id,
         "title": query_result.title,
         "company": query_result.company,
         "description": query_result.description,
         "user_name": query_result.user_name,
-        "employment_type": query_result.employment_type,
-        "job_mode": query_result.job_mode,
+        "employment_type": EmploymentTypeEnum(query_result.employment_type),
+        "mode": JobModeEnum(query_result.mode),
         "salary": query_result.salary,
         "tags": tag_list,
         "interested_count": query_result.interested_count
@@ -238,6 +244,7 @@ def get_open_job_postings(
     result = []
     for row in query_result:
         result.append({
+            "post_id": row.post_id,
             "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
@@ -285,6 +292,7 @@ def get_closed_job_postings(
     result = []
     for row in query_result:
         result.append({
+            "post_id": row.post_id,
             "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,

@@ -27,7 +27,7 @@ class JobPosting(Base):
     link = Column(Text)
     image = Column(Text)
     employment_type = Column(Enum(EmploymentTypeEnum))
-    job_mode = Column(Enum(JobModeEnum))
+    mode = Column(Enum(JobModeEnum))
     description = Column(Text)
     is_deleted = Column(Boolean, default=False)
     is_closed = Column(Boolean, default=False)
