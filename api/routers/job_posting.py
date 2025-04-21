@@ -244,6 +244,7 @@ def get_open_job_postings(
     result = []
     for row in query_result:
         result.append({
+            "post_id": row.post_id,
             "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
@@ -291,6 +292,7 @@ def get_closed_job_postings(
     result = []
     for row in query_result:
         result.append({
+            "post_id": row.post_id,
             "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,

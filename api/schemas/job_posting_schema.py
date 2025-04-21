@@ -33,6 +33,7 @@ class JobPostingOut(BaseModel):
         from_attributes = True
 
 class JobPostingForAdminOut(BaseModel):
+    post_id: UUID
     title: str
     user_name: str
     interested_count: int
