@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from util.job_search_logic import search_job, view_interested_in, job_overview
+from util.job_search_logic import search_job, view_interested_in, job_overview, get_current_interested
 from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut
 from typing import Optional, List, Dict
 from config.database import get_db
@@ -44,5 +44,17 @@ def job_overview_route(
 
     if not results:
         raise HTTPException(status_code=404, detail="Job posting not found.")
+    
+    return results
+
+@router.get("/job/new-interested/{post_id}", response_model=list[UserInterestedOut])
+def view_new_interested(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    results = get_current_interested(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No new interested users found.")
     
     return results
