@@ -1,14 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminModal from './adminmodal';
-import { X } from 'lucide-react';
+import { X, CheckCircle } from 'lucide-react';
 import axios from 'axios'
+import CircularLoading from '../LoadingComponents/circularloading';
 
 function JobTable({ data, jobType }) {
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
     const navigate = useNavigate();
     const [selectedJob, setSelectedJob] = useState(null);
     const [reports, setReports] = useState([])
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [removeLoading, setRemoveLoading] = useState(false);
+    const [removeSuccess, setRemoveSuccess] = useState(false);
+    
+    async function removePost() {
+      setRemoveLoading(true);
+      try {
+          await axios.delete(`${API_BASE_URL}/delete-job-postings/${selectedJob.post_id}`);
+          setRemoveLoading(false);
+          setRemoveSuccess(true);
+      } catch (error) {
+          setRemoveLoading(false);
+          console.error("Failed to delete post:", error);
+      }
+  }
 
     async function fetchReports(){
         const response = await axios.get(`${API_BASE_URL}/admin/job-posts/${selectedJob.post_id}/reports`)
@@ -17,8 +33,10 @@ function JobTable({ data, jobType }) {
     }
 
     useEffect(() => {
-        fetchReports()
-    }, [selectedJob])
+      if (selectedJob) {
+          fetchReports();
+      }
+  }, [selectedJob]);
 
   return (
     <>
@@ -108,7 +126,8 @@ function JobTable({ data, jobType }) {
                     </div>
                     {/* TODO: Add remove post */}
                     <div className="pt-4 flex w-full justify-end">
-                        <button className="bg-red-800 text-white px-6 py-3 rounded-2xl font-satoshi-medium text-lg" onClick={() => {}}>
+                        <button className="bg-red-800 text-white px-6 py-3 rounded-2xl font-satoshi-medium text-lg cursor-pointer" 
+                        onClick={() => setShowRemoveModal(true)}>
                         Remove Post
                         </button>
                     </div>
@@ -175,6 +194,58 @@ function JobTable({ data, jobType }) {
             )}
         </div>
         )}
+        {showRemoveModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+            <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
+              {removeLoading ? (
+                <div className='h-full'>
+                  <CircularLoading />
+                </div>
+              ) : removeSuccess ? (
+                <>
+                  <div className="text-success">
+                    <CheckCircle size={48} />
+                  </div>
+                  <p className="text-xl font-satoshi-medium mt-4 text-center">
+                    Post successfully removed!
+                  </p>
+                  <button
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
+                    onClick={() => {
+                      setShowRemoveModal(false);
+                      setRemoveSuccess(false);
+                      setSelectedJob(null);
+                      // optionally: refresh job list
+                    }}
+                  >
+                    Close
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-xl font-satoshi-medium text-center mt-4">
+                    Are you sure you want to remove this post?
+                  </p>
+                  <div className="flex gap-3 mt-6 w-full justify-center">
+                    <button
+                      className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
+                      onClick={() => setShowRemoveModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-red-800 text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                      onClick={removePost}
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
     </>
   );
 }
