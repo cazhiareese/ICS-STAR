@@ -36,6 +36,7 @@ function ProfileSection({
   }, []);
 
   const handleSocialLinksSave = async (links) => {
+    console.log("Saving social links:", links);
     try {
       await updateSocialLinks(links);
       // Optionally update local state or refetch profile

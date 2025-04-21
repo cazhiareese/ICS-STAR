@@ -119,7 +119,7 @@ export const removeScholarship = async (scholarshipToRemove) => {
   return await response.json();
 };
 
-export const updateSocialLinks = async (facebook, linkedin, github) => {
+export const updateSocialLinks = async (links) => {
   try {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -129,9 +129,9 @@ export const updateSocialLinks = async (facebook, linkedin, github) => {
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const body = new URLSearchParams({
-      facebook: facebook || "",
-      linkedin: linkedin || "",
-      github: github || "",
+      facebook: links.facebook || "",
+      linkedin: links.linkedin || "",
+      github: links.github || "",
     }).toString();
 
     console.log("🔍 Final Request Body:", body);
@@ -155,4 +155,3 @@ export const updateSocialLinks = async (facebook, linkedin, github) => {
     throw err;
   }
 };
-
