@@ -26,3 +26,14 @@ class UserInterestedOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class JobPostingOverviewOut(BaseModel):
+    title: str
+    company: str
+    posted_by: str
+    poster_location: str
+    total_interested: int
+    created_at: str
+
+    class Config:
+        from_attributes = True

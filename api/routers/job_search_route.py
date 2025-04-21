@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from util.job_search_logic import search_job, view_interested_in
-from schemas.job_search_schema import JobSearchOut, UserInterestedOut
+from util.job_search_logic import search_job, view_interested_in, job_overview
+from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut
 from typing import Optional, List, Dict
 from config.database import get_db
 
@@ -21,7 +21,7 @@ def job_search(
     
     return results
 
-@router.get("/job/interested_in/{post_id}", response_model=tuple[list[UserInterestedOut], dict])
+@router.get("/job/interested_in/{post_id}", response_model=list[UserInterestedOut])
 def interested_in(
     post_id: str,
     db: Session = Depends(get_db)
@@ -31,5 +31,18 @@ def interested_in(
 
     if not results:
         raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+    
+    return results
+
+@router.get("/job/overview/{post_id}", response_model=JobPostingOverviewOut)
+def job_overview_route(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    
+    results = job_overview(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="Job posting not found.")
     
     return results
