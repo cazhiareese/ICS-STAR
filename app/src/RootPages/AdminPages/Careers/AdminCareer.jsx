@@ -5,6 +5,7 @@ import JobTable from '../../../components/AdminComponents/JobTable';
 import AdminModal from '../../../components/AdminComponents/adminmodal';
 import axios from 'axios'
 import CircularLoading from "../../../components/LoadingComponents/circularloading"
+import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading"
 
 function AdminCareer() {
 
@@ -101,7 +102,24 @@ function AdminCareer() {
       <h1 className='text-primary font-satoshi-bold text-5xl mb-4 self-start'>Career</h1>
       {/* Card Carousel */}
       {topLoading ? (
-        <CircularLoading />
+        <div className='flex items-center gap-4 w-full justify-center'>
+          <div className='flex flex-row justify-between items-center w-full cursor-pointer' onClick={() => {}}>
+            {/* Role, Location */}
+            <div className='flex flex-col'>
+              <SkeletonLoading/>
+            </div>
+
+            {/* Interested, Date, Person */}
+            <div className='flex flex-col'>
+              <div className='flex flex-row gap-2'>
+                <SkeletonLoading/>
+              </div>
+              <div className='flex flex-row gap-2'>
+                <SkeletonLoading/>
+              </div>
+            </div>
+          </div>
+        </div>
       ) : topJobs.length > 0 ? (
         <div className='flex items-center gap-4 w-full justify-center' onClick={() => setSelectedJob(topJobs[index])}>
           <AdminCareerCard job={topJobs[index]} onPrev={prev} onNext={next} />
@@ -114,12 +132,16 @@ function AdminCareer() {
 
       {/* Dots */}
       <div className='flex gap-1 mt-4'>
-        {topJobs.map((_, i) => (
-          <span
+        {topLoading ? (
+          <></>
+        ) : (
+          topJobs.map((_, i) => (
+            <span
             key={i}
             className={`w-2 h-2 rounded-full ${i === index ? 'bg-primary' : 'bg-gray-300'}`}
-          />
-        ))}
+            />
+          ))
+        )}
       </div>
       {/* Buttons and filters */}
       <div className='flex flex-col w-full lg:flex-row items-center lg:justify-between gap-2 lg:gap-0'>
@@ -179,7 +201,9 @@ function AdminCareer() {
       {/* Table for desktop*/}
       <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full'>
         {loading ? (
-          <CircularLoading/>
+          <div className='flex flex-row items-center justify-center h-full'>
+            <CircularLoading/>
+          </div>
         ) : (
           <JobTable data={jobs} jobType={jobType} />
         )}
