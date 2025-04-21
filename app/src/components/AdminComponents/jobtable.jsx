@@ -58,16 +58,21 @@ function JobTable({ data, jobType }) {
             {jobType === 'reported' ? (
             <div className="flex flex-row gap-6 p-6 h-4/5 w-full">
                 {/* Left Column: Reports Table */}
-                <div className="md:w-3/5 bg-white rounded-2xl shadow p-6">
-                    <h2 className="text-3xl font-satoshi-bold mb-1">{selectedJob.title}</h2>
+                <div className="flex flex-col md:w-3/5 bg-white rounded-2xl shadow p-6">
+                    <div className='flex flex-row justify-between'>
+                        <h2 className="text-3xl font-satoshi-bold mb-1">{selectedJob.title}</h2>
+                        <button onClick={() => {setSelectedJob(null)}}>
+                            <X size={28} className='text-primary rounded-full hover:text-hover cursor-pointer'/>
+                        </button>
+                    </div>
                     <p className="text-lg text-gray-700">{selectedJob.company}</p>
                     <p className="mb-4 text-sm text-gray-600">
                         Posted by: <span className="text-primary">{selectedJob.user_name}</span>
                     </p>
 
                     <h3 className="text-lg font-satoshi-medium mb-2">Reports</h3>
-                    <div className="overflow-auto">
-                        <table className="w-full border border-gray-300 rounded-lg">
+                    <div className="overflow-auto flex-1 rounded-2xl w-full border border-gray-300">
+                        <table className="w-full">
                         <thead>
                             <tr className=" text-sm text-left text-primary">
                             <th className="py-2 px-3">Date Reported</th>
@@ -78,9 +83,9 @@ function JobTable({ data, jobType }) {
                         </thead>
                         <tbody className="text-sm">
                             {reports.map((report, i) => (
-                            <tr key={i} className="border-t">
+                            <tr key={i} className="">
                                 <td className="py-2 px-3">{report.date_reported}</td>
-                                <td className="py-2 px-3">{report.alumni_name}</td>
+                                <td className="py-2 px-3">{report.reporter_name}</td>
                                 <td className="py-2 px-3">{report.reason}</td>
                                 <td className="py-2 px-3">
                                 {report.attachment ? (
@@ -101,9 +106,9 @@ function JobTable({ data, jobType }) {
                         </tbody>
                         </table>
                     </div>
-
-                    <div className="pt-4">
-                        <button className="bg-red-700 text-white px-4 py-2 rounded-md">
+                    {/* TODO: Add remove post */}
+                    <div className="pt-4 flex w-full justify-end">
+                        <button className="bg-red-800 text-white px-6 py-3 rounded-2xl font-satoshi-medium text-lg" onClick={() => {}}>
                         Remove Post
                         </button>
                     </div>
@@ -127,9 +132,9 @@ function JobTable({ data, jobType }) {
                         <h3 className="font-satoshi-medium mb-1 text-lg">Details</h3>
                         <p className='font-satoshi-regular text-sm'>Details here</p>
 
-                        <h3 className="font-satoshi-medium mb-1 text-lg">Description</h3>
+                        <h3 className="font-satoshi-medium mb-1 text-lg">{selectedJob.details}</h3>
                         <p className="font-satoshi-regular text-sm">
-                        This is a placeholder description. Replace with actual data or enrich the job object!
+                        {selectedJob.description}
                         </p>
                     </div>
                 </div>
