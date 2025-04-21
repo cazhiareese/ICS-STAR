@@ -4,7 +4,7 @@ from sqlalchemy import String, func, or_, union_all
 from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
-from schemas.job_search_schema import JobSearchOut, UserInterestedOut
+from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut
 import datetime
 from uuid import UUID
 
@@ -62,25 +62,7 @@ def search_job(
 def view_interested_in(
         db: Session,
         post_id: UUID
-) -> tuple[list[UserInterestedOut], dict]:
-    
-    # Query to get the overview info about the job (title, company, job poster, job poster's location, total number of interested users, date of creation)
-    job_info_query = db.query(
-        JobPosting.title,
-        JobPosting.company,
-        JobPosting.created_at,
-        func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
-        func.concat(User.state, ', ', User.country).label("poster_location"),
-        func.count(JobPostingInterestedIn.post_id).label("total_interested")
-    ).join(
-        User, User.user_id == JobPosting.user_id
-    ).outerjoin(
-        JobPostingInterestedIn, JobPostingInterestedIn.post_id == JobPosting.post_id
-    ).filter(
-        JobPosting.post_id == post_id
-    ).group_by(
-        JobPosting.post_id, User.first_name, User.last_name, User.state, User.country
-    ).first()
+) -> list[UserInterestedOut]:
     
     # Base query for interested users
     query = db.query(
@@ -120,13 +102,41 @@ def view_interested_in(
         )
         interested_out_list.append(user_out)
 
-    job_summary = {
-        "title": job_info_query.title if job_info_query else None,
-        "company": job_info_query.company if job_info_query else None,
-        "posted_by": job_info_query.posted_by if job_info_query else None,
-        "poster_location": job_info_query.poster_location if job_info_query else None,
-        "total_interested": job_info_query.total_interested if job_info_query else 0,
-        "created_at": job_info_query.created_at.strftime("%B %d, %Y") if job_info_query else None
-    }
+    return interested_out_list
 
-    return interested_out_list, job_summary
+def job_overview(
+        db: Session,
+        post_id: UUID
+) -> JobPostingOverviewOut:
+    
+    # Query to get the overview info about the job (title, company, job poster, job poster's location, total number of interested users, date of creation)
+    job_info_query = db.query(
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.created_at,
+        func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
+        func.concat(User.state, ', ', User.country).label("poster_location"),
+        func.count(JobPostingInterestedIn.post_id).label("total_interested")
+    ).join(
+        User, User.user_id == JobPosting.user_id
+    ).outerjoin(
+        JobPostingInterestedIn, JobPostingInterestedIn.post_id == JobPosting.post_id
+    ).filter(
+        JobPosting.post_id == post_id
+    ).group_by(
+        JobPosting.post_id, User.first_name, User.last_name, User.state, User.country
+    ).first()
+
+    if not job_info_query:
+        return None
+    
+    job_info = JobPostingOverviewOut(
+        title=job_info_query.title,
+        company=job_info_query.company,
+        posted_by=job_info_query.posted_by,
+        poster_location=job_info_query.poster_location,
+        total_interested=job_info_query.total_interested,
+        created_at=job_info_query.created_at.strftime("%m/%d/%Y") if job_info_query.created_at else None
+    )
+
+    return job_info
