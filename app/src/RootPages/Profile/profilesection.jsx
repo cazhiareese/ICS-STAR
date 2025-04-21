@@ -108,7 +108,6 @@ function ProfileSection({
       const urlEncodedData = new URLSearchParams(currentFormData).toString();
 
       console.log("🔍 Final Request Body:", urlEncodedData);
-      
 
       const response = await fetch(`${API_BASE_URL}/profile/edit`, {
         method: "PUT",
@@ -140,38 +139,50 @@ function ProfileSection({
 
   return (
     <div
-  className={`relative w-full max-w-[1100px] border border-disabled rounded-[10px] p-6 flex flex-col sm:flex-row items-center sm:justify-between ${
-    userDetails?.is_verified ? "bg-whitey" : "bg-white"
-  }`}
->
-
+      className={`relative w-full max-w-[1100px] border border-disabled rounded-[10px] p-6 flex flex-col sm:flex-row items-center sm:justify-between ${
+        userDetails?.is_verified ? "bg-whitey" : "bg-white"
+      }`}
+    >
       {/* Edit / Save Profile Button - only visible on "About" tab */}
       {activeTab === "About" && (
-  <button
-    onClick={() => {
-      if (userDetails?.is_verified) {
-        if (editMode) {
-          setShowModal(true);
-        } else {
-          setEditMode(true);
-        }
-      }
-    }}
-    disabled={!userDetails?.is_verified}
-    className={`absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto
-      ${userDetails?.is_verified ? "bg-primary text-white hover:bg-hover" : "bg-bg-disabled text-neutral-c cursor-not-allowed"}`}
-  >
-    {editMode ? (
-      <Check size={18} className={`${userDetails?.is_verified ? "text-white" : "text-neutral"} pointer-events-none`} />
-    ) : (
-      <Pencil size={18} className={`${userDetails?.is_verified ? "" : "text-neutral"} pointer-events-none`} />
-    )}
-    <span className="hidden sm:inline pointer-events-none text-neutral">
-      {editMode ? "Save Profile" : "Edit Profile"}
-    </span>
-  </button>
-)}
-
+        <button
+          onClick={() => {
+            if (userDetails?.is_verified) {
+              if (editMode) {
+                setShowModal(true);
+              } else {
+                setEditMode(true);
+              }
+            }
+          }}
+          disabled={!userDetails?.is_verified}
+          className={`absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto
+      ${
+        userDetails?.is_verified
+          ? "bg-primary text-white hover:bg-hover"
+          : "bg-bg-disabled text-neutral-c cursor-not-allowed"
+      }`}
+        >
+          {editMode ? (
+            <Check
+              size={18}
+              className={`${
+                userDetails?.is_verified ? "text-white" : "text-neutral"
+              } pointer-events-none`}
+            />
+          ) : (
+            <Pencil
+              size={18}
+              className={`${
+                userDetails?.is_verified ? "" : "text-neutral"
+              } pointer-events-none`}
+            />
+          )}
+          <span className="hidden sm:inline pointer-events-none text-neutral">
+            {editMode ? "Save Profile" : "Edit Profile"}
+          </span>
+        </button>
+      )}
 
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
@@ -185,12 +196,12 @@ function ProfileSection({
             />
           </span>
           {userDetails?.is_verified && (
-    <Camera
-      size={32}
-      className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black w-8 h-8 rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
-      onClick={() => setShowUploadModal(true)}
-    />
-  )}
+            <Camera
+              size={32}
+              className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black w-8 h-8 rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
+              onClick={() => setShowUploadModal(true)}
+            />
+          )}
         </span>
 
         {/* Name, Email, and Social Icons */}
@@ -232,43 +243,56 @@ function ProfileSection({
             </>
           )}
 
-{userDetails?.is_verified && (
-  <div
-    className={editMode 
-      ? "bg-white border border-disabled rounded-[12px] px-2 py-1 mt-2 group cursor-pointer hover:bg-hover transition" 
-      : "mt-2"}
-    onClick={editMode ? () => setShowSocialModal(true) : undefined}
-  >
-    <div className={`flex gap-3 mt-1 ${editMode ? "pointer-events-none" : ""}`}>
-      {userDetails.facebook && (
-        <a href={userDetails.facebook} target="_blank" rel="noopener noreferrer">
-          <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
-            <Facebook size={20} className="text-white" />
-          </span>
-        </a>
-      )}
-      {userDetails.github && (
-        <a href={userDetails.github} target="_blank" rel="noopener noreferrer">
-          <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
-            <Github size={20} className="text-white" />
-          </span>
-        </a>
-      )}
-      {userDetails.linkedin && (
-        <a href={userDetails.linkedin} target="_blank" rel="noopener noreferrer">
-          <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
-            <Linkedin size={20} className="text-white" />
-          </span>
-        </a>
-      )}
-    </div>
-  </div>
-)}
-
-
-
-
-
+          {userDetails?.is_verified && (
+            <div
+              className={
+                editMode
+                  ? "bg-white border border-disabled rounded-[12px] px-2 py-1 mt-2 group cursor-pointer hover:bg-hover transition"
+                  : "mt-2"
+              }
+              onClick={editMode ? () => setShowSocialModal(true) : undefined}
+            >
+              <div
+                className={`flex gap-3 mt-1 ${
+                  editMode ? "pointer-events-none" : ""
+                }`}
+              >
+                {userDetails.facebook && (
+                  <a
+                    href={userDetails.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+                      <Facebook size={20} className="text-white" />
+                    </span>
+                  </a>
+                )}
+                {userDetails.github && (
+                  <a
+                    href={userDetails.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+                      <Github size={20} className="text-white" />
+                    </span>
+                  </a>
+                )}
+                {userDetails.linkedin && (
+                  <a
+                    href={userDetails.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+                      <Linkedin size={20} className="text-white" />
+                    </span>
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -286,12 +310,12 @@ function ProfileSection({
         onUpload={handleUpload}
       />
 
-<SocialLinksEditModal
-  isOpen={showSocialModal}
-  onClose={() => setShowSocialModal(false)}
-  onSaveLinks={handleSocialLinksSave}
-  userDetails={userDetails}
-/>
+      <SocialLinksEditModal
+        isOpen={showSocialModal}
+        onClose={() => setShowSocialModal(false)}
+        onSaveLinks={handleSocialLinksSave}
+        userDetails={userDetails}
+      />
     </div>
   );
 }
