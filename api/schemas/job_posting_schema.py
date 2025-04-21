@@ -6,8 +6,8 @@ from datetime import datetime
 
 
 class EmploymentTypeEnum(str, Enum):
-    full_time = "full-time"
-    part_time = "part-time"
+    fulltime = "fulltime"
+    parttime = "parttime"
     contractual = "contractual"
     freelance = "freelance"
     internship = "internship"

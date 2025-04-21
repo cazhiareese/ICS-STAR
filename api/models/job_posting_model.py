@@ -6,8 +6,8 @@ from config.config import Base
 from enum import Enum as PyEnum
 
 class EmploymentTypeEnum(PyEnum):
-    full_time = "full-time"
-    part_time = "part-time"
+    fulltime = "fulltime"
+    parttime = "parttime"
     contractual = "contractual"
     freelance = "freelance"
     internship = "internship"
