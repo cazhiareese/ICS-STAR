@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import SectionHeader from "../components/sectionheader";
 import axios from "axios";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import DonationDetailsModal from "../components/donationmodal";
+import DonationDetailsModal from "./component/donationmodal";
 import DonationTableHeader from "./component/donationheader";
 
 function DonationHistoryUser({ userDetails }) {
