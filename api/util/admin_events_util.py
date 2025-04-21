@@ -331,3 +331,17 @@ def get_demographics(
     results = query.all()
 
     return [{"batch": r.batch, "rsvp_count": r.rsvp_count} for r in results]
+
+def add_user_clicks(
+    event_id: UUID,
+    db: Session
+):
+    try:
+        event = db.query(Event).filter(Event.event_id == event_id, Event.is_deleted == False).one()
+        event.user_clicks = (event.user_clicks or 0) + 1
+        db.commit()
+        db.refresh(event)
+        return True
+    except Exception as e:
+        db.rollback()
+        raise e
