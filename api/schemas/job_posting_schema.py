@@ -38,6 +38,11 @@ class JobPostingForAdminOut(BaseModel):
     user_name: str
     interested_count: int
     date_posted: str
+    company: str
+    description: Optional[str] = None
+    user_name: str
+    employment_type: EmploymentTypeEnum
+    mode: JobModeEnum
     
     
     class Config:
