@@ -3,6 +3,7 @@ import SectionHeader from "../components/sectionheader";
 import axios from "axios";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import DonationDetailsModal from "../components/donationmodal";
+import DonationTableHeader from "./component/donationheader";
 
 function DonationHistoryUser({ userDetails }) {
   const [monetaryDonations, setMonetaryDonations] = useState([]);
@@ -138,23 +139,12 @@ function DonationHistoryUser({ userDetails }) {
         }}
       />
 
-      <div className="mt-1 rounded-xl py-2 font-satoshi-bold">
-        <div className="flex font-semibold text-primary">
-          <div
-            className="w-1/3 cursor-pointer flex items-center gap-1"
-            onClick={() => handleSort("date_donated", selectedType)}
-          >
-            Date {getSortIcon("date_donated", selectedType)}
-          </div>
-          <div className="w-1/3">Donation</div>
-          <div
-            className="w-1/3 text-right cursor-pointer flex justify-end items-center gap-1"
-            onClick={() => handleSort("amount", selectedType)}
-          >
-            Amount {getSortIcon("amount", selectedType)}
-          </div>
-        </div>
-      </div>
+      <DonationTableHeader
+        onSort={handleSort}
+        getSortIcon={getSortIcon}
+        selectedType={selectedType}
+      />
+
 
       {loading && <p className="mt-4">Loading...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
@@ -188,7 +178,9 @@ function DonationHistoryUser({ userDetails }) {
               >
                 <div className="w-1/3">{formattedDate}</div>
                 <div className="w-1/3">{donation.donation_drive_title}</div>
-                <div className="w-1/3 text-right">{formattedAmount}</div>
+                <div className="w-1/3 text-right">
+  {selectedType === "Monetary" ? formattedAmount : donation.status}
+</div>
               </div>
             );
           })}
