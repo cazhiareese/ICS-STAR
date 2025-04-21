@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { XCircle } from "lucide-react";
 
-function SocialLinksEditModal({ isOpen, onClose, onSaveLinks }) {
+function SocialLinksEditModal({ isOpen, onClose, onSaveLinks, userDetails }) {
   const [facebook, setFacebook] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [github, setGithub] = useState("");
 
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      // Populate the fields with the current user details when modal opens
+      setFacebook(userDetails?.facebook || "");
+      setLinkedin(userDetails?.linkedin || "");
+      setGithub(userDetails?.github || "");
+    } else {
+      // Reset the fields when modal is closed
       setFacebook("");
       setLinkedin("");
       setGithub("");
     }
-  }, [isOpen]);
+  }, [isOpen, userDetails]); // Re-run when userDetails or isOpen changes
 
   const handleSave = async () => {
     await onSaveLinks({ facebook, linkedin, github });

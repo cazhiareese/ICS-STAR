@@ -290,6 +290,7 @@ function ProfileSection({
   isOpen={showSocialModal}
   onClose={() => setShowSocialModal(false)}
   onSaveLinks={handleSocialLinksSave}
+  userDetails={userDetails}
 />
     </div>
   );
