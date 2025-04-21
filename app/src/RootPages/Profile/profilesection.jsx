@@ -218,20 +218,22 @@ function ProfileSection({
             </>
           )}
 
-{/* Social Icons */}
 {userDetails?.is_verified && (
-  <div className="flex gap-3 mt-1">
-    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
-      <Facebook size={20} className="text-white" />
-    </span>
-    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
-      <Github size={20} className="text-white" />
-    </span>
-    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
-      <Linkedin size={20} className="text-white" />
-    </span>
+  <div className={editMode ? "bg-white border border-disabled rounded-[12px] px-2 py-1  mt-2" : "mt-2"}>
+    <div className="flex gap-3 mt-1">
+      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+        <Facebook size={20} className="text-white" />
+      </span>
+      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+        <Github size={20} className="text-white" />
+      </span>
+      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+        <Linkedin size={20} className="text-white" />
+      </span>
+    </div>
   </div>
 )}
+
 
 
         </div>
