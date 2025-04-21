@@ -1,4 +1,5 @@
 from enum import Enum
+from uuid import UUID
 from pydantic import BaseModel
 from typing import List
 from datetime import datetime
@@ -18,6 +19,7 @@ class JobModeEnum(str, Enum):
     hybrid = "hybrid"
 
 class JobPostingOut(BaseModel):
+    post_id: UUID
     title: str
     company: str
     description: str
@@ -25,7 +27,7 @@ class JobPostingOut(BaseModel):
     tags: List[str]
     interested_count: int
     employment_type: EmploymentTypeEnum
-    job_mode: JobModeEnum
+    mode: JobModeEnum
     
     class Config:
         from_attributes = True
