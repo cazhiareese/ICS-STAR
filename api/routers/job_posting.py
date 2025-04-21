@@ -228,6 +228,11 @@ def get_open_job_postings(
         JobPosting.post_id,
         JobPosting.title,
         JobPosting.date_posted, 
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -248,6 +253,11 @@ def get_open_job_postings(
             "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
+            "company": row.company,
+            "description": row.description,
+            "employment_type": row.employment_type,
+            "mode": row.mode,
+            "salary": row.salary,
             "interested_count": row.interested_count
         })
     
@@ -275,7 +285,12 @@ def get_closed_job_postings(
     query_result = db.query(
         JobPosting.post_id,
         JobPosting.title,
-        JobPosting.date_posted, 
+        JobPosting.date_posted,
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary, 
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -296,6 +311,11 @@ def get_closed_job_postings(
             "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
+            "company": row.company,
+            "description": row.description,
+            "employment_type": row.employment_type,
+            "mode": row.mode,
+            "salary": row.salary,
             "interested_count": row.interested_count
         })
     
