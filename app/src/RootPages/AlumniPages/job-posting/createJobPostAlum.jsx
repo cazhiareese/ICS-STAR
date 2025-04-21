@@ -268,7 +268,7 @@ function CreateJobPostAlum() {
                     />
                 </div>
 
-                {/* TODO: add file upload here */}
+                
                 <div className='w-2/6'>
                     <h1 className='text-lg font-satoshi-medium pb-3'>
                         Image (Optional)
