@@ -12,6 +12,7 @@ import SaveConfirmationModal from "./components/savemodal";
 import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
+import SocialLinksEditModal from "./components/sociallinksmoda";
 
 function ProfileSection({
   activeTab,
@@ -24,6 +25,7 @@ function ProfileSection({
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showSocialModal, setShowSocialModal] = useState(false);
 
   //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
   useEffect(() => {
@@ -219,20 +221,26 @@ function ProfileSection({
           )}
 
 {userDetails?.is_verified && (
-  <div className={editMode ? "bg-white border border-disabled rounded-[12px] px-2 py-1  mt-2" : "mt-2"}>
-    <div className="flex gap-3 mt-1">
-      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+  <div
+    className={editMode 
+      ? "bg-white border border-disabled rounded-[12px] px-2 py-1 mt-2 group cursor-pointer hover:bg-hover transition" 
+      : "mt-2"}
+    onClick={editMode ? () => setShowSocialModal(true) : undefined}
+  >
+    <div className={`flex gap-3 mt-1 ${editMode ? "pointer-events-none" : ""}`}>
+      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
         <Facebook size={20} className="text-white" />
       </span>
-      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
         <Github size={20} className="text-white" />
       </span>
-      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
+      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
         <Linkedin size={20} className="text-white" />
       </span>
     </div>
   </div>
 )}
+
 
 
 
@@ -252,6 +260,8 @@ function ProfileSection({
         onClose={() => setShowUploadModal(false)}
         onUpload={handleUpload}
       />
+
+<SocialLinksEditModal isOpen={showSocialModal} onClose={() => setShowSocialModal(false)} />
     </div>
   );
 }
