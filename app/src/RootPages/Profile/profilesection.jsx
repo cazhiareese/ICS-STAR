@@ -240,18 +240,31 @@ function ProfileSection({
     onClick={editMode ? () => setShowSocialModal(true) : undefined}
   >
     <div className={`flex gap-3 mt-1 ${editMode ? "pointer-events-none" : ""}`}>
-      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
-        <Facebook size={20} className="text-white" />
-      </span>
-      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
-        <Github size={20} className="text-white" />
-      </span>
-      <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
-        <Linkedin size={20} className="text-white" />
-      </span>
+      {userDetails.facebook && (
+        <a href={userDetails.facebook} target="_blank" rel="noopener noreferrer">
+          <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+            <Facebook size={20} className="text-white" />
+          </span>
+        </a>
+      )}
+      {userDetails.github && (
+        <a href={userDetails.github} target="_blank" rel="noopener noreferrer">
+          <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+            <Github size={20} className="text-white" />
+          </span>
+        </a>
+      )}
+      {userDetails.linkedin && (
+        <a href={userDetails.linkedin} target="_blank" rel="noopener noreferrer">
+          <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+            <Linkedin size={20} className="text-white" />
+          </span>
+        </a>
+      )}
     </div>
   </div>
 )}
+
 
 
 
