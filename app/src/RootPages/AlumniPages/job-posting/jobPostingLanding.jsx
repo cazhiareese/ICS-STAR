@@ -4,13 +4,28 @@ import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
 import { BriefcaseBusiness, Plus, PlusCircle } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
+import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 
 function JobPostingLanding() {
     const [searchInput, setSearchInput] = useState("");
-    const [selectedJobId, setSelectedJobId] = useState(""); //the job id will be stored here
+    const [selectedJobId, setSelectedJobId] = useState("dd"); //the job id will be stored here
+    const [selectedJob, setSelectedJob] = useState({});
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
 
+    useEffect(() => {
+        const token = localStorage.getItem('token'); 
+        if (token) {
+            try {
+            const decoded = jwtDecode(token);
+            console.log("Decoded JWT:", decoded);
+            setUserId(decoded.sub); 
+            // console.log(decoded.sub)
+            } catch (error) {
+            console.error("Invalid token", error);
+            }
+        }
+    }, []);
 
     // For Dummy testing only
     useEffect(() => {
@@ -41,6 +56,27 @@ function JobPostingLanding() {
         
     }, []);
 
+
+    useEffect(() => {
+        // Job Dummy Data
+        const job = {
+            title: "Data Scientist",
+            company: "Google Alphabet",
+            description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
+            salary: 20000,
+            tags: ["Software Engineering", "UI/UX"],
+            employment_type: "Full-time",
+            link: "LinkedIn.com",
+            image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
+            user_name: "Roche Quejada", //Tentative
+            interested_count: 5,
+            user_id: "2543d5a7-f7f3-4a90-92f7-d0a8595db26b"
+        }
+
+        setSelectedJob(job);
+        
+    }, []);
+
     
 
     return (
@@ -63,7 +99,7 @@ function JobPostingLanding() {
                 </button>
             </div>
 
-            <div className='flex flex-row mt-16 mx-30'>
+            <div className='flex flex-row mt-16 mx-30 gap-5'>
                 {/* Scrollable wrapper */}
                 <div className='h-[800px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left'>
                     <div className='flex flex-col gap-5 mx-10'>
@@ -75,16 +111,13 @@ function JobPostingLanding() {
 
                 {/* Job Preview */}
                 
-                {selectedJobId === "" ? (
-                    <div className="flex flex-col items-center justify-center  w-1/2 mr-10">
+                {!selectedJob || !selectedJob.tags ? (
+                    <div className="flex flex-col items-center justify-center w-lg mr-10">
                         <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200}/></h1>
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>
                 ) : (
-                    <div>
-                    {/* Render job preview here, example placeholder */}
-                    <p>Previewing Job ID: {selectedJobId}</p>
-                    </div>
+                    <JobExpandedCard job={selectedJob} />
                 )}
                 
             </div>
