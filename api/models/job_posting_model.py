@@ -1,8 +1,22 @@
-from sqlalchemy import Column, String, Boolean, Numeric, Text, ForeignKey, DateTime, func, UUID
+from sqlalchemy import Column, String, Boolean, Numeric, Text, ForeignKey, DateTime, func, UUID, Enum
 from sqlalchemy.orm import relationship
 import uuid
 from models.usermodel import User
 from config.config import Base
+from enum import Enum as PyEnum
+
+class EmploymentTypeEnum(PyEnum):
+    full_time = "full-time"
+    part_time = "part-time"
+    contractual = "contractual"
+    freelance = "freelance"
+    internship = "internship"
+    apprenticeship = "apprenticeship"
+
+class JobModeEnum(PyEnum):
+    onsite = "onsite"
+    remote = "remote"
+    hybrid = "hybrid"
 
 class JobPosting(Base):
     __tablename__ = 'job_posting'
@@ -12,7 +26,8 @@ class JobPosting(Base):
     company = Column(String(255))
     link = Column(Text)
     image = Column(Text)
-    employment_type = Column(String(255))
+    employment_type = Column(Enum(EmploymentTypeEnum))
+    job_mode = Column(Enum(JobModeEnum))
     description = Column(Text)
     is_deleted = Column(Boolean, default=False)
     is_closed = Column(Boolean, default=False)
