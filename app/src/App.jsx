@@ -48,6 +48,7 @@ import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
+import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -105,7 +106,7 @@ function App() {
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="alumni/createJobPosting" element={<CreateJobPostAlum />} />
-            
+            <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
 
             <Route path="*" element={<Unauthorized />} />
 
