@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AdminCareerCard from '../../../components/AdminComponents/admincareercard'
 import { ChevronLeft, ChevronRight, Filter, List, LayoutGrid, MoveRight, MoveLeft } from 'lucide-react'
-import JobTable from '../../../components/AdminComponents/jobtable';
+import JobTable from '../../../components/AdminComponents/JobTable';
 
 const jobPostings = [
   {
