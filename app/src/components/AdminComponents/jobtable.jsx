@@ -1,10 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminModal from './adminmodal';
+import { X } from 'lucide-react';
+import axios from 'axios'
 
-function JobTable({ data }) {
-  const navigate = useNavigate();
-  const [selectedJob, setSelectedJob] = useState(null);
+function JobTable({ data, jobType }) {
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
+    const navigate = useNavigate();
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [reports, setReports] = useState([])
+
+    async function fetchReports(){
+        const response = await axios.get(`${API_BASE_URL}/admin/job-posts/${selectedJob.post_id}/reports`)
+        console.log(response.data)
+        setReports(response.data)
+    }
+
+    useEffect(() => {
+        fetchReports()
+    }, [selectedJob])
 
   return (
     <>
@@ -23,9 +37,9 @@ function JobTable({ data }) {
           {data.map((job, index) => (
             <tr key={index}>
               <td className="py-3 px-4 font-satoshi-bold">{job.date_posted}</td>
-              <td className="py-3 px-4">{job.job_title}</td>
-              <td className="py-3 px-4">{job.creator}</td>
-              <td className="py-3 px-4">{job.interested}</td>
+              <td className="py-3 px-4">{job.title}</td>
+              <td className="py-3 px-4">{job.user_name}</td>
+              <td className="py-3 px-4">{job.interested_count}</td>
               <td className="py-3 px-4">
                 <button
                   className="text-primary hover:text-hover cursor-pointer underline"
@@ -39,33 +53,121 @@ function JobTable({ data }) {
         </tbody>
       </table>
 
-      <AdminModal isOpen={!!selectedJob} onClose={() => setSelectedJob(null)}>
-        {selectedJob && (
-          <>
-            <div className='h-1/3 w-full bg-primary font-satoshi-regular rounded-t-2xl'></div>
-            <div className='p-6'>
-                <h2 className="text-4xl font-satoshi-bold mb-2">{selectedJob.job_title}</h2>
-                <p className="text-2xl font-satoshi-regular">
-                {selectedJob.org || 'Institute of Computer Science, UPLB'}
-                </p>
-                <p className='font-satoshi-regular'>
-                    Posted by: <span className="text-primary">{selectedJob.creator}</span>
-                </p>
-                <p className='font-satoshi-regular'>
-                    Date: {selectedJob.date_posted}
-                </p>
+      {selectedJob && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">            
+            {jobType === 'reported' ? (
+            <div className="flex flex-row gap-6 p-6 h-4/5 w-full">
+                {/* Left Column: Reports Table */}
+                <div className="md:w-3/5 bg-white rounded-2xl shadow p-6">
+                    <h2 className="text-3xl font-satoshi-bold mb-1">{selectedJob.title}</h2>
+                    <p className="text-lg text-gray-700">{selectedJob.company}</p>
+                    <p className="mb-4 text-sm text-gray-600">
+                        Posted by: <span className="text-primary">{selectedJob.user_name}</span>
+                    </p>
 
-                <h3 className="font-satoshi-medium mb-1 text-lg">Details</h3>
-                <p className='font-satoshi-regular text-sm'>Details here</p>
+                    <h3 className="text-lg font-satoshi-medium mb-2">Reports</h3>
+                    <div className="overflow-auto">
+                        <table className="w-full border border-gray-300 rounded-lg">
+                        <thead>
+                            <tr className=" text-sm text-left text-primary">
+                            <th className="py-2 px-3">Date Reported</th>
+                            <th className="py-2 px-3">Alumni</th>
+                            <th className="py-2 px-3">Reason</th>
+                            <th className="py-2 px-3">Attachments</th>
+                            </tr>
+                        </thead>
+                        <tbody className="text-sm">
+                            {reports.map((report, i) => (
+                            <tr key={i} className="border-t">
+                                <td className="py-2 px-3">{report.date_reported}</td>
+                                <td className="py-2 px-3">{report.alumni_name}</td>
+                                <td className="py-2 px-3">{report.reason}</td>
+                                <td className="py-2 px-3">
+                                {report.attachment ? (
+                                    <a
+                                    className="text-primary underline hover:text-hover"
+                                    href={report.attachment}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >
+                                    {report.attachment.split('/').pop()}
+                                    </a>
+                                ) : (
+                                    'N/A'
+                                )}
+                                </td>
+                            </tr>
+                            ))}
+                        </tbody>
+                        </table>
+                    </div>
 
-                <h3 className="font-satoshi-medium mb-1 text-lg">Description</h3>
-                <p className="font-satoshi-regular text-sm">
-                This is a placeholder description. Replace with actual data or enrich the job object!
-                </p>
+                    <div className="pt-4">
+                        <button className="bg-red-700 text-white px-4 py-2 rounded-md">
+                        Remove Post
+                        </button>
+                    </div>
+                </div>
+
+                {/* Right Column: Job Preview Card */}
+                <div className="md:w-2/5 bg-white rounded-2xl shadow overflow-hidden">
+                    <div className="h-1/3 w-full bg-primary font-satoshi-regular rounded-t-2xl"></div>
+                    <div className="p-6">
+                        <h2 className="text-4xl font-satoshi-bold mb-2">{selectedJob.title}</h2>
+                        <p className="text-2xl font-satoshi-regular">
+                        {selectedJob.company}
+                        </p>
+                        <p className='font-satoshi-regular'>
+                        Posted by: <span className="text-primary">{selectedJob.user_name}</span>
+                        </p>
+                        <p className='font-satoshi-regular'>
+                        Date: {selectedJob.date_posted}
+                        </p>
+
+                        <h3 className="font-satoshi-medium mb-1 text-lg">Details</h3>
+                        <p className='font-satoshi-regular text-sm'>Details here</p>
+
+                        <h3 className="font-satoshi-medium mb-1 text-lg">Description</h3>
+                        <p className="font-satoshi-regular text-sm">
+                        This is a placeholder description. Replace with actual data or enrich the job object!
+                        </p>
+                    </div>
+                </div>
             </div>
-          </>
+            ) : (
+            <div className="relative max-w-4xl mx-auto bg-white rounded-2xl shadow overflow-hidden h-4/5 w-1/3">
+                <button 
+                    className="absolute top-4 right-4 cursor-pointer text-white rounded-full"
+                    onClick={() => setSelectedJob(null)}
+                >
+                    <X size={24} className=''/>
+                </button>
+                <div className="h-1/3 w-full bg-primary font-satoshi-regular rounded-t-2xl"></div>
+                <div className="p-6">
+                    <h2 className="text-4xl font-satoshi-bold mb-2">{selectedJob.title}</h2>
+                    <p className="text-2xl font-satoshi-regular">
+                    {selectedJob.company}
+                    </p>
+                    <p className='font-satoshi-regular'>
+                    Posted by: <span className="text-primary">{selectedJob.user_name}</span>
+                    </p>
+                    <p className='font-satoshi-regular'>
+                    Date: {selectedJob.date_posted}
+                    </p>
+
+                    <h3 className="font-satoshi-medium mb-1 text-lg">Details</h3>
+                    <p className='font-satoshi-regular text-sm'>{selectedJob.details}</p>
+
+                    <h3 className="font-satoshi-medium mb-1 text-lg">Description</h3>
+                    <p className="font-satoshi-regular text-sm">
+                    {selectedJob.description}
+                    </p>
+                </div>
+            </div>
+
+            )}
+        </div>
         )}
-      </AdminModal>
     </>
   );
 }
