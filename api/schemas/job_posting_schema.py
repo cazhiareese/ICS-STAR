@@ -34,7 +34,8 @@ class JobPostingForAdminOut(BaseModel):
     title: str
     user_name: str
     interested_count: int
-    date_posted: datetime
+    date_posted: str
+    
     
     class Config:
         from_attributes = True

@@ -238,13 +238,27 @@ def get_open_job_postings(
     result = []
     for row in query_result:
         result.append({
-            "date_posted": row.date_posted,
+            "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
             "interested_count": row.interested_count
         })
     
     return result
+
+# Get count job postings that are open
+@router.get("/admin/job-postings/open/count")
+def get_open_job_postings_count(
+    db: Session = Depends(get_db)
+):
+    count = db.query(
+        func.count(distinct(JobPosting.post_id))
+    ).filter(
+        JobPosting.is_closed == False,
+        JobPosting.is_deleted == False
+    ).scalar()
+    
+    return {"open_job_postings_count": count}
 
 # Get job postings that are closed
 @router.get("/admin/job-postings/closed", response_model=List[JobPostingForAdminOut])
@@ -271,13 +285,27 @@ def get_closed_job_postings(
     result = []
     for row in query_result:
         result.append({
-            "date_posted": row.date_posted,
+            "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
             "interested_count": row.interested_count
         })
     
     return result
+
+# Get count job postings that are closed
+@router.get("/admin/job-postings/closed/count")
+def get_closed_job_postings_count(
+    db: Session = Depends(get_db)
+):
+    count = db.query(
+        func.count(distinct(JobPosting.post_id))
+    ).filter(
+        JobPosting.is_closed == True,
+        JobPosting.is_deleted == False
+    ).scalar()
+    
+    return {"closed_job_postings_count": count}
 
 @router.get("/admin/job-postings/reported", response_model=List[ReportedJobPostingOut])
 def get_reported_job_postings(
@@ -307,13 +335,68 @@ def get_reported_job_postings(
     for row in query_result:
         result.append({
             "post_id": row.post_id,
-            "date_posted": row.date_posted,
+            "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
             "interested_count": row.interested_count,
             "report_count": row.report_count
         })
     
+    return result
+
+# Get count job postings that are reported
+@router.get("/admin/job-postings/reported/count")
+def get_reported_job_postings_count(
+    db: Session = Depends(get_db),
+):
+    count = db.query(
+        func.count(distinct(JobPosting.post_id))
+    ).join(
+        Report, Report.reported_post_id == JobPosting.post_id
+    ).filter(
+        JobPosting.is_deleted == False
+    ).scalar()
+    
+    return {"reported_job_postings_count": count}
+
+
+@router.get("/admin/job-postings/top-4-interested")
+def get_top_4_interested_job_postings(db: Session = Depends(get_db)):
+    # Query to get the top 4 job postings with the most interested users
+    query_result = db.query(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.date_posted,
+        func.concat(User.first_name, ' ', User.last_name).label('user_name'),
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
+    ).join(
+        User, JobPosting.user_id == User.user_id 
+    ).join(
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).group_by(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.date_posted,
+        User.first_name,
+        User.last_name
+    ).order_by(
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).desc()
+    ).limit(4).all()
+
+
+    result = []
+    for row in query_result:
+        result.append({
+            "post_id": row.post_id,
+            "title": row.title,
+            "company": row.company,
+            "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
+            "user_name": row.user_name,
+            "interested_count": row.interested_count
+        })
+
     return result
 
 @router.get("/admin/job-posts/{post_id}/reports", response_model=List[PostReportDetailOut])
