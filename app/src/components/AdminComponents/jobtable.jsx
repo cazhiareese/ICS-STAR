@@ -129,11 +129,12 @@ function JobTable({ data, jobType }) {
                         Date: {selectedJob.date_posted}
                         </p>
 
-                        <h3 className="font-satoshi-medium mb-1 text-lg">Details</h3>
-                        <p className='font-satoshi-regular text-sm'>Details here</p>
+                        <h3 className="font-satoshi-medium text-lg">Details</h3>
+                        <p className='font-satoshi-regular text-md'><span className='font-satoshi-medium'>Employment type:</span> {selectedJob.employment_type}</p>
+                        <p className='font-satoshi-regular text-md'> <span className='font-satoshi-medium'>Mode:</span> {selectedJob.mode}</p>
 
-                        <h3 className="font-satoshi-medium mb-1 text-lg">{selectedJob.details}</h3>
-                        <p className="font-satoshi-regular text-sm">
+                        <h3 className="font-satoshi-medium text-lg">Description</h3>
+                        <p className="font-satoshi-regular text-md">
                         {selectedJob.description}
                         </p>
                     </div>
