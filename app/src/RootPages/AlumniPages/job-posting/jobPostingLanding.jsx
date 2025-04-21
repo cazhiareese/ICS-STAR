@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import SearchBar from '../../../components/AlumniComponents/searchbar'
 import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
-import { Plus, PlusCircle } from 'lucide-react';
+import { BriefcaseBusiness, Plus, PlusCircle } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
 
 function JobPostingLanding() {
     const [searchInput, setSearchInput] = useState("");
+    const [selectedJobId, setSelectedJobId] = useState(""); //the job id will be stored here
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
 
@@ -64,13 +65,28 @@ function JobPostingLanding() {
 
             <div className='flex flex-row mt-16 mx-30'>
                 {/* Scrollable wrapper */}
-                <div className='h-[600px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left'>
+                <div className='h-[800px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left'>
                     <div className='flex flex-col gap-5 mx-10'>
                         {jobList.map((job, index) => (
                             <JobCard key={index} job={job} />
                         ))}
                     </div>
                 </div>
+
+                {/* Job Preview */}
+                
+                {selectedJobId === "" ? (
+                    <div className="flex flex-col items-center justify-center  w-1/2 mr-10">
+                        <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200}/></h1>
+                        <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
+                    </div>
+                ) : (
+                    <div>
+                    {/* Render job preview here, example placeholder */}
+                    <p>Previewing Job ID: {selectedJobId}</p>
+                    </div>
+                )}
+                
             </div>
                 
         </div>
