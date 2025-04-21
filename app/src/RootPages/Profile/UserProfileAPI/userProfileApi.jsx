@@ -120,22 +120,22 @@ export const removeScholarship = async (scholarshipToRemove) => {
 };
 
 export const updateLinks = async ({ facebook, linkedin, github }) => {
-  const formData = new FormData();
-  formData.append("facebook", facebook);
-  formData.append("linkedin", linkedin);
-  formData.append("github", github);
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("User not authenticated");
+
+  const formData = new URLSearchParams({ facebook, linkedin, github });
 
   const response = await fetch(`${API_BASE_URL}/update-links`, {
     method: "PUT",
     headers: {
-      Authorization: `Bearer ${token}`, // Don't include Content-Type for FormData
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Bearer ${token}`,
     },
     body: formData,
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.detail || "Failed to update social links");
+    throw new Error("Failed to update social links");
   }
 
   return await response.json();

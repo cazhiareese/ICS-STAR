@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { updateLinks } from "./UserProfileAPI/userProfileApi";
 import {
   Camera,
   Facebook,
@@ -33,6 +34,16 @@ function ProfileSection({
     fetchProfilePicture();
     setProfilePicture(userDetails.profile_picture);
   }, []);
+
+  const handleSocialLinksSave = async (links) => {
+    try {
+      await updateLinks(links);
+      // Optionally update local state or refetch profile
+      console.log("Social links updated");
+    } catch (err) {
+      console.error("Error updating links:", err);
+    }
+  };
 
   const fetchProfilePicture = async () => {
     try {
@@ -261,7 +272,11 @@ function ProfileSection({
         onUpload={handleUpload}
       />
 
-<SocialLinksEditModal isOpen={showSocialModal} onClose={() => setShowSocialModal(false)} />
+<SocialLinksEditModal
+  isOpen={showSocialModal}
+  onClose={() => setShowSocialModal(false)}
+  onSaveLinks={handleSocialLinksSave}
+/>
     </div>
   );
 }

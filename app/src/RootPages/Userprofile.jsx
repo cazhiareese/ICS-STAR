@@ -37,6 +37,7 @@ function UserProfile() {
     const fetchProfile = async () => {
       try {
         const data = await apiFetchProfile(); // Correctly access 'data.data'
+        console.log(data);
 
         setUserDetails({
           first_name: data.first_name,
