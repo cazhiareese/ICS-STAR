@@ -6,6 +6,7 @@ from models.event_model import Event, EventConfirmedBy, EventDate, EventVisibleT
 from uuid import UUID
 from datetime import datetime, timezone, date, timedelta
 from schemas.events_schema import OneEventOut, EventOut
+from util.admin_events_util import add_user_clicks
 
 
 def fetch_event_suggestions(db: Session, query_text: str, limit: int = 5) -> List[str]:
@@ -101,6 +102,8 @@ def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
         raise HTTPException(status_code=404, detail="Event not found")
 
     dates = event.dates
+    
+    add_user_clicks(event.event_id, db)
 
     return OneEventOut(
         event_id=event.event_id,
