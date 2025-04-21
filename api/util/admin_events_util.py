@@ -1,6 +1,6 @@
 
 from datetime import date, datetime
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from sqlalchemy import UUID, func, or_
 from models.usermodel import User, UserAffiliation
@@ -299,7 +299,12 @@ async def edit_event_util (
     return event
 
 
-def get_demographics(event_id: str, db: Session) -> List[DemographicsOut]:
+def get_demographics(
+    event_id: str, 
+    db: Session,
+    sort_by: Literal["batch", "rsvp"] = "batch",
+    order: Literal["asc", "desc"] = "asc"
+) -> List[DemographicsOut]:
     batch_year_expr = func.substr(User.student_number, 1, 4)
 
     query = (
@@ -311,8 +316,18 @@ def get_demographics(event_id: str, db: Session) -> List[DemographicsOut]:
         .filter(EventConfirmedBy.event_id == event_id)
         .filter(User.student_number.isnot(None))
         .group_by(batch_year_expr)
-        .order_by(batch_year_expr)
     )
+    
+    if sort_by == "batch":
+        sort_column = batch_year_expr
+    else:
+        sort_column = func.count(EventConfirmedBy.user_id)
+
+    if order == "desc":
+        query = query.order_by(sort_column.desc())
+    else:
+        query = query.order_by(sort_column.asc())
+    
     results = query.all()
 
     return [{"batch": r.batch, "rsvp_count": r.rsvp_count} for r in results]

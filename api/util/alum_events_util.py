@@ -1,10 +1,10 @@
 from fastapi import HTTPException
-from typing import List
+from typing import List, Optional
 from sqlalchemy import distinct, or_, asc, func
 from sqlalchemy.orm import Session
 from models.event_model import Event, EventConfirmedBy, EventDate, EventVisibleTo
 from uuid import UUID
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date, timedelta
 from schemas.events_schema import OneEventOut, EventOut
 
 
@@ -59,6 +59,7 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
         .join(EventConfirmedBy, Event.event_id == EventConfirmedBy.event_id)
         .filter(EventConfirmedBy.user_id == user_id)
         .filter(Event.is_deleted == False)
+        .filter(Event.is_concluded == False)
         .all()
     )
 
@@ -113,9 +114,14 @@ def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
         tags=[tag.tag for tag in event.tags],
     )
 
-def get_visible_events_for_user(user_id: UUID, db: Session):
-    now = datetime.now(timezone.utc)
-
+def get_visible_events_for_user(
+    user_id: UUID,
+    db: Session,
+    date_filter: Optional[str] = None
+) -> List[EventOut]:
+    
+    now = datetime.now(timezone.utc).date()
+    
     visible_event_ids = (
         db.query(EventVisibleTo.event_id)
         .filter(EventVisibleTo.user_id == user_id)
@@ -133,14 +139,31 @@ def get_visible_events_for_user(user_id: UUID, db: Session):
         )
         .all()
     )
+    
+    print
 
     event_list = []
 
     for event in events:
-        future_dates = sorted(
-            [dt.date for dt in event.dates if dt.date >= now]
-        )
+        future_dates = sorted([dt.date for dt in event.dates if dt.date.date() >= now])
+
         if not future_dates:
+            continue
+        
+        filtered_dates = []
+        if date_filter == "today":
+            filtered_dates = [d for d in future_dates if d.date() == now]
+        elif date_filter == "tomorrow":
+            filtered_dates = [d for d in future_dates if d.date() == now + timedelta(days=1)]
+        elif date_filter == "this_weekend":
+            filtered_dates = [d for d in future_dates if d.weekday() in (5, 6)]
+        else:
+            try:
+                custom_date = datetime.strptime(date_filter, "%Y-%m-%d").date()
+                filtered_dates = [d for d in future_dates if d.date() == custom_date]
+            except (ValueError, TypeError):
+                filtered_dates = future_dates
+        if not filtered_dates:
             continue
 
         tags = [tag.tag for tag in event.tags]
@@ -152,7 +175,7 @@ def get_visible_events_for_user(user_id: UUID, db: Session):
             "description": event.description,
             "location": event.location,
             "is_closed": event.is_closed,
-            "dates": [d for d in future_dates],
+            "dates": filtered_dates,
             "tags": tags
         })
 
