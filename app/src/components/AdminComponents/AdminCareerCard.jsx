@@ -23,8 +23,8 @@ function AdminCareerCard({ job, onPrev, onNext }) {
         <div className='flex flex-row justify-between items-center w-full cursor-pointer' onClick={() => {}}>
           {/* Role, Location */}
           <div className='flex flex-col'>
-            <h2 className='text-3xl text-primary font-satoshi-bold'>{job.job_title}</h2>
-            <p className='font-satoshi-regular'>{job.org}</p>
+            <h2 className='text-3xl text-primary font-satoshi-bold'>{job.title}</h2>
+            <p className='font-satoshi-regular'>{job.company}</p>
             <p className='font-satoshi-regular'>{job.location}</p>
           </div>
 
@@ -33,16 +33,16 @@ function AdminCareerCard({ job, onPrev, onNext }) {
             <div className='flex flex-row gap-2'>
               <Heart className='text-primary' />
               <p className='font-satoshi-regular'>
-                <span className='text-primary font-satoshi-medium'>{job.interested} people</span> are interested
+                <span className='text-primary font-satoshi-medium'>{job.interested_count} people</span> are interested
               </p>
             </div>
             <div className='flex flex-row gap-2'>
               <Calendar className='text-primary' />
-              <p className='font-satoshi-regular'>{job.date}</p>
+              <p className='font-satoshi-regular'>{job.date_posted}</p>
             </div>
             <div className='flex flex-row gap-2'>
               <User className='text-primary' />
-              <p className='font-satoshi-regular'>{job.creator}</p>
+              <p className='font-satoshi-regular'>{job.user_name}</p>
             </div>
           </div>
         </div>
