@@ -3,7 +3,7 @@ import React from 'react'
 
 function JobCard({job}) {
     return (
-        <div className='flex flex-col outline-1 outline-neutral-300 w-lg rounded-2xl p-10 cursor cursor-pointer'>
+        <div className='flex flex-col outline-1 outline-neutral-300 w-lg rounded-2xl p-8 cursor cursor-pointer'>
             {/* Title and Company */}
             <h1 className='font-satoshi-bold text-3xl'>{job.title}</h1>
             <h1 className='font-satoshi-bold text-lg pt-2'>{job.company}</h1>

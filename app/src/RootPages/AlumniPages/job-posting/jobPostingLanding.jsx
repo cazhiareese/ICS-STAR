@@ -62,12 +62,14 @@ function JobPostingLanding() {
                 </button>
             </div>
 
-            {/* Job Cards Mapping */}
-            <div className='flex flex-row mt-16'>
-                <div className='flex flex-col gap-5 mx-48'>
-                    {jobList.map((job, index) => (
-                        <JobCard job={job} />
-                    ))}
+            <div className='flex flex-row mt-16 mx-30'>
+                {/* Scrollable wrapper */}
+                <div className='h-[600px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left'>
+                    <div className='flex flex-col gap-5 mx-10'>
+                        {jobList.map((job, index) => (
+                            <JobCard key={index} job={job} />
+                        ))}
+                    </div>
                 </div>
             </div>
                 
