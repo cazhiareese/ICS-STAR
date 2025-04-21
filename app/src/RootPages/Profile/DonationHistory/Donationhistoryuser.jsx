@@ -53,6 +53,7 @@ function DonationHistoryUser({ userDetails }) {
           ...d,
           type: "Monetary",
         }));
+        console.log(monetary);  
 
         const inKind = inKindRes.data.data.map((d) => ({
           ...d,
