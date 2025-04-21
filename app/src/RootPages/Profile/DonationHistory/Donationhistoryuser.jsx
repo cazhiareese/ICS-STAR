@@ -61,6 +61,7 @@ function DonationHistoryUser({ userDetails }) {
           type: "In-Kind",
           amount: 0,
         }));
+        console.log(inKind );  
 
         const sortedMonetary = [...monetary].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
         const sortedInKind = [...inKind].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
