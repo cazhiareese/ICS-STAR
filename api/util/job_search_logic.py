@@ -140,3 +140,52 @@ def job_overview(
     )
 
     return job_info
+
+def get_current_interested(
+        db: Session,
+        post_id: UUID,
+) -> list[UserInterestedOut]:
+    
+    # Same as view_interested_in but get only those created today
+    today = datetime.datetime.now(datetime.timezone.utc).date()
+    start_of_today = datetime.datetime.combine(today, datetime.time.min)
+    end_of_today = datetime.datetime.combine(today, datetime.time.max)
+    query = db.query(
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name).label("name"),
+        User.student_number,
+        func.concat(User.state, ', ', User.country).label("location"),
+        User.industry,
+        User.image,
+        JobPosting.title,
+        JobPostingInterestedIn.created_at
+    ).join(
+        JobPostingInterestedIn, JobPostingInterestedIn.user_id == User.user_id
+    ).join(
+        JobPosting, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPostingInterestedIn.post_id == post_id,
+        JobPostingInterestedIn.created_at.between(start_of_today, end_of_today)
+    )
+
+    interested_users = query.all()
+
+    if not interested_users:
+        return []
+
+    interested_out_list = []
+
+    for user in interested_users:
+        user_out = UserInterestedOut(
+            id=user.user_id,
+            name=user.name,
+            batch=user.student_number[:4],
+            image=f"{STORAGE_STRING}{user.image}" if user.image else None,
+            location=user.location,
+            title=user.title,
+            industry=user.industry,
+            date_of_interest=user.created_at.strftime("%m/%d/%Y") if user.created_at else None
+        )
+        interested_out_list.append(user_out)
+
+    return interested_out_list
