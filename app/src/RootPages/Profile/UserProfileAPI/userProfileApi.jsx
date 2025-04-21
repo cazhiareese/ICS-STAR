@@ -118,3 +118,25 @@ export const removeScholarship = async (scholarshipToRemove) => {
   if (!response.ok) throw new Error("Failed to remove scholarship");
   return await response.json();
 };
+
+export const updateLinks = async ({ facebook, linkedin, github }) => {
+  const formData = new FormData();
+  formData.append("facebook", facebook);
+  formData.append("linkedin", linkedin);
+  formData.append("github", github);
+
+  const response = await fetch(`${API_BASE_URL}/update-links`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`, // Don't include Content-Type for FormData
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error?.detail || "Failed to update social links");
+  }
+
+  return await response.json();
+};
