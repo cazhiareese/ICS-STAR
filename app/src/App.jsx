@@ -20,7 +20,7 @@ import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
 import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
 import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
-import AdminCareer from "./RootPages/AdminPages/admincareer";
+import AdminCareer from "./RootPages/AdminPages/Careers/AdminCareer";
 import AdminDonations from "./RootPages/AdminPages/Donations/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
 
