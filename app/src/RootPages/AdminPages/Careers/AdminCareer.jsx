@@ -2,22 +2,23 @@ import React, { useState, useEffect } from 'react'
 import AdminCareerCard from '../../../components/AdminComponents/admincareercard'
 import { ChevronLeft, ChevronRight, Filter, List, LayoutGrid, MoveRight, MoveLeft } from 'lucide-react'
 import JobTable from '../../../components/AdminComponents/JobTable';
+import AdminModal from '../../../components/AdminComponents/adminmodal';
 
 const jobPostings = [
   {
-    title: 'Software Engineer',
+    job_title: 'Software Engineer',
     org: 'Institute of Computer Science, UPLB',
     location: 'Los Baños, Laguna',
     interested: 128,
     date: 'January 1, 2025',
-    poster: 'John Doe',
+    creator: 'John Doe',
   },
   {
     title: 'Frontend Developer',
     org: 'Tech Inc.',
     location: 'Taguig, Metro Manila',
     interested: 90,
-    date: 'February 5, 2025',
+    date_posted: 'February 5, 2025',
     poster: 'Jane Smith',
   },
   {
@@ -38,6 +39,7 @@ function AdminCareer() {
   const [page, setPage] = useState()
   const [totalPages, setTotalPages] = useState()
   const [jobs, setJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   const prev = () => setIndex((index - 1 + total) % total);
   const next = () => setIndex((index + 1) % total);
@@ -67,8 +69,8 @@ function AdminCareer() {
     <div className='flex flex-col h-screen p-6 items-center w-full'>
       <h1 className='text-primary font-satoshi-bold text-5xl mb-4 self-start'>Career</h1>
       {/* Card Carousel */}
-      <div className='flex items-center gap-4 w-full justify-center'>
-        <AdminCareerCard job={jobPostings[index]} onPrev={prev} onNext={next} />
+      <div className='flex items-center gap-4 w-full justify-center' onClick={() => setSelectedJob(jobPostings[index])}>
+      <AdminCareerCard job={jobPostings[index]} onPrev={prev} onNext={next} />
       </div>
 
       {/* Dots */}
@@ -139,6 +141,33 @@ function AdminCareer() {
       <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full'>
         <JobTable data={jobs}/>
       </div>
+        <AdminModal isOpen={!!selectedJob} onClose={() => setSelectedJob(null)}>
+        {selectedJob && (
+          <>
+            <div className='h-1/3 w-full bg-primary font-satoshi-regular rounded-t-2xl'></div>
+            <div className='p-6'>
+                <h2 className="text-4xl font-satoshi-bold mb-2">{selectedJob.job_title}</h2>
+                <p className="text-2xl font-satoshi-regular">
+                {selectedJob.org || 'Institute of Computer Science, UPLB'}
+                </p>
+                <p className='font-satoshi-regular'>
+                    Posted by: <span className="text-primary">{selectedJob.creator}</span>
+                </p>
+                <p className='font-satoshi-regular'>
+                    Date: {selectedJob.date_posted}
+                </p>
+
+                <h3 className="font-satoshi-medium mb-1 text-lg">Details</h3>
+                <p className='font-satoshi-regular text-sm'>Details here</p>
+
+                <h3 className="font-satoshi-medium mb-1 text-lg">Description</h3>
+                <p className="font-satoshi-regular text-sm">
+                This is a placeholder description. Replace with actual data or enrich the job object!
+                </p>
+            </div>
+          </>
+        )}
+      </AdminModal>
     </div>
   );
 }

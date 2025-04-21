@@ -23,7 +23,7 @@ function AdminCareerCard({ job, onPrev, onNext }) {
         <div className='flex flex-row justify-between items-center w-full cursor-pointer' onClick={() => {}}>
           {/* Role, Location */}
           <div className='flex flex-col'>
-            <h2 className='text-3xl text-primary font-satoshi-bold'>{job.title}</h2>
+            <h2 className='text-3xl text-primary font-satoshi-bold'>{job.job_title}</h2>
             <p className='font-satoshi-regular'>{job.org}</p>
             <p className='font-satoshi-regular'>{job.location}</p>
           </div>
@@ -42,7 +42,7 @@ function AdminCareerCard({ job, onPrev, onNext }) {
             </div>
             <div className='flex flex-row gap-2'>
               <User className='text-primary' />
-              <p className='font-satoshi-regular'>{job.poster}</p>
+              <p className='font-satoshi-regular'>{job.creator}</p>
             </div>
           </div>
         </div>
