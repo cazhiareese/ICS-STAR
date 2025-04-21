@@ -1,7 +1,7 @@
 from enum import Enum
 from uuid import UUID
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 
@@ -22,7 +22,7 @@ class JobPostingOut(BaseModel):
     post_id: UUID
     title: str
     company: str
-    description: str
+    description: Optional[str] = None
     user_name: str
     tags: List[str]
     interested_count: int

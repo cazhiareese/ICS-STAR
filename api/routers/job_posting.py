@@ -6,7 +6,7 @@ from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
-from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut
+from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut, EmploymentTypeEnum, JobModeEnum
 from schemas.report_schema import ReportedJobPostingOut, PostReportDetailOut
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
@@ -210,8 +210,8 @@ def get_job_posting(
         "company": query_result.company,
         "description": query_result.description,
         "user_name": query_result.user_name,
-        "employment_type": query_result.employment_type,
-        "mode": query_result.mode,
+        "employment_type": EmploymentTypeEnum(query_result.employment_type),
+        "mode": JobModeEnum(query_result.mode),
         "salary": query_result.salary,
         "tags": tag_list,
         "interested_count": query_result.interested_count
