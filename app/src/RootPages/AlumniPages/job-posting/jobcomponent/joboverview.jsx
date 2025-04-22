@@ -3,7 +3,7 @@ import { Heart, Calendar, User } from "lucide-react";
 
 function JobOverviewCard({ overview }) {
   return (
-    <div className="relative border border-gray-300 rounded-[20px] shadow-xl max-h-[178px]  py-6 px-8 w-full max-w-[1100px] mx-auto  bg-white flex flex-row justify-between items-center mb-6">
+    <div className="relative border border-gray-300 rounded-[20px] shadow-xl max-h-[178px]  py-6 px-8 sm:px-12 w-full max-w-[1100px] mx-auto  bg-white flex flex-row justify-between items-center mb-6">
       {/* Left Section: Role & Company */}
       <div className="flex flex-col">
         <h2 className="text-[18px] text-primary font-satoshi-black sm:text-[40px] sm:font-satoshi-bold">{overview.title}</h2>
