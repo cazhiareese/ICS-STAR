@@ -18,7 +18,7 @@ import { OnboardingProvider } from "./AuthPages/AuthContext/onboardingcontext";
 import AdminRoot from "./RootPages/AdminPages/Layouts/adminroot";
 import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
 import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
-import AdminEvents from "./RootPages/AdminPages/adminevents";
+import AdminEvents from "./RootPages/AdminPages/Events/AdminEvents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/Careers/AdminCareer";
 import AdminDonations from "./RootPages/AdminPages/Donations/admindonations";
@@ -51,6 +51,7 @@ import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPost
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
 import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
 import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
+import AdminEventsLayout from "./RootPages/AdminPages/Layouts/AdminEventsLayout";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -152,7 +153,9 @@ function App() {
               <Route path="pending-verifications" element={<AdminPendingVerifications />}/>
               <Route path="verification-confirmation/:userid"element={<AdminVerificationConfirmation />}/>
             </Route>
-            <Route path="events" element={<AdminEvents />} />
+            <Route path="events" element={<AdminEventsLayout />}>
+              <Route index element={<AdminEvents/>}/>
+            </Route>
             <Route path="newsletter" element={<AdminNewsletter />} />
             <Route path="career" element={<AdminCareerLayout />}>
               <Route index element ={<AdminCareer/>}/>
