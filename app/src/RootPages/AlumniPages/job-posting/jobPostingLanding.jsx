@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/AlumniComponents/searchbar'
 import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
 import { BriefcaseBusiness, Plus, PlusCircle } from 'lucide-react';
@@ -51,7 +52,7 @@ function JobPostingLanding() {
             interested_count: 5
         }
         
-        const jobs = [job,job,job];
+        const jobs = [job,job,job, job, job, job, job];
         setJobList(jobs);
         
     }, []);
@@ -78,6 +79,12 @@ function JobPostingLanding() {
         
     }, []);
 
+    // Navigation to create job post
+    const navigate = useNavigate();
+    const navToCreateJobPost = () => {
+        navigate('createJobPosting', { relative: 'path' });
+    };
+
     
 
     return (
@@ -93,6 +100,7 @@ function JobPostingLanding() {
 
                 {/* Button aligned to the right */}
                 <button  
+                    onClick={navToCreateJobPost}
                     className="flex items-center gap-2 w-56 h-14 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
                 >
                     <PlusCircle />
@@ -102,7 +110,7 @@ function JobPostingLanding() {
 
             <div className='flex flex-row mt-16 mx-30 gap-5'>
                 {/* Scrollable wrapper */}
-                <div className='h-[800px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left'>
+                <div className='h-[1000px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left'>
                     <div className='flex flex-col gap-5 mx-10'>
                         {jobList.map((job, index) => (
                             <JobCard key={index} job={job} />

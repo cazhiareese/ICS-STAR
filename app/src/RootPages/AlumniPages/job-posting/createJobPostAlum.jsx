@@ -1,5 +1,6 @@
 import { ArrowLeft, ChevronDown, CloudUpload } from 'lucide-react'
 import React, { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 
 
@@ -58,6 +59,13 @@ function CreateJobPostAlum() {
         setLinkInput(e.target.value);
         console.log(linkInput); //For checking only
     };
+
+    // Navigate back
+    const navigate = useNavigate();
+    const navToJobPostLanding= () => {
+        navigate('..', { relative: 'path' });
+    }
+
     
     // FOR FILE UPLOAD ONLy-----------------------------------
     // Triggered when a user selects a file through the file picker.
@@ -92,7 +100,7 @@ function CreateJobPostAlum() {
     return (
         <div className='flex flex-col mx-48 my-16'>
             {/* Back button */}
-            <button className='text-primary flex gap-5 cursor-pointer'>
+            <button onClick={navToJobPostLanding} className='text-primary flex gap-5 cursor-pointer'>
                 <ArrowLeft size={25} />
                 <span className='font-satoshi-medium text-primary text-xl'>Back</span>
             </button>
