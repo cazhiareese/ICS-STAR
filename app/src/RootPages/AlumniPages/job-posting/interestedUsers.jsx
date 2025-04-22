@@ -76,7 +76,7 @@ function InterestedUsers() {
 
   return (
     <div className="w-full max-w-[1100px] mx-auto p-4">
-      <div className="pl-12">
+      <div className="sm:pl-12">
       <BackButton label="Back" />
       </div>
 
