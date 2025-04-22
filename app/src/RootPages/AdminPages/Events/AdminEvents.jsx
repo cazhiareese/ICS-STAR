@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react'
 import { Plus, MoveLeft, MoveRight, Dot } from 'lucide-react'
 import AdminEventCard from '../../../components/AdminComponents/AdminEventCard'
 import axios from 'axios'
+import EventsTable from '../../../components/AdminComponents/EventsTable'
+import CircularLoading from "../../../components/LoadingComponents/circularloading" 
 
 function AdminEvents() {
   const [eventType, setEventType] = useState('active')
@@ -12,15 +14,28 @@ function AdminEvents() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
-  async function fetchEvents() {
-    const response = await axios.get(`${API_BASE_URL}/api/admin/events/all-open-events`)
-    console.log(response.data.data)
-    setEvents(response.data.data)
+  async function fetchEvents(type) {
+    setLoading(true)
+    try {
+      let endpoint = "";
+      if (type === 'active') {
+        endpoint = "/api/admin/events/all-open-events";
+      } else if (type === 'finished') {
+        endpoint = "/api/admin/events/all-concluded-events";
+      }
+  
+      const response = await axios.get(`${API_BASE_URL}${endpoint}`);
+      setEvents(response.data.data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
-    fetchEvents()
-  }, [])
+    fetchEvents(eventType)
+  }, [eventType])
 
   return (
     <div className='h-screen w-full p-6 flex flex-col'>
@@ -68,7 +83,13 @@ function AdminEvents() {
           </div>
           ) : eventType === 'finished' ? (
             <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto">
-              {/* Content for active */}
+              {events.length == 0 ? (
+                <div className='h-full w-full flex flex-row items-center justify-center'>
+                  <h1 className='font-satoshi-regular text-3xl text-primary'>No events to show</h1>
+                </div>
+              ) : (
+                <EventsTable data={events}/>
+              )}
             </div>
           ) : null
         }
