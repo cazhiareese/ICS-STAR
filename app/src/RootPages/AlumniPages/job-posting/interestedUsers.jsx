@@ -73,7 +73,8 @@ function InterestedUsers() {
   }, [id, token]);
 
   return (
-    <div className="p-4">
+    <div className="w-full max-w-[1100px] mx-auto p-4">
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-3 border-b border-gray-200 bg-white rounded-t-2xl">
         <div>
