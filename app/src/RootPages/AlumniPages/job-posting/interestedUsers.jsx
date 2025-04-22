@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import JobOverviewCard from "./jobcomponent/joboverview";
+import JobSectionHeader from "./jobcomponent/jobsectionheader";
 
 function InterestedUsers() {
   // const { id } = useParams();
@@ -89,6 +90,7 @@ function InterestedUsers() {
           </button>
         </div>
       </div>
+      <JobSectionHeader title="Interested Users" />
 
       {jobOverview && <JobOverviewCard overview={jobOverview} />}
 
