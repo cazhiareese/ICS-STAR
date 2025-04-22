@@ -20,7 +20,7 @@ import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
 import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
 import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
-import AdminCareer from "./RootPages/AdminPages/admincareer";
+import AdminCareer from "./RootPages/AdminPages/Careers/AdminCareer";
 import AdminDonations from "./RootPages/AdminPages/Donations/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
 
@@ -41,7 +41,7 @@ import AdminDonationInformation from "./RootPages/AdminPages/Donations/admindona
 import AdminCreateDonationDrive from "./RootPages/AdminPages/Donations/admincreatedonationdrive";
 import AdminHelpIcs from "./RootPages/AdminPages/Donations/adminhelpics";
 import AdminPendingDonations from "./RootPages/AdminPages/Donations/adminpendingdonations";
-
+import AdminCareerLayout from "./RootPages/AdminPages/Layouts/admincareerlayout";
 
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
@@ -154,7 +154,9 @@ function App() {
             </Route>
             <Route path="events" element={<AdminEvents />} />
             <Route path="newsletter" element={<AdminNewsletter />} />
-            <Route path="career" element={<AdminCareer />} />
+            <Route path="career" element={<AdminCareerLayout />}>
+              <Route index element ={<AdminCareer/>}/>
+            </Route>
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
               <Route path=":driveid" element={<AdminDonationInformation/>}/>
