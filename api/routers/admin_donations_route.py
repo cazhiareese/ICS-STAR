@@ -39,7 +39,7 @@ from util.admin_donations_logic import (search_donation_drives,
 import datetime
 from uuid import UUID
 
-router = APIRouter()
+router = APIRouter(tags=["Admin Donations View"])
 
 @router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
 def search_drives(

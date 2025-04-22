@@ -15,7 +15,7 @@ from typing import Optional, List, Dict
 from config.database import get_db
 from typing import List, Optional
 
-router = APIRouter(prefix="/suggestions", tags=["suggestions"])
+router = APIRouter(prefix="/suggestions", tags=["Alumni Search Suggestions"])
 
 @router.get("/top-job-titles", response_model=List[str])
 def autocomplete_top_job_titles(db: Session = Depends(get_db)):
