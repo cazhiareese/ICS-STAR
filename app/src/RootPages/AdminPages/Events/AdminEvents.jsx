@@ -4,8 +4,10 @@ import AdminEventCard from '../../../components/AdminComponents/AdminEventCard'
 import axios from 'axios'
 import EventsTable from '../../../components/AdminComponents/EventsTable'
 import CircularLoading from "../../../components/LoadingComponents/circularloading" 
+import { Navigate, useNavigate } from 'react-router-dom'
 
 function AdminEvents() {
+  const navigate = useNavigate()
   const [eventType, setEventType] = useState('active')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(48)
@@ -42,7 +44,9 @@ function AdminEvents() {
       {/* Events header and new event button */}
       <div className='flex flex-row justify-between mb-10'>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Events</h1>
-        <button className='flex flex-row items-center justify-center gap-2 font-satoshi-regular text-white bg-primary px-6 py-3 rounded-2xl hover:bg-hover cursor-pointer '> <Plus/> New Event</button>
+        <button className='flex flex-row items-center justify-center gap-2 font-satoshi-regular text-white bg-primary px-6 py-3 rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {navigate("/admin/events/create-event")}}> 
+          <Plus/> New Event
+        </button>
       </div>
       {/* Alumni or student */}
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
