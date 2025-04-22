@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import JobOverviewCard from "./jobcomponent/joboverview";
 import JobSectionHeader from "./jobcomponent/jobsectionheader";
+import BackButton from "../../../components/backbutton";
 
 function InterestedUsers() {
   // const { id } = useParams();
@@ -75,7 +76,9 @@ function InterestedUsers() {
 
   return (
     <div className="w-full max-w-[1100px] mx-auto p-4">
-
+      <div className="pl-12">
+      <BackButton label="Back" />
+      </div>
 
       <JobSectionHeader title="Interested Users" />
 
