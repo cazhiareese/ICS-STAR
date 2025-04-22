@@ -1,17 +1,25 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from typing import List, Optional
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from config.database import get_db
-from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation
+from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation, fetch_drive_suggestions
 from util.userutil import get_current_user
 from models.usermodel import User
 from schemas.user import UserTypeEnum
 from uuid import UUID
 
 router = APIRouter()
+
+@router.get("/drive-suggestions")
+def get_drive_suggestions(
+    q: str = Query(..., min_length=1, description="Search donation drive title"),
+    limit: Optional[int] = Query(5, ge=1, le=20, description="Maximum number of results"),
+    db: Session = Depends(get_db)
+):
+    return fetch_drive_suggestions(db, q, limit)
 
 @router.get("/donationdrive", response_model=List[DonationDriveOut])
 def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_current_user)):

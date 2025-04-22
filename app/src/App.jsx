@@ -49,6 +49,8 @@ import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/adm
 import OtherUserProfile from "./RootPages/OtherUserprofile";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
+import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
+import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -141,6 +143,8 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
+              <Route path="industry-reports" element={<AdminIndustryInformation/>}/>
+              <Route path="country-reports" element={<AdminCountryInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />

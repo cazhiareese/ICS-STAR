@@ -3,7 +3,7 @@ import { ArrowUp, ArrowDown } from 'lucide-react';
 
 // 'direction' is the initial state of the arrow in the parent component
 // 'onToggle' is the event to change the order in the parent component
-function OrderToggle({ direction, onToggle }) {
+function OrderToggle({ direction, onToggle}) {
   const isAscending = direction === 'asc';
 
   return (
@@ -16,7 +16,7 @@ function OrderToggle({ direction, onToggle }) {
       ) : (
         <ArrowDown className="text-primary" />
       )}
-    </button>
+    </button> 
   );
 }
 
