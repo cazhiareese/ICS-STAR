@@ -137,6 +137,7 @@ def get_job_postings(db: Session = Depends(get_db)):
         JobPosting.description,
         JobPosting.employment_type,
         JobPosting.mode,
+        User.user_id,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -144,7 +145,12 @@ def get_job_postings(db: Session = Depends(get_db)):
     ).outerjoin(
         JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
     ).group_by(
-        JobPosting.post_id, JobPosting.title, JobPosting.company, JobPosting.description, 'user_name'
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name)
     ).all()
     
     # Now we need to get tags for each job posting
@@ -156,6 +162,7 @@ def get_job_postings(db: Session = Depends(get_db)):
         
         result.append({
             "post_id": row.post_id,
+            "user_id": row.user_id,
             "title": row.title,
             "company": row.company,
             "description": row.description,
@@ -183,6 +190,7 @@ def get_job_posting(
         JobPosting.employment_type,
         JobPosting.mode,
         JobPosting.salary,
+        User.user_id,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -192,7 +200,16 @@ def get_job_posting(
     ).filter(
         JobPosting.post_id == job_id
     ).group_by(
-        JobPosting.post_id, JobPosting.title, JobPosting.company, JobPosting.description, 'user_name'
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
+        User.user_id,
+        User.first_name,
+        User.last_name
     ).first()
     
     # If no job posting is found, raise a 404 error
@@ -207,11 +224,12 @@ def get_job_posting(
     response = {
         "post_id": query_result.post_id,
         "title": query_result.title,
+        "user_id": query_result.user_id,
         "company": query_result.company,
         "description": query_result.description,
         "user_name": query_result.user_name,
-        "employment_type": EmploymentTypeEnum(query_result.employment_type),
-        "mode": JobModeEnum(query_result.mode),
+        "employment_type": query_result.employment_type,
+        "mode": query_result.mode,
         "salary": query_result.salary,
         "tags": tag_list,
         "interested_count": query_result.interested_count

@@ -20,6 +20,7 @@ class JobModeEnum(str, Enum):
 
 class JobPostingOut(BaseModel):
     post_id: UUID
+    user_id: UUID
     title: str
     company: str
     description: Optional[str] = None
