@@ -49,7 +49,7 @@ import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/adm
 import OtherUserProfile from "./RootPages/OtherUserprofile";
 const isSignedIn = !!localStorage.getItem("token");
 
-import InterestedUsers from "./RootPages/AlumniPages/JobPosting/interestedUsers";
+import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 
 function App() {
   function checkType() {
