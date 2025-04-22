@@ -1,6 +1,7 @@
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import func, or_
+from sqlalchemy import String, func, or_, union_all
+from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, AdminOverviewDonationDrive, MonetaryDonationOut, InKindDonationOut, GenericDriveOut, ShortenedMonetaryDonationsOut, ShortenedInKindDonationsOut, AdminGenericDriveView
@@ -58,6 +59,10 @@ def search_donation_drives(
     
     drive_out_list = []
     for drive in drives:
+        # If generic drive, skip it
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -204,42 +209,22 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     
     # Add pending monetary donations to the list
     for donation in pending_monetary_donations:
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "date_donated": donation.donation_date,
-            "name": donation.name,
-            "donation_type": "Monetary",
-            "donation_details": f"₱{donation.donation_details:,.2f}",
-            "proof": donation.proof
-        })
+        pending_verifications.append(donation.dict())
     
     # Add pending in-kind donations to the list
     for donation in pending_inkind_donations:
-        pending_verifications.append(donation)
+        pending_verifications.append(donation.dict())
 
     # Format the verified donations list
     verified_donations = []
     
     # Add verified monetary donations to the list
     for donation in verified_monetary_donations:
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": donation.donation_date,
-            "name": donation.name,
-            "donation_type": "Monetary",
-            "donation_details": f"₱{donation.donation_details:,.2f}",
-            "proof": donation.proof
-        })
+        verified_donations.append(donation.dict())
     
     # Add verified in-kind donations to the list
     for donation in verified_inkind_donations:
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": donation.donation_date,
-            "name": donation.name,
-            "donation_type": "In-kind",
-            "donation_details": donation.donation_details
-        })
+        verified_donations.append(donation.dict())
 
     date_started = drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None
 
@@ -285,48 +270,22 @@ def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     
     # Add pending monetary donations to the list
     for donation in pending_monetary_donations:
-        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "name": donation.name,
-            "donation_details": f"₱{donation.donation_details:,.2f}",
-            "date_donated": date_donated,
-        })
+        pending_verifications.append(donation.dict())
     
     # Add pending in-kind donations to the list
     for donation in pending_inkind_donations:
-        date_donated = donation.date_donated.strftime("%-m/%d/%y %I:%M %p") if donation.date_donated else None
-        pending_verifications.append({
-            "donation_id": donation.donation_id,
-            "name": donation.name,
-            "donation_details": donation.donation_details,
-            "date_donated": date_donated,
-        })
+        pending_verifications.append(donation.dict())
 
     # Format the verified donations list
     verified_donations = []
     
     # Add verified monetary donations to the list
     for donation in verified_monetary_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": date_donated,
-            "name": donation.name,
-            "donation_type": "Monetary",
-            "donation_details": f"₱{donation.donation_details:,.2f}"
-        })
+        verified_donations.append(donation.dict())
     
     # Add verified in-kind donations to the list
     for donation in verified_inkind_donations:
-        date_donated = donation.date_donated.strftime("%m/%d/%Y") if donation.date_donated else None
-        verified_donations.append({
-            "donation_id": donation.donation_id,
-            "date_donated": date_donated,
-            "name": donation.name,
-            "donation_type": "In-kind",
-            "donation_details": donation.donation_details
-        })
+        verified_donations.append(donation.dict())
 
     
     # Get the total amount of monetary donations for the generic drive
@@ -615,3 +574,187 @@ def close_donation_drive(db: Session, drive_id: UUID) -> dict:
         "is_closed": drive.is_closed,
         "created_at": drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None, 
     }
+
+
+# Get the donor counts per batch per donation drive
+def get_donor_counts_by_batch_for_drive(db: Session, drive_id: UUID):
+    monetary_q = db.query(
+        MonetaryDonation.drive_id.label("drive_id"),
+        MonetaryDonation.user_id.label("user_id")
+    ).filter(MonetaryDonation.drive_id == drive_id)
+
+    in_kind_q = db.query(
+        InKindDonation.drive_id.label("drive_id"),
+        InKindDonation.user_id.label("user_id")
+    ).filter(InKindDonation.drive_id == drive_id)
+
+    combined_subq = union_all(monetary_q, in_kind_q).subquery()
+
+    batch_counts = db.query(
+        func.substr(User.student_number, 1, 4).label("batch"),
+        func.count(distinct(combined_subq.c.user_id)).label("total_donors")
+    ).join(
+        User, combined_subq.c.user_id == User.user_id
+    ).group_by(
+        func.substr(User.student_number, 1, 4)
+    ).order_by(
+        func.count(distinct(combined_subq.c.user_id)).desc()
+    ).all()
+
+
+    total_donors = db.query(
+        func.count(distinct(combined_subq.c.user_id))
+    ).scalar()
+
+    # Calculate percentage for each batch
+    batches_with_percentage = [
+        {
+            "batch": row.batch,
+            "total_donors": row.total_donors,
+            "percentage": (row.total_donors / total_donors) * 100 if total_donors > 0 else 0
+        }
+        for row in batch_counts
+    ]
+
+    # Slice into top 3 and the rest
+    top_3 = batches_with_percentage[:3]
+    others = batches_with_percentage[3:]
+
+    return {
+        "top_3": top_3,
+        "others": others
+    }
+    
+# Get the total number of donors for a specific donation drive
+def get_total_donors_for_drive(db: Session, drive_id: UUID):
+    monetary_q = db.query(
+        MonetaryDonation.drive_id.label("drive_id"),
+        MonetaryDonation.user_id.label("user_id")
+    ).filter(MonetaryDonation.drive_id == drive_id)
+
+    in_kind_q = db.query(
+        InKindDonation.drive_id.label("drive_id"),
+        InKindDonation.user_id.label("user_id")
+    ).filter(InKindDonation.drive_id == drive_id)
+
+    combined_subq = union_all(monetary_q, in_kind_q).subquery()
+
+    total_donors = db.query(
+        func.count(distinct(combined_subq.c.user_id)).label("total_donors")
+    ).scalar()
+
+    return total_donors
+
+def get_top_and_other_donor_batches_monetary_amount(db: Session, drive_id: UUID):
+    # Query for total amounts per batch, grouped by batch (first 4 digits of student_number)
+    batch_counts = db.query(
+        func.substr(User.student_number, 1, 4).label("batch"),
+        func.sum(MonetaryDonation.amount).label("total_amount")
+    ).join(
+        User, MonetaryDonation.user_id == User.user_id
+    ).filter(
+        MonetaryDonation.drive_id == drive_id
+    ).group_by(
+        func.substr(User.student_number, 1, 4)
+    ).order_by(
+        func.sum(MonetaryDonation.amount).desc()
+    ).all()
+
+    # Total amount across all batches
+    total_amount = db.query(
+        func.sum(MonetaryDonation.amount)
+    ).filter(
+        MonetaryDonation.drive_id == drive_id
+    ).scalar()
+
+    # Calculate percentage of total amount for each batch
+    batches_with_percentage = [
+        {
+            "batch": row.batch,
+            "total_amount": row.total_amount or 0,  # Ensure no null value for amount
+            "percentage_amount": (row.total_amount / total_amount) * 100 if total_amount > 0 else 0
+        }
+        for row in batch_counts
+    ]
+
+    # Slice into top 3 and the rest
+    top_3 = batches_with_percentage[:3]
+    others = batches_with_percentage[3:]
+
+    return {
+        "top_3": top_3,
+        "others": others
+    }
+
+def get_donation_totals_with_percentages(db: Session, drive_id: UUID):
+    # Query for the total number of monetary donations
+    total_monetary_donations = db.query(
+        func.count(MonetaryDonation.donation_id)
+    ).filter(
+        MonetaryDonation.drive_id == drive_id
+    ).scalar()
+
+    # Query for the total number of in-kind donations
+    total_inkind_donations = db.query(
+        func.count(InKindDonation.donation_id)
+    ).filter(
+        InKindDonation.drive_id == drive_id
+    ).scalar()
+
+    # Calculate the overall total donations (monetary + in-kind)
+    overall_total_donations = total_monetary_donations + total_inkind_donations
+
+    # Calculate the percentage of monetary donations
+    percentage_monetary = (total_monetary_donations / overall_total_donations) * 100 if overall_total_donations > 0 else 0
+
+    # Calculate the percentage of in-kind donations
+    percentage_inkind = (total_inkind_donations / overall_total_donations) * 100 if overall_total_donations > 0 else 0
+
+    return {
+        "total_monetary_donations": total_monetary_donations,
+        "total_inkind_donations": total_inkind_donations,
+        "percentage_monetary": percentage_monetary,
+        "percentage_inkind": percentage_inkind,
+        "overall_total_donations": overall_total_donations
+    }
+
+def get_weekly_donation_amounts(db: Session, drive_id: UUID):
+    # Get the range of donation dates
+    min_date, max_date = db.query(
+        func.min(MonetaryDonation.date_donated),
+        func.max(MonetaryDonation.date_donated)
+    ).filter(MonetaryDonation.drive_id == drive_id).first()
+
+    if not min_date or not max_date:
+        return []
+
+    # Align start date to Monday
+    start_week = min_date - datetime.timedelta(days=min_date.weekday())
+    end_week = max_date - datetime.timedelta(days=max_date.weekday())
+
+    # Fetch donation totals grouped by week
+    week_start = func.date_trunc('week', MonetaryDonation.date_donated).label("week_start")
+    donations = db.query(
+        week_start,
+        func.sum(MonetaryDonation.amount).label("total_amount")
+    ).filter(
+        MonetaryDonation.drive_id == drive_id
+    ).group_by(week_start).order_by(week_start).all()
+
+    # Map donations by week for lookup
+    donation_map = {
+        week_start.date(): total_amount for week_start, total_amount in donations
+    }
+
+    # Build weekly output from start to end week
+    result = []
+    current = start_week
+    while current <= end_week:
+        amount = donation_map.get(current.date(), 0)
+        result.append({
+            "week": current.strftime("%m/%d"),
+            "amount_in_thousands": round(amount / 1000, 2) if amount else 0
+        })
+        current += datetime.timedelta(weeks=1)
+
+    return result

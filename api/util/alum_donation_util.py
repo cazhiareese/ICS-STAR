@@ -1,28 +1,55 @@
-from fastapi import Depends, HTTPException, UploadFile, File
+from fastapi import HTTPException, UploadFile, File
 from config.config import supabase_client, STORAGE_STRING
-from config.database import get_db
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import or_, func, distinct
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from models.usermodel import User
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, List
 import uuid
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
+def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[str]:
+    results = (
+        db.query(distinct(DonationDrive.title))
+        .filter(
+            DonationDrive.is_deleted.is_(False),
+            or_(
+                DonationDrive.title.ilike(f"%{query_text}%"),
+                DonationDrive.description.ilike(f"%{query_text}%")
+            )
+        )
+        .filter(DonationDrive.title.isnot(None))
+        .order_by(DonationDrive.title)
+        .limit(limit)
+        .all()
+    )
+
+    return [result[0] for result in results]
+
 def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveOut:
     monetary_data = db.query(
         func.coalesce(func.sum(MonetaryDonation.amount), 0).label('total_amount_donated'),
         func.count(MonetaryDonation.donation_id).label('monetary_count')
-    ).filter(MonetaryDonation.drive_id == drive.drive_id).one()
+    ).filter(
+        MonetaryDonation.drive_id == drive.drive_id,
+        MonetaryDonation.is_acknowledged.is_(True)
+    ).one()
 
     total_amount_donated = monetary_data.total_amount_donated
     monetary_count = monetary_data.monetary_count
     
-    in_kind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar()
+    in_kind_count = (
+        db.query(func.count(InKindDonation.donation_id))
+        .filter(
+            InKindDonation.drive_id == drive.drive_id,
+            InKindDonation.is_acknowledged.is_(True)
+        )
+        .scalar()
+    )
 
     donation_count = monetary_count + in_kind_count
 
@@ -41,13 +68,23 @@ def get_one_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     monetary_data = db.query(
         func.coalesce(func.sum(MonetaryDonation.amount), 0).label('total_amount_donated'),
         func.count(MonetaryDonation.donation_id).label('monetary_count')
-    ).filter(MonetaryDonation.drive_id == drive.drive_id).one()
+    ).filter(
+        MonetaryDonation.drive_id == drive.drive_id,
+        MonetaryDonation.is_acknowledged.is_(True)
+    ).one()
 
     total_amount_donated = monetary_data.total_amount_donated
     fund_percentage = (monetary_data.total_amount_donated / drive.target_cost * 100) if drive.target_cost else None
     
     monetary_count = monetary_data.monetary_count
-    in_kind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar()
+    in_kind_count = (
+        db.query(func.count(InKindDonation.donation_id))
+        .filter(
+            InKindDonation.drive_id == drive.drive_id,
+            InKindDonation.is_acknowledged.is_(True)
+        )
+        .scalar()
+    )
 
     donation_count = monetary_count + in_kind_count
     
@@ -72,11 +109,21 @@ def general_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     monetary_data = db.query(
         func.coalesce(func.sum(MonetaryDonation.amount), 0).label('total_amount_donated'),
         func.count(MonetaryDonation.donation_id).label('monetary_count')
-    ).filter(MonetaryDonation.drive_id == drive.drive_id).one()
+    ).filter(
+        MonetaryDonation.drive_id == drive.drive_id,
+        MonetaryDonation.is_acknowledged.is_(True)
+    ).one()
 
     total_amount_donated = monetary_data.total_amount_donated    
     monetary_count = monetary_data.monetary_count
-    in_kind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar()
+    in_kind_count = (
+        db.query(func.count(InKindDonation.donation_id))
+        .filter(
+            InKindDonation.drive_id == drive.drive_id,
+            InKindDonation.is_acknowledged.is_(True)
+        )
+        .scalar()
+    )
 
     donation_count = monetary_count + in_kind_count
     

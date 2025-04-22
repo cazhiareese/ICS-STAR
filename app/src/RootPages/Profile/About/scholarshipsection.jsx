@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PlusCircle, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddScholarshipModal from "../components/scholarshipmodal";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
@@ -9,6 +9,8 @@ const ScholarshipsSection = ({
   scholarships,
   removeScholarship,
   addScholarship,
+  isLoading, // <-- added this prop
+  isVerified, // <-- added this prop
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -18,14 +20,22 @@ const ScholarshipsSection = ({
         title="SCHOLARSHIPS"
         buttonText="Add scholarships"
         onButtonClick={() => setIsModalOpen(true)}
+        isVerified={isVerified}
       />
+
 
       <div className="flex justify-between items-center mt-4">
         {/* Scholarship List */}
         <div className="w-full">
-          {scholarships.length === 0 ? (
+          {isVerified && (
+          <>
+          {isLoading ? (
             <div className="flex justify-center mt-4">
               <CircularLoading />
+            </div>
+          ) : scholarships.length === 0 ? (
+            <div className="flex justify-center mt-4 text-gray-500 italic">
+              No scholarships yet.
             </div>
           ) : (
             scholarships.map((scholarship, index) => (
@@ -52,7 +62,7 @@ const ScholarshipsSection = ({
                 <div className="w-full border-b border-disabled"></div>
               </div>
             ))
-          )}
+          )}</>)}
         </div>
       </div>
 

@@ -29,7 +29,12 @@ from util.admin_donations_logic import (search_donation_drives,
                                         verify_monetary_donation,
                                         close_donation_drive,
                                         update_generic_drive_stats,
-                                        view_generic_drive
+                                        view_generic_drive,
+                                        get_donor_counts_by_batch_for_drive,
+                                        get_total_donors_for_drive,
+                                        get_top_and_other_donor_batches_monetary_amount,
+                                        get_donation_totals_with_percentages,
+                                        get_weekly_donation_amounts
                                         )
 import datetime
 from uuid import UUID
@@ -232,4 +237,72 @@ def close_drive(
     if not results:
         raise HTTPException(status_code=404, detail="Drive not found")
 
+    return results
+
+# Get the donor counts per batch for a specific drive
+@router.get("/admin/donations/drive-donor-counts", tags=["Donations"])
+def donor_counts(
+    drive_id: UUID = None,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_donor_counts_by_batch_for_drive(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No donor counts found")
+    
+    return results
+
+# Get the total number of donors for a specific drive
+@router.get("/admin/donations/drive-total-donors", tags=["Donations"])
+def total_donors(
+    drive_id: UUID = None,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_total_donors_for_drive(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No donor counts found")
+    
+    return results
+
+# Get the top and other donor batches monetary amount for a specific drive
+@router.get("/admin/donations/top-monetary-donors", tags=["Donations"])
+def donor_batch_breakdown_with_amount_only(
+    drive_id: UUID, 
+    db: Session = Depends(get_db)
+):
+
+    results = get_top_and_other_donor_batches_monetary_amount(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No donor batches found")
+
+    return results    
+
+# Get the total donations of a drive
+@router.get("/admin/donations/donation-totals", tags=["Donations"])
+def donation_totals_with_percentages(
+    drive_id: UUID, 
+    db: Session = Depends(get_db)
+):
+    results = get_donation_totals_with_percentages(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No donation totals found")
+
+    return results
+
+# Get the weekly monetary donations for a specific drive
+@router.get("/admin/donations/weekly-amounts", tags=["Donations"])
+def weekly_monetary_donations(
+    drive_id: UUID, 
+    db: Session = Depends(get_db)
+):
+    results = get_weekly_donation_amounts(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No weekly amounts found")
+    
     return results

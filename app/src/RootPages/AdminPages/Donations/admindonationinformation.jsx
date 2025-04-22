@@ -27,11 +27,22 @@ function AdminDonationInformation() {
   const [loading, setLoading] = useState(true)
 
   async function handleCloseDrive() {
-    const closeDriveResponse = await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`)
-    console.log(closeDriveResponse)
+    setCloseDonationLoading(true)
+  
+    try {
+      const response = await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`)
+      console.log(response)
+  
+      // Show success message
+      setCloseDonationLoading(false)
+      setTransitionComplete(true)
+      window.location.reload()
+    } catch (error) {
+      console.error("Failed to close donation drive", error)
+    }
   }
 
-  const fetchData = async () => {
+  async function fetchData() {
     setLoading(true)
 
     try {
@@ -122,9 +133,12 @@ function AdminDonationInformation() {
                         <p className='font-satoshi-light'>View Statistics</p>
                       </button>
                       {/* Close Drive */}
-                      <button className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer' onClick={() => {handleCloseDrive()}}>
-                        <p className='font-satoshi-light'>Close Drive</p>
-                      </button>
+                      <button
+                      className='bg-error text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'
+                      onClick={() => {setCloseDonation(true)}}
+                    >
+                      <p className='font-satoshi-light'>Close Drive</p>
+                    </button>
                     </>
                   )}
                 </div>
@@ -266,9 +280,8 @@ function AdminDonationInformation() {
                 {closeDonation && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
                     <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
-                      {/* Loading Spinner */}
                       {closeDonationLoading ? (
-                        <div className='h-full'>
+                        <div className="h-full">
                           <CircularLoading />
                         </div>
                       ) : transitionComplete ? (
@@ -284,32 +297,31 @@ function AdminDonationInformation() {
                             onClick={() => {
                               setCloseDonation(false)
                               setTransitionComplete(false)
-                              window.location.reload()
                             }}
                           >
                             Close
                           </button>
                         </>
                       ) : (
-                        <div className=''>
+                        <>
                           <p className="text-xl font-satoshi-medium text-center mt-4">
                             Are you sure you want to close this donation drive?
                           </p>
                           <div className="flex gap-3 mt-6 w-full h-full justify-center">
                             <button
-                              className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-300"
+                              className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-400"
                               onClick={() => setCloseDonation(false)}
                             >
                               Cancel
                             </button>
                             <button
-                              className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
-                              onClick={() => {handleCloseDrive()}}
+                              className="bg-error text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                              onClick={() => handleCloseDrive()}
                             >
                               Confirm
                             </button>
                           </div>
-                        </div>
+                        </>
                       )}
                     </div>
                   </div>

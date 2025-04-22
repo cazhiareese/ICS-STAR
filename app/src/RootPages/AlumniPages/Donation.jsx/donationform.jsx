@@ -37,6 +37,9 @@ function Donationform() {
     const [summaryLoading, setSummaryLoading] = useState(true);
     const [driveDetails, setDriveDetails] = useState(null);
 
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
     const formatDate = (date) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         return new Date(date).toLocaleDateString(undefined, options);
@@ -99,7 +102,7 @@ function Donationform() {
         }
 
         try {
-            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -137,7 +140,7 @@ function Donationform() {
         formData.append('description', donationDetailsInput);
 
         try {
-            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -167,7 +170,7 @@ function Donationform() {
                     {/* Make a Donation Part */}
                     <div className='flex flex-col lg:w-7/12 w-full'>
                         {/* Back button */}
-                        <button className='text-primary flex gap-5 cursor-pointer'>
+                        <button onClick={handleClick} className='text-primary flex gap-5 cursor-pointer'>
                             <ArrowLeft size={25} />
                             <span className='font-satoshi-medium text-primary text-xl'>Back</span>
                         </button>
