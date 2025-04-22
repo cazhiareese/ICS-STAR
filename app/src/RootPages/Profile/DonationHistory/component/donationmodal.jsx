@@ -14,12 +14,12 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
   const statusText = donation.is_acknowledged ? "Acknowledged" : "Pending Acknowledgement";
 
   const displayAmount = isInKind
-    ? donation.details
+    ? donation.description // Show description for In-Kind donations
     : new Intl.NumberFormat("en-PH", {
         style: "currency",
         currency: "PHP",
         minimumFractionDigits: 2,
-      }).format(parseFloat(donation.details));
+      }).format(parseFloat(donation.amount));
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50 px-4 sm:px-0">
@@ -40,13 +40,13 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
 
         {/* Donation Info */}
         <div className="mt-6 space-y-3 text-sm sm:text-base">
-          {[
+          {[ 
             { label: "Donation Drive", value: donation.donation_drive_title },
             { label: "Date", value: formattedDate },
             { label: "Type", value: donation.type },
             { label: "Status", value: <span className="text-primary font-semibold">{statusText}</span> },
             {
-              label: isInKind ? "Details" : "Amount",
+              label: isInKind ? "Description" : "Amount", // Show 'Description' for In-Kind donations
               value: displayAmount,
             },
           ].map(({ label, value }, index) => (
