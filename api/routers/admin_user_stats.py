@@ -11,9 +11,7 @@ from util.user_information_stats import  employment_class_util, get_active_alumn
 
 from util.admin_alum_list import get_alumni_list_filter,  get_alumni_filter, get_all_alumni, get_student_filter
 
-router = APIRouter(
-    tags=["Admin Stats"],
-)
+router = APIRouter()
 
 
 

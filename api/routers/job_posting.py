@@ -343,12 +343,3 @@ def get_post_reports(post_id: str, db: Session = Depends(get_db)):
         })
 
     return result
-
-@router.get("/get-company-by-id/{user_id}")
-async def get_comp_by_id(user_id: UUID, db: Session=Depends(get_db)):
-    query= db.query(User.user_id, User.company_name).filter(User.user_id == user_id).first()
-
-    if query:
-        return {"message": "success", "data": {"id": query.user_id, "comapany": query.company_name}}
-    else:
-        raise HTTPException(status_code=404, detail="Cant find company name")
