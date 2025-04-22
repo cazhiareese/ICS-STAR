@@ -4,7 +4,7 @@ from util.alumni_search_logic import logic_search_alumni
 from typing import Optional, List, Dict
 from config.database import get_db
 
-router = APIRouter()
+router = APIRouter(tags=["Alumni Search"])
 
 @router.get("/alumni/search", response_model=List[Dict])
 def search_alumni(
