@@ -58,12 +58,12 @@ function Donationform() {
         
     }, [summary]);
 
-        
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     
         useEffect(() => {
             const token = localStorage.getItem("token");
     
-            fetch(`https://ics-star-api.vercel.app/one-donation-drive/${drive_id}`, {
+            fetch(`${API_BASE_URL}/one-donation-drive/${drive_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

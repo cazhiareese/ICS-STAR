@@ -47,6 +47,8 @@ import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
+import EventsLanding from "./RootPages/Events/eventslanding";
+
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -101,6 +103,7 @@ function App() {
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="alumni/events" element={<EventsLanding />} />
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             
@@ -124,6 +127,7 @@ function App() {
           <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
+            <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="*" element={<UserProfile />} />
           </Route>
         </>

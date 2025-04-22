@@ -4,13 +4,16 @@ import DonationMainView from "./donationMainView";
 import { useParams } from "react-router-dom";
 
 function DonationInfo({generalDrive}) {
-    const { driveid } = useParams(); // <- destructure directly if param is named 'driveid'
+    const idUser = useParams(); // <- destructure directly if param is named 'driveid'
+    const driveid = idUser.driveid; 
     const [driveDetails, setDriveDetails] = useState(null);
-
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     useEffect(() => {
         const token = localStorage.getItem("token");
-
-        fetch(`https://ics-star-api.vercel.app/one-donation-drive/${driveid}`, {
+        console.log(`${API_BASE_URL}/${driveid}`)
+        console.log(driveid)
+        // console.log("SDFDSF")
+        fetch(`${API_BASE_URL}/one-donation-drive/${driveid}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -23,7 +26,7 @@ function DonationInfo({generalDrive}) {
             .catch((err) => {
                 console.error("Error fetching drive details:", err);
             });
-    }, [driveid]);
+    }, []);
 
     if (!driveDetails) return <p>Loading drive...</p>;
 
