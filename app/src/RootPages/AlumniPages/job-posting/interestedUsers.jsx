@@ -152,8 +152,8 @@ function InterestedUsers() {
                   className="w-10 h-10 rounded-full object-cover border"
                 />
                 <div>
-                  <p className="font-medium text-gray-800">{user.name}</p>
-                  <p className="text-sm text-gray-500">Class of {user.batch}</p>
+                  <p className="font-satoshi-black text-black text-[16px]">{user.name}</p>
+                  <p className="text-[12px] text-black font-satoshi-medium">Class of {user.batch}</p>
                 </div>
               </div>
             ))}
