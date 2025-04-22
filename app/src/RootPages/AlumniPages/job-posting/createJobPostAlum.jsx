@@ -1,10 +1,69 @@
-import { ArrowLeft, ChevronDown, CloudUpload } from 'lucide-react'
+import { ArrowLeft, ChevronDown, CloudUpload, X } from 'lucide-react'
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
+import axios from 'axios';
+import { jwtDecode } from "jwt-decode";
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import JobPostSummary from '../../../components/AlumniComponents/jobPostSummary';
 
 
 function CreateJobPostAlum() {
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    console.log(typeof decoded.sub);
+    
+    
+
+    const [tagInput, setTagInput] = useState('');
+    const [tagss, setTagss] = useState([]);
+    const [tagsSuggestions, setTagSuggestions] = useState([]);
+    const [currentCompany, setCurrentCompany] = useState(false);
+    const handleTagInputChange = (e) => {
+        setTagInput(e.target.value);
+    };
+
+    const handleTagInputKeyPress = (e) => {
+        if (e.key === 'Enter' && tagInput.trim() !== '') {
+          const newTags = tagInput
+            .split(',')
+            .map(tag => tag.trim())
+            .filter(tag => tag.length > 0 && !tagss.includes(tag));
+    
+          // Add new tags to the state and reset input
+          setTagss(prevTags => [...prevTags, ...newTags]);
+          setTagInput('');
+          console.log(tagss);
+        }
+      };
+    
+    const handleAddTags = () => {
+        // const newTags = tagInput
+        //   .split(',')
+        //   .map(tag => tag.trim())
+        //   .filter(tag => tag.length > 0 && !tagss.includes(tag));
+    
+        // setTagss(prevTags => [...prevTags, ...newTags]);
+        // setTagInput('');
+        setIsTagsModalOpen(false);
+
+
+    };
+
+    // Remove a tag from the list
+    const handleRemoveTag = (tagToRemove) => {
+        setTagss(prevTags => prevTags.filter(tag => tag !== tagToRemove));
+    };
+    
+    const handleAddSuggestionTag = (tag) => {
+        if (!tagss.includes(tag)) {
+          setTagss([...tagss, tag]);
+      
+        //   // Remove tag from suggestions
+        //   setTagSuggestions(prev => prev.filter(t => t !== tag));
+        }
+    };
+      
     // Forms Values to be posted in the  API
     const [jobTitleInput, setJobTitleInput] = useState("");
     const [companyInput, setCompanyInput] = useState("");
@@ -12,6 +71,7 @@ function CreateJobPostAlum() {
     const [linkInput, setLinkInput] = useState("");
     const [employmentType, setEmploymentType] = useState("");
     const [employmentMode, setEmploymentMode] = useState("");
+    const [description, setDescription] = useState("");
 
     const fileInputRef = useRef(null);
     const [fileName, setFileName] = useState('');
@@ -19,6 +79,9 @@ function CreateJobPostAlum() {
     const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
     const tagsRef = useRef(null);
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
+
+    const [submitting, setSubmitting] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(true);
 
     // dummy tags
     const tags = [
@@ -29,6 +92,10 @@ function CreateJobPostAlum() {
         "Big Data",
         "Data Science"
     ]
+
+    useEffect(() => {
+        setTagSuggestions(["UI/UX", "Gamedev", "Software Eng", "QA"]);
+    }, []);
 
     useEffect(() => {
         if (isTagsModalOpen && tagsRef.current) {
@@ -45,6 +112,11 @@ function CreateJobPostAlum() {
     const handleJobTitleChange = (e) => {
         setJobTitleInput(e.target.value);
         console.log(jobTitleInput); //For checking only
+    };
+
+    const handleJobDescriptionChange = (e) => {
+        setDescription(e.target.value);
+        console.log(description); //For checking only
     };
     
 
@@ -82,11 +154,15 @@ function CreateJobPostAlum() {
     
     // FOR FILE UPLOAD ONLy-----------------------------------
     // Triggered when a user selects a file through the file picker.
+    const handleFileSubmit = (file) => {
+        setFile(file);
+    };
+    
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setFileName(file.name);
-            onFileSubmit(file);
+            handleFileSubmit(file);
         }
     };
 
@@ -96,7 +172,7 @@ function CreateJobPostAlum() {
         const file = e.dataTransfer.files[0];
         if (file) {
             setFileName(file.name);
-            onFileSubmit(file);
+            handleFileSubmit(file);
         }
     };
 
@@ -110,8 +186,77 @@ function CreateJobPostAlum() {
         fileInputRef.current.click();
     };
 
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    // Submitting job post
+    const handleSubmitJob = async () => {
+        if (
+            !jobTitleInput.trim() ||
+            !companyInput.trim() ||
+            !linkInput.trim() ||
+            !description.trim() ||
+            !employmentType.trim() ||
+            !employmentMode.trim()
+        ) {
+            alert("Please fill in all required fields");
+            return;
+        }
+
+        setSubmitting(true);
+
+        const formData = new FormData();
+
+        formData.append('title', jobTitleInput);
+        formData.append('company', companyInput);
+        salaryInput && formData.append('salary', salaryInput);
+        tagss && formData.append('tags', tagss);
+        formData.append('link', linkInput);
+        formData.append('description', description);
+        formData.append('employment_type', employmentType);
+        formData.append('mode', employmentMode)
+        formData.append('user_id', decoded.sub);
+        
+        if (file != null) {
+            formData.append('image', file);
+        }
+    
+        try {
+            const response = await axios.post(`${API_BASE_URL}/create-job-postings`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log('Job successfully posted:', response.data);
+            alert("Job successfully submitted!");
+            setSubmitting(false);
+            setIsSubmitted(true);
+            // Optionally reset form fields here
+        } catch (error) {
+            console.error('Error posting job:', error);
+            setSubmitting(false);
+            alert("There was an error submitting the job post.");
+        }
+    };
+    
+
+    useEffect(() => {
+        setJobTitleInput('Frontend Developer');
+        setCompanyInput('OpenAI Inc.');
+        setLinkInput('https://www.openai.com/careers/frontend-dev');
+        setTagss(['React', 'Tailwind', 'TypeScript']);
+        setSalaryInput(20000);
+        setDescription('We’re looking for a skilled Frontend Developer to join our AI team and build awesome tools.');
+    }, []);
+
+
     return (
         <div className='flex flex-col mx-48 mt-16 mb-30'>
+            {/* Modal For successful post */}
+            <JobPostSummary isOpen={isSubmitted} setIsOpen={setIsSubmitted} 
+            />
+
             {/* Back button */}
             <button onClick={navToJobPostLanding} className='text-primary flex gap-5 cursor-pointer'>
                 <ArrowLeft size={25} />
@@ -150,12 +295,15 @@ function CreateJobPostAlum() {
                             onChange={handleCompanyChange}
                             type="text"
                             className="bg-white font-satoshi-medium text-md w-full h-10 md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0"
+                            disabled={currentCompany}
                         />
                     </div>
 
                     <label className="flex items-center gap-2 ml-auto pt-7">
                         {/* TODO: modify checkbox */}
-                        <input type="checkbox" className="bg-primary w-4 h-4"/> 
+                        <input
+                        onChange={(e) => setCurrentCompany(e.target.checked)}
+                        type="checkbox" className="bg-primary w-4 h-4"/> 
                         <span className='font-satoshi-regular'>Same as current company</span>
                     </label>
                 </div>
@@ -228,32 +376,69 @@ function CreateJobPostAlum() {
                             </button>
                         </div>
 
-                        <div className='flex flex-col'>
-                            {/* Modal content */}
-                            <h1 className='text-md font-satoshi-medium w-full pb-3'>Tags</h1>
-                            <input
-                                type="text"
-                                className="bg-white font-satoshi-medium text-md w-full h-10 md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0"
-                            />
-                            {/* Suggestion buttons */}
-                            <h1 className='text-md font-satoshi-medium w-full py-3'>Suggestions</h1>
+                        {/* Input box for tags */}
+                        <input
+                        type="text"
+                        value={tagInput}
+                        onChange={handleTagInputChange}
+                        onKeyPress={handleTagInputKeyPress}
+                        className="bg-white font-satoshi-medium text-md w-full h-10 md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0"
+                        placeholder='Enter tags'
+                        />
+
+                        {/* Render user-added tags */}
+                        {tagss.length > 0 && (
+                        <>
+                            <h1 className='text-md font-satoshi-medium w-full py-3'>Your Tags</h1>
                             <div className="flex flex-wrap gap-2">
-                                {tags.map((tag, index) => (
-                                    <button
+                                {tagss.map((tag, index) => (
+                                    <span
                                     key={index}
-                                    className="rounded-full border-2 border-primary text-primary px-4 py-1 font-satoshi-medium text-sm transition cursor-pointer"
+                                    className="bg-primary text-white text-xs rounded-full px-3 py-1 font-satoshi-medium flex items-center gap-1 w-fit"
                                     >
-                                    {tag}
-                                    </button>
+                                        {tag}
+                                        <button
+                                            onClick={() => handleRemoveTag(tag)}
+                                            className=" text-white text-xs rounded-full p-1 "
+                                        >
+                                            <X size={14}/>
+                                        </button>
+                                    </span>
                                 ))}
                             </div>
-                            {/* Submit button for tags */}
-                            <button  
-                                className="mt-6 rounded-full justify-center bg-primary font-satoshi-medium text-white text-md w-1/6 h-10 ml-auto cursor-pointer"
+                        </>
+                        )}
+
+                        {/* Suggestion buttons */}
+                        <h1 className='text-md font-satoshi-medium w-full py-3'>Suggestions</h1>
+                        <div className="flex flex-wrap gap-2">
+                        {tagsSuggestions
+                            .filter(tag => !tagss.includes(tag)) // Only show tags not yet added
+                            .map((tag, index) => (
+                                <button
+                                key={index}
+                                onClick={() => handleAddSuggestionTag(tag)}
+                                className="rounded-full border-2 border-primary text-primary px-4 py-1 font-satoshi-medium text-sm transition cursor-pointer"
+                                >
+                                {tag}
+                                </button>
+                        ))}
+
+
+                        </div>
+
+                        {/* Submit button for tags */}
+                        <div className="mt-6 flex justify-end w-full">
+                            <button
+                                onClick={handleAddTags}
+                                className="rounded-full bg-primary font-satoshi-medium text-white text-md h-10 px-6 cursor-pointer"
                             >
                                 Done
                             </button>
                         </div>
+
+
+
                     </motion.div>
                 )}
             </div>
@@ -284,7 +469,7 @@ function CreateJobPostAlum() {
                     <textarea
                         type="text"
                         className="bg-white font-satoshi-medium text-md w-full md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0 h-40"
-                        onChange={handleJobTitleChange}
+                        onChange={handleJobDescriptionChange}
                         placeholder='Describe job posting'
                     />
                 </div>
@@ -345,12 +530,12 @@ function CreateJobPostAlum() {
                             onChange={handleEmploymentTypeChange}
                             value={employmentType}
                         >
-                            <option value="Full-time">Full-time</option>
-                            <option value="Part-time">Part-time</option>
-                            <option value="Contractual">Contractual</option>
+                            <option value="fulltime">Full-time</option>
+                            <option value="parttime">Part-time</option>
+                            <option value="contractual">Contractual</option>
                             <option value="Freelance">Freelance</option>
-                            <option value="Internship">Internship</option>
-                            <option value="Apprenticeship">Apprenticeship</option>
+                            <option value="internship">Internship</option>
+                            <option value="apprenticeship ">Apprenticeship</option>
                         </select>
 
                         {/* Fake dropdown with icon */}
@@ -374,9 +559,9 @@ function CreateJobPostAlum() {
                             onChange={handleEmploymentModeChange}
                             value={employmentMode}
                         >
-                            <option value="On-site">On-site</option>
-                            <option value="Remote">Remote</option>
-                            <option value="Hybrid">Hybrid</option>
+                            <option value="onsite">On-site</option>
+                            <option value="remote">Remote</option>
+                            <option value="hybrid">Hybrid</option>
                         </select>
 
                         {/* Fake dropdown with icon */}
@@ -388,11 +573,20 @@ function CreateJobPostAlum() {
 
                 </div>
             </div>
-            <button  
+            
+
+            {submitting ? (
+                <div className="ml-auto mt-6">
+                    <CircularLoading />
+                </div>
+            ) : (
+                <button 
+                onClick={handleSubmitJob} 
                 className="mt-6 rounded-full justify-center bg-primary font-satoshi-medium text-white text-xl w-1/6 h-12 ml-auto cursor-pointer"
-            >
-                Submit
-            </button>
+                >
+                    Submit
+                </button>
+            )}
             
         </div>
     )
