@@ -75,9 +75,9 @@ function InterestedUsers() {
       {!loading && !error && interestedUsers.length > 0 && (
         <>
           {/* Table View (lg and up) */}
-          <div className="overflow-auto mt-4">
-  <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] shadow border border-gray-200 p-4">
-    <table className="w-full max-w-5xl mx-auto text-sm text-left text-gray-700">
+          <div className="hidden lg:block overflow-auto mt-4">
+  <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] shadow border border-disabled p-4">
+    <table className="w-full max-w-5xl mx-auto text-sm text-left text-black">
 
       <thead className=" text-[13px] text-primary uppercase font-satoshi-bold">
         <tr>
@@ -105,7 +105,7 @@ function InterestedUsers() {
 <td className="px-4 py-3 font-satoshi-medium">{user.title}</td>
 <td className="px-4 py-3 font-satoshi-medium">{user.industry || "—"}</td>
 <td className="px-4 py-3 font-satoshi-medium">{user.date_of_interest}</td>
-          
+
           </tr>
         ))}
       </tbody>
