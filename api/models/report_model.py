@@ -19,10 +19,7 @@ class Report(Base):
     report_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     reporter_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False)
     reported_user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=True)
-
-    # TODO: Add ForeignKey to Post model when created
-    reported_post_id = Column(UUID(as_uuid=True), nullable=True)
-
+    reported_post_id = Column(UUID(as_uuid=True), ForeignKey("job_posting.post_id"), nullable=True)
 
     reason = Column(String, nullable=False)
     status = Column(Enum(ReportStatusEnum), default=ReportStatusEnum.pending, nullable=False)
@@ -31,13 +28,14 @@ class Report(Base):
 
     reporter = relationship("User", foreign_keys=[reporter_id], back_populates="reports")
     reported_user = relationship("User", foreign_keys=[reported_user_id], back_populates="account_reports")
-    # reported_post = relationship("Post", foreign_keys=[reported_post_id]) #TODO: Add relationship to Post model when created
+    reported_post = relationship("JobPosting", foreign_keys=[reported_post_id], back_populates="reported_posts")
 
     attachments = relationship("ReportAttachment", back_populates="report")
 
+
 # Report Attachment Model
 class ReportAttachment(Base):
-    __tablename__ = "report_attachment"
+    __tablename__ = "report_attachments"
 
     attachment_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     report_id = Column(UUID(as_uuid=True), ForeignKey("report.report_id"), nullable=False)

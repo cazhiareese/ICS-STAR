@@ -8,7 +8,8 @@ import axios from 'axios'
 import SkeletonLoading from '../../../components/LoadingComponents/skeletonloading';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import { div, q } from 'framer-motion/client';
-
+import SortModal from '../../../components/AdminComponents/sortmodal';
+import OrderToggle from '../../../components/AdminComponents/ordertoggle';
 
 function AdminAlumniInfo() {
   const navigate = useNavigate();
@@ -24,15 +25,38 @@ function AdminAlumniInfo() {
     "inactive_alumni": 0,
     "inactive_alumni_percentage": 0.0
   })
+
+  const sorters = [
+    { label: 'Count', value: 'total_users' },
+    { label: 'Batch', value: 'batch' },
+    {label:'Active', value: 'active_users'},
+    {label: 'Inactive', value:'inactive_users'}
+  ]
+
   const [batchPage, setBatchPage] = useState(1)
   const [totalBatchPages, setTotalBatchPages] = useState(20)
+  const [sortBy, setSortBy] = useState(sorters[0].value);
+  const [sortDirection, setSortDirection] = useState('desc');
+  const [orderBy, setOrderBy] = useState('total_users_desc');
+
+    const handleSortFieldChange = (field) => {
+      setSortBy(field);
+      const newParam = `${field}_${sortDirection}`;
+      setOrderBy(newParam);
+    };
+  
+    const handleDirectionToggle = (newDirection) => {
+      setSortDirection(newDirection);
+      const newParam = `${sortBy}_${newDirection}`;
+      setOrderBy(newParam);
+    };
 
   const [batchData, setBatchData] = useState([
-      { batch: 2022, count: 172, active: 80, inactive: 22 },
-      { batch: 2019, count: 102, active: 80, inactive: 22 },
-      { batch: 2018, count: 101, active: 80, inactive: 22 },
-      { batch: 2022, count: 99, active: 80, inactive: 22 },
-      { batch: 2022, count: 99, active: 80, inactive: 22 },
+      // { batch: 2022, count: 172, active: 80, inactive: 22 },
+      // { batch: 2019, count: 102, active: 80, inactive: 22 },
+      // { batch: 2018, count: 101, active: 80, inactive: 22 },
+      // { batch: 2022, count: 99, active: 80, inactive: 22 },
+      // { batch: 2022, count: 99, active: 80, inactive: 22 },
     ])
 
   // const [industryData, setIndustryData] = useState([
@@ -78,11 +102,11 @@ function AdminAlumniInfo() {
     // { name: "More than ₱181,999", value: 2 },
   ])
 
-  const [locationData, seLocationData] = useState([
-    { name: "USA", value: 100},
-    { name: "Canada", value: 60 },
-    { name: "UK", value: 75 },
-    { name: "Australia", value: 30 },
+  const [locationData, setLocationData] = useState([
+    // { name: "USA", value: 100},
+    // { name: "Canada", value: 60 },
+    // { name: "UK", value: 75 },
+    // { name: "Australia", value: 30 },
   ])
 
   const [industries, setIndustries] = useState()
@@ -119,6 +143,13 @@ function AdminAlumniInfo() {
           { name: "Inactive", value: inactive_alumni },
         ])
 
+        const batchParams = new URLSearchParams();
+        batchParams.append('order', orderBy);
+        const queryString = batchParams.toString();
+
+        const batchActivity = await axios.get(`${API_BASE_URL}/admin/stats/get_active_by_batch?${queryString}`)
+        setBatchData(batchActivity.data.data)
+
         // Get industry count
         const industryCount = await axios.get(`${API_BASE_URL}/admin/stats/industry/count`)
         setIndustries(industryCount.data.data)
@@ -136,6 +167,9 @@ function AdminAlumniInfo() {
         // Get salary grade 
         const salaryGradeCount = await axios.get(`${API_BASE_URL}/admin/stats/salary_grade`)
         setSalaryGradeData(salaryGradeCount.data.data)
+
+        const locationCount = await axios.get(`${API_BASE_URL}/admin/stats/countries`)
+        setLocationData(locationCount.data.data)
       } catch (error) {
         console.log(error);
         // setUsers([]);
@@ -145,6 +179,24 @@ function AdminAlumniInfo() {
     };
     fetchData();
   },[])
+
+  useEffect(() => {
+
+    const fetchBatchActivity = async () => {
+      try{
+        const batchParams = new URLSearchParams();
+        batchParams.append('order', orderBy);
+        const queryString = batchParams.toString();
+        const batchActivity = await axios.get(`${API_BASE_URL}/admin/stats/get_active_by_batch?${queryString}`)
+          setBatchData(batchActivity.data.data)
+      }catch (error){
+        console.log(error)
+      }
+    }
+
+    fetchBatchActivity();
+   
+  }, [sortBy, sortDirection])
 
   const COLORS = ["#00369C", "#618FE9", "#A3BFF4", "#CEDEFD"];
   const activeInactiveColors = ["#00369C", "#F7F7FB"]
@@ -211,9 +263,11 @@ function AdminAlumniInfo() {
           <div className='flex items-center justify-between'>
             <h2 className='font-satoshi-medium text-lg' >Batch Information</h2>
             <div className='flex gap-2'>
-              <button className='border border-disabled rounded-xl px-3 py-1 cursor-pointer'>
-                <p className='font-satoshi-regular'>Sort by <span className='font-satoshi-medium'>Count</span></p>
-              </button>
+              {/* <button className='border border-disabled rounded-xl px-3 py-1 cursor-pointer'> */}
+                {/* <p className='font-satoshi-regular'>Sort by <span className='font-satoshi-medium'>Count</span></p> */}
+                <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
+                <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
+              {/* </button> */}
                 <button className='flex items-center gap-2 cursor-pointer text-md font-satoshi-regular'>
                   <MoveLeft/>
                     <p> Page </p>
@@ -242,18 +296,28 @@ function AdminAlumniInfo() {
               {/* Table Body */}
               <tbody className='font-satoshi-regular'>
                 {batchData.map((row, index) => {
-                  const activePercentage = ((row.active / row.count) * 100).toFixed(0);
-                  const inactivePercentage = ((row.inactive / row.count) * 100).toFixed(0);
+                  const activePercentage = ((row.active_users / row.total_users) * 100).toFixed(0);
+                  const inactivePercentage = ((row.inactive_users / row.total_users) * 100).toFixed(0);
                   
                   return (
-                    <tr key={index} className="text-sm cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`)}}>
+                    <tr key={index} className="text-sm cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`, 
+                      {
+                        state: {
+                          batch: row.batch,
+                          count: row.total_users,
+                          active: row.active_users,
+                          active_percentage: row.active_users_percentage,
+                          inactive: row.inactive_users,
+                          inactive_percentage: row.inactive_users_percentage
+                        },
+                    })}}>
                       <td className="p-2">{row.batch}</td>
-                      <td className="p-2">{row.count}</td>
+                      <td className="p-2">{row.total_users}</td>
                       <td className="p-2">
-                        {row.active} <span className="text-gray-500">({activePercentage}%)</span>
+                        {row.active_users} <span className="text-gray-500">({activePercentage}%)</span>
                       </td>
                       <td className="p-2">
-                        {row.inactive} <span className="text-gray-500">({inactivePercentage}%)</span>
+                        {row.inactive_users} <span className="text-gray-500">({inactivePercentage}%)</span>
                       </td>
                     </tr>
                   );
@@ -395,8 +459,8 @@ function AdminAlumniInfo() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={locationData} layout="vertical" margin={{ left: 20, right: 20, bottom: 40 }}>
               <XAxis type="number"/>
-              <YAxis type="category" dataKey="name" width={100} />
-              <Bar dataKey="value" barSize={20} radius={[0, 5, 5, 0]}>
+              <YAxis type="category" dataKey="country" width={100} />
+              <Bar dataKey="count" barSize={20} radius={[0, 5, 5, 0]}>
                 {locationData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[0]} />
                 ))}
