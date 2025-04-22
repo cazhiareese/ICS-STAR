@@ -3,7 +3,7 @@ import { Heart, Calendar, User } from "lucide-react";
 
 function JobOverviewCard({ overview }) {
   return (
-    <div className="relative border border-gray-300 rounded-2xl shadow-lg min-h-44 py-6 px-8 w-full max-w-[1100px] mx-auto bg-white flex flex-row justify-between items-center mb-6">
+    <div className="relative border border-gray-300 rounded-[20px] shadow-xl max-h-[178px]  py-6 px-8 w-full max-w-[1100px] mx-auto bg-white flex flex-row justify-between items-center mb-6">
       {/* Left Section: Role & Company */}
       <div className="flex flex-col">
         <h2 className="text-[18px] text-primary font-satoshi-bold sm:text-[40px]">{overview.title}</h2>
@@ -16,7 +16,7 @@ function JobOverviewCard({ overview }) {
         <div className="flex items-center gap-2">
           <Heart className="text-primary w-4 h-4" />
           <p>
-            <span className="text-primary font-satoshi-medium">
+            <span className="text-primary font-satoshi-bold">
               {overview.total_interested} people
             </span>{" "}
             are interested
