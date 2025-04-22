@@ -76,10 +76,10 @@ function InterestedUsers() {
         <>
           {/* Table View (lg and up) */}
           <div className="overflow-auto mt-4">
-  <div className="max-w-[1100px] mx-auto bg-white rounded-2xl shadow border border-gray-200 p-4">
+  <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] shadow border border-gray-200 p-4">
     <table className="w-full max-w-5xl mx-auto text-sm text-left text-gray-700">
 
-      <thead className=" text-xs text-gray-600 uppercase">
+      <thead className=" text-[13px] text-primary uppercase font-satoshi-bold">
         <tr>
           <th className="px-4 py-5">Name</th>
           <th className="px-4 py-5">Batch</th>
@@ -98,13 +98,14 @@ function InterestedUsers() {
                 alt={user.name}
                 className="w-8 h-8 rounded-full object-cover border"
               />
-              <span className="font-medium text-gray-800">{user.name}</span>
+              <span className="font-satoshi-bold text-black">{user.name}</span>
             </td>
-            <td className="px-4 py-3">{user.batch}</td>
-            <td className="px-4 py-3">{user.location}</td>
-            <td className="px-4 py-3">{user.title}</td>
-            <td className="px-4 py-3">{user.industry || "—"}</td>
-            <td className="px-4 py-3">{user.date_of_interest}</td>
+            <td className="px-4 py-3 font-satoshi-medium">{user.batch}</td>
+<td className="px-4 py-3 font-satoshi-medium">{user.location}</td>
+<td className="px-4 py-3 font-satoshi-medium">{user.title}</td>
+<td className="px-4 py-3 font-satoshi-medium">{user.industry || "—"}</td>
+<td className="px-4 py-3 font-satoshi-medium">{user.date_of_interest}</td>
+          
           </tr>
         ))}
       </tbody>
