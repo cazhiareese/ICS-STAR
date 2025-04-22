@@ -2,7 +2,7 @@ import React from 'react';
 
 function JobSectionHeader({ title }) {
   return (
-    <h2 className="text-2xl font-satoshi-black text-gray-800 mb-4 text-left">
+    <h2 className="text-[28px] sm:text-[40px] font-satoshi-bold sm:pl-8  text-gray-800 mb-4 text-left">
       {title}
     </h2>
   );
