@@ -6,6 +6,7 @@ from typing import List, Optional
 from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
+from models.job_posting_model import JobPosting
 
 from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum, UserStandingEnum
 
@@ -89,7 +90,6 @@ async def add_skills(
     
     db.add_all(new_skills)
     db.commit()
-    primt(new_skills)
     return {"message": "skills added successfully"}
 
 @router.post("/onboarding-info-student")
@@ -546,3 +546,18 @@ async def update_links(
     db.commit()
     
     return {"message": "Links updated successfully"}
+
+# Fetch the user's job posts
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of job posts made by the user
+@router.get("/profile/job-posts")
+async def get_job_posts(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    job_posts = db.query(JobPosting).filter(JobPosting.user_id == user.user_id).all()
+
+    return {"message": "success", "data": job_posts}
