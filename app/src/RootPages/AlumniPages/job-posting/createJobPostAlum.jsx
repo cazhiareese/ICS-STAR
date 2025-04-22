@@ -10,6 +10,8 @@ function CreateJobPostAlum() {
     const [companyInput, setCompanyInput] = useState("");
     const [salaryInput, setSalaryInput] = useState(0);
     const [linkInput, setLinkInput] = useState("");
+    const [employmentType, setEmploymentType] = useState("");
+    const [employmentMode, setEmploymentMode] = useState("");
 
     const fileInputRef = useRef(null);
     const [fileName, setFileName] = useState('');
@@ -44,6 +46,7 @@ function CreateJobPostAlum() {
         setJobTitleInput(e.target.value);
         console.log(jobTitleInput); //For checking only
     };
+    
 
     const handleCompanyChange = (e) => {
         setCompanyInput(e.target.value);
@@ -58,6 +61,16 @@ function CreateJobPostAlum() {
     const handleLinkInput = (e) => {
         setLinkInput(e.target.value);
         console.log(linkInput); //For checking only
+    };
+
+    const handleEmploymentTypeChange = (e) => {
+        setEmploymentType(e.target.value);
+        console.log(employmentType); //For checking only
+    };
+
+    const handleEmploymentModeChange = (e) => {
+        setEmploymentMode(e.target.value);
+        console.log(employmentMode); //For checking only
     };
 
     // Navigate back
@@ -98,7 +111,7 @@ function CreateJobPostAlum() {
     };
 
     return (
-        <div className='flex flex-col mx-48 my-16'>
+        <div className='flex flex-col mx-48 mt-16 mb-30'>
             {/* Back button */}
             <button onClick={navToJobPostLanding} className='text-primary flex gap-5 cursor-pointer'>
                 <ArrowLeft size={25} />
@@ -317,8 +330,63 @@ function CreateJobPostAlum() {
                     </div>
                     
                 </div>
+            </div>
+            {/* Emplyment type and mode */}
+            <div className='flex flex-row gap-3 mt-6'>
+                {/* Employment type */}
+                <div className='outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 px-8 w-full'>
+                    <h1 className='text-lg font-satoshi-medium pb-3'>
+                        Employment Type <span className='text-error'>*</span>
+                    </h1>
+                    {/* dropdown Box */}
+                    <div className="relative w-full">
+                        <select
+                            className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            onChange={handleEmploymentTypeChange}
+                            value={employmentType}
+                        >
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contractual">Contractual</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Apprenticeship">Apprenticeship</option>
+                        </select>
 
+                        {/* Fake dropdown with icon */}
+                        <div className="bg-white font-satoshi-medium text-md w-full flex items-center justify-between md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 pointer-events-none">
+                            {employmentType || 'Select Job Type'}
+                            <ChevronDown className="w-5 h-5 text-gray-500" />
+                        </div>
+                    </div>
+
+                </div>
                 
+                {/* Employment Mode */}
+                <div className='outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 px-8 w-full'>
+                    <h1 className='text-lg font-satoshi-medium pb-3'>
+                        Employment Mode <span className='text-error'>*</span>
+                    </h1>
+                    {/* dropdown Box */}
+                    <div className="relative w-full">
+                        <select
+                            className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            onChange={handleEmploymentModeChange}
+                            value={employmentMode}
+                        >
+                            <option value="On-site">On-site</option>
+                            <option value="Remote">Remote</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+
+                        {/* Fake dropdown with icon */}
+                        <div className="bg-white font-satoshi-medium text-md w-full flex items-center justify-between md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 pointer-events-none">
+                            {employmentMode || 'Select Mode'}
+                            <ChevronDown className="w-5 h-5 text-gray-500" />
+                        </div>
+                    </div>
+
+                </div>
             </div>
             <button  
                 className="mt-6 rounded-full justify-center bg-primary font-satoshi-medium text-white text-xl w-1/6 h-12 ml-auto cursor-pointer"
