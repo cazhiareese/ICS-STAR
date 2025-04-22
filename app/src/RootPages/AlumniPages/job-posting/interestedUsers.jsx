@@ -76,20 +76,7 @@ function InterestedUsers() {
   return (
     <div className="w-full max-w-[1100px] mx-auto p-4">
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-3 border-b border-gray-200 bg-white rounded-t-2xl">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-satoshi-bold text-gray-800">Interested Users</h1>
-          <p className="text-sm text-gray-500 mt-1 sm:mt-0">
-            View the list of users who have shown interest in this donation drive.
-          </p>
-        </div>
-        <div className="mt-3 sm:mt-0">
-          <button className="bg-primary text-white px-4 py-2 rounded-full text-sm hover:bg-hover transition">
-            Export List
-          </button>
-        </div>
-      </div>
+
       <JobSectionHeader title="Interested Users" />
 
       {jobOverview && <JobOverviewCard overview={jobOverview} />}
