@@ -17,6 +17,8 @@ const SearchBar =
     setLoading,
     setAlumniList
   })=> {
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const [filteredAlumni, setFilteredAlumni] = useState([]); 
     // cache reference
     const cache = useRef({});
@@ -39,7 +41,7 @@ const SearchBar =
             }
 
             try {
-            const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/names?q=${encodeURIComponent(searchInput)}&limit=5`);
+            const response = await axios.get(`${API_BASE_URL}/autocomplete/names?q=${encodeURIComponent(searchInput)}&limit=5`);
             setFilteredAlumni(response.data);
             cache.current[query] = response.data; // Cache the result for future use
             console.log("Fetched alumni data for:", query, response.data);
@@ -117,7 +119,7 @@ const SearchBar =
     
     //Builds URL using object
     function buildSearchUrl(filters) {
-        let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
+        let baseUrl = `${API_BASE_URL}/alumni/search`;
         let queryParams = new URLSearchParams(filters).toString();
         return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
     }

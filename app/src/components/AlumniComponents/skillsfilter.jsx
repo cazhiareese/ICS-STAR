@@ -13,7 +13,8 @@ const AlumniSkillsFilter = ({
   setIsLocationExpanded,
   setIsSeeAllSkillOpen
 }) => {
-
+  // BASE URL ENV
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const [skills, setSkills] = useState([]); 
   // cache reference
   const cache = useRef({});
@@ -30,7 +31,7 @@ const AlumniSkillsFilter = ({
         }
 
         try {
-          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-skills");
+          const response = await axios.get(`${API_BASE_URL}/suggestions/top-skills`);
           setSkills(response.data);
           cache.current["top-skills"] = response.data; // Cache the response
           console.log("Fetched top skills:", response.data);
@@ -47,7 +48,7 @@ const AlumniSkillsFilter = ({
         }
 
         try {
-          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/skills?q=${encodeURIComponent(query)}&limit=5`);
+          const response = await axios.get(`${API_BASE_URL}/autocomplete/skills?q=${encodeURIComponent(query)}&limit=5`);
           setSkills(response.data);
           cache.current[query] = response.data; // Cache the result for future use
           console.log("Fetched skills for input:", query, response.data);
@@ -147,7 +148,7 @@ const AlumniSkillsFilter = ({
         <div className="flex flex-row px-12 pb-3 pt-5">
           <h1 className="flex-1 text-gray-400">Suggestions</h1>
           <button onClick={() => setIsSeeAllSkillOpen(true)}>
-            <h1 className="underline text-primary">See all</h1>
+            <h1 className="underline text-primary hover:text-blue-700 cursor-pointer">See all</h1>
           </button>
         </div>
 

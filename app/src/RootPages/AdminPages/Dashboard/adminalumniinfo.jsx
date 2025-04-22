@@ -328,6 +328,8 @@ function AdminAlumniInfo() {
         </div>
         {/* Filters */}
         <div className='row-start-2 col-span-2'> Filters</div>
+        {/* Industry Reports Navigate */}
+        <button onClick={()=> navigate("/admin/dashboard/industry-reports/")}>Navigate to Industry Reports</button>
         {/* Industries and employment*/}
         <div className={`${cardDesign} row-start-3 col-span-2 flex flex-col font-satoshi-regular`}> 
           {/* Top half - bar graph */}
@@ -455,6 +457,8 @@ function AdminAlumniInfo() {
         </div>
         {/* Locations */}
         <div className={`${cardDesign} row-start-4 col-span-2 h-full p-4`}> 
+        {/* Country Reports Navigate */}
+        <button onClick={()=> navigate("/admin/dashboard/country-reports/")}>Navigate to country reports</button>
           <h3 className='text-2xl font-satoshi-bold'> Locations </h3>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={locationData} layout="vertical" margin={{ left: 20, right: 20, bottom: 40 }}>

@@ -11,7 +11,7 @@ import { Eye, EyeClosed, CircleX } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
-    const baseURL = "https://ics-star-api.vercel.app"
+    const baseURL = "https://ics-star.onrender.com"
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");

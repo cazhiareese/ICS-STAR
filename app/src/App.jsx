@@ -47,6 +47,10 @@ import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
+import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
+import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
+import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
+import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -103,7 +107,8 @@ function App() {
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
-            
+            <Route path="alumni/createJobPosting" element={<CreateJobPostAlum />} />
+            <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
 
             <Route path="*" element={<Unauthorized />} />
 
@@ -138,6 +143,8 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
+              <Route path="industry-reports" element={<AdminIndustryInformation/>}/>
+              <Route path="country-reports" element={<AdminCountryInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
