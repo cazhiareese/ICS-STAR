@@ -85,7 +85,7 @@ def view_interested_in(
     interested_users = query.all()
 
     if not interested_users:
-        return [], {}
+        return []
 
     interested_out_list = []
 
