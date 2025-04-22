@@ -5,7 +5,7 @@ from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostin
 from typing import Optional, List, Dict
 from config.database import get_db
 
-router = APIRouter()
+router = APIRouter(tags=["Job Search"])
 
 @router.get("/job/search", response_model=List[JobSearchOut])
 def job_search(
