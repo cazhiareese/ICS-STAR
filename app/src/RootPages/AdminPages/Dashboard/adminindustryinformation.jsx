@@ -104,9 +104,12 @@ function AdminIndustryInformation() {
         }
 
     }
+    if (industries.length > 0){
+        console.log(industries)
       const index = industries.findIndex(f => f.industry === selectedIndustry);
     //   console.log(industries[index])
       setIndustryTotalCount(industries[index].count)
+    }
       fetchData();
       
     }, [selectedIndustry])
