@@ -301,3 +301,22 @@ async def batch_unemployment(db: Session = Depends(get_db), batch: Optional[str]
     unemployment_reason = unemployment_reason_util(db, batch = batch)
 
     return{"message": "success", "data": unemployment_reason}
+
+@router.get("/get-all-industries")
+async def get_industries(db: Session= Depends(get_db)):
+    query = db.query(
+       User.industry,
+       func.count().label("count")
+    ).filter().distinct().group_by(User.industry).order_by(User.industry).all()
+
+    return {"message": "success", "data": [{"industry": industry.industry, "count": industry.count} for industry in query if industry[0] is not None]}
+
+@router.get("/get-all-countries")
+async def get_industries(db: Session= Depends(get_db)):
+    query = db.query(
+       User.country,
+       func.count().label("count")
+    ).filter().distinct().group_by(User.country).order_by(User.country).all()
+
+    return {"message": "success", "data": [{"country": country.country, "count": country.count} for country in query if country[0] is not None]}
+
