@@ -142,7 +142,7 @@ function InterestedUsers() {
           {/* Card View (mobile) */}
           <div className="block lg:hidden space-y-4 mt-4">
             {interestedUsers.map((user, idx) => (
-              <div key={idx} className="flex items-center gap-4 p-3 bg-white rounded-xl shadow-sm">
+              <div key={idx} className="flex items-center gap-4 p-2 ">
                 <img
                   src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`}
                   alt={user.name}
