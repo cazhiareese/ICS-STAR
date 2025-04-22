@@ -88,17 +88,25 @@ function InterestedUsers() {
         </tr>
       </thead>
       <tbody>
-        {interestedUsers.map((user, idx) => (
-          <tr key={idx} className="border-t hover:bg-gray-50">
-            <td className="px-4 py-3 font-medium text-gray-800">{user.name}</td>
-            <td className="px-4 py-3">{user.batch}</td>
-            <td className="px-4 py-3">{user.location}</td>
-            <td className="px-4 py-3">{user.title}</td>
-            <td className="px-4 py-3">{user.industry || "—"}</td>
-            <td className="px-4 py-3">{user.date_of_interest}</td>
-          </tr>
-        ))}
-      </tbody>
+  {interestedUsers.map((user, idx) => (
+    <tr key={idx} className="border-t hover:bg-gray-50">
+      <td className="px-4 py-3 flex items-center gap-3">
+        <img
+          src={user.image || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.name)}
+          alt={user.name}
+          className="w-8 h-8 rounded-full object-cover border"
+        />
+        <span className="font-medium text-gray-800">{user.name}</span>
+      </td>
+      <td className="px-4 py-3">{user.batch}</td>
+      <td className="px-4 py-3">{user.location}</td>
+      <td className="px-4 py-3">{user.title}</td>
+      <td className="px-4 py-3">{user.industry || "—"}</td>
+      <td className="px-4 py-3">{user.date_of_interest}</td>
+    </tr>
+  ))}
+</tbody>
+
     </table>
   </div>
 </div>
