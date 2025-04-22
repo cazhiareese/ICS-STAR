@@ -64,8 +64,9 @@ function JobPostingLanding() {
             company: "Google Alphabet",
             description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
             salary: 20000,
-            tags: ["Software Engineering", "UI/UX"],
+            tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
             employment_type: "Full-time",
+            mode: "On-site",
             link: "LinkedIn.com",
             image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
             user_name: "Roche Quejada", //Tentative
@@ -81,7 +82,7 @@ function JobPostingLanding() {
 
     return (
         <div className='flex flex-col mb-16'>
-            <div className="flex flex-row w-full mt-16 shadow-md pb-8  rounded-full px-8">
+            <div className="flex flex-row w-full mt-8 shadow-md pb-8  rounded-full px-8">
                 {/* Centered Search Bar */}
                 <div className="flex-1 flex justify-center ml-50">
                     <JobSearchBar 
