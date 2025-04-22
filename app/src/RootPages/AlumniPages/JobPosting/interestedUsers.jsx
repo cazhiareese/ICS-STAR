@@ -1,6 +1,6 @@
 import React from "react";
 
-const InterestedUsersHeader = () => {
+function InterestedUsers() {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-3 border-b border-gray-200 bg-white rounded-t-2xl">
       <div>
@@ -17,6 +17,6 @@ const InterestedUsersHeader = () => {
       </div>
     </div>
   );
-};
+}
 
-export default InterestedUsersHeader;
+export default InterestedUsers;

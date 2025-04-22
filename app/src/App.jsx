@@ -49,6 +49,8 @@ import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/adm
 import OtherUserProfile from "./RootPages/OtherUserprofile";
 const isSignedIn = !!localStorage.getItem("token");
 
+import InterestedUsers from "./RootPages/AlumniPages/JobPosting/interestedUsers";
+
 function App() {
   function checkType() {
     const User = localStorage.getItem("token");
@@ -103,6 +105,8 @@ function App() {
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
+
+            <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
             
 
             <Route path="*" element={<Unauthorized />} />
