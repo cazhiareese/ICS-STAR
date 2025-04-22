@@ -79,19 +79,19 @@ function InterestedUsers() {
   <div className="max-w-[1100px] mx-auto bg-white rounded-2xl shadow border border-gray-200 p-4">
     <table className="w-full max-w-5xl mx-auto text-sm text-left text-gray-700">
 
-      <thead className="bg-gray-100 text-xs text-gray-600 uppercase">
+      <thead className=" text-xs text-gray-600 uppercase">
         <tr>
-          <th className="px-4 py-3">Name</th>
-          <th className="px-4 py-3">Batch</th>
-          <th className="px-4 py-3">Base Location</th>
-          <th className="px-4 py-3">Job Title</th>
-          <th className="px-4 py-3">Industry</th>
-          <th className="px-4 py-3">Interested On</th>
+          <th className="px-4 py-5">Name</th>
+          <th className="px-4 py-5">Batch</th>
+          <th className="px-4 py-5">Base Location</th>
+          <th className="px-4 py-5">Job Title</th>
+          <th className="px-4 py-5">Industry</th>
+          <th className="px-4 py-5">Interested On</th>
         </tr>
       </thead>
       <tbody>
         {interestedUsers.map((user, idx) => (
-          <tr key={idx} className="border-t hover:bg-gray-50">
+          <tr key={idx} className=" hover:bg-gray-50">
             <td className="px-4 py-3 flex items-center gap-3">
               <img
                 src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`}
