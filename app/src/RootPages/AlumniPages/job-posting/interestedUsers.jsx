@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import JobOverviewCard from "./jobcomponent/joboverview";
 
 function InterestedUsers() {
   // const { id } = useParams();
@@ -87,6 +88,9 @@ function InterestedUsers() {
           </button>
         </div>
       </div>
+
+      {jobOverview && <JobOverviewCard overview={jobOverview} />}
+
 
       {/* Content */}
       {loading && <p className="text-gray-500 mt-4">Loading...</p>}
