@@ -5,6 +5,7 @@ function InterestedUsers() {
   // const { id } = useParams();
   const id = "f7a09e35-1e12-4214-9bda-5c87de635416"; // temporary hardcoded ID
   const [interestedUsers, setInterestedUsers] = useState([]);
+  const [jobOverview, setJobOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,6 +47,26 @@ function InterestedUsers() {
         setLoading(false);
       }
     };
+    const fetchJobOverview = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/job/overview/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        if (!response.ok) throw new Error("Failed to fetch job overview");
+    
+        const data = await response.json();
+        console.log("Job Overview Data:", data); // Debugging line
+        setJobOverview(data);
+      } catch (err) {
+        console.error("Job Overview Fetch Error:", err);
+      }
+    };
+    
+    fetchJobOverview();
+    
 
     fetchInterestedUsers();
   }, [id, token]);
