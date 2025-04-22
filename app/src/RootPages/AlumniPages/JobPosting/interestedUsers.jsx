@@ -39,10 +39,8 @@ function InterestedUsers() {
         }
 
         const data = await response.json();
-        console.log("Interested Users Data:", data);
         setInterestedUsers(data);
       } catch (err) {
-        console.error("Error fetching interested users:", err);
         setError(err.message || "Failed to fetch interested users.");
       } finally {
         setLoading(false);
@@ -73,44 +71,63 @@ function InterestedUsers() {
       {loading && <p className="text-gray-500 mt-4">Loading...</p>}
       {error && <p className="text-red-500 mt-4">{error}</p>}
 
+      {/* Large screen table */}
       {!loading && !error && interestedUsers.length > 0 && (
-        <div className="overflow-auto mt-4">
-  <div className="max-w-[1100px] mx-auto">
-    <table className="min-w-full text-sm text-left text-gray-700 border border-gray-200 rounded-xl overflow-hidden">
-      <thead className="bg-gray-100 text-xs text-gray-600 uppercase">
-        <tr>
-          <th className="px-4 py-3">Name</th>
-          <th className="px-4 py-3">Batch</th>
-          <th className="px-4 py-3">Base Location</th>
-          <th className="px-4 py-3">Job Title</th>
-          <th className="px-4 py-3">Industry</th>
-          <th className="px-4 py-3">Interested On</th>
-        </tr>
-      </thead>
-      <tbody>
-  {interestedUsers.map((user, idx) => (
-    <tr key={idx} className="border-t hover:bg-gray-50">
-      <td className="px-4 py-3 flex items-center gap-3">
-        <img
-          src={user.image || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.name)}
-          alt={user.name}
-          className="w-8 h-8 rounded-full object-cover border"
-        />
-        <span className="font-medium text-gray-800">{user.name}</span>
-      </td>
-      <td className="px-4 py-3">{user.batch}</td>
-      <td className="px-4 py-3">{user.location}</td>
-      <td className="px-4 py-3">{user.title}</td>
-      <td className="px-4 py-3">{user.industry || "—"}</td>
-      <td className="px-4 py-3">{user.date_of_interest}</td>
-    </tr>
-  ))}
-</tbody>
+        <>
+          {/* Table View (lg and up) */}
+          <div className="hidden lg:block overflow-auto mt-4">
+            <div className="max-w-[1100px] mx-auto">
+              <table className="min-w-full text-sm text-left text-gray-700 border border-gray-200 rounded-xl overflow-hidden">
+                <thead className="bg-gray-100 text-xs text-gray-600 uppercase">
+                  <tr>
+                    <th className="px-4 py-3">Name</th>
+                    <th className="px-4 py-3">Batch</th>
+                    <th className="px-4 py-3">Base Location</th>
+                    <th className="px-4 py-3">Job Title</th>
+                    <th className="px-4 py-3">Industry</th>
+                    <th className="px-4 py-3">Interested On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {interestedUsers.map((user, idx) => (
+                    <tr key={idx} className="border-t hover:bg-gray-50">
+                      <td className="px-4 py-3 flex items-center gap-3">
+                        <img
+                          src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`}
+                          alt={user.name}
+                          className="w-8 h-8 rounded-full object-cover border"
+                        />
+                        <span className="font-medium text-gray-800">{user.name}</span>
+                      </td>
+                      <td className="px-4 py-3">{user.batch}</td>
+                      <td className="px-4 py-3">{user.location}</td>
+                      <td className="px-4 py-3">{user.title}</td>
+                      <td className="px-4 py-3">{user.industry || "—"}</td>
+                      <td className="px-4 py-3">{user.date_of_interest}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-    </table>
-  </div>
-</div>
-
+          {/* Card View (mobile) */}
+          <div className="block lg:hidden space-y-4 mt-4">
+            {interestedUsers.map((user, idx) => (
+              <div key={idx} className="flex items-center gap-4 p-3 bg-white rounded-xl shadow-sm">
+                <img
+                  src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`}
+                  alt={user.name}
+                  className="w-10 h-10 rounded-full object-cover border"
+                />
+                <div>
+                  <p className="font-medium text-gray-800">{user.name}</p>
+                  <p className="text-sm text-gray-500">Class of {user.batch}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
