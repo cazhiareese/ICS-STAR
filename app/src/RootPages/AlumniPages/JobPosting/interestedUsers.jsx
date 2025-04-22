@@ -1,6 +1,9 @@
 import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 function InterestedUsers() {
+  const id = useParams();
+  console.log(id);
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-3 border-b border-gray-200 bg-white rounded-t-2xl">
       <div>
