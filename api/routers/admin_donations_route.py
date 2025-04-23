@@ -55,7 +55,12 @@ from util.admin_donations_logic import (search_donation_drives,
                                         get_all_closed_drives_by_percent_funded_ascending,
                                         get_all_closed_drives_by_percent_funded_descending,
                                         get_all_closed_drives_by_target_cost_ascending,
-                                        get_all_closed_drives_by_target_cost_descending
+                                        get_all_closed_drives_by_target_cost_descending,
+                                        update_generic_drive_stats_custom_range,
+                                        update_generic_drive_stats_last_seven_days,
+                                        update_generic_drive_stats_this_month,
+                                        update_generic_drive_stats_this_week,
+                                        update_generic_drive_stats_this_year
                                         )
 import datetime
 from uuid import UUID
@@ -80,6 +85,78 @@ def update_generic_drive(
     drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
 
     results = update_generic_drive_stats(db, drive_id)
+
+    if results is None:
+        raise HTTPException(status_code=404, detail="Drive not found")
+
+    return results
+
+@router.get("/admin/donations/update-generic-drive-custom-range", response_model=GenericDriveOut)
+def update_generic_drive_custom_range(
+    start_date: str,
+    end_date: str,
+    db: Session = Depends(get_db)
+):
+
+    drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
+
+    results = update_generic_drive_stats_custom_range(db, drive_id, start_date, end_date)
+
+    if results is None:
+        raise HTTPException(status_code=404, detail="Drive not found")
+
+    return results
+
+@router.get("/admin/donations/update-generic-drive-last-seven-days", response_model=GenericDriveOut)
+def update_generic_drive_last_seven_days(
+    db: Session = Depends(get_db)
+):
+
+    drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
+
+    results = update_generic_drive_stats_last_seven_days(db, drive_id)
+
+    if results is None:
+        raise HTTPException(status_code=404, detail="Drive not found")
+
+    return results
+
+@router.get("/admin/donations/update-generic-drive-this-month", response_model=GenericDriveOut)
+def update_generic_drive_this_month(
+    db: Session = Depends(get_db)
+):
+
+    drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
+
+    results = update_generic_drive_stats_this_month(db, drive_id)
+
+    if results is None:
+        raise HTTPException(status_code=404, detail="Drive not found")
+
+    return results
+
+@router.get("/admin/donations/update-generic-drive-this-week", response_model=GenericDriveOut)
+def update_generic_drive_this_week(
+    db: Session = Depends(get_db)
+):
+
+    drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
+
+    results = update_generic_drive_stats_this_week(db, drive_id)
+
+    if results is None:
+        raise HTTPException(status_code=404, detail="Drive not found")
+
+    return results
+
+@router.get("/admin/donations/update-generic-drive-this-year", response_model=GenericDriveOut)
+def update_generic_drive_this_year(
+    db: Session = Depends(get_db)
+):
+
+    drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
+
+    results = update_generic_drive_stats_this_year(db, drive_id)
 
     if results is None:
         raise HTTPException(status_code=404, detail="Drive not found")
