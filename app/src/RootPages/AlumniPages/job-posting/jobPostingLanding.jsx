@@ -30,33 +30,33 @@ function JobPostingLanding() {
     }, []);
 
     // For Dummy testing only
-    useEffect(() => {
-        // Job Dummy Data
-        // const job = {
-        //     title: "Data Scientist",
-        //     company: "Google Alphabet",
-        //     description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
-        //     salary: 20000,
-        //     tags: ["Software Engineering", "UI/UX"],
-        //     employment_type: "Full-time",
-        //     link: "LinkedIn.com",
-        //     image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
-        //     alumni: "Roche Quejada" //Tentative
-        // }
+    // useEffect(() => {
+    //     // Job Dummy Data
+    //     // const job = {
+    //     //     title: "Data Scientist",
+    //     //     company: "Google Alphabet",
+    //     //     description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
+    //     //     salary: 20000,
+    //     //     tags: ["Software Engineering", "UI/UX"],
+    //     //     employment_type: "Full-time",
+    //     //     link: "LinkedIn.com",
+    //     //     image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
+    //     //     alumni: "Roche Quejada" //Tentative
+    //     // }
 
-        const job = {
-            title: "Data Scientist",
-            company: "Google Alphabet",
-            description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
-            user_name: "Roche Quejada",
-            tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
-            interested_count: 5
-        }
+    //     const job = {
+    //         title: "Data Scientist",
+    //         company: "Google Alphabet",
+    //         description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
+    //         user_name: "Roche Quejada",
+    //         tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
+    //         interested_count: 5
+    //     }
         
-        const jobs = [job,job,job, job, job, job, job];
-        setJobList(jobs);
+    //     const jobs = [job,job,job, job, job, job, job];
+    //     setJobList(jobs);
         
-    }, []);
+    // }, []);
 
 
 
@@ -145,6 +145,8 @@ function JobPostingLanding() {
                     <JobSearchBar 
                     searchInput={searchInput}
                     setSearchInput={setSearchInput}
+                    setLoading={setLoading}
+                    setJobList={setJobList}
                     />
                 </div>
 
@@ -158,7 +160,7 @@ function JobPostingLanding() {
                 </button>
             </div>
 
-            <div className='flex flex-row mt-16 mx-30 gap-5'>
+            <div className='flex flex-row mt-16 mx-30 gap-5 justify-center'>
                 {/* Scrollable wrapper */}
                 <div className='h-[1000px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
                     {!loading ? (
@@ -185,12 +187,12 @@ function JobPostingLanding() {
                 {/* Job Preview */} 
                 
                 {!selectedJob || !selectedJob.tags ? (
-                    <div className="flex flex-col items-center justify-center w-lg mr-10 outline-1">
+                    <div className="flex flex-col items-center justify-center w-lg mr-10 outline-0">
                         <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200}/></h1>
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} />
+                    <JobExpandedCard job={selectedJob} currentUserID={userId} />
                 )}
                 
             </div>

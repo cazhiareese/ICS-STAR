@@ -1,19 +1,68 @@
-import { Banknote, BriefcaseBusiness, Ellipsis, FileText, SquareArrowOutUpRight, Star } from 'lucide-react'
-import React from 'react'
+import { Banknote, BriefcaseBusiness, Ellipsis, FileText, Pencil, SquareArrowOutUpRight, Star, Trash2 } from 'lucide-react'
+import {React, useState, useEffect, useRef} from 'react'
 
-function JobExpandedCard({job}) {
+function JobExpandedCard({job, currentUserID}) {
+    const [showOptions, setShowOptions] = useState(false);
+    const modalRef = useRef(null);
+    const ellipsisRef = useRef(null);
+
+    // Close modal on outside click
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                modalRef.current &&
+                !modalRef.current.contains(event.target) &&
+                !ellipsisRef.current.contains(event.target)
+            ) {
+                setShowOptions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
         <div className="flex flex-col w-lg mr-10 outline-0 gap-5">
             {/* Main Card */}
             <div className='flex flex-col outline-1 outline-neutral-300 w-full rounded-2xl px-8 pt-4 pb-8 cursor'>
-                {/* Ellipsis button for edit and delete job */}
-                <button className='ml-auto'><Ellipsis size={30} /></button>
+                {/* Ellipsis & Modal */}
+                {job.user_id === currentUserID && (
+                    <div className="relative ml-auto" ref={ellipsisRef}>
+                        <button className='cursor-pointer' onClick={() => setShowOptions(!showOptions)}>
+                            <Ellipsis size={30} />
+                        </button>
+                        {showOptions && (
+                            <div
+                                ref={modalRef}
+                                className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+                            >
+                                <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
+                                    <Trash2 size={16} />
+                                    Delete Post
+                                </button>
+                                <button className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer">
+                                    <Pencil size={16} />
+                                    Edit Post
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
                 {/* Title and Company */}
-                <h1 className='font-satoshi-bold text-3xl'>{job.title}</h1>
+                <h1 className='font-satoshi-bold text-3xl pt-5'>{job.title}</h1>
                 <div className="flex items-center gap-2 pt-2">
                     <h1 className='font-satoshi-bold text-lg'>{job.company}</h1>
                     {/* TODO: Add onclick */}
-                    <button className='cursor-pointer'><SquareArrowOutUpRight size={20} /></button> 
+                    <button className='cursor-pointer'
+                     onClick={() => {
+                        const url = job.link.startsWith('http') ? job.link : `https://${job.link}`;
+                        window.open(url, '_blank');
+                      }}
+                    >
+                        <SquareArrowOutUpRight size={20} />
+                    </button> 
                 </div>
                 <div className="flex items-center gap-2 pt-1">
                     <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
