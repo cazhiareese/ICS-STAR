@@ -30,7 +30,7 @@ class JobPostingOut(BaseModel):
     employment_type: EmploymentTypeEnum
     mode: JobModeEnum
     link: str
-    image: str
+    image: Optional[str] = None
     
     class Config:
         from_attributes = True
