@@ -43,6 +43,9 @@ function ReportJobPosting (){
       </div>
       <JobSectionHeader title="Report a Job" />
       {jobOverview && <JobOverviewCard overview={jobOverview} />}
+      <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px]   border border-disabled p-4">
+        <p>hjasaj</p>
+        </div>
     </div>
   );
 };
