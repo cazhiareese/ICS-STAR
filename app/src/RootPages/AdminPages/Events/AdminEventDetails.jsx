@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MoveLeft, Pencil, Trash2, Dot } from 'lucide-react'
+import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
@@ -10,24 +10,36 @@ function AdminEventDetails() {
   const navigate = useNavigate()
   const {eventid} = useParams()
   const [eventDetails, setEventDetails] = useState()
-  const [loading, setLoading] = useState()
+  const [rsvpDetails, setRsvpDetails] = useState()
+  const [loading, setLoading] = useState(true)
 
   async function fetchEventDetails () {
-    setLoading(true)
-    try {
       const response = await axios.get(`${API_BASE_URL}/one-event/${eventid}`)
       console.log(response)
       setEventDetails(response.data)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
+  }
+
+  async function fetchRSVPClicks() {
+    const response = await axios.get(`${API_BASE_URL}/api/admin/events/rsvp-clicks-count/${eventid}`)
+    console.log(response.data)
+    setRsvpDetails(response.data)
   }
   
   useEffect(() => {
-    fetchEventDetails()
-  },[])
+    async function fetchInitialInformation() {
+      setLoading(true)
+      try {
+        await fetchEventDetails()
+        await fetchRSVPClicks()
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+  
+    fetchInitialInformation()
+  }, [eventid])
 
   return (
     loading ? (
@@ -72,8 +84,23 @@ function AdminEventDetails() {
           </button>
         </div>
       </div>
-      <div className='border border-gray-400 rounded-3xl h-36'>
-
+      <div className='flex flex-row items-center border border-gray-400 rounded-3xl h-24 px-12 py-6'>
+        <div className='flex flex-1 items-center gap-12'>
+          <h2 className='font-satoshi-bold text-primary text-3xl flex items-center'>{rsvpDetails.rsvp_count} RSVPs</h2>
+          <div className='flex flex-row items-center gap-2'>
+            <MousePointerClick className='text-primary'/>
+            <div className='flex flex-col h-fit justify-center'>
+              <h2 className='font-satoshi-bold text-primary text-2xl -mb-2'>{rsvpDetails.user_clicks}</h2>
+              <h2 className='font-satoshi-light text-black'>User Clicks</h2>
+            </div>
+          </div>
+        </div>
+        <div className='flex-1 flex justify-end'>
+          <button className='flex flex-row items-center gap-2 text-primary font-satoshi-regular cursor-pointer hover:text-hover'>
+            View Demographics
+            <SquareArrowOutUpRight size={20} className='stroke-2'/> 
+          </button>
+        </div>
       </div>
     </div>
     )
