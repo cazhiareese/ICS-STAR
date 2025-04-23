@@ -50,6 +50,7 @@ import OtherUserProfile from "./RootPages/OtherUserprofile";
 const isSignedIn = !!localStorage.getItem("token");
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
+import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
 
 function App() {
   function checkType() {
@@ -107,6 +108,7 @@ function App() {
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
 
             <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
+            <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
             
             
 
