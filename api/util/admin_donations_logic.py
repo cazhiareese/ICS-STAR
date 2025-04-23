@@ -710,13 +710,27 @@ def get_donation_totals_with_percentages(db: Session, drive_id: UUID):
     # Calculate the percentage of in-kind donations
     percentage_inkind = (total_inkind_donations / overall_total_donations) * 100 if overall_total_donations > 0 else 0
 
-    return {
-        "total_monetary_donations": total_monetary_donations,
-        "total_inkind_donations": total_inkind_donations,
-        "percentage_monetary": percentage_monetary,
-        "percentage_inkind": percentage_inkind,
-        "overall_total_donations": overall_total_donations
-    }
+    # Format the percentages as strings with % symbol
+    formatted_percentage_monetary = f"{percentage_monetary:.1f}%"
+    formatted_percentage_inkind = f"{percentage_inkind:.1f}%"
+
+    return [
+        {
+            "name": "monetary",
+            "count": total_monetary_donations,
+            "percentage": formatted_percentage_monetary
+        },
+        {
+            "name": "in-kind",
+            "count": total_inkind_donations,
+            "percentage": formatted_percentage_inkind
+        },
+        {
+            "name": "total",
+            "count": overall_total_donations,
+            "percentage": "100.0%"
+        }
+    ]
 
 def get_weekly_donation_amounts(db: Session, drive_id: UUID):
     # Get the range of donation dates
