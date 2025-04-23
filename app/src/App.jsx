@@ -51,6 +51,7 @@ const isSignedIn = true;
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
+import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
 
 function App() {
   function checkType() {
@@ -109,6 +110,7 @@ function App() {
 
             <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
             <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
+            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
             
             
 
