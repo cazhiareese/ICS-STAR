@@ -53,6 +53,7 @@ import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindu
 import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
 import AdminEventsLayout from "./RootPages/AdminPages/Layouts/AdminEventsLayout";
 import AdminCreateEvent from "./RootPages/AdminPages/Events/AdminCreateEvent";
+import AdminEventDetails from "./RootPages/AdminPages/Events/AdminEventDetails";
 const isSignedIn = !!localStorage.getItem("token");
 
 function App() {
@@ -157,6 +158,7 @@ function App() {
             <Route path="events" element={<AdminEventsLayout />}>
               <Route index element={<AdminEvents/>}/>
               <Route path="create-event" element={<AdminCreateEvent/>}/>
+              <Route path="event-details/:eventid" element={<AdminEventDetails/>}/>
             </Route>
             <Route path="newsletter" element={<AdminNewsletter />} />
             <Route path="career" element={<AdminCareerLayout />}>

@@ -1,6 +1,8 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
 function AdminEventCard({event}) {
+  const navigate = useNavigate()
 
   function formatDate(datetimeStr) {
     if (datetimeStr == null){
@@ -17,7 +19,7 @@ function AdminEventCard({event}) {
   }
 
   return (
-    <button className='h-72 border border-gray-300 rounded-2xl flex flex-col cursor-pointer'>
+    <button className='h-72 border border-gray-300 rounded-2xl flex flex-col cursor-pointer'  onClick={() => {navigate(`/admin/events/event-details/${event.event_id}`)}}>
     {/* Image placeholder */}
     <div className='bg-primary h-24 w-full rounded-t-2xl'>
       <img src="" alt="" className='h-full object-cover'/>
