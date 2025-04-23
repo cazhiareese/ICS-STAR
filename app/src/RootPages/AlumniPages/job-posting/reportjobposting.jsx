@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import BackButton from "../../../components/backbutton";
+import JobSectionHeader from "./jobcomponent/jobsectionheader";
 
 function ReportJobPosting (){
     const [jobOverview, setJobOverview] = useState(null);
@@ -39,6 +40,7 @@ function ReportJobPosting (){
 <div className="sm:pl-12">
       <BackButton label="Back" />
       </div>
+      <JobSectionHeader title="Report a Job" />
     </div>
   );
 };
