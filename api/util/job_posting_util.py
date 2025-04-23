@@ -47,7 +47,6 @@ async def create_job_posting(
     else:
         image_url = None
 
-    job_title = job_title.replace(" ", "_")
     job_posting = JobPosting(
         title=job_title,
         company=company,
