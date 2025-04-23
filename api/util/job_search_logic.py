@@ -70,8 +70,6 @@ def search_job(
         query = query.order_by(JobPosting.created_at.desc())
     elif sort_by == "date_asc":
         query = query.order_by(JobPosting.created_at.asc())
-    elif sort_by == "title_asc":
-        query = query.order_by(JobPosting.title.asc())
     elif sort_by == "creator_asc":
         query = query.order_by(func.concat(User.first_name, ' ', User.last_name).asc())
     elif sort_by == "interested_desc":
