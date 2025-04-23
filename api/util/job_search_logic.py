@@ -11,41 +11,63 @@ from uuid import UUID
 def search_job(
         db: Session,
         title_string: str = "",
-        company: str = ""
+        company: str = "",
+        tag: str = ""
 ) -> list[JobSearchOut]:
     
-    # Base query
+    # Almost same logic as alumni search, we start with a base query
+    post_query = db.query(JobPosting.post_id).filter(JobPosting.is_deleted == False)
+
+    # Apply optional tags
+    if title_string:
+        post_query = post_query.filter(JobPosting.title.ilike(f"%{title_string}%"))
+
+    if company:
+        post_query = post_query.filter(JobPosting.company.ilike(f"%{company}%"))
+
+    if tag:
+        tags_list = [t.strip() for t in tag.split(',') if t.strip()]
+        
+        if tags_list:
+            tag_post_ids = db.query(JobPostingTag.post_id).filter(or_(*[JobPostingTag.tag.ilike(f"%{t}%") for t in tags_list])).distinct()
+            
+            post_query = post_query.filter(JobPosting.post_id.in_(tag_post_ids))
+    
+    matching_post_ids = [post_id for (post_id,) in post_query.all()]
+    
+    if not matching_post_ids:
+        return []
+    
+    # Now we create the bigger query
     query = db.query(
-    JobPosting.post_id,
-    JobPosting.title,
-    JobPosting.company,
-    JobPosting.description,
-    func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
-    func.count(JobPostingInterestedIn.post_id).label("interested_in")
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
+        func.count(JobPostingInterestedIn.post_id).label("interested_in")
     ).join(
         User, User.user_id == JobPosting.user_id
     ).outerjoin(
         JobPostingInterestedIn, JobPostingInterestedIn.post_id == JobPosting.post_id
     ).filter(
-        JobPosting.is_deleted == False
+        JobPosting.post_id.in_(matching_post_ids)
     ).group_by(
         JobPosting.post_id, User.first_name, User.last_name
     )
 
-    # Apply search filter if provided
-    if title_string:
-        query = query.filter(JobPosting.title.ilike(f"%{title_string}%"))
-
-    if company:
-        query = query.filter(JobPosting.company.ilike(f"%{company}%"))
-
     jobs = query.all()
-
-    if not jobs:
-        return []
-
+    
+    all_tags = db.query(JobPostingTag.post_id, JobPostingTag.tag).filter(JobPostingTag.post_id.in_(matching_post_ids)).all()
+    
+    # Organize tags by post_id
+    tags_by_post = {}
+    for post_id, tag in all_tags:
+        if post_id not in tags_by_post:
+            tags_by_post[post_id] = []
+        tags_by_post[post_id].append(tag)
+    
     jobs_out_list = []
-
     for job in jobs:
         job_out = JobSearchOut(
             id=job.post_id,
@@ -53,7 +75,8 @@ def search_job(
             company=job.company,
             description=job.description,
             posted_by=job.posted_by,
-            interested_in=job.interested_in
+            interested_in=job.interested_in,
+            tags=tags_by_post.get(job.post_id, [])
         )
         jobs_out_list.append(job_out)
 
