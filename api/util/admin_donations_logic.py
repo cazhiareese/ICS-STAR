@@ -4,7 +4,7 @@ from sqlalchemy import String, func, or_, union_all
 from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
-from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, AdminOverviewDonationDrive, MonetaryDonationOut, InKindDonationOut, GenericDriveOut, ShortenedMonetaryDonationsOut, ShortenedInKindDonationsOut, AdminGenericDriveView
+from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, AdminOverviewDonationDrive, MonetaryDonationOut, InKindDonationOut, GenericDriveOut, ShortenedMonetaryDonationsOut, ShortenedInKindDonationsOut, AdminGenericDriveView, AdminClosedDonationDriveOut
 import datetime
 from uuid import UUID
 
@@ -21,9 +21,6 @@ from uuid import UUID
 def search_donation_drives(
     db: Session, 
     search_string: str = "", 
-    date_filter: str = None,
-    custom_start_date: datetime.date = None,
-    custom_end_date: datetime.date = None
 ) -> list[AdminDonationDriveOut]:
     
     query = db.query(DonationDrive)
@@ -31,29 +28,6 @@ def search_donation_drives(
     # Apply search filter if provided
     if search_string:
         query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
-    
-    # Apply date filters
-    today = datetime.date.today()
-    
-    if date_filter == "last_7_days":
-        seven_days_ago = today - datetime.timedelta(days=7)
-        query = query.filter(DonationDrive.created_at >= seven_days_ago)
-    
-    elif date_filter == "this_week":
-        # Start of week is Sunday
-        start_of_week = today - datetime.timedelta(days=today.weekday() + 1)
-        query = query.filter(DonationDrive.created_at >= start_of_week)
-    
-    elif date_filter == "this_month":
-        start_of_month = today.replace(day=1)
-        query = query.filter(DonationDrive.created_at >= start_of_month)
-    
-    elif date_filter == "this_year":
-        start_of_year = today.replace(month=1, day=1)
-        query = query.filter(DonationDrive.created_at >= start_of_year)
-    
-    elif date_filter == "custom" and custom_start_date and custom_end_date:
-        query = query.filter(DonationDrive.created_at >= custom_start_date, DonationDrive.created_at <= custom_end_date)
     
     drives = query.all()
     
@@ -489,7 +463,185 @@ def get_all_open_drives_by_date_created_oldest(db: Session) -> list[AdminDonatio
     
     return drive_out_list
 
-def get_all_closed_drives(db: Session) -> list[AdminDonationDriveOut]:
+def get_all_closed_drives(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    return drive_out_list
+
+def get_all_closed_drives_by_date_closed_newest(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.date_closed, reverse=True)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_date_closed_oldest(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+        
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.date_closed)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_amount_raised_descending(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.amount_raised, reverse=True)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_amount_raised_ascending(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.amount_raised)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_donation_count_descending(db: Session) -> list[AdminClosedDonationDriveOut]:
     query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
     
     drives = query.all()
@@ -513,22 +665,286 @@ def get_all_closed_drives(db: Session) -> list[AdminDonationDriveOut]:
         # Calculate percent funded and remaining percentage
         percent_info = get_percent_funded(db, drive.drive_id)
         total_percentage = percent_info.percent_funded
-        remaining_percentage = percent_info.remaining_percent
 
         # Format created_at date to Month DD, YYYY
-        date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
 
-        drive_out = AdminDonationDriveOut(
+        drive_out = AdminClosedDonationDriveOut(
             drive_id = drive.drive_id,
             title = drive.title,
-            created_at = date_created,
-            donation_count = total_count,
+            date_closed = close_date,
+            date_created = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
-            remaining_percent = remaining_percentage,
+            target_cost = drive.target_cost,
+            donation_count = total_count
         )
         drive_out_list.append(drive_out)
 
+    drive_out_list.sort(key=lambda x: x.donation_count, reverse=True)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_donation_count_ascending(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate monetary donation count
+        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+        
+        # Calculate in-kind donation count separately without referencing the 'amount' column
+        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
+        
+        total_count = monetary_count + inkind_count
+        
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+            donation_count = total_count
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.donation_count)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_date_created_newest(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.date_created, reverse=True)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_date_created_oldest(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.date_created)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_percent_funded_descending(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.percent_funded, reverse=True)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_percent_funded_ascending(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.percent_funded)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_target_cost_descending(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.target_cost, reverse=True)
+    
+    return drive_out_list
+
+def get_all_closed_drives_by_target_cost_ascending(db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+    
+    drives = query.all()
+
+    if not drives:
+        return []
+    
+    drive_out_list = []
+    for drive in drives:
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+
+        # Format created_at date to Month DD, YYYY
+        close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
+        open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminClosedDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            date_closed = close_date,
+            date_created = open_date,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            target_cost = drive.target_cost,
+        )
+        drive_out_list.append(drive_out)
+
+    drive_out_list.sort(key=lambda x: x.target_cost)
+    
     return drive_out_list
 
 # Viewing a specific donation drive

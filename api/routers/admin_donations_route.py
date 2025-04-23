@@ -11,7 +11,8 @@ from schemas.donation_schema import (
     InKindDonationOut, 
     ShortenedInKindDonationsOut, 
     ShortenedMonetaryDonationsOut,
-    AdminGenericDriveView
+    AdminGenericDriveView,
+    AdminClosedDonationDriveOut
     )
 from config.database import get_db
 from util.admin_donations_logic import (search_donation_drives, 
@@ -42,7 +43,19 @@ from util.admin_donations_logic import (search_donation_drives,
                                         get_all_open_drives_by_date_created_newest,
                                         get_all_open_drives_by_date_created_oldest,
                                         get_all_open_drives_by_donation_count_ascending,
-                                        get_all_open_drives_by_donation_count_descending
+                                        get_all_open_drives_by_donation_count_descending,
+                                        get_all_closed_drives_by_amount_raised_ascending,
+                                        get_all_closed_drives_by_amount_raised_descending,
+                                        get_all_closed_drives_by_date_closed_newest,
+                                        get_all_closed_drives_by_date_closed_oldest,
+                                        get_all_closed_drives_by_date_created_newest,
+                                        get_all_closed_drives_by_date_created_oldest,
+                                        get_all_closed_drives_by_donation_count_ascending,
+                                        get_all_closed_drives_by_donation_count_descending,
+                                        get_all_closed_drives_by_percent_funded_ascending,
+                                        get_all_closed_drives_by_percent_funded_descending,
+                                        get_all_closed_drives_by_target_cost_ascending,
+                                        get_all_closed_drives_by_target_cost_descending
                                         )
 import datetime
 from uuid import UUID
@@ -52,23 +65,10 @@ router = APIRouter(tags=["Admin Donations View"])
 @router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
 def search_drives(
     title: str = "",
-    filter_type: str = None,
-    custom_start: str = None, 
-    custom_end: str = None,
     db: Session = Depends(get_db)
 ):
-    # String date input format is MM/DD/YYYY
-    # Convert string dates to datetime objects if custom filter is selected
-    custom_start_date = None
-    custom_end_date = None
-    if filter_type == "custom" and custom_start and custom_end:
-        try:
-            custom_start_date = datetime.datetime.strptime(custom_start, "%m/%d/%Y").date()
-            custom_end_date = datetime.datetime.strptime(custom_end, "%m/%d/%Y").date()
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid date format. Please use MM/DD/YYYY.")
     
-    results = search_donation_drives(db, title, date_filter=filter_type, custom_start_date=custom_start_date, custom_end_date=custom_end_date)
+    results = search_donation_drives(db, title)
 
     return results
 
@@ -86,7 +86,7 @@ def update_generic_drive(
 
     return results
 
-@router.get("/admin/donations/closed-drives", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/closed-drives", response_model=List[AdminClosedDonationDriveOut])
 def closed_drives(
     db: Session = Depends(get_db)
 ):
@@ -96,6 +96,150 @@ def closed_drives(
         raise HTTPException(status_code=404, detail="No closed drives found")
 
     return results
+
+@router.get("/admin/donations/closed-drives-by-amount-raised-descending", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_amount_raised(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_amount_raised_descending(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-amount-raised-ascending", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_amount_raised_ascending(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_amount_raised_ascending(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-date-closed-newest", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_date_closed_newest(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_date_closed_newest(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-date-closed-oldest", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_date_closed_oldest(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_date_closed_oldest(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-date-created-newest", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_date_created_newest(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_date_created_newest(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-date-created-oldest", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_date_created_oldest(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_date_created_oldest(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-donation-count-descending", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_donation_count_descending(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_donation_count_descending(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-donation-count-ascending", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_donation_count_ascending(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_donation_count_ascending(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-percent-funded-descending", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_percent_funded_descending(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_percent_funded_descending(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-percent-funded-ascending", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_percent_funded_ascending(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_percent_funded_ascending(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-target-cost-ascending", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_target_cost_ascending(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_target_cost_ascending(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-target-cost-descending", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_target_cost_descending(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_target_cost_descending(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
+@router.get("/admin/donations/closed-drives-by-date-created-oldest", response_model=List[AdminClosedDonationDriveOut])
+def closed_drives_by_date_created_oldest(
+    db: Session = Depends(get_db)
+):
+    results = get_all_closed_drives_by_date_created_oldest(db)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No closed drives found")
+
+    return results
+
 
 @router.get("/admin/donations/open-drives", response_model=List[AdminDonationDriveOut])
 def open_drives(
