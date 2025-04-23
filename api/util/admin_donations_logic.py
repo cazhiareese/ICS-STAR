@@ -601,7 +601,6 @@ def get_donor_counts_by_batch_for_drive(db: Session, drive_id: UUID):
         func.count(distinct(combined_subq.c.user_id)).desc()
     ).all()
 
-
     total_donors = db.query(
         func.count(distinct(combined_subq.c.user_id))
     ).scalar()
@@ -619,9 +618,23 @@ def get_donor_counts_by_batch_for_drive(db: Session, drive_id: UUID):
     # Slice into top 3 and the rest
     top_3 = batches_with_percentage[:3]
     others = batches_with_percentage[3:]
+    
+    # Calculate aggregated values for "others" category
+    others_total_donors = sum(batch["total_donors"] for batch in others)
+    others_percentage = sum(batch["percentage"] for batch in others)
+    
+    # Create combined "others" entry
+    combined_others = {
+        "batch": "others",
+        "total_donors": others_total_donors,
+        "percentage": others_percentage
+    }
+    
+    # Add combined "others" to top_3
+    top_3_with_others = top_3 + [combined_others]
 
     return {
-        "top_3": top_3,
+        "top_3": top_3_with_others,
         "others": others
     }
     
@@ -680,9 +693,22 @@ def get_top_and_other_donor_batches_monetary_amount(db: Session, drive_id: UUID)
     # Slice into top 3 and the rest
     top_3 = batches_with_percentage[:3]
     others = batches_with_percentage[3:]
+    
+    # Calculate sum of "others" for the combined entry
+    others_total_amount = sum(batch["total_amount"] for batch in others)
+    others_percentage = sum(batch["percentage_amount"] for batch in others)
+    
+    # Add the combined "others" entry to top_3
+    combined_others = {
+        "batch": "others",
+        "total_amount": others_total_amount,
+        "percentage_amount": others_percentage
+    }
+    
+    top_3_with_others = top_3 + [combined_others]
 
     return {
-        "top_3": top_3,
+        "top_3": top_3_with_others,
         "others": others
     }
 
