@@ -19,6 +19,7 @@ function CreateJobPostAlum() {
     const [tagss, setTagss] = useState([]);
     const [tagsSuggestions, setTagSuggestions] = useState([]);
     const [currentCompany, setCurrentCompany] = useState(false);
+    const [summary, setSummary] = useState({});
     const handleTagInputChange = (e) => {
         setTagInput(e.target.value);
     };
@@ -81,7 +82,7 @@ function CreateJobPostAlum() {
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
 
     const [submitting, setSubmitting] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(true);
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     // dummy tags
     const tags = [
@@ -229,9 +230,16 @@ function CreateJobPostAlum() {
                 }
             });
             console.log('Job successfully posted:', response.data);
-            alert("Job successfully submitted!");
+            // alert("Job successfully submitted!");
+
             setSubmitting(false);
+            // Store response to summary
+            setSummary(response.data);
+            set
             setIsSubmitted(true);
+
+
+
             // Optionally reset form fields here
         } catch (error) {
             console.error('Error posting job:', error);
@@ -241,20 +249,20 @@ function CreateJobPostAlum() {
     };
     
 
-    useEffect(() => {
-        setJobTitleInput('Frontend Developer');
-        setCompanyInput('OpenAI Inc.');
-        setLinkInput('https://www.openai.com/careers/frontend-dev');
-        setTagss(['React', 'Tailwind', 'TypeScript']);
-        setSalaryInput(20000);
-        setDescription('We’re looking for a skilled Frontend Developer to join our AI team and build awesome tools.');
-    }, []);
+    // useEffect(() => {
+    //     setJobTitleInput('Frontend Developer');
+    //     setCompanyInput('OpenAI Inc.');
+    //     setLinkInput('https://www.openai.com/careers/frontend-dev');
+    //     setTagss(['React', 'Tailwind', 'TypeScript']);
+    //     setSalaryInput(20000);
+    //     setDescription('We’re looking for a skilled Frontend Developer to join our AI team and build awesome tools.');
+    // }, []);
 
 
     return (
         <div className='flex flex-col mx-48 mt-16 mb-30'>
             {/* Modal For successful post */}
-            <JobPostSummary isOpen={isSubmitted} setIsOpen={setIsSubmitted} 
+            <JobPostSummary isOpen={isSubmitted} setIsOpen={setIsSubmitted} job={summary} 
             />
 
             {/* Back button */}

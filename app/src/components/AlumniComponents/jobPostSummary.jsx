@@ -7,6 +7,7 @@ import CircularLoading from '../LoadingComponents/circularloading';
 const JobPostSummary = ({ 
     isOpen, 
     setIsOpen,
+    job,
 }) => {
     if (!isOpen) return null;
     
@@ -15,15 +16,15 @@ const JobPostSummary = ({
         setIsOpen(false);
     };
 
-    const job = {
-        image: "https://ocmxiyulokpueycaxbuv.supabase.co/storage/v1/object/public/128storage/job_posting/a.jpg",
-        title: "Software Development Intern",
-        company: "Shopee",
-        link: "bit.ly/ShopeeInternship",
-        tags: ["tag", "tag", "tag", "tag"],
-        salary: 20000,
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis aute irure dolor in reprehenderit in voluptate."
-    }
+    // const job = {
+    //     image: "https://ocmxiyulokpueycaxbuv.supabase.co/storage/v1/object/public/128storage/job_posting/a.jpg",
+    //     title: "Software Development Intern",
+    //     company: "Shopee",
+    //     link: "bit.ly/ShopeeInternship",
+    //     tags: ["tag", "tag", "tag", "tag"],
+    //     salary: 20000,
+    //     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis aute irure dolor in reprehenderit in voluptate."
+    // }
 
     return (
         <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-100 h-auto">
@@ -62,19 +63,22 @@ const JobPostSummary = ({
                         </div>
 
                         {/* Job tags */}
+                        {job.tags && job.tags.length > 0 && (
                         <div className='flex flex-row gap-5'>
                             <h1 className='font-satoshi-bold text-md text-black'>Tags:</h1>
                             <div className='flex flex-wrap gap-2 ml-auto'>
-                                {job.tags.map((tag, index) => (
-                                    <span
-                                        key={index}
-                                        className="bg-primary text-white text-sm px-3 py-1 rounded-xl w-fit"
-                                    >
-                                        {tag}
-                                    </span>
-                                ))}
+                            {job.tags.map((tag, index) => (
+                                <span
+                                key={index}
+                                className="bg-primary text-white text-sm px-3 py-1 rounded-xl w-fit"
+                                >
+                                {tag}
+                                </span>
+                            ))}
                             </div>
                         </div>
+                        )}
+
 
                         {/* Salary */}
                         <div className='flex flex-row gap-5'>
