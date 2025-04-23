@@ -9,7 +9,7 @@ function BackButton({ label = "Back" }) {
   return (
     <button
       onClick={() => navigate(-1)}
-      className="flex items-center gap-2 text-primary hover:underline font-satoshi-medium mb-4"
+      className="flex items-center gap-2 text-primary hover:underline font-satoshi-medium mb-2"
     >
       <ChevronLeft className="w-5 h-5" />
       <span>{label}</span>

@@ -43,13 +43,13 @@ function ReportJobPosting (){
       </div>
       <JobSectionHeader title="Report a Job" />
       {jobOverview && <JobOverviewCard overview={jobOverview} />}
-      <div className="max-w-[1100px] mx-auto bg-white rounded-[10px] border border-disabled p-6 space-y-6 h-[510px]">
+      <div className="max-w-[1100px] mx-auto bg-white rounded-[10px] border border-disabled p-6 space-y-6 h-[530px]">
 
   {/* Report Details */}
   <div>
     <label className="block font-medium text-gray-700 mb-2">Report Details</label>
     <textarea
-      className="w-full border border-gray-300 rounded-md p-3 min-h-[120px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full border border-gray-300 rounded-md p-3 min-h-[220px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
       placeholder="Please provide information that would help us understand your concern..."
     />
   </div>
@@ -57,7 +57,7 @@ function ReportJobPosting (){
   {/* File Upload */}
   <div>
     <label className="block font-medium text-gray-700 mb-2">Attach file(s) here:</label>
-    <div className="w-full border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center text-center text-gray-500 bg-gray-50 hover:bg-gray-100 transition-colors">
+    <div className="w-full h-[130px] border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center text-center text-gray-500 bg-gray-50 hover:bg-gray-100 transition-colors">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-8 w-8 mb-2 text-blue-500"
