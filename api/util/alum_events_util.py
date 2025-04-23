@@ -103,7 +103,7 @@ def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
 
     dates = event.dates
     
-    add_user_clicks(event.event_id, db)
+    # add_user_clicks(event.event_id, db)
 
     return OneEventOut(
         event_id=event.event_id,
