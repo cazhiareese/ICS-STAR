@@ -40,8 +40,8 @@ function ReportJobPosting() {
         <BackButton label="Back" />
       </div>
       <JobSectionHeader title="Report a Job" />
-      <div className="flex items-center gap-2 w-full max-w-3xl px-4 py-3  text-neutral-c sm:max-w-[1100px]">
-        <Info className="w-5 h-5 flex-shrink-0" />
+      <div className="flex items-start gap-1 w-full max-w-3xl px-4 py-3  text-neutral-c sm:max-w-[1100px]">
+        <Info className="w-4 h-4 flex-shrink-0" />
         <span className="text-[12px] sm:text-[14px] font-satoshi-medium-italic text-center sm:text-left">
         Thank you for helping keep our career page safe and relevant. Your report will be reviewed by our team and appropriate action will be taken.
         </span>  
