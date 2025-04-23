@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
+import RsvpListTable from '../../../components/AdminComponents/RsvpListTable'
 
 function AdminEventDetails() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
@@ -11,6 +12,7 @@ function AdminEventDetails() {
   const {eventid} = useParams()
   const [eventDetails, setEventDetails] = useState()
   const [rsvpDetails, setRsvpDetails] = useState()
+  const [rsvpList, setRsvpList] = useState(null)
   const [loading, setLoading] = useState(true)
   const [viewStyle, setViewStyle] = useState('rsvpList')
 
@@ -26,12 +28,19 @@ function AdminEventDetails() {
     setRsvpDetails(response.data)
   }
   
+  async function fetchRSVPList() {
+    const response = await axios.get(`${API_BASE_URL}api/admin/events/getRSVPs/${eventid}`)
+    console.log(response.data)
+    setRsvpList(response.data.data)
+  }
+
   useEffect(() => {
     async function fetchInitialInformation() {
       setLoading(true)
       try {
         await fetchEventDetails()
         await fetchRSVPClicks()
+        await fetchRSVPList()
       } catch (error) {
         console.error(error)
       } finally {
@@ -107,11 +116,11 @@ function AdminEventDetails() {
        {/* Send email button and list/details toggle */}
       <div className='flex flex-row justify-between mt-3 font-satoshi-regular'>
         {/* Send email invites button */}
-        <button className='bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 gap-2 cursor-pointer'>
+        <button className='bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer'>
           <Mail/>
           Send Email Invites
         </button>
-        <div className='flex flex-row h-fit w-fit self-end'>
+        <div className='flex flex-row h-fit w-fit mr-5 self-end'>
           <button 
             className={`${viewStyle == 'rsvpList' ? 'bg-primary text-white' : ''} border-x border-t border-primary rounded-tl-2xl py-1 px-8 cursor-pointer`} 
             onClick={() => {setViewStyle('rsvpList')}}> 
@@ -123,6 +132,18 @@ function AdminEventDetails() {
             Event Details
           </button>
         </div>
+      </div>
+      {/* RSVP List table / Event Details */}
+      <div className='flex items-center justify-center w-full h-full border border-gray-400 rounded-2xl'>
+        {viewStyle == 'rsvpList' ? (
+          rsvpList == null ? (
+            <p> No RSVP yet :(</p>
+          ) : (
+            <RsvpListTable data={rsvpList}/>
+          )
+        ) : (
+          <></>
+        )}
       </div>
     </div>
     )
