@@ -28,8 +28,14 @@ function AdminDonations() {
   const fetchData = async () => {
     setLoading(true)
     try {
+      
+      try{
       const response = await axios.get(`${API_BASE_URL}/admin/donations/${donationType}-drives`)      
       setDonations(response.data)
+      }catch(error){
+        console.log(error)
+        setDonations([])
+      }
       // sessionStorage.setItem(`donations-${donationType}`, JSON.stringify(response.data));
 
       const genDriveResponse = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`)
