@@ -10,6 +10,7 @@ class JobSearchOut(BaseModel):
     description: Optional[str] = None
     posted_by: str
     interested_in: int
+    tags: List[str] = []
 
     class Config:
         from_attributes = True
