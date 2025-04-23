@@ -1,7 +1,12 @@
 // ReportJobPosting.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 function ReportJobPosting (){
+    const [jobOverview, setJobOverview] = useState(null);
+    const id = "f7a09e35-1e12-4214-9bda-5c87de635416";
+    console.log(id);
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    const token = localStorage.getItem("token");
 
       useEffect(() => {
         const fetchJobOverview = async () => {
