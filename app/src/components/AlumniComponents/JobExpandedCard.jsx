@@ -117,7 +117,7 @@ function JobExpandedCard({job}) {
             <div className='flex flex-col outline-1 outline-neutral-300 w-full rounded-2xl px-8 pt-8 pb-8 cursor'>
                 {/* Description */}
                 <h1 className='font-satoshi-bold text-2xl'>Description</h1>
-                <p className='font-satoshi-regular text-md pt-4 text-justify'>{job.description}</p>
+                <p className='font-satoshi-regular text-md pt-4 text-justify max-h-40 overflow-y-auto'>{job.description}</p>
                 
             </div>
         </div>
