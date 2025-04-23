@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight, Mail } from 'lucide-react'
+import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight, Mail, MapPin, Calendar, Link } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
@@ -134,15 +134,76 @@ function AdminEventDetails() {
         </div>
       </div>
       {/* RSVP List table / Event Details */}
-      <div className='flex items-center justify-center w-full h-full border border-gray-400 rounded-2xl'>
+      <div className='w-full h-full border border-gray-400 rounded-2xl overflow-auto'>
         {viewStyle == 'rsvpList' ? (
           rsvpList == null ? (
-            <p> No RSVP yet :(</p>
+            <div className='flex items-center justify-center w-full h-full'>
+              <p> No RSVP yet :(</p>
+            </div>
           ) : (
             <RsvpListTable data={rsvpList}/>
           )
         ) : (
-          <></>
+          <div className='flex flex-col p-6'>
+              <button 
+                className='bg-red-700 text-white text-lg font-satoshi-regular px-7 py-1 w-fit h-fit shadow-lg rounded-3xl self-end cursor-pointer'
+                onClick={() => {}} // TODO: Add close event
+              > 
+                Close Event
+              </button>
+              {/* Image placeholder */}
+              <div className='bg-primary rounded-3xl h-80 w-full mt-3'></div>
+              {/* Event details */}
+              <div className='mt-4'>
+                {/* location and tags */}
+                <div className='flex flex-row justify-between'>
+                  {/* location */}
+                  <div className='flex flex-row gap-2'>
+                    <MapPin/>
+                    <p className='font-satoshi-regular'>{eventDetails.location}</p>
+                  </div>
+                  {/* Tags */}
+                  <div className='flex flex-row gap-2 flex-wrap'>
+                    {eventDetails.tags?.map((tag, index) => (
+                      <span 
+                        key={index} 
+                        className='bg-primary text-white text-sm px-3 py-1 rounded-lg font-satoshi-light'>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div> 
+                {/* Date and time */}
+                <div>
+                  <Calendar/>
+                  {/* <p>{eventDetails.}</p> TODO: Fix the date times */}
+                </div>
+                {/* Divider */}
+                <div className='border-t border-gray-300 w-full my-4'></div>
+                {/* Description */}
+                <h2 className='font-satoshi-light'>Description</h2>
+                <p className='font-satoshi-regular'>{eventDetails.description}</p>
+                {/* Relevant Links */}
+                <h2 className='font-satoshi-light mt-4'>Relevant Links</h2>
+                {/* Iterate over links */}
+                <div className='flex flex-col gap-2 mt-1'>
+                  {eventDetails.links?.map((link, index) => (
+                    <div className='flex flex-row items-center gap-2 text-primary'>
+                      <Link size={16}/>
+                      <a 
+                        key={index} 
+                        href={link} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className='text-primary break-all font-satoshi-regular'
+                        >
+                        {link}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+          </div>
         )}
       </div>
     </div>
