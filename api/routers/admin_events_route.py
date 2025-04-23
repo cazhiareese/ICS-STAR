@@ -38,7 +38,7 @@ async def create_event(
     links: Optional[List[str]] = Form([]),
     isAll: Optional[bool] = Form(False),
     batch: Optional[List[str]] = Form(None),
-    affliation:Optional[List[str]] = Form(None),
+    affiliation:Optional[List[str]] = Form(None),
     employmentStatus: Optional[str] = Form(None),
     job: Optional[List[str]] = Form([]), #can handle multi jobs  
     sendEmail: Optional[bool] = Form(False),
@@ -76,7 +76,7 @@ async def create_event(
         tags = clean_input(tags)
         links = clean_input(links)
         job = clean_input(job)
-        affliation = clean_input(affliation)
+        affiliation = clean_input(affiliation)
         batch = clean_input(batch)
 
         event = await create_event_util(
@@ -89,7 +89,7 @@ async def create_event(
                         links=links, 
                         isAll=isAll,
                         batch=batch,
-                        affliation=affliation,
+                        affliation=affiliation,
                         sendEmail=sendEmail,
                         employmentStatus=employmentStatus,
                         job=job  )
@@ -110,7 +110,7 @@ async def edit_event(
     links: Optional[List[str]] = Form([]),
     isAll: Optional[bool] = Form(False),
     batch: Optional[List[str]] = Form(None),
-    affliation:Optional[List[str]] = Form(None),
+    affiliation:Optional[List[str]] = Form(None),
     employmentStatus: Optional[str] = Form(None),
     job: Optional[List[str]] = Form([]),
     db: Session = Depends(get_db)
@@ -159,7 +159,7 @@ async def edit_event(
                 links=links, 
                 isAll=isAll,
                 batch=batch,
-                affliation=affliation,
+                affliation=affiliation,
                 employmentStatus=employmentStatus,
                 job=job
         )
