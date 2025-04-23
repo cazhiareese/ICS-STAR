@@ -61,7 +61,6 @@ function Donationform() {
         
     }, [summary]);
 
-    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     
         useEffect(() => {
             const token = localStorage.getItem("token");

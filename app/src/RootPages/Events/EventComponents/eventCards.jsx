@@ -1,15 +1,16 @@
 import {useState} from 'react';
 import { MapPinned, Calendar, Star } from 'lucide-react';
-
+import { useNavigate } from "react-router-dom";
 const EventCards = ({event}) => {
 
     const [status, setStatus] = useState()
+    const navigate = useNavigate();
     const parseTime = (isoTimestamp) => {
         // Parse the timestamp into a Date object (in UTC)
         const date = new Date(isoTimestamp);
 
         // Subtract 15 days
-        date.setUTCDate(date.getUTCDate() - 15);
+        // date.setUTCDate(date.getUTCDate() - 15);
 
         // Set the time to 3:00 PM (15:00 in 24-hour time)
         date.setUTCHours(15, 0, 0, 0);
@@ -26,9 +27,16 @@ const EventCards = ({event}) => {
 
         return formatted
     }
-    
-    const handleRSVPClick = () =>{
 
+    
+    const openEventDetails = (eventId) => {
+        // if (reservations && reservations.some(reservation => reservation.id === eventId)) {
+        //     alert("You have already RSVP'd for this event.");
+        // } else {
+        //     alert("You have not RSVP'd for this event yet.");
+        // }
+        console.log("RSVP clicked for event ID:", eventId);
+        navigate(`/alumni/events/${eventId}`);
     }
     const truncateDescription = (description, maxLines = 2) => {
         const lines = description.split('\n');
@@ -37,17 +45,14 @@ const EventCards = ({event}) => {
 
     const truncatedDescription = truncateDescription(event.description, 2);
     return (
-        <div className="w-110 h-100 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1">
+        <div className="w-90 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1"
+        onClick={() => {openEventDetails(event.event_id)}} 
+        >
             <div className="h-40 bg-gray-300"></div>
-            <button className="flex flex-row space-x-3 absolute right-3 top-35 bg-primary text-white px-4 py-2 rounded-full shadow-md hover:cursor-pointer"
-                onClick={handleRSVPClick}
-            >
-                    <Star/>
-                    <label>RSVP</label>
-            </button>
+            
             <div className="p-4">
-                <h1 className="text-xl font-bold text-blue-900">{event.title}</h1>
-                <p className="text-gray-600 pt-2">{truncatedDescription}</p>
+                <h1 className="text-xl font-bold text-blue-900 pt-10">{event.title}</h1>
+                <p className="text-gray-600 pt-2 h-15 flex items-center">{truncatedDescription}</p>
                 
                 
                 <div className="flex items-center mt-4 text-gray-600 space-x-3">

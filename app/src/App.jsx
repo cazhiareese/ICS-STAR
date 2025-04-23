@@ -51,7 +51,9 @@ import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPost
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
 import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
 import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
+
 import EventsLanding from "./RootPages/Events/eventslanding";
+import EventCardsMain from "./RootPages/Events/eventCardsMain";
 
 const isSignedIn = !!localStorage.getItem("token");
 
@@ -97,8 +99,7 @@ function App() {
           />
         </>
       )}
-
-
+      
       {isSignedIn && checkType() === "alumni" && (
         <>
           <Route path="/" element={<Root />}>
@@ -108,6 +109,8 @@ function App() {
             <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/events" element={<EventsLanding />} />
+            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
+            
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="alumni/createJobPosting" element={<CreateJobPostAlum />} />
@@ -125,7 +128,7 @@ function App() {
             />
           </Route>
         </>
-      )}
+      )} 
 
       {isSignedIn && checkType() === "student" && (
         <>

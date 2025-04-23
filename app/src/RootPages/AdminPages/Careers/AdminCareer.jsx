@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import AdminCareerCard from '../../../components/AdminComponents/admincareercard'
+import AdminCareerCard from '../../../components/AdminComponents/AdminCareerCard'
 import { ChevronLeft, ChevronRight, Filter, List, LayoutGrid, MoveRight, MoveLeft } from 'lucide-react'
-import JobTable from '../../../components/AdminComponents/JobTable';
-import AdminModal from '../../../components/AdminComponents/adminmodal';
+import JobTable from '../../../components/AdminComponents/jobtable';
+import AdminModal from '../../../components/AdminComponents/AdminModal';
 import axios from 'axios'
 import CircularLoading from "../../../components/LoadingComponents/circularloading"
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading"
