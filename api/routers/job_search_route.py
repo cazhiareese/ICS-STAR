@@ -11,10 +11,11 @@ router = APIRouter(tags=["Job Search"])
 def job_search(
     title: Optional[str] = None,
     company: Optional[str] = None,
+    tag: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     
-    results = search_job(db, title_string=title, company=company)
+    results = search_job(db, title_string=title, company=company, tag=tag)
 
     if not results:
         raise HTTPException(status_code=404, detail="No job postings found matching the search criteria.")
