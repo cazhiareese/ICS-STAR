@@ -6,6 +6,7 @@ import { BriefcaseBusiness, Plus, PlusCircle } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
 import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
 
 function JobPostingLanding() {
     const [searchInput, setSearchInput] = useState("");
@@ -13,7 +14,7 @@ function JobPostingLanding() {
     const [selectedJob, setSelectedJob] = useState({});
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
-
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         const token = localStorage.getItem('token'); 
         if (token) {
@@ -58,6 +59,8 @@ function JobPostingLanding() {
     }, []);
 
 
+
+
     useEffect(() => {
         // Job Dummy Data
         const job = {
@@ -77,6 +80,29 @@ function JobPostingLanding() {
 
         setSelectedJob(job);
         
+    }, []);
+
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    // Get all jobs
+    useEffect(() => {
+        const fetchJobs = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/job-postings`);
+            if (!response.ok) {
+            throw new Error('Failed to fetch jobs');
+            }
+            const data = await response.json();
+            setJobList(data);
+        } catch (err) {
+            setError(err.message || 'Something went wrong');
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        fetchJobs();
     }, []);
 
     // Navigation to create job post
@@ -110,13 +136,18 @@ function JobPostingLanding() {
 
             <div className='flex flex-row mt-16 mx-30 gap-5'>
                 {/* Scrollable wrapper */}
+                {!loading ? (
                 <div className='h-[1000px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left'>
                     <div className='flex flex-col gap-5 mx-10'>
-                        {jobList.map((job, index) => (
-                            <JobCard key={index} job={job} />
-                        ))}
+                    {jobList.map((job, index) => (
+                        <JobCard key={index} job={job} />
+                    ))}
                     </div>
                 </div>
+                ) : (
+                    <CircularLoading/>
+                )}
+
 
                 {/* Job Preview */}
                 

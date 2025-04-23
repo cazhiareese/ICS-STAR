@@ -7,7 +7,7 @@ function JobCard({job}) {
             {/* Title and Company */}
             <h1 className='font-satoshi-bold text-3xl'>{job.title}</h1>
             <h1 className='font-satoshi-bold text-lg pt-2'>{job.company}</h1>
-            <p className='font-satoshi-regular text-md pt-4 text-justify'>{job.description}</p>
+            <p className='font-satoshi-regular text-md mt-4 text-justify max-h-40 overflow-y-auto'>{job.description}</p>
             
             {/* user name and interested count */}
             <div className="flex justify-between items-center">
