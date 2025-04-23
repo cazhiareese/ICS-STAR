@@ -1,11 +1,18 @@
 // EditJobPosting.jsx
 import React from "react";
+import BackButton from "../../../components/backbutton";
+import JobSectionHeader from "./jobcomponent/jobsectionheader";
+
 
 function EditJobPosting() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold">Edit Job Posting</h1>
-    </div>
+    <div className="w-full max-w-[1100px] mx-auto p-4">
+      <div className="sm:pl-12">
+      <BackButton label="Back" />
+      </div>
+
+      <JobSectionHeader title="Edit Job Posting" />
+      </div>
   );
 }
 
