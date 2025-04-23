@@ -15,37 +15,30 @@ def search_job(
         tag: str = ""
 ) -> list[JobSearchOut]:
     
-    # First, find all post_ids that match our criteria
+    # Almost same logic as alumni search, we start with a base query
     post_query = db.query(JobPosting.post_id).filter(JobPosting.is_deleted == False)
 
-    # Apply title and company filters
+    # Apply optional tags
     if title_string:
         post_query = post_query.filter(JobPosting.title.ilike(f"%{title_string}%"))
 
     if company:
         post_query = post_query.filter(JobPosting.company.ilike(f"%{company}%"))
 
-    # Handle tag filtering separately and early
     if tag:
         tags_list = [t.strip() for t in tag.split(',') if t.strip()]
         
         if tags_list:
-            # Find all posts having any of these tags
-            tag_post_ids = db.query(JobPostingTag.post_id).filter(
-                or_(*[JobPostingTag.tag.ilike(f"%{t}%") for t in tags_list])
-            ).distinct()
+            tag_post_ids = db.query(JobPostingTag.post_id).filter(or_(*[JobPostingTag.tag.ilike(f"%{t}%") for t in tags_list])).distinct()
             
-            # Filter to only these post_ids
             post_query = post_query.filter(JobPosting.post_id.in_(tag_post_ids))
     
-    # Get the filtered post_ids
     matching_post_ids = [post_id for (post_id,) in post_query.all()]
     
-    # If no matches, return empty result early
     if not matching_post_ids:
         return []
     
-    # Now do the main query for just these post_ids
+    # Now we create the bigger query
     query = db.query(
         JobPosting.post_id,
         JobPosting.title,
@@ -65,10 +58,7 @@ def search_job(
 
     jobs = query.all()
     
-    # Get all tags for these jobs in one query
-    all_tags = db.query(JobPostingTag.post_id, JobPostingTag.tag).filter(
-        JobPostingTag.post_id.in_(matching_post_ids)
-    ).all()
+    all_tags = db.query(JobPostingTag.post_id, JobPostingTag.tag).filter(JobPostingTag.post_id.in_(matching_post_ids)).all()
     
     # Organize tags by post_id
     tags_by_post = {}
