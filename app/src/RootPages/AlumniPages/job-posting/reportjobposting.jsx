@@ -1,22 +1,34 @@
 // ReportJobPosting.jsx
 import React from "react";
 
-const ReportJobPosting = () => {
+function ReportJobPosting (){
+
+      useEffect(() => {
+        const fetchJobOverview = async () => {
+          try {
+            const response = await fetch(`${API_BASE_URL}/job/overview/${id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+        
+            if (!response.ok) throw new Error("Failed to fetch job overview");
+        
+            const data = await response.json();
+            console.log("Job Overview Data:", data); // Debugging line
+            setJobOverview(data);
+          } catch (err) {
+            console.error("Job Overview Fetch Error:", err);
+          }
+        };
+        
+        fetchJobOverview();
+        
+    
+
+      }, [id, token]);
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-2xl">
-      <h2 className="text-xl font-bold mb-4">Report Job Posting</h2>
-      <p className="text-sm text-gray-600 mb-2">
-        If you believe this job posting violates our guidelines, please report it.
-      </p>
-      <textarea
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-        placeholder="Explain the issue..."
-        rows={4}
-        disabled
-      />
-      <button className="bg-red-500 text-white px-4 py-2 rounded-lg cursor-not-allowed" disabled>
-        Submit Report (Demo)
-      </button>
+<div className="w-full max-w-[1100px] mx-auto p-4">
     </div>
   );
 };

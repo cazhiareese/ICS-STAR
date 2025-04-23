@@ -47,19 +47,19 @@ import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
-const isSignedIn = !!localStorage.getItem("token");
+const isSignedIn = true;
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
 
 function App() {
   function checkType() {
-    const User = localStorage.getItem("token");
+    const User = true;
     let tokenType = null;
     if (User) {
-      const decoded = jwtDecode(User);
-      console.log("Decoded token:", decoded);
-      tokenType = decoded.role;
+      //const decoded = jwtDecode(User);
+      //console.log("Decoded token:", decoded);
+      tokenType = "alumni";
       console.log("Decoded token type:", tokenType);
       return tokenType;
     } else {

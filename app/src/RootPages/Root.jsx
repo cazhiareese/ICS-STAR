@@ -5,9 +5,9 @@ import { jwtDecode } from "jwt-decode";
 
 function Root() {
 
-  const User = localStorage.getItem("token");
-  const decoded = jwtDecode(User);
-  const tokentype = decoded.role;
+  //const User = localStorage.getItem("token");
+  //const decoded = jwtDecode(User);
+  const tokentype = "alumni";
   console.log("Decoded token typee:", tokentype);
 
   return (
@@ -17,7 +17,7 @@ function Root() {
   <Navbar tokentype={tokentype} />
 )}
 
-      <Outlet context={decoded} />
+      <Outlet context={tokentype} />
     </div>
   );
 }
