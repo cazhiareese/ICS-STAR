@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight } from 'lucide-react'
+import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight, Mail } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
@@ -12,6 +12,7 @@ function AdminEventDetails() {
   const [eventDetails, setEventDetails] = useState()
   const [rsvpDetails, setRsvpDetails] = useState()
   const [loading, setLoading] = useState(true)
+  const [viewStyle, setViewStyle] = useState('rsvpList')
 
   async function fetchEventDetails () {
       const response = await axios.get(`${API_BASE_URL}/one-event/${eventid}`)
@@ -84,6 +85,7 @@ function AdminEventDetails() {
           </button>
         </div>
       </div>
+      {/* RSVP Details */}
       <div className='flex flex-row items-center border border-gray-400 rounded-3xl h-24 px-12 py-6'>
         <div className='flex flex-1 items-center gap-12'>
           <h2 className='font-satoshi-bold text-primary text-3xl flex items-center'>{rsvpDetails.rsvp_count} RSVPs</h2>
@@ -99,6 +101,26 @@ function AdminEventDetails() {
           <button className='flex flex-row items-center gap-2 text-primary font-satoshi-regular cursor-pointer hover:text-hover'>
             View Demographics
             <SquareArrowOutUpRight size={20} className='stroke-2'/> 
+          </button>
+        </div>
+      </div>
+       {/* Send email button and list/details toggle */}
+      <div className='flex flex-row justify-between mt-3 font-satoshi-regular'>
+        {/* Send email invites button */}
+        <button className='bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 gap-2 cursor-pointer'>
+          <Mail/>
+          Send Email Invites
+        </button>
+        <div className='flex flex-row h-fit w-fit self-end'>
+          <button 
+            className={`${viewStyle == 'rsvpList' ? 'bg-primary text-white' : ''} border-x border-t border-primary rounded-tl-2xl py-1 px-8 cursor-pointer`} 
+            onClick={() => {setViewStyle('rsvpList')}}> 
+            RSVP List
+          </button>
+          <button 
+            className={`${viewStyle == 'eventDetails' ? 'bg-primary text-white' : ''} border-x border-t border-primary rounded-tr-2xl py-1 px-6 cursor-pointer`} 
+            onClick={() => {setViewStyle('eventDetails')}}> 
+            Event Details
           </button>
         </div>
       </div>
