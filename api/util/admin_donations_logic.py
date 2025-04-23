@@ -5,7 +5,7 @@ from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, AdminOverviewDonationDrive, MonetaryDonationOut, InKindDonationOut, GenericDriveOut, ShortenedMonetaryDonationsOut, ShortenedInKindDonationsOut, AdminGenericDriveView, AdminClosedDonationDriveOut
-import datetime
+from datetime import datetime, timedelta
 from uuid import UUID
 
 # Function to search for donation drives based on various filters
@@ -1114,9 +1114,6 @@ def get_percent_funded(db: Session, drive_id: UUID) -> PercentOut:
 #
 # Returns: GenericDriveOut object containing the total monetary amount, total in-kind donations, and the number of unverified donations
 def update_generic_drive_stats(db: Session, drive_id: UUID):
-    # Get the generic drive by hardcoded ID
-    generic_drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
-
     # Get the total amount of monetary donations for the generic drive
     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
 
@@ -1131,6 +1128,191 @@ def update_generic_drive_stats(db: Session, drive_id: UUID):
         total_in_kind=total_in_kind,
         number_of_unverified=number_of_unverified
     )
+
+def update_generic_drive_stats_this_year(db: Session, drive_id: UUID):
+    # Get the current year's start date
+    current_year = datetime.now().year
+    year_start = datetime(current_year, 1, 1)
+    
+    # Get the total amount of monetary donations for the generic drive in this year
+    total_amount = db.query(func.sum(MonetaryDonation.amount))\
+        .filter(
+            MonetaryDonation.drive_id == drive_id,
+            MonetaryDonation.is_acknowledged == True,
+            MonetaryDonation.created_at >= year_start
+        ).scalar() or 0
+
+    # Get the total in-kind donations for the generic drive in this year
+    total_in_kind = db.query(func.count(InKindDonation.donation_id))\
+        .filter(
+            InKindDonation.drive_id == drive_id,
+            InKindDonation.created_at >= year_start
+        ).scalar() or 0
+
+    # Get the number of unverified donations for the generic drive in this year
+    number_of_unverified = db.query(func.count(MonetaryDonation.donation_id))\
+        .filter(
+            MonetaryDonation.drive_id == drive_id,
+            MonetaryDonation.is_acknowledged == False,
+            MonetaryDonation.created_at >= year_start
+        ).scalar() or 0
+
+    return GenericDriveOut(
+        total_amount=total_amount,
+        total_in_kind=total_in_kind,
+        number_of_unverified=number_of_unverified
+    )
+
+
+def update_generic_drive_stats_this_month(db: Session, drive_id: UUID):
+    # Get the current month's start date
+    now = datetime.now()
+    month_start = datetime(now.year, now.month, 1)
+    
+    # Get the total amount of monetary donations for the generic drive in this month
+    total_amount = db.query(func.sum(MonetaryDonation.amount))\
+        .filter(
+            MonetaryDonation.drive_id == drive_id,
+            MonetaryDonation.is_acknowledged == True,
+            MonetaryDonation.created_at >= month_start
+        ).scalar() or 0
+
+    # Get the total in-kind donations for the generic drive in this month
+    total_in_kind = db.query(func.count(InKindDonation.donation_id))\
+        .filter(
+            InKindDonation.drive_id == drive_id,
+            InKindDonation.created_at >= month_start
+        ).scalar() or 0
+
+    # Get the number of unverified donations for the generic drive in this month
+    number_of_unverified = db.query(func.count(MonetaryDonation.donation_id))\
+        .filter(
+            MonetaryDonation.drive_id == drive_id,
+            MonetaryDonation.is_acknowledged == False,
+            MonetaryDonation.created_at >= month_start
+        ).scalar() or 0
+
+    return GenericDriveOut(
+        total_amount=total_amount,
+        total_in_kind=total_in_kind,
+        number_of_unverified=number_of_unverified
+    )
+
+
+def update_generic_drive_stats_this_week(db: Session, drive_id: UUID):
+    # Get the current week's start date (Monday)
+    now = datetime.now()
+    week_start = now - timedelta(days=now.weekday())
+    week_start = datetime(week_start.year, week_start.month, week_start.day)
+    
+    # Get the total amount of monetary donations for the generic drive in this week
+    total_amount = db.query(func.sum(MonetaryDonation.amount))\
+        .filter(
+            MonetaryDonation.drive_id == drive_id,
+            MonetaryDonation.is_acknowledged == True,
+            MonetaryDonation.created_at >= week_start
+        ).scalar() or 0
+
+    # Get the total in-kind donations for the generic drive in this week
+    total_in_kind = db.query(func.count(InKindDonation.donation_id))\
+        .filter(
+            InKindDonation.drive_id == drive_id,
+            InKindDonation.created_at >= week_start
+        ).scalar() or 0
+
+    # Get the number of unverified donations for the generic drive in this week
+    number_of_unverified = db.query(func.count(MonetaryDonation.donation_id))\
+        .filter(
+            MonetaryDonation.drive_id == drive_id,
+            MonetaryDonation.is_acknowledged == False,
+            MonetaryDonation.created_at >= week_start
+        ).scalar() or 0
+
+    return GenericDriveOut(
+        total_amount=total_amount,
+        total_in_kind=total_in_kind,
+        number_of_unverified=number_of_unverified
+    )
+
+
+def update_generic_drive_stats_last_seven_days(db: Session, drive_id: UUID):
+    # Get the date from 7 days ago
+    now = datetime.now()
+    seven_days_ago = now - timedelta(days=7)
+    
+    # Get the total amount of monetary donations for the generic drive in the last 7 days
+    total_amount = db.query(func.sum(MonetaryDonation.amount))\
+        .filter(
+            MonetaryDonation.drive_id == drive_id,
+            MonetaryDonation.is_acknowledged == True,
+            MonetaryDonation.created_at >= seven_days_ago
+        ).scalar() or 0
+
+    # Get the total in-kind donations for the generic drive in the last 7 days
+    total_in_kind = db.query(func.count(InKindDonation.donation_id))\
+        .filter(
+            InKindDonation.drive_id == drive_id,
+            InKindDonation.created_at >= seven_days_ago
+        ).scalar() or 0
+
+    # Get the number of unverified donations for the generic drive in the last 7 days
+    number_of_unverified = db.query(func.count(MonetaryDonation.donation_id))\
+        .filter(
+            MonetaryDonation.drive_id == drive_id,
+            MonetaryDonation.is_acknowledged == False,
+            MonetaryDonation.created_at >= seven_days_ago
+        ).scalar() or 0
+
+    return GenericDriveOut(
+        total_amount=total_amount,
+        total_in_kind=total_in_kind,
+        number_of_unverified=number_of_unverified
+    )
+
+def update_generic_drive_stats_custom_range(db: Session, drive_id: UUID, start_date_str: str, end_date_str: str):
+    try:
+        # Parse the date strings into datetime objects
+        start_date = datetime.strptime(start_date_str, "%m/%d/%Y")
+        
+        # Parse end date and set it to the end of that day (23:59:59)
+        end_date = datetime.strptime(end_date_str, "%m/%d/%Y")
+        end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+        
+        # Get the total amount of monetary donations for the date range
+        total_amount = db.query(func.sum(MonetaryDonation.amount))\
+            .filter(
+                MonetaryDonation.drive_id == drive_id,
+                MonetaryDonation.is_acknowledged == True,
+                MonetaryDonation.created_at >= start_date,
+                MonetaryDonation.created_at <= end_date
+            ).scalar() or 0
+
+        # Get the total in-kind donations for the date range
+        total_in_kind = db.query(func.count(InKindDonation.donation_id))\
+            .filter(
+                InKindDonation.drive_id == drive_id,
+                InKindDonation.created_at >= start_date,
+                InKindDonation.created_at <= end_date
+            ).scalar() or 0
+
+        # Get the number of unverified donations for the date range
+        number_of_unverified = db.query(func.count(MonetaryDonation.donation_id))\
+            .filter(
+                MonetaryDonation.drive_id == drive_id,
+                MonetaryDonation.is_acknowledged == False,
+                MonetaryDonation.created_at >= start_date,
+                MonetaryDonation.created_at <= end_date
+            ).scalar() or 0
+
+        return GenericDriveOut(
+            total_amount=total_amount,
+            total_in_kind=total_in_kind,
+            number_of_unverified=number_of_unverified
+        )
+        
+    except ValueError as e:
+        # Handle date parsing errors
+        raise ValueError(f"Invalid date format. Dates must be in MM/DD/YYYY format. Error: {str(e)}")
 
 def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[ShortenedMonetaryDonationsOut]:
     pending_monetary_donations = db.query(
