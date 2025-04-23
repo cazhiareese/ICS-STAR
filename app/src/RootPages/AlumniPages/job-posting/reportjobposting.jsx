@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import BackButton from "../../../components/backbutton";
 import JobSectionHeader from "./jobcomponent/jobsectionheader";
 import JobOverviewCard from "./jobcomponent/joboverview";
+import { Info } from "lucide-react";
 
 function ReportJobPosting() {
   const [jobOverview, setJobOverview] = useState(null);
@@ -39,8 +40,14 @@ function ReportJobPosting() {
         <BackButton label="Back" />
       </div>
       <JobSectionHeader title="Report a Job" />
+      <div className="flex items-center gap-2 w-full max-w-3xl px-4 py-3  text-neutral-c sm:max-w-[1100px]">
+        <Info className="w-5 h-5 flex-shrink-0" />
+        <span className="text-[12px] sm:text-[14px] font-satoshi-medium-italic text-center sm:text-left">
+        Thank you for helping keep our career page safe and relevant. Your report will be reviewed by our team and appropriate action will be taken.
+        </span>  
+      </div>
       {jobOverview && <JobOverviewCard overview={jobOverview} />}
-      <div className="max-w-[1100px] mx-auto bg-white rounded-[10px] border border-disabled p-6 space-y-6 h-[530px]">
+      <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] border border-disabled p-6 space-y-6 h-[530px]">
         {/* Report Details */}
         <div>
           <label className="block font-medium text-gray-700 mb-2">
