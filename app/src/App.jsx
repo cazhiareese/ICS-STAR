@@ -18,9 +18,9 @@ import { OnboardingProvider } from "./AuthPages/AuthContext/onboardingcontext";
 import AdminRoot from "./RootPages/AdminPages/Layouts/adminroot";
 import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
 import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
-import AdminEvents from "./RootPages/AdminPages/adminevents";
+import AdminEvents from "./RootPages/AdminPages/Events/AdminEvents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
-import AdminCareer from "./RootPages/AdminPages/admincareer";
+import AdminCareer from "./RootPages/AdminPages/Careers/AdminCareer";
 import AdminDonations from "./RootPages/AdminPages/Donations/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
 
@@ -41,16 +41,37 @@ import AdminDonationInformation from "./RootPages/AdminPages/Donations/admindona
 import AdminCreateDonationDrive from "./RootPages/AdminPages/Donations/admincreatedonationdrive";
 import AdminHelpIcs from "./RootPages/AdminPages/Donations/adminhelpics";
 import AdminPendingDonations from "./RootPages/AdminPages/Donations/adminpendingdonations";
-
+import AdminCareerLayout from "./RootPages/AdminPages/Layouts/admincareerlayout";
 
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
+
+import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
+import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
+import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
 import EditJobPostAlum from "./RootPages/AlumniPages/job-posting/editJobPostings";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
+import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
+import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
+import AdminEventsLayout from "./RootPages/AdminPages/Layouts/AdminEventsLayout";
+import AdminCreateEvent from "./RootPages/AdminPages/Events/AdminCreateEvent";
+import AdminEventDetails from "./RootPages/AdminPages/Events/AdminEventDetails";
 const isSignedIn = !!localStorage.getItem("token");
+console.log("isSignedIn:", isSignedIn);
+
+
+
+import EventsLanding from "./RootPages/Events/eventslanding";
+import EventCardsMain from "./RootPages/Events/eventCardsMain";
+
+
+//const isSignedIn = !!localStorage.getItem("token");
+
+
+
 
 function App() {
   function checkType() {
@@ -59,7 +80,8 @@ function App() {
     if (User) {
       const decoded = jwtDecode(User);
       console.log("Decoded token:", decoded);
-      tokenType = decoded.role;
+      //tokenType = "alumni";
+      const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
     } else {
@@ -94,8 +116,7 @@ function App() {
           />
         </>
       )}
-
-
+      
       {isSignedIn && checkType() === "alumni" && (
         <>
           <Route path="/" element={<Root />}>
@@ -104,12 +125,20 @@ function App() {
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="alumni/events" element={<EventsLanding />} />
+            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
+            
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
+            <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
+            <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
+            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
             <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
             <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
+
             
             <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+
             <Route path="*" element={<Unauthorized />} />
 
             <Route
@@ -122,13 +151,16 @@ function App() {
             />
           </Route>
         </>
-      )}
+      )} 
 
       {isSignedIn && checkType() === "student" && (
         <>
           <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/events" element={<EventsLanding />} />
+            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
+            <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="*" element={<UserProfile />} />
           </Route>
         </>
@@ -143,6 +175,8 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
+              <Route path="industry-reports" element={<AdminIndustryInformation/>}/>
+              <Route path="country-reports" element={<AdminCountryInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
@@ -150,9 +184,15 @@ function App() {
               <Route path="pending-verifications" element={<AdminPendingVerifications />}/>
               <Route path="verification-confirmation/:userid"element={<AdminVerificationConfirmation />}/>
             </Route>
-            <Route path="events" element={<AdminEvents />} />
+            <Route path="events" element={<AdminEventsLayout />}>
+              <Route index element={<AdminEvents/>}/>
+              <Route path="create-event" element={<AdminCreateEvent/>}/>
+              <Route path="event-details/:eventid" element={<AdminEventDetails/>}/>
+            </Route>
             <Route path="newsletter" element={<AdminNewsletter />} />
-            <Route path="career" element={<AdminCareer />} />
+            <Route path="career" element={<AdminCareerLayout />}>
+              <Route index element ={<AdminCareer/>}/>
+            </Route>
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
               <Route path=":driveid" element={<AdminDonationInformation/>}/>

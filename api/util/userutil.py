@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone
 import jwt
+from jose import JWTError
 import uuid
-import supabase
-from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends, HTTPException, status, UploadFile, File
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
@@ -11,7 +11,7 @@ from typing import List, Optional
 
 from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum, UnemploymentReasonEnum, UserEmploymentStatus
+from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum, UnemploymentReasonEnum, UserEmploymentStatus, UnemploymentReason
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -144,6 +144,10 @@ def process_alumni_onboarding(
         if skills:
             new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
             db.add_all(new_skills)
+        
+        if employment_status.value == "unemployed":
+            new_reasons = [UnemploymentReason(user_id=user.user_id, reason=reason) for reason in reasons]
+            db.add_all(new_reasons)
 
         
         user.industry = industry
@@ -284,7 +288,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         role: str = payload.get("role")
         if user_id is None or role is None:
             raise credentials_exception
-    except InvalidTokenError:
+    except JWTError:
         raise credentials_exception
 
     user = db.query(User).filter(User.user_id == user_id).first()

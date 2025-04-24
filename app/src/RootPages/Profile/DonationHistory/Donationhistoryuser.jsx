@@ -2,15 +2,20 @@ import React, { useEffect, useState } from "react";
 import SectionHeader from "../components/sectionheader";
 import axios from "axios";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import DonationDetailsModal from "../components/donationmodal";
+import DonationDetailsModal from "./component/donationmodal";
+import DonationTableHeader from "./component/donationheader";
 
 function DonationHistoryUser({ userDetails }) {
-  const [donationHistory, setDonationHistory] = useState([]);
-  const [sortedData, setSortedData] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [monetaryDonations, setMonetaryDonations] = useState([]);
+  const [inKindDonations, setInKindDonations] = useState([]);
+  const [sortedDataMonetary, setSortedDataMonetary] = useState([]);
+  const [sortedDataInKind, setSortedDataInKind] = useState([]);
+  const [sortConfigMonetary, setSortConfigMonetary] = useState({ key: null, direction: "asc" });
+  const [sortConfigInKind, setSortConfigInKind] = useState({ key: null, direction: "asc" });
+  const [selectedType, setSelectedType] = useState("Monetary");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -36,19 +41,37 @@ function DonationHistoryUser({ userDetails }) {
       }
 
       try {
-        const response = await axios.get(`${API_BASE_URL}/donation-history`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const [monetaryRes, inKindRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${API_BASE_URL}/donation-history/in-kind-donations`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-        const sortedByLatest = response.data.data.sort(
-          (a, b) => new Date(b.date_donated) - new Date(a.date_donated)
-        );
+        const monetary = monetaryRes.data.data.map((d) => ({
+          ...d,
+          type: "Monetary",
+        }));
+        console.log(monetary);  
 
-        setDonationHistory(sortedByLatest);
-        setSortedData(sortedByLatest);
-        setSortConfig({ key: "date_donated", direction: "desc" });
+        const inKind = inKindRes.data.data.map((d) => ({
+          ...d,
+          type: "In-Kind",
+          amount: 0,
+        }));
+        console.log(inKind );  
+
+        const sortedMonetary = [...monetary].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
+        const sortedInKind = [...inKind].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
+
+        setMonetaryDonations(monetary);
+        setInKindDonations(inKind);
+        setSortedDataMonetary(sortedMonetary);
+        setSortedDataInKind(sortedInKind);
+        setSortConfigMonetary({ key: "date_donated", direction: "desc" });
+        setSortConfigInKind({ key: "date_donated", direction: "desc" });
       } catch (err) {
         console.error("Error fetching donation history:", err);
         setError(err.response?.data?.message || "Something went wrong.");
@@ -60,14 +83,20 @@ function DonationHistoryUser({ userDetails }) {
     fetchDonationHistory();
   }, [token]);
 
-  const handleSort = (key) => {
+  const handleSort = (key, type) => {
+    const currentSortConfig = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
+    const setSortConfig = type === "Monetary" ? setSortConfigMonetary : setSortConfigInKind;
+    const dataToSort = type === "Monetary" ? [...monetaryDonations] : [...inKindDonations];
+    const setSortedData = type === "Monetary" ? setSortedDataMonetary : setSortedDataInKind;
+
     let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
+    if (currentSortConfig.key === key && currentSortConfig.direction === "asc") {
       direction = "desc";
     }
+
     setSortConfig({ key, direction });
 
-    const sorted = [...donationHistory].sort((a, b) => {
+    const sorted = dataToSort.sort((a, b) => {
       let aValue = a[key];
       let bValue = b[key];
 
@@ -76,7 +105,7 @@ function DonationHistoryUser({ userDetails }) {
         bValue = new Date(bValue);
       }
 
-      if (key === "details") {
+      if (key === "amount") {
         aValue = parseFloat(aValue);
         bValue = parseFloat(bValue);
       }
@@ -89,56 +118,45 @@ function DonationHistoryUser({ userDetails }) {
     setSortedData(sorted);
   };
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key)
+  const getSortIcon = (key, type) => {
+    const config = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
+    if (config.key !== key)
       return <ChevronDown className="inline text-primary w-4 h-4" />;
-    return sortConfig.direction === "asc" ? (
+    return config.direction === "asc" ? (
       <ChevronUp className="inline text-primary w-4 h-4" />
     ) : (
       <ChevronDown className="inline text-primary w-4 h-4" />
     );
   };
-  console.log("Donation History:", donationHistory);
+
+  const currentSortedData = selectedType === "Monetary" ? sortedDataMonetary : sortedDataInKind;
+
   return (
     <div className="w-full max-w-[1100px] mt-6">
-      {/* Section Header */}
       <SectionHeader
         title="DONATIONS"
         onToggleChange={(type) => {
-          console.log("Selected donation type:", type);
+          setSelectedType(type);
         }}
       />
 
-      {/* Table Header */}
-      <div className="mt-1 rounded-xl py-2 font-satoshi-bold">
-        <div className="flex font-semibold text-primary">
-          <div
-            className="w-1/3 cursor-pointer flex items-center gap-1"
-            onClick={() => handleSort("date_donated")}
-          >
-            Date {getSortIcon("date_donated")}
-          </div>
-          <div className="w-1/3">Donation</div>
-          <div
-            className="w-1/3 text-right cursor-pointer flex justify-end items-center gap-1"
-            onClick={() => handleSort("details")}
-          >
-            Amount {getSortIcon("details")}
-          </div>
-        </div>
-      </div>
+      <DonationTableHeader
+        onSort={handleSort}
+        getSortIcon={getSortIcon}
+        selectedType={selectedType}
+      />
+
 
       {loading && <p className="mt-4">Loading...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
-      {!loading && !error && sortedData.length === 0 && (
+      {!loading && !error && currentSortedData.length === 0 && (
         <p className="mt-4 text-gray-500">No donation history found.</p>
       )}
 
-      {/* Scrollable Donation List */}
-      {!loading && !error && sortedData.length > 0 && (
+      {!loading && !error && currentSortedData.length > 0 && (
         <div className="font-satoshi-medium text-[16px] text-black max-h-[525px] overflow-y-auto sm:max-h-[400px] scrollbar-blue">
-          {sortedData.map((donation) => {
+          {currentSortedData.map((donation) => {
             const formattedDate = new Date(
               donation.date_donated
             ).toLocaleDateString("en-US", {
@@ -151,7 +169,7 @@ function DonationHistoryUser({ userDetails }) {
               style: "currency",
               currency: "PHP",
               minimumFractionDigits: 2,
-            }).format(donation.details);
+            }).format(donation.amount);
 
             return (
               <div
@@ -161,12 +179,15 @@ function DonationHistoryUser({ userDetails }) {
               >
                 <div className="w-1/3">{formattedDate}</div>
                 <div className="w-1/3">{donation.donation_drive_title}</div>
-                <div className="w-1/3 text-right">{formattedAmount}</div>
+                <div className="w-1/3 text-right">
+  {selectedType === "Monetary" ? formattedAmount : donation.status}
+</div>
               </div>
             );
           })}
         </div>
       )}
+
       <DonationDetailsModal
         isOpen={isModalOpen}
         onClose={closeModal}

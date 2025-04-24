@@ -9,9 +9,9 @@ import JobPostSummary from '../../../components/AlumniComponents/jobPostSummary'
 
 
 function CreateJobPostAlum() {
-    const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    console.log(typeof decoded.sub);
+    //const token = localStorage.getItem("token");
+    //const decoded = jwtDecode(token);
+    //console.log(typeof decoded.sub);
     
     
 
