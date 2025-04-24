@@ -318,7 +318,7 @@ function CreateJobPostAlum() {
             </button>
 
             {/* Create Job Posting title */}
-            <h1 className='font-satoshi-bold text-black text-4xl py-10'>Create Job Posting</h1>
+            <h1 className='font-satoshi-bold text-black text-4xl py-10'>Edit Current Job</h1>
             
 
             {/* JOB TITLE & COMPANY */}
