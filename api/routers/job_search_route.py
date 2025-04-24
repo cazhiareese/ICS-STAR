@@ -8,7 +8,7 @@ from uuid import UUID
 
 router = APIRouter(tags=["Job Search"])
 
-@router.get("/job/search", response_model=List[JobSearchOut])
+@router.get("/admin/job/search", response_model=List[JobSearchOut])
 def job_search(
     creator_name : Optional[str] = "",
     tag: Optional[str] = "",
