@@ -17,7 +17,7 @@ function AdminEventDetails() {
   const [viewStyle, setViewStyle] = useState('rsvpList')
 
   async function fetchEventDetails () {
-      const response = await axios.get(`${API_BASE_URL}/one-event/${eventid}`)
+      const response = await axios.get(`${API_BASE_URL}/api/admin/events/event-by-id/${eventid}`)
       console.log(response)
       setEventDetails(response.data)
   }
