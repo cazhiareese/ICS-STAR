@@ -235,7 +235,6 @@ function CreateJobPostAlum() {
             setSubmitting(false);
             // Store response to summary
             setSummary(response.data);
-            set
             setIsSubmitted(true);
 
 
@@ -258,6 +257,32 @@ function CreateJobPostAlum() {
     //     setDescription('We’re looking for a skilled Frontend Developer to join our AI team and build awesome tools.');
     // }, []);
 
+    // Get company by id
+
+    // useEffect(() => {
+    //     const token = localStorage.getItem('token'); 
+    //     const decoded = jwtDecode(token);
+    //     console.log(decoded.sub)
+    //     const fetchJobs = async () => {
+        
+    //     try {
+    //         const response = await axios.get(`${API_BASE_URL}/job/get-company-by-id/${decoded.sub}`);
+    //         if (!response.ok) {
+    //         throw new Error('Failed to fetch company');
+    //         }
+            
+    //         console.log(response.data);
+            
+    //     } catch (err) {
+    //         alert(err.message || 'Something went wrong');
+    //     } finally {
+            
+    //     }
+    //     };
+
+    //     fetchJobs();
+    // }, []);
+
 
     return (
         <div className='flex flex-col mx-48 mt-16 mb-30'>
@@ -276,7 +301,7 @@ function CreateJobPostAlum() {
             
 
             {/* JOB TITLE & COMPANY */}
-            <div className='flex flex-row gap-3'>
+            <div className='flex md:flex-row flex-col gap-3'>
                 {/* Job Title */}
                 <div className='outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 px-8 w-full'>
                     <h1 className='text-lg font-satoshi-medium pb-3'>
@@ -318,9 +343,9 @@ function CreateJobPostAlum() {
             </div>
 
             {/* SALARY & TAGS */}
-            <div className='flex flex-row gap-3 mt-6'>
+            <div className='flex md:flex-row flex-col gap-3 mt-6'>
                 {/* Salary */}
-                <div className='outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 px-8 w-5/6'>
+                <div className='outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 px-8 md:w-5/6 w-full'>
                     <h1 className='text-lg font-satoshi-medium pb-3'>
                         Salary/Compensation
                     </h1>

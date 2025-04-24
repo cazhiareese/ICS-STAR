@@ -135,6 +135,27 @@ function JobPostingLanding() {
         navigate('createJobPosting', { relative: 'path' });
     };
 
+    // Get company by id
+    useEffect(() => {
+        const fetchJobs = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/get-company-by-id/${userId}`);
+            if (!response.ok) {
+            throw new Error('Failed to fetch company');
+            }
+            const data = await response.json();
+            console.log(data)
+            
+        } catch (err) {
+            setError(err.message || 'Something went wrong');
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        fetchJobs();
+    }, []);
     
 
     return (
