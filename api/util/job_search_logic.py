@@ -235,3 +235,29 @@ def get_current_interested(
         interested_out_list.append(user_out)
 
     return interested_out_list
+
+def add_user_interested(
+        db: Session,
+        user_id: UUID,
+        post_id: UUID
+) -> dict:
+    
+    query = db.query(JobPostingInterestedIn).filter(JobPostingInterestedIn.user_id == user_id,JobPostingInterestedIn.post_id == post_id).first()
+
+    if query:
+        return False
+
+    # Add the user to the interested list
+    new_interest = JobPostingInterestedIn(user_id=user_id, post_id=post_id)
+    db.add(new_interest)
+    db.commit()
+    db.refresh(new_interest)
+
+    success_message = {
+        "success": True,
+        "message": "User added to interested list successfully.",
+        "user_id": user_id,
+        "post_id": post_id
+    }
+
+    return success_message
