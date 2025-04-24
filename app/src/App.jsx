@@ -55,9 +55,19 @@ import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPost
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
 import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
 import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
+
 const isSignedIn = !!localStorage.getItem("token");
 console.log("isSignedIn:", isSignedIn);
-//const isSignedIn = true;
+
+
+
+import EventsLanding from "./RootPages/Events/eventslanding";
+import EventCardsMain from "./RootPages/Events/eventCardsMain";
+
+
+//const isSignedIn = !!localStorage.getItem("token");
+
+
 
 
 function App() {
@@ -103,8 +113,7 @@ function App() {
           />
         </>
       )}
-
-
+      
       {isSignedIn && checkType() === "alumni" && (
         <>
           <Route path="/" element={<Root />}>
@@ -113,6 +122,9 @@ function App() {
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="alumni/events" element={<EventsLanding />} />
+            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
+            
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
@@ -134,13 +146,16 @@ function App() {
             />
           </Route>
         </>
-      )}
+      )} 
 
       {isSignedIn && checkType() === "student" && (
         <>
           <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/events" element={<EventsLanding />} />
+            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
+            <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="*" element={<UserProfile />} />
           </Route>
         </>

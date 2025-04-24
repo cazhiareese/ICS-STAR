@@ -9,7 +9,7 @@ import ICSSTARHEAD from "../assets/ics-starhead.png";
 import Star from "../assets/Star 52.png"
 import { Eye, EyeClosed, CircleX } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-
+import CircularLoading from "../components/LoadingComponents/circularloading";
 function LoginPage() {
 
     const baseURL = import.meta.env.VITE_BACKEND_URL;
@@ -128,10 +128,10 @@ function LoginPage() {
 
 
   return (
-    <div className="relative flex items-center justify-center w-screen h-screen overflow-clip">
+    <div className="flex items-center justify-center w-screen h-screen">
         {/* Background */}
 
-        <div className="absolute inset-0 bg-cover object-fill bg-center scale-100 opacity-50 md:opacity-50"
+        <div className="absolute inset-0 object-fill bg-center scale-100 opacity-50 md:opacity-50 h-screen w-screen     bg-fixed"
             style={{ backgroundImage: `url(${loginBg})` }}>
             <div className="sticky inset-0"></div>
         </div>
@@ -155,7 +155,7 @@ function LoginPage() {
         </div>
 
         {/* Lower Portion */}
-        <div className="flex flex-col overflow-auto [@media(max-height:800px)]:justify-normal items-center justify-center w-screen h-screen p-10 z-10 overflow-clip">
+        <div className="flex flex-col overflow-auto [@media(max-height:800px)]:justify-normal items-center justify-center w-screen h-screen p-10 z-10">
             
             {/* Mobile COnstellation */}
             <div className="sm:hidden block w-screen -mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 [@media(max-height:800px)]:opacity-40">
@@ -183,7 +183,7 @@ function LoginPage() {
             </div>
 
             {/* Login Signup */}
-            <div onClick={() => setCodeError(false)} className=" flex flex-col items-center justify-center h-screen sm:mt-30 w-[30%]  min-h-110 sm:min-h-140 min-w-sm sm:min-w-md sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
+            <div onClick={() => setCodeError(false)} className=" flex flex-col items-center justify-center h-screen sm:mt-10 w-[30%]  min-h-110 max-h-150 sm:min-h-140 min-w-sm sm:min-w-md sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
                     <h1 className="hidden sm:block text-8xl font-satoshi-light mb-0 text-[#102E46]">Login</h1> 
                     
                     
@@ -320,11 +320,7 @@ function LoginPage() {
 
                     {isLoading ? (
                         // Rotating image
-                        <img
-                        src={Star}
-                        alt="Loading"
-                        className="w-12 h-12 animate-spin"
-                        />
+                        <CircularLoading/>
                     ) : (
                         // Normal button
                         <button
@@ -342,7 +338,7 @@ function LoginPage() {
             </div>
             
             {/* Caption below */}
-            <div className="hidden sm:block flex flex-col w-full pt-10  ">
+            <div className="absolute hidden sm:flex flex-col w-full pt-10 bottom-10 -left-10">
                 <h1 className="text-5xl font-satoshi-light text-right ">Bridging Alumni</h1>
                 <h1 className="text-5xl font-satoshi-bold font-bold text-primary text-right">Across the Cosmos</h1>
             </div>
