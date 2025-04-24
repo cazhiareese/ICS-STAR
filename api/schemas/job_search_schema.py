@@ -7,8 +7,10 @@ class JobSearchOut(BaseModel):
     id: UUID
     title: str
     company: str
-    description: Optional[str] = None
+    description: Optional[str] = None,
+    employment_type: str
     posted_by: str
+    created_at: str
     interested_in: int
     tags: List[str] = []
 
