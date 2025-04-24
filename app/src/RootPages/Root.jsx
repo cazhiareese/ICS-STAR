@@ -5,9 +5,10 @@ import { jwtDecode } from "jwt-decode";
 
 function Root() {
 
-  //const User = localStorage.getItem("token");
-  //const decoded = jwtDecode(User);
-  const tokentype = "alumni";
+  const User = localStorage.getItem("token");
+  const decoded = jwtDecode(User);
+  //const tokentype = "alumni";
+  const tokentype = decoded.role;
   console.log("Decoded token typee:", tokentype);
 
   return (
