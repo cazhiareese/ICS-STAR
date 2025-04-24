@@ -1,5 +1,5 @@
 from typing import List, Optional
-from config.config import STORAGE_STRING, supabase_client
+from config.config import STORAGE_STRING, SUPABASE_BUCKET, supabase_client
 from config.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -190,7 +190,7 @@ async def create_donation_drive(
         file_name = f"donation_drive/{title.replace(' ', '_')}.{file_extension}"
 
         try:
-            supabase_client.storage.from_("128storage").upload(file_name, file)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload image. Error: {str(e)}")
         
