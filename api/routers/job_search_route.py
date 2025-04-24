@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from util.job_search_logic import search_job, view_interested_in, job_overview, get_current_interested, add_user_interested
+from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse
 from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut
 from typing import Optional, List, Dict
 from config.database import get_db
@@ -8,7 +8,7 @@ from uuid import UUID
 
 router = APIRouter(tags=["Job Search"])
 
-@router.get("/job/search", response_model=List[JobSearchOut])
+@router.get("/admin/job/search", response_model=List[JobSearchOut])
 def job_search(
     creator_name : Optional[str] = "",
     tag: Optional[str] = "",
@@ -18,7 +18,7 @@ def job_search(
     db: Session = Depends(get_db)
 ):
     
-    results = search_job(db, creator_name=creator_name, employment_type=employment_type, company=company, tag=tag, sort_by=sort_by)
+    results = admin_search_job(db, creator_name=creator_name, employment_type=employment_type, company=company, tag=tag, sort_by=sort_by)
 
     if not results:
         raise HTTPException(status_code=404, detail="No job postings found matching the search criteria.")
@@ -51,6 +51,85 @@ def interested_in(
         raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
     
     return results
+
+@router.get("/job/interested_in/{post_id}/batch-ascending", response_model=List[UserInterestedOut])
+def interested_in_batch_ascending(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_all_user_interested_by_batch_ascending(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+    
+    return results
+
+@router.get("/job/interested_in/{post_id}/batch-descending", response_model=List[UserInterestedOut])
+def interested_in_batch_descending(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_all_user_interested_by_batch_descending(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+    
+    return results
+
+@router.get("/job/interested_in/{post_id}/date-of-interest-newest", response_model=List[UserInterestedOut])
+def interested_in_date_of_interest_newest(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_all_user_interested_by_date_of_interest_newest(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+    
+    return results
+
+@router.get("/job/interested_in/{post_id}/date-of-interest-oldest", response_model=List[UserInterestedOut])
+def interested_in_date_of_interest_oldest(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_all_user_interested_by_date_of_interest_oldest(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+    
+    return results
+
+@router.get("/job/interested_in/{post_id}/name-alphabetical", response_model=List[UserInterestedOut])
+def interested_in_name_alphabetical(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_all_user_interested_by_name_alphabetical(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+    
+    return results
+
+@router.get("/job/interested_in/{post_id}/name-reverse", response_model=List[UserInterestedOut])
+def interested_in_name_reverse(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    
+    results = get_all_user_interested_by_name_reverse(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+    
+    return results
+
 
 @router.get("/job/overview/{post_id}", response_model=JobPostingOverviewOut)
 def job_overview_route(
