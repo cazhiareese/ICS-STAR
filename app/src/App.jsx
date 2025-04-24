@@ -55,18 +55,20 @@ import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPost
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
 import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
 import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
-//const isSignedIn = !!localStorage.getItem("token");
-const isSignedIn = true;
+const isSignedIn = !!localStorage.getItem("token");
+console.log("isSignedIn:", isSignedIn);
+//const isSignedIn = true;
 
 
 function App() {
   function checkType() {
-    const User = true;
+    const User = localStorage.getItem("token");
     let tokenType = null;
     if (User) {
-      //const decoded = jwtDecode(User);
-      //console.log("Decoded token:", decoded);
-      tokenType = "alumni";
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      //tokenType = "alumni";
+      const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
     } else {
