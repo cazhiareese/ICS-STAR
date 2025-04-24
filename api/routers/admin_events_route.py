@@ -1,7 +1,5 @@
-
-
-from typing import List, Optional
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
+from typing import List, Optional, Literal
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, Query
 from datetime import date, datetime
 import pytz
 from sqlalchemy import asc, desc, func
@@ -10,7 +8,7 @@ from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, Ev
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from util.admin_events_util import create_event_util, edit_event_util
+from util.admin_events_util import create_event_util, edit_event_util, get_demographics
 from config.database import get_db
 
 event_router = APIRouter(
@@ -370,3 +368,25 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
         })
     
     return {"message": "success", "data": processed_events}
+
+
+@event_router.get("/rsvp-clicks-count/{event_id}")
+def rsvp_clicks_count(event_id: UUID, db: Session = Depends(get_db)):
+    
+    rsvp_count = db.query(EventConfirmedBy.user_id).filter(EventConfirmedBy.event_id == event_id).count()
+    event = db.query(Event).filter(Event.event_id == event_id, Event.is_deleted == False).one()
+    
+    return {"event": event.title, "rsvp_count": rsvp_count, "user_clicks": event.user_clicks}
+
+@event_router.get("/demographics/{event_id}")
+def demographics_by_batch(
+    event_id: UUID,
+    db: Session = Depends(get_db),
+    sort_by: Literal["batch", "rsvp"] = Query("batch", description="Sort by batch or rsvp"),
+    order: Literal["asc", "desc"] = Query("asc", description="Sort order asc or desc")
+):
+    try:
+        result = get_demographics(event_id, db, sort_by, order)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -21,6 +21,7 @@ async def create_job_posting(
         link: str,
         description: str,
         employment_type: str,
+        mode: str,
         image: Optional[UploadFile],
         db: Session,
         user_id: UUID
@@ -54,6 +55,7 @@ async def create_job_posting(
         link=link,
         description=description,
         employment_type=employment_type,
+        mode=mode,
         image=image_url,
         user_id=user_id
     )
@@ -85,6 +87,7 @@ async def edit_job_posting(
         link: str,
         description: str,
         employment_type: str,
+        mode: str,
         image: Optional[UploadFile],
         db: Session
 ):
@@ -119,6 +122,7 @@ async def edit_job_posting(
     job_posting.link = link
     job_posting.description = description
     job_posting.employment_type = employment_type
+    job_posting.mode = mode
     job_posting.image = image_url
 
     db.commit()

@@ -6,11 +6,16 @@ import logo from "../assets/Subtract.png";
 function Navbar({ tokentype }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const id = "0ed168b4-344b-4760-bb68-0b7c5c3a9252";
 
   function handleLogout() {
     sessionStorage.removeItem("User");
     localStorage.removeItem("token");
     window.location.href = "/login";
+  }
+
+  function handleInterested() {
+    navigate(`${tokentype}/jobPosting/interested/${id}`) ;
   }
 
   function handleSearch() {
@@ -50,7 +55,7 @@ function Navbar({ tokentype }) {
       {/* Icons and Mobile Menu Button */}
       <div className="flex items-center gap-4">
         <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
-        <Globe className="cursor-pointer hover:text-primary transition" size={20} />
+        <Globe className="cursor-pointer hover:text-primary transition" size={20} onClick={handleInterested}/>
         <LogOut className="cursor-pointer hover:text-red-500 transition" size={20} onClick={handleLogout} />
         <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
