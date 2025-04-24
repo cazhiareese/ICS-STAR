@@ -127,7 +127,7 @@ function Step2Onboarding() {
         <>
             {!secondStep ? (
                 <div className="flex flex-col justify-center md:mx-30 mx-10">
-                    <img src={peersIcon} className="lg:h-15 lg:w-15 h-10 w-10 mt-10 mb-5" alt="Peers Icon" />
+                    <img src={peersIcon} className="lg:h-15 lg:w-15 h-10 w-10 sm:mt-10 mb-5" alt="Peers Icon" />
                     <label className="font-satoshi-black lg:text-5xl sm:text-3xl text-2xl ">Did you have Affiliations or Scholarships?</label>
                     <label className="font-satoshi-light lg:text-3xl text-xl">
                         Please select if you had any of the following during your time at college

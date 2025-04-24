@@ -31,6 +31,10 @@ function Navbar({ tokentype }) {
     window.location.href = `/alumni/donations`;
   }
 
+  function handleEvents(){
+    window.location.href = `/alumni/events`;
+  }
+
   return (
     <nav className="bg-white text-black px-6 py-4 shadow-md flex justify-between items-center border-b border-gray-300 h-20 relative">
       {/* Logo + Title */}
@@ -41,7 +45,7 @@ function Navbar({ tokentype }) {
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex gap-6 font-medium">
-        <button className="hover:text-primary transition font-satoshi-bold">Events</button>
+        <button className="hover:text-primary transition font-satoshi-bold" onClick={handleEvents}>Events</button>
         <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
         <button className="hover:text-primary transition font-satoshi-bold">Career</button>
         <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>Alumni Search</button>
