@@ -6,7 +6,7 @@ from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
-from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut
+from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut, EmploymentTypeEnum, JobModeEnum
 from schemas.report_schema import ReportedJobPostingOut, PostReportDetailOut
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
@@ -25,6 +25,7 @@ async def create_job_posting_endpoint(
     link: str = Form(...),
     description: str = Form(...),
     employment_type: str = Form(...),
+    mode: str = Form(...),
     image: UploadFile = None, 
     user: get_current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -48,6 +49,7 @@ async def create_job_posting_endpoint(
         link=link,
         description=description,
         employment_type=employment_type,
+        mode=mode,
         image=image,
         user_id=user_id,
         db=db
@@ -64,6 +66,7 @@ async def edit_job_posting_endpoint(
     link: str = Form(...),
     description: str = Form(...),
     employment_type: str = Form(...),
+    mode: str = Form(...),
     image: Optional[UploadFile] = None,  
     db: Session = Depends(get_db)
 ):
@@ -84,6 +87,7 @@ async def edit_job_posting_endpoint(
         link=link,
         description=description,
         employment_type=employment_type,
+        mode=mode,
         image=image,
         db=db
     )
@@ -131,6 +135,9 @@ def get_job_postings(db: Session = Depends(get_db)):
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        User.user_id,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -138,7 +145,12 @@ def get_job_postings(db: Session = Depends(get_db)):
     ).outerjoin(
         JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
     ).group_by(
-        JobPosting.post_id, JobPosting.title, JobPosting.company, JobPosting.description, 'user_name'
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name)
     ).all()
     
     # Now we need to get tags for each job posting
@@ -149,9 +161,13 @@ def get_job_postings(db: Session = Depends(get_db)):
         tag_list = [tag[0] for tag in tags]
         
         result.append({
+            "post_id": row.post_id,
+            "user_id": row.user_id,
             "title": row.title,
             "company": row.company,
             "description": row.description,
+            "employment_type": row.employment_type,
+            "mode": row.mode,
             "user_name": row.user_name,
             "tags": tag_list,
             "interested_count": row.interested_count
@@ -171,6 +187,10 @@ def get_job_posting(
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
+        User.user_id,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -180,7 +200,16 @@ def get_job_posting(
     ).filter(
         JobPosting.post_id == job_id
     ).group_by(
-        JobPosting.post_id, JobPosting.title, JobPosting.company, JobPosting.description, 'user_name'
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
+        User.user_id,
+        User.first_name,
+        User.last_name
     ).first()
     
     # If no job posting is found, raise a 404 error
@@ -193,10 +222,15 @@ def get_job_posting(
     
     # Construct the response
     response = {
+        "post_id": query_result.post_id,
         "title": query_result.title,
+        "user_id": query_result.user_id,
         "company": query_result.company,
         "description": query_result.description,
         "user_name": query_result.user_name,
+        "employment_type": query_result.employment_type,
+        "mode": query_result.mode,
+        "salary": query_result.salary,
         "tags": tag_list,
         "interested_count": query_result.interested_count
     }
@@ -212,6 +246,11 @@ def get_open_job_postings(
         JobPosting.post_id,
         JobPosting.title,
         JobPosting.date_posted, 
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -228,13 +267,33 @@ def get_open_job_postings(
     result = []
     for row in query_result:
         result.append({
-            "date_posted": row.date_posted,
+            "post_id": row.post_id,
+            "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
+            "company": row.company,
+            "description": row.description,
+            "employment_type": row.employment_type,
+            "mode": row.mode,
+            "salary": row.salary,
             "interested_count": row.interested_count
         })
     
     return result
+
+# Get count job postings that are open
+@router.get("/admin/job-postings/open/count")
+def get_open_job_postings_count(
+    db: Session = Depends(get_db)
+):
+    count = db.query(
+        func.count(distinct(JobPosting.post_id))
+    ).filter(
+        JobPosting.is_closed == False,
+        JobPosting.is_deleted == False
+    ).scalar()
+    
+    return {"open_job_postings_count": count}
 
 # Get job postings that are closed
 @router.get("/admin/job-postings/closed", response_model=List[JobPostingForAdminOut])
@@ -244,7 +303,12 @@ def get_closed_job_postings(
     query_result = db.query(
         JobPosting.post_id,
         JobPosting.title,
-        JobPosting.date_posted, 
+        JobPosting.date_posted,
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary, 
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -261,13 +325,33 @@ def get_closed_job_postings(
     result = []
     for row in query_result:
         result.append({
-            "date_posted": row.date_posted,
+            "post_id": row.post_id,
+            "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
+            "company": row.company,
+            "description": row.description,
+            "employment_type": row.employment_type,
+            "mode": row.mode,
+            "salary": row.salary,
             "interested_count": row.interested_count
         })
     
     return result
+
+# Get count job postings that are closed
+@router.get("/admin/job-postings/closed/count")
+def get_closed_job_postings_count(
+    db: Session = Depends(get_db)
+):
+    count = db.query(
+        func.count(distinct(JobPosting.post_id))
+    ).filter(
+        JobPosting.is_closed == True,
+        JobPosting.is_deleted == False
+    ).scalar()
+    
+    return {"closed_job_postings_count": count}
 
 @router.get("/admin/job-postings/reported", response_model=List[ReportedJobPostingOut])
 def get_reported_job_postings(
@@ -297,13 +381,68 @@ def get_reported_job_postings(
     for row in query_result:
         result.append({
             "post_id": row.post_id,
-            "date_posted": row.date_posted,
+            "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
             "title": row.title,
             "user_name": row.user_name,
             "interested_count": row.interested_count,
             "report_count": row.report_count
         })
     
+    return result
+
+# Get count job postings that are reported
+@router.get("/admin/job-postings/reported/count")
+def get_reported_job_postings_count(
+    db: Session = Depends(get_db),
+):
+    count = db.query(
+        func.count(distinct(JobPosting.post_id))
+    ).join(
+        Report, Report.reported_post_id == JobPosting.post_id
+    ).filter(
+        JobPosting.is_deleted == False
+    ).scalar()
+    
+    return {"reported_job_postings_count": count}
+
+
+@router.get("/admin/job-postings/top-4-interested")
+def get_top_4_interested_job_postings(db: Session = Depends(get_db)):
+    # Query to get the top 4 job postings with the most interested users
+    query_result = db.query(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.date_posted,
+        func.concat(User.first_name, ' ', User.last_name).label('user_name'),
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
+    ).join(
+        User, JobPosting.user_id == User.user_id 
+    ).join(
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).group_by(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.date_posted,
+        User.first_name,
+        User.last_name
+    ).order_by(
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).desc()
+    ).limit(4).all()
+
+
+    result = []
+    for row in query_result:
+        result.append({
+            "post_id": row.post_id,
+            "title": row.title,
+            "company": row.company,
+            "date_posted": row.date_posted.strftime("%m/%d/%Y") if row.date_posted else None,
+            "user_name": row.user_name,
+            "interested_count": row.interested_count
+        })
+
     return result
 
 @router.get("/admin/job-posts/{post_id}/reports", response_model=List[PostReportDetailOut])

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminModal from './adminmodal';
+import AdminModal from './AdminModal';
 import { X, CheckCircle } from 'lucide-react';
 import axios from 'axios'
 import CircularLoading from '../LoadingComponents/circularloading';

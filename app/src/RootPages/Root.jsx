@@ -7,6 +7,7 @@ function Root() {
 
   const User = localStorage.getItem("token");
   const decoded = jwtDecode(User);
+  //const tokentype = "alumni";
   const tokentype = decoded.role;
   console.log("Decoded token typee:", tokentype);
 
@@ -17,7 +18,7 @@ function Root() {
   <Navbar tokentype={tokentype} />
 )}
 
-      <Outlet context={decoded} />
+      <Outlet context={tokentype} />
     </div>
   );
 }
