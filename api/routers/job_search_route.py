@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from util.job_search_logic import search_job, view_interested_in, job_overview, get_current_interested
+from util.job_search_logic import search_job, view_interested_in, job_overview, get_current_interested, add_user_interested
 from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut
 from typing import Optional, List, Dict
 from config.database import get_db
+from uuid import UUID
 
 router = APIRouter(tags=["Job Search"])
 
@@ -23,6 +24,20 @@ def job_search(
         raise HTTPException(status_code=404, detail="No job postings found matching the search criteria.")
     
     return results
+
+@router.put("/job/add-user-interested/{post_id}", response_model=dict)
+def add_user_interested_route(
+    post_id: UUID,
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    
+    result = add_user_interested(db, post_id=post_id, user_id=user_id)
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Failed to add user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
+    
+    return result
 
 @router.get("/job/interested_in/{post_id}", response_model=list[UserInterestedOut])
 def interested_in(
