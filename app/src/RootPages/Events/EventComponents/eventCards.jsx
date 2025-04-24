@@ -48,7 +48,16 @@ const EventCards = ({event}) => {
         <div className="w-90 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1"
         onClick={() => {openEventDetails(event.event_id)}} 
         >
-            <div className="h-40 bg-gray-300"></div>
+            <div className="h-40 bg-gray-300">
+                {event.image && (
+                        <img
+                            src={event.image}
+                            alt="Event"
+                            className="w-full h-full object-cover"
+                        />
+                )}
+            </div>
+            
             
             <div className="p-4">
                 <h1 className="text-xl font-bold text-blue-900 pt-10">{event.title}</h1>
@@ -61,7 +70,11 @@ const EventCards = ({event}) => {
                 </div>
                 <div className="flex items-center mt-2 text-gray-600 space-x-3">
                     <Calendar />
-                    <label>{parseTime(event.dates)}</label>
+                    <div className="flex flex-col w-1/2 overflow-y-scroll max-h-32">
+                            {event.dates.map((datetime, index) => (
+                                <label key={index}>{parseTime(datetime)}</label>
+                            ))}
+                    </div>
                 </div>
                 <div className="flex flex-row gap-2 mt-4 overflow-x-scroll">
                     {event.tags.map((tag, index) => (

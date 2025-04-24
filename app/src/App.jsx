@@ -134,6 +134,8 @@ function App() {
         <>
           <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/events" element={<EventsLanding />} />
+            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="*" element={<UserProfile />} />

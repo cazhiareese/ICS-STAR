@@ -19,7 +19,7 @@ const EventCardsMain = () => {
     
     const navigate = useNavigate();
     const [isGoing, setIsGoing] = useState(false);
-    
+    const [user, setUser] = useState(null);
     const id = useParams(); // Get the drive_id from the URL params
     const event_id = id.eventid; // Extract the drive_id from the params
 
@@ -40,6 +40,7 @@ const EventCardsMain = () => {
             }
         };
         fetchEvent();
+        console.log("Event data:", event);
         
     },[]);
 
@@ -63,12 +64,15 @@ const EventCardsMain = () => {
             
                     const result = await response.json();
                     console.log(result.data.user_id);
+                    console.log(result)
                     setUserId(result.data.user_id);
+                    setUser(result.data);
                 } catch (error) {
                     console.error("Error fetching profile:", error.message);
                 }
             };
-            fetchUserId();        
+            fetchUserId();   
+            console.log("Event data:", event);     
         },[])
 
     useEffect(() => {
@@ -113,6 +117,7 @@ const EventCardsMain = () => {
 
         fetchAllEvents();
         // setEvent(sampleEvent)
+        console.log("Event data:", event);
 
     }, []);
 
@@ -206,7 +211,8 @@ const EventCardsMain = () => {
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
 
             <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
-            <button
+            {user?.role !== "student" && (
+                <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                     !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                     }`}
@@ -214,25 +220,33 @@ const EventCardsMain = () => {
                 >
                     <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
                     <label>{!isGoing ? 'Going' : 'RSVP'}</label>
-            </button>
-            <div className="sm:max-w-180 sm:w-[80%] w-[90%] h-190 rounded-4xl overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
-                <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl"></div>
-                <button
-                    className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                    !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                    }`}
-                    onClick={() => handleRSVPClick(event.event_id)}
-                >
-                    <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                    <label>{!isGoing ? 'Going' : 'RSVP'}</label>
-                    
                 </button>
+            )}
+            <div className="sm:max-w-180 sm:w-[80%] w-[90%] h-185 rounded-4xl overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
+                <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl overflow-hidden">
+                    {event.image && (
+                        <img
+                            src={event.image}
+                            alt="Event"
+                            className="w-full h-full object-cover"
+                        />
+                    )}
+                </div>
+                {user?.role !== "student" && (
+                    <button
+                        className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
+                        !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
+                        }`}
+                        onClick={() => handleRSVPClick(event.event_id)}
+                    >
+                        <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
+                        <label>{!isGoing ? 'Going' : 'RSVP'}</label>
+                    </button>
+                )}
                 <div className="p-4 mx-5 flex flex-col">
                     <h1 className="sm:text-3xl text-2xl font-satoshi-bold text-blue-900">{event.title}</h1>
                     
                     <label className='text-gray-400 pt-8'>Event Details</label>
-                    
-                    
                     
                     <div className="flex items-center mt-2 text-gray-600 space-x-3">
                         <MapPinned/>
@@ -240,13 +254,17 @@ const EventCardsMain = () => {
                     </div>
                     <div className="flex items-center mt-2 text-gray-600 space-x-3">
                         <Calendar />
-                        <label>{parseTime(event.datetimes)}</label>
+                        <div className="flex flex-row w-2/3 overflow-y-scroll max-h-32">
+                            {event.datetimes.map((datetime, index) => (
+                                <label key={index} className='pr-5'>{parseTime(datetime)}/</label>
+                            ))}
+                        </div>
                     </div>
                     <div className='flex flex-col mt-5 h-50 overflow-y-scroll'>
                         <label className='text-gray-400'>Event Description</label>
                         <label className="text-gray-600 pt-2">{event.description}</label>
 
-                        <label className='text-gray-400 pt-5 pb-2'>Relevant Links</label>
+                        <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
                         {event.links.map((link, index) => (
                                 <li key={index}>
                                     <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
@@ -256,7 +274,7 @@ const EventCardsMain = () => {
                         ))}
                     </div>
                     
-                    <div className="flex f</li>lex-row gap-2 mt-7 overflow-x-scroll">
+                    <div className="flex flex-row gap-2 mt-5 overflow-x-scroll">
                         {event.tags.map((tag, index) => (
                             <span
                                 key={index}

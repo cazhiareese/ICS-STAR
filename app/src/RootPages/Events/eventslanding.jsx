@@ -24,7 +24,7 @@ const EventsLanding = () => {
     const token = localStorage.getItem("token");
     const [reservationSignal, setReservationSignal] = useState(false);
     const [userId, setUserId] = useState(null);
-
+    
     const [searchInput, setSearchInput] = useState('');
     const [suggestions, setSuggestions] = useState("none");
 
@@ -33,6 +33,9 @@ const EventsLanding = () => {
     const navigate = useNavigate();
 
     const exploreRef = useRef(null);
+
+    const [user, setUser] = useState(null);
+    const [userType, setUserType] = useState(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -65,6 +68,8 @@ const EventsLanding = () => {
                 const result = await response.json();
                 console.log(result.data.user_id);
                 setUserId(result.data.user_id);
+                setUser(result.data);
+                setUserType(result.data.user_type);
             } catch (error) {
                 console.error("Error fetching profile:", error.message);
             }
@@ -109,6 +114,7 @@ const EventsLanding = () => {
                 });
                 setAllEvents(response.data);
                 console.log(allEvents)
+                console.log(allEvents)
 
             } catch (error) {
                 console.error('Error fetching all events:', error);
@@ -118,7 +124,8 @@ const EventsLanding = () => {
 
         fetchAllEvents();
         // setAllEvents([sampleEvent1, sampleEvent2, sampleEvent3, sampleEvent4]);
-        console.log(allEvents)
+        
+        console.log("RESERVATION SIGNALasdfasdf")
     }, []);
 
     const sampleEvent1 = {
@@ -222,7 +229,13 @@ const EventsLanding = () => {
 
 
 
-
+    if (user === null) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen">
+                <h1 className="text-2xl font-bold">Loading...</h1>
+            </div>
+        );
+    }
     return (
         <>
             <div className="flex flex-col items-center ">
@@ -282,13 +295,14 @@ const EventsLanding = () => {
                         <label className="text-3xl text-primary font-satoshi-bold">Your Reservations</label>
                         <label className="text-xl text-primary font-satoshi-light">({reservations == null ? "0" : reservations.length})</label>
                     </div>
-
-                    <div className="flex flex-row mt-5 mx-10 gap-5 overflow-scroll">
+                    {userType === "alumni" && (
+                        <div className="flex flex-row mt-5 mr-10  gap-5 overflow-scroll w-full">
                         {reservations != null ? (
                             reservations.length > 0 ? (
                                 reservations.map((reservation, index) => (
                                     <div key={index} className="flex relative">
                                         <EventCards event={reservation} />
+                                        
                                         <button
                                             className="z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer bg-green-500 text-whitey"
                                             onClick={() => handleRSVPClick(reservation.event_id, reservation)}
@@ -310,6 +324,12 @@ const EventsLanding = () => {
                             </div>
                         )}
                     </div>
+
+
+                    )
+                    
+                    }
+                    
                 </div>
 
                 <div className="flex flex-col mt-10 w-full mb-10 sm:px-15">
@@ -441,7 +461,7 @@ const EventsLanding = () => {
 
                     
 
-                    <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto mx-10">
+                    <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto">
                         {suggestions!= "none" ? (
                             
                         // <div className="absolute top-full mt-5 bg-white w-full max-w-[600px] border-gray-400 border-2 z-20 rounded-2xl">
@@ -450,15 +470,18 @@ const EventsLanding = () => {
                             return !isGoing && (
                                 <div key={index} className="flex relative">
                                 <EventCards event={event} />
-                                <button
+                                {userType === "alumni" && (
+                                    <button
                                     className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                                    isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
+                                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                                     }`}
                                     onClick={() => handleRSVPClick(event.event_id, event)}
                                 >
-                                    <Star />
+                                    <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
                                     <label>{isGoing ? 'Going' : 'RSVP'}</label>
-                                </button>
+                                    </button>
+                                    )
+                                }
                                 </div>
                             );
                             })
@@ -469,15 +492,18 @@ const EventsLanding = () => {
                             return !isGoing && (
                             <div key={index} className="flex relative">
                                 <EventCards event={event} />
-                                <button
-                                className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                                    isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                                }`}
-                                onClick={() => handleRSVPClick(event.event_id, event)}
+                                {userType === "alumni" && (
+                                    <button
+                                    className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
+                                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
+                                    }`}
+                                    onClick={() => handleRSVPClick(event.event_id, event)}
                                 >
-                                <Star />
-                                <label>{isGoing ? 'Going' : 'RSVP'}</label>
-                                </button>
+                                    <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
+                                    <label>{isGoing ? 'Going' : 'RSVP'}</label>
+                                    </button>
+                                    )
+                                }
                             </div>
                             );
                         })
