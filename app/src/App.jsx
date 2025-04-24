@@ -47,7 +47,8 @@ import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
-import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
+import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/editJobPostings";
+import EditJobPostAlum from "./RootPages/AlumniPages/job-posting/editJobPostings";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
 const isSignedIn = !!localStorage.getItem("token");
 
@@ -107,7 +108,8 @@ function App() {
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
             <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
-
+            
+            <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
             <Route path="*" element={<Unauthorized />} />
 
             <Route
