@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from sqlalchemy.pool import NullPool
 import supabase
 from models import *  
+import brevo_python
 
 load_dotenv()
 DATABASE_URL = os.getenv('DB_STRING')
@@ -28,3 +29,7 @@ STORAGE_STRING = os.getenv("STORAGE_STRING")
 STORAGE_API_KEY = os.getenv("STORAGE_API_KEY")
 supabase_client = supabase.create_client(STORAGE_URL, STORAGE_API_KEY)
 SUPABASE_BUCKET = os.getenv("BUCKET_NAME")
+
+brevo_configuration = brevo_python.Configuration()
+brevo_configuration.api_key['api-key'] = os.getenv("BREVO_API")
+email_sender = {"name": "ICS-STAR", "email": "icsstar128@gmail.com"}
