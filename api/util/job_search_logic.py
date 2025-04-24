@@ -10,20 +10,27 @@ from uuid import UUID
 
 def search_job(
         db: Session,
-        title_string: str = "",
+        creator_name: str = "",
+        tag: str = "",
         company: str = "",
-        tag: str = ""
+        employment_type: str = "",
+        sort_by: str = "date_desc"
 ) -> list[JobSearchOut]:
     
-    # Almost same logic as alumni search, we start with a base query
-    post_query = db.query(JobPosting.post_id).filter(JobPosting.is_deleted == False)
+    # Start with a base query
+    post_query = db.query(JobPosting.post_id)\
+        .join(User, User.user_id == JobPosting.user_id)\
+        .filter(JobPosting.is_deleted == False)
 
-    # Apply optional tags
-    if title_string:
-        post_query = post_query.filter(JobPosting.title.ilike(f"%{title_string}%"))
+    # Apply optional filters
+    if creator_name:
+        post_query = post_query.filter(func.concat(User.first_name, ' ', User.last_name).ilike(f"%{creator_name}%"))
 
     if company:
         post_query = post_query.filter(JobPosting.company.ilike(f"%{company}%"))
+        
+    if employment_type:
+        post_query = post_query.filter(JobPosting.employment_type == employment_type)
 
     if tag:
         tags_list = [t.strip() for t in tag.split(',') if t.strip()]
@@ -44,6 +51,8 @@ def search_job(
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
+        JobPosting.created_at,
+        JobPosting.employment_type,
         func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
         func.count(JobPostingInterestedIn.post_id).label("interested_in")
     ).join(
@@ -55,6 +64,18 @@ def search_job(
     ).group_by(
         JobPosting.post_id, User.first_name, User.last_name
     )
+    
+    # Apply sorting based on sort_by parameter
+    if sort_by == "date_desc":
+        query = query.order_by(JobPosting.created_at.desc())
+    elif sort_by == "date_asc":
+        query = query.order_by(JobPosting.created_at.asc())
+    elif sort_by == "creator_asc":
+        query = query.order_by(func.concat(User.first_name, ' ', User.last_name).asc())
+    elif sort_by == "interested_desc":
+        query = query.order_by(func.count(JobPostingInterestedIn.post_id).desc())
+    elif sort_by == "interested_asc":
+        query = query.order_by(func.count(JobPostingInterestedIn.post_id).asc())
 
     jobs = query.all()
     
@@ -74,7 +95,9 @@ def search_job(
             title=job.title,
             company=job.company,
             description=job.description,
+            employment_type=job.employment_type,
             posted_by=job.posted_by,
+            created_at=job.created_at.strftime("%m/%d/%Y") if job.created_at else None,
             interested_in=job.interested_in,
             tags=tags_by_post.get(job.post_id, [])
         )
@@ -212,3 +235,29 @@ def get_current_interested(
         interested_out_list.append(user_out)
 
     return interested_out_list
+
+def add_user_interested(
+        db: Session,
+        user_id: UUID,
+        post_id: UUID
+) -> dict:
+    
+    query = db.query(JobPostingInterestedIn).filter(JobPostingInterestedIn.user_id == user_id,JobPostingInterestedIn.post_id == post_id).first()
+
+    if query:
+        return False
+
+    # Add the user to the interested list
+    new_interest = JobPostingInterestedIn(user_id=user_id, post_id=post_id)
+    db.add(new_interest)
+    db.commit()
+    db.refresh(new_interest)
+
+    success_message = {
+        "success": True,
+        "message": "User added to interested list successfully.",
+        "user_id": user_id,
+        "post_id": post_id
+    }
+
+    return success_message
