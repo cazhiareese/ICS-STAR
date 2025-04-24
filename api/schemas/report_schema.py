@@ -38,7 +38,7 @@ class ReportAttachmentOut(BaseModel):
 class ReportedJobPostingOut(BaseModel):
     post_id: UUID
     title: str
-    date_posted: datetime
+    date_posted: str
     user_name: str
     interested_count: int
     report_count: int

@@ -197,7 +197,7 @@ def overview(
 
     return results
 
-@router.post("/admin/donations/verify-inkind/{donation_id}", response_model=InKindDonationOut)
+@router.put("/admin/donations/verify-inkind/{donation_id}", response_model=InKindDonationOut)
 def verify_inkind(
     donation_id: UUID,
     choice: str,
@@ -212,7 +212,7 @@ def verify_inkind(
 
     return results
 
-@router.post("/admin/donations/verify-monetary/{donation_id}", response_model=MonetaryDonationOut)
+@router.put("/admin/donations/verify-monetary/{donation_id}", response_model=MonetaryDonationOut)
 def verify_monetary(
     donation_id: UUID,
     choice: str,
@@ -227,7 +227,7 @@ def verify_monetary(
 
     return results
 
-@router.post("/admin/donations/close-drive/{drive_id}", response_model=dict)
+@router.put("/admin/donations/close-drive/{drive_id}", response_model=dict)
 def close_drive(
     drive_id: UUID,
     db: Session = Depends(get_db)

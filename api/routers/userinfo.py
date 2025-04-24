@@ -89,7 +89,7 @@ async def add_skills(
     
     db.add_all(new_skills)
     db.commit()
-    primt(new_skills)
+    print(new_skills)
     return {"message": "skills added successfully"}
 
 @router.post("/onboarding-info-student")

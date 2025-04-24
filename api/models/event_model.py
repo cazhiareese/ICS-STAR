@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Boolean, Text, ForeignKey, DateTime, Date, func, UUID
+from sqlalchemy import Column, Boolean, Text, ForeignKey, DateTime, Date, func, UUID, Integer
 from sqlalchemy.orm import relationship
 import uuid
 from config.config import Base
@@ -15,6 +15,7 @@ class Event(Base):
     is_closed = Column(Boolean, default=False)
     is_deleted = Column(Boolean, default=False)
     is_all = Column(Boolean, default=False)
+    user_clicks = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     confirmed_by = relationship("EventConfirmedBy", foreign_keys="[EventConfirmedBy.event_id]", back_populates="event")

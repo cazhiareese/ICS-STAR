@@ -1,12 +1,13 @@
 
 from datetime import date, datetime
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from sqlalchemy import UUID, func, or_
 from models.usermodel import User, UserAffiliation
 from config.config import STORAGE_STRING, supabase_client
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
+from schemas.events_schema import DemographicsOut
 from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, EventTag, EventVisibleTo
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -298,14 +299,49 @@ async def edit_event_util (
     return event
 
 
+def get_demographics(
+    event_id: str, 
+    db: Session,
+    sort_by: Literal["batch", "rsvp"] = "batch",
+    order: Literal["asc", "desc"] = "asc"
+) -> List[DemographicsOut]:
+    batch_year_expr = func.substr(User.student_number, 1, 4)
 
-
-
-        
-   
-
-
+    query = (
+        db.query(
+            batch_year_expr.label("batch"),
+            func.count(EventConfirmedBy.user_id).label("rsvp_count")
+        )
+        .join(EventConfirmedBy, EventConfirmedBy.user_id == User.user_id)
+        .filter(EventConfirmedBy.event_id == event_id)
+        .filter(User.student_number.isnot(None))
+        .group_by(batch_year_expr)
+    )
     
+    if sort_by == "batch":
+        sort_column = batch_year_expr
+    else:
+        sort_column = func.count(EventConfirmedBy.user_id)
 
+    if order == "desc":
+        query = query.order_by(sort_column.desc())
+    else:
+        query = query.order_by(sort_column.asc())
     
-    
+    results = query.all()
+
+    return [{"batch": r.batch, "rsvp_count": r.rsvp_count} for r in results]
+
+def add_user_clicks(
+    event_id: UUID,
+    db: Session
+):
+    try:
+        event = db.query(Event).filter(Event.event_id == event_id, Event.is_deleted == False).one()
+        event.user_clicks = (event.user_clicks or 0) + 1
+        db.commit()
+        db.refresh(event)
+        return True
+    except Exception as e:
+        db.rollback()
+        raise e

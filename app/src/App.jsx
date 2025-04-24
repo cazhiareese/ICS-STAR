@@ -47,20 +47,26 @@ import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
+
+import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
+import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
+import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
 import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
 import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
-const isSignedIn = !!localStorage.getItem("token");
+//const isSignedIn = !!localStorage.getItem("token");
+const isSignedIn = true;
+
 
 function App() {
   function checkType() {
-    const User = localStorage.getItem("token");
+    const User = true;
     let tokenType = null;
     if (User) {
-      const decoded = jwtDecode(User);
-      console.log("Decoded token:", decoded);
-      tokenType = decoded.role;
+      //const decoded = jwtDecode(User);
+      //console.log("Decoded token:", decoded);
+      tokenType = "alumni";
       console.log("Decoded token type:", tokenType);
       return tokenType;
     } else {
@@ -107,8 +113,12 @@ function App() {
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
+            <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
+            <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
+            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
             <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
             <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
+
 
             <Route path="*" element={<Unauthorized />} />
 
