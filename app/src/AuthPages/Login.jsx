@@ -11,7 +11,9 @@ import { Eye, EyeClosed, CircleX } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+
     const baseURL = import.meta.env.VITE_BACKEND_URL;
+
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");

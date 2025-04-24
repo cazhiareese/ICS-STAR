@@ -20,7 +20,7 @@ import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
 import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
 import AdminEvents from "./RootPages/AdminPages/adminevents";
 import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
-import AdminCareer from "./RootPages/AdminPages/admincareer";
+import AdminCareer from "./RootPages/AdminPages/Careers/AdminCareer";
 import AdminDonations from "./RootPages/AdminPages/Donations/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
 
@@ -41,17 +41,23 @@ import AdminDonationInformation from "./RootPages/AdminPages/Donations/admindona
 import AdminCreateDonationDrive from "./RootPages/AdminPages/Donations/admincreatedonationdrive";
 import AdminHelpIcs from "./RootPages/AdminPages/Donations/adminhelpics";
 import AdminPendingDonations from "./RootPages/AdminPages/Donations/adminpendingdonations";
-
+import AdminCareerLayout from "./RootPages/AdminPages/Layouts/admincareerlayout";
 
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
 import OtherUserProfile from "./RootPages/OtherUserprofile";
-const isSignedIn = true;
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
 import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
+import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
+import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
+import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
+import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
+//const isSignedIn = !!localStorage.getItem("token");
+const isSignedIn = true;
+
 
 function App() {
   function checkType() {
@@ -107,12 +113,12 @@ function App() {
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
-
             <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
             <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
             <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
-            
-            
+            <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
+            <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
+
 
             <Route path="*" element={<Unauthorized />} />
 
@@ -147,6 +153,8 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="alumni-report" element={<AdminAlumniInfo />} />
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
+              <Route path="industry-reports" element={<AdminIndustryInformation/>}/>
+              <Route path="country-reports" element={<AdminCountryInformation/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
@@ -156,7 +164,9 @@ function App() {
             </Route>
             <Route path="events" element={<AdminEvents />} />
             <Route path="newsletter" element={<AdminNewsletter />} />
-            <Route path="career" element={<AdminCareer />} />
+            <Route path="career" element={<AdminCareerLayout />}>
+              <Route index element ={<AdminCareer/>}/>
+            </Route>
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
               <Route path=":driveid" element={<AdminDonationInformation/>}/>
