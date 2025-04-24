@@ -9,7 +9,7 @@ from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
 from typing import List, Optional
 
-from config.config import SECRET_KEY, ALGORITHM, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
+from config.config import SECRET_KEY, ALGORITHM, SUPABASE_BUCKET, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
 from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum, UnemploymentReasonEnum, UserEmploymentStatus, UnemploymentReason
 
@@ -190,7 +190,7 @@ async def register_user(
         verification_ext = verification_file.filename.split(".")[-1]
         verification_name = f"verification_files/{uuid.uuid4()}.{verification_ext}"
         try:
-            supabase_client.storage.from_("128storage").upload(verification_name, file_content)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(verification_name, file_content)
         except Exception as e:
             print("Upload Error:", e)
         verification_url = f"{STORAGE_STRING}{verification_name}"
@@ -233,7 +233,7 @@ async def upload_profile(profile_picture, user, db):
     if user.image:
         try:
             old_file_path = user.image.replace(STORAGE_STRING, "")
-            supabase_client.storage.from_("128storage").remove([old_file_path])
+            supabase_client.storage.from_(SUPABASE_BUCKET).remove([old_file_path])
         except Exception as e:
             raise HTTPException(status_code=500, detail="Failed to delete old profile picture: {e}")
 
@@ -241,7 +241,7 @@ async def upload_profile(profile_picture, user, db):
     profile_picture_name = f"profile_pictures/{uuid.uuid4()}.{profile_picture_ext}"
 
     try:
-        supabase_client.storage.from_("128storage").upload(profile_picture_name, file_content)
+        supabase_client.storage.from_(SUPABASE_BUCKET).upload(profile_picture_name, file_content)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload Error: {str(e)}")
 
