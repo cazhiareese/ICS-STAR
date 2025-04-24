@@ -107,8 +107,8 @@ function App() {
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
-            <Route path="alumni/createJobPosting" element={<CreateJobPostAlum />} />
             <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
+            <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
 
             <Route path="*" element={<Unauthorized />} />
 
