@@ -1,10 +1,19 @@
 import { Banknote, BriefcaseBusiness, Ellipsis, FileText, Pencil, SquareArrowOutUpRight, Star, Trash2 } from 'lucide-react'
 import {React, useState, useEffect, useRef} from 'react'
+import { useNavigate } from 'react-router-dom';
 
 function JobExpandedCard({job, currentUserID}) {
     const [showOptions, setShowOptions] = useState(false);
     const modalRef = useRef(null);
     const ellipsisRef = useRef(null);
+
+    const jobId = job.post_id; // Assuming job.post_id is the ID of the job post
+    const navigate = useNavigate();
+    const navToEditJobPost = () => {
+        console.log("Edit Job Posting clicked");
+        console.log(jobId);
+        navigate(`editJobPosting/${jobId}`, { relative: 'path' });
+    };
 
     // Close modal on outside click
     useEffect(() => {
@@ -42,8 +51,11 @@ function JobExpandedCard({job, currentUserID}) {
                                     <Trash2 size={16} />
                                     Delete Post
                                 </button>
-                                <button className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer">
-                                    <Pencil size={16} />
+                                <button className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
+                                onClick={()=>navToEditJobPost()}>
+                                    <Pencil size={16} 
+                                    
+                                    />
                                     Edit Post
                                 </button>
                             </div>

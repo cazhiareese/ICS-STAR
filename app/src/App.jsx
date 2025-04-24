@@ -52,6 +52,7 @@ import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
 import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
+import EditJobPostAlum from "./RootPages/AlumniPages/job-posting/editJobPostings";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
 import AdminIndustryInformation from "./RootPages/AdminPages/Dashboard/adminindustryinformation";
 import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincountryinformation";
@@ -135,6 +136,8 @@ function App() {
             <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
             <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
 
+            
+            <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
 
             <Route path="*" element={<Unauthorized />} />
 
