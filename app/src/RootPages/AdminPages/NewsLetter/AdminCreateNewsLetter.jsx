@@ -1,6 +1,6 @@
 import React from 'react'
 
-function AdminCreatesNewsletter() {
+function AdminCreateNewsletter() {
   return (
     <div>
       Admin Newsletter
@@ -8,4 +8,4 @@ function AdminCreatesNewsletter() {
   )
 }
 
-export default AdminCreatesNewsletter
+export default AdminCreateNewsletter
