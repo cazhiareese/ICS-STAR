@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react"
 import DatePicker from "react-multi-date-picker"
 import TimePicker from "react-multi-date-picker/plugins/time_picker";
+import DatePanel from "react-multi-date-picker/plugins/date_panel"
+
 
 import transition from "react-element-popper/animations/transition"
 import { format } from "date-fns"
@@ -8,6 +10,7 @@ import { format } from "date-fns"
 export default function MultiDatePicker({ onApply, initialDates = '' }) {
   const [dates, setDates] = useState([])
   const [tempDates, setTempDates] = useState([])
+  const [focusedDate, setFocusedDate] = useState()
 
   useEffect(() => {
     if (initialDates) {
@@ -40,21 +43,35 @@ export default function MultiDatePicker({ onApply, initialDates = '' }) {
         onChange={setTempDates}
         multiple
         sort
+        onFocusedDateChange={setFocusedDate}
+        onClose={() => setFocusedDate(undefined)}
         format="MM/DD/YYYY HH:mm:ss A"
         plugins={[
-          <TimePicker hideSeconds position="right" />
+          <TimePicker hideSeconds position="bottom" />,
+          <DatePanel markFocused focusedClassName="bg-#00369C"/>
         ]} 
+        mapDays={({ date, isSameDate }) => {
+          let props = {}
+          
+          if (!isSameDate(date, focusedDate)) return
+      
+          props.style = {
+            backgroundColor: "#00369C",
+            color: "white"
+          }          
+          return props
+        }}
         numberOfMonths={1}
         calendarPosition="bottom-left"
         animations={[transition()]}
         
         render={(value, openCalendar) => (
-          <div className="w-80" onClick={openCalendar}>
+          <div className="w-full" onClick={openCalendar}>
             <div
-              className="w-80 overflow-hidden text-ellipsis whitespace-nowrap border border-gray-300 px-3 py-2 rounded-2xl"
+              className="w-full overflow-hidden text-ellipsis whitespace-nowrap border border-gray-300 px-3 py-2 rounded-2xl"
               title={value}
             >
-              {value || "Select dates"}
+              {value || "Select date and time"}
             </div>
           </div>
         )}
