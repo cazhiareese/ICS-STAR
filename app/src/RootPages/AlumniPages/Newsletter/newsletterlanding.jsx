@@ -3,7 +3,7 @@ import { Search, Calendar } from "lucide-react";
 import star from "../../../assets/star.png";
 import "../../../index.css";
 import { select } from "framer-motion/client";
-
+import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
 
 const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selectedTags }) => {
     const formatDate = (utcDate) => {
@@ -40,6 +40,30 @@ const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selec
         </div>
     );
 };
+
+const SkeletonCards = () => {
+    return (
+        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 border-gray-200 border shadow-md p-5">
+            <div className="flex flex-col h-full">
+                <div className="w-full h-45 bg-gray-300 rounded-lg overflow-hidden"></div>
+                <div className="flex flex-col mt-4 flex-grow">
+                    <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+                </div>
+                <div className="flex flex-row mt-4 space-x-2 overflow-x-scroll">
+                    <div className="h-8 w-20 bg-gray-300 rounded-full"></div>
+                    <div className="h-8 w-24 bg-gray-300 rounded-full"></div>
+                    <div className="h-8 w-16 bg-gray-300 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+
 
 const NewsletterLanding = () => {
     const [card, setCard] = useState([]);
@@ -128,7 +152,7 @@ const NewsletterLanding = () => {
         { id: 9, name: "Lifestyle" },
         { id: 10, name: "Environment" }
     ];
-    
+
     const [tags, setTags] = useState(mockTag);
 
     const toggleTagSelection = (tagName) => {
@@ -146,7 +170,7 @@ const NewsletterLanding = () => {
     : card;
 
     
-
+    
     return (
         <div className={`flex-1 overflow-y-hidden sm:mx-10 md:mx-15 lg:mx-20 mx-3`}>
             <div className="flex w-full h-20 border border-gray-300 shadow-lg items-center justify-center rounded-b-2xl">
@@ -161,8 +185,9 @@ const NewsletterLanding = () => {
                     </div>
                 </div>
             </div>
+            { card.length>0 ? 
 
-            <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+                (<><div className={`h-7 flex flex-row items-center justify-start mt-7`}>
                 <div className="flex overflow-x-auto space-x-4 py-4">
                     {tags.map((tag) => (
                         <div
@@ -181,7 +206,7 @@ const NewsletterLanding = () => {
             </div>
             <div
                 className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
-                style={{ height: `calc(100vh - 20rem)` }} // Adjust height dynamically based on remaining space
+                style={{ height: `calc(100vh - 18rem)` }} // Adjust height dynamically based on remaining space
             >
                 {filteredCards.map((item) => (
                     <Cards
@@ -196,7 +221,37 @@ const NewsletterLanding = () => {
                         selectedTags={selectedTags}
                     />
                 ))}
+            </div></>) : <div className="animate-pulse">
+            
+            <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+                <div className="flex overflow-x-auto space-x-4 py-4">
+                    <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                    <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                    <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                    <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                    <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                    <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                </div>
             </div>
+            <div
+                className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
+                style={{ height: `calc(100vh - 20rem)` }} // Adjust height dynamically based on remaining space
+            >
+                <SkeletonCards/>
+                <SkeletonCards/>
+                <SkeletonCards/>
+                <SkeletonCards/>
+                <SkeletonCards/>
+                <SkeletonCards/>
+                
+            </div>
+                
+            
+            
+            </div>
+                
+            }
+            
         </div>
     );
 };
