@@ -61,6 +61,7 @@ import AdminCreateEvent from "./RootPages/AdminPages/Events/AdminCreateEvent";
 import AdminEventDetails from "./RootPages/AdminPages/Events/AdminEventDetails";
 import AdminNewsLetter from "./RootPages/AdminPages/NewsLetter/AdminNewsLetter";
 import AdminCreateNewsletter from "./RootPages/AdminPages/NewsLetter/AdminCreateNewsLetter";
+import AdminNewsletterDetails from "./RootPages/AdminPages/NewsLetter/AdminNewsletterDetails";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
@@ -198,6 +199,7 @@ function App() {
             <Route path="newsletter" element={<AdminNewsletterLayout />} >
               <Route index element={<AdminNewsLetter/>}/>
               <Route path="create-newsletter" element={<AdminCreateNewsletter/>}/>
+              <Route path="newsletter-details" element={<AdminNewsletterDetails/>}/>
             </Route>
             <Route path="career" element={<AdminCareerLayout />}>
               <Route index element ={<AdminCareer/>}/>
