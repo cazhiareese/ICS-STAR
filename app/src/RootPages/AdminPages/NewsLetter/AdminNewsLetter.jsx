@@ -55,7 +55,7 @@ function AdminNewsletter() {
             className='w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold'
           />
           <p>of {totalPages}</p>
-          <MoveRight className='cursor-pointer' onClick={() => {}} />
+          <MoveRight className='cursor-pointer' onClick={() => {navigate("newsletter-details")}} />
         </div>
       </div>
 
