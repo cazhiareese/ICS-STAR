@@ -116,7 +116,7 @@ function AdminCreateEvent() {
   }
 
   return (
-    <div className='p-6'>
+    <div className='p-6 px-24'>
       <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
         <MoveLeft className='text-primary' />
         <p className='text-primary font-satoshi-medium text-lg'>Back to events</p>
