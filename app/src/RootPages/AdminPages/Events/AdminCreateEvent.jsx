@@ -274,7 +274,7 @@ function AdminCreateEvent() {
         <div className='p-6 border border-gray-400 rounded-3xl space-y-2'>
           <h2 className='font-satoshi-medium'>Visibility and Invitations</h2>
           <div className="flex items-center gap-2">
-            <input type="checkbox" name="isAll" checked={formData.isAll} onChange={handleInputChange} />
+            <input type="checkbox" name="isAll" className='accent-primary cursor-pointer' checked={formData.isAll} onChange={handleInputChange} />
             <label>All Alumni</label>
           </div>
 
@@ -323,7 +323,7 @@ function AdminCreateEvent() {
           </div>
 
           <div className="flex items-center gap-2">
-            <input type="checkbox" name="sendEmail" checked={formData.sendEmail} onChange={handleInputChange} />
+            <input type="checkbox" name="sendEmail" className='accent-primary cursor-pointer' checked={formData.sendEmail} onChange={handleInputChange} />
             <label>Send email invites</label>
           </div>
         </div>
