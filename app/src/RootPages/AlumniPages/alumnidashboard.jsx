@@ -110,7 +110,7 @@ function AlumniLanding() {
 
         {/* Cards Section */}
         <div className="flex flex-wrap flex-row gap-5 font-satoshi-regular mt-10 items-center justify-center">
-          <CardComponent icon={Calendar} text="Look for events to attend" />
+          <CardComponent icon={Calendar} text="Look for events to attend " />
           <CardComponent icon={BookOpen} text="Catch up with ICS" />
           <CardComponent icon={Briefcase} text="Browse job opportunities" />
           <CardComponent icon={Users} text="Connect with Alumni" />
