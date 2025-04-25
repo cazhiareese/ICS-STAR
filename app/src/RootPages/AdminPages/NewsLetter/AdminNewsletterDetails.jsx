@@ -42,7 +42,7 @@ function AdminNewsletterDetails() {
 
         {/* Action Buttons */}
         <div className="flex gap-2">
-          <button className="bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer">
+          <button className="bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer" onClick={() => navigate("edit-newsletter")}>
             <Pencil />
             <p className="font-satoshi-regular text-lg">Edit Newsletter</p>
           </button>

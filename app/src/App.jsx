@@ -72,6 +72,7 @@ console.log("isSignedIn:", isSignedIn);
 
 import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
+import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
@@ -200,7 +201,7 @@ function App() {
               <Route index element={<AdminNewsLetter/>}/>
               <Route path="create-newsletter" element={<AdminCreateNewsletter/>}/>
               <Route path="newsletter-details" element={<AdminNewsletterDetails/>}/>
-              <Route path="edit-newsletter" element={<AdminCreateNewsletter/>}/>  
+              <Route path="newsletter-details/edit-newsletter" element={<AdminEditNewsletter/>}/>  
             </Route>
             <Route path="career" element={<AdminCareerLayout />}>
               <Route index element ={<AdminCareer/>}/>
