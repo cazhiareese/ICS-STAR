@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect , useRef} from "react"
 import DatePicker from "react-multi-date-picker"
 import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel"
-
-
 import transition from "react-element-popper/animations/transition"
 import { format } from "date-fns"
 
@@ -11,6 +9,8 @@ export default function MultiDatePicker({ onApply, initialDates = '' }) {
   const [dates, setDates] = useState([])
   const [tempDates, setTempDates] = useState([])
   const [focusedDate, setFocusedDate] = useState()
+  const pickerRef = useRef()
+
 
   useEffect(() => {
     if (initialDates) {
@@ -23,10 +23,12 @@ export default function MultiDatePicker({ onApply, initialDates = '' }) {
   const handleApply = () => {
     setDates(tempDates)
   
-    const dateStrings = tempDates.map(d => format(d, "MM/dd/yyyy")).join(", ")
+    const dateStrings = tempDates.map(d => format(d, "yyyy-MM-dd")).join(", ")
     const timeStrings = tempDates.map(d => format(d, "HH:mm")).join(", ")
   
     onApply({ date: dateStrings, time: timeStrings })
+    if (pickerRef.current) pickerRef.current.closeCalendar()
+
   }
   
   
@@ -40,12 +42,13 @@ export default function MultiDatePicker({ onApply, initialDates = '' }) {
     <div className="flex flex-col gap-2">
       <DatePicker
         value={dates}
+        ref={pickerRef}
         onChange={setTempDates}
         multiple
         sort
         onFocusedDateChange={setFocusedDate}
         onClose={() => setFocusedDate(undefined)}
-        format="MM/DD/YYYY HH:mm:ss A"
+        format="MM/DD/YYYY HH:mm A"
         plugins={[
           <TimePicker hideSeconds position="bottom" />,
           <DatePanel markFocused focusedClassName="bg-#00369C"/>
