@@ -37,7 +37,7 @@ function AdminNewsletterDetails() {
           onClick={() => navigate(-1)}
         >
           <MoveLeft className="text-primary" />
-          <p className="text-primary font-satoshi-medium text-lg">Back to events</p>
+          <p className="text-primary font-satoshi-medium text-lg">Back </p>
         </button>
 
         {/* Action Buttons */}
@@ -54,16 +54,17 @@ function AdminNewsletterDetails() {
       </div>
 
       {/* Card */}
-      <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-6">
+      <div className="flex justify-center w-full">
+      <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-6 w-[1350px] justify">
         {/* Image or Placeholder */}
         {newsletter.image ? (
           <img
             src={newsletter.image}
             alt="Newsletter"
-            className="w-full h-[300px] object-cover rounded-xl"
+            className="w-full h-[500px] object-cover rounded-xl"
           />
         ) : (
-          <div className="w-full h-[300px] bg-blue-200 rounded-xl flex items-center justify-center text-blue-600 font-bold text-2xl">
+          <div className="w-full h-[500px] bg-blue-200 rounded-xl flex items-center justify-center text-blue-600 font-bold text-2xl">
             No Image Available
           </div>
         )}
@@ -110,6 +111,7 @@ function AdminNewsletterDetails() {
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   )
