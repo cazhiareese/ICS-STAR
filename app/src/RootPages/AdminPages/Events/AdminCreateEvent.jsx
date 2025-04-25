@@ -171,7 +171,7 @@ function AdminCreateEvent() {
 
           {/* Tags */}
           <div className='p-6 border border-gray-400 rounded-3xl w-2/5'>
-            <div className="relative mb-4">
+            <div className="relative">
               <label className="block font-satoshi-medium">Tags (Optional)</label>
               <div 
                 className="border border-gray-300 rounded-3xl px-3 py-2 mt-1 cursor-pointer text-ellipsis whitespace-nowrap overflow-hidden"
