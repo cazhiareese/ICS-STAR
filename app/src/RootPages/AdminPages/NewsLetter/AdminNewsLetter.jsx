@@ -6,7 +6,9 @@ import EventsTable from '../../../components/AdminComponents/EventsTable';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import { Navigate, useNavigate } from 'react-router-dom';
 
+
 function AdminNewsletter() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(48);
   const [newsletter, setNewsletter] = useState([]);
@@ -34,7 +36,7 @@ function AdminNewsletter() {
         <h1 className='font-satoshi-bold text-5xl text-black'>Newsletter</h1>
         <button
           className='flex flex-row items-center justify-center gap-2 font-satoshi-regular text-white bg-primary px-6 py-3 rounded-2xl hover:bg-hover cursor-pointer'
-          onClick={() => {}}
+          onClick={() => {navigate("/admin/newsletter/create-newsletter")}}
         >
           <Plus /> New Newsletter
         </button>
