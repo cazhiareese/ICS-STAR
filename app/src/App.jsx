@@ -200,6 +200,7 @@ function App() {
               <Route index element={<AdminNewsLetter/>}/>
               <Route path="create-newsletter" element={<AdminCreateNewsletter/>}/>
               <Route path="newsletter-details" element={<AdminNewsletterDetails/>}/>
+              <Route path="edit-newsletter" element={<AdminCreateNewsletter/>}/>  
             </Route>
             <Route path="career" element={<AdminCareerLayout />}>
               <Route index element ={<AdminCareer/>}/>
