@@ -390,3 +390,14 @@ def demographics_by_batch(
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@event_router.get("/get-tags")
+def get_tags(db: Session = Depends(get_db)):
+
+    
+    query = db.query(EventTag.tag).distinct().all()
+    if not query:
+        raise HTTPException(status_code=404, detail="No tags to fetch!")
+    
+    return{"message": "success", "data": [tag[0] for tag in query if tag is not None]}
