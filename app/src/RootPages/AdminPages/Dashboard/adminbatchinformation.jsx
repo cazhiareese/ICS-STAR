@@ -267,7 +267,10 @@ function AdminBatchInformation() {
         }
 
     }
-      fetchData();
+      if (selectedYear){
+        fetchData();
+      }
+      
     }, [batch])
 
     useEffect(() => {
