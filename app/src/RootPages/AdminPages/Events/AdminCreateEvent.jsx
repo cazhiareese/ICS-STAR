@@ -73,7 +73,9 @@ function AdminCreateEvent() {
   const [filterOpen, setFilterOpen] = useState(false)
   const [activeOptionIndex, setActiveOptionIndex] = useState(null);
   const [activeFilter, setActiveFilter] = useState(null)
-
+  const [tagsDropdownOpen, setTagsDropdownOpen] = useState(false)
+  const [customTag, setCustomTag] = useState('')
+  
 
   const handleSubmit = async () => {
     const payload = new FormData()
@@ -169,12 +171,63 @@ function AdminCreateEvent() {
 
           {/* Tags */}
           <div className='p-6 border border-gray-400 rounded-3xl w-2/5'>
-            <label className="block mb-1 font-satoshi-medium">Tags (Optional)</label>
-            <select name="tags" value={formData.tags} onChange={(e) => handleMultiChange(e, 'tags')} className="w-full border border-gray-300 rounded-2xl p-2">
-              <option value="Gaming">Gaming</option>
-              <option value="Workshop">Workshop</option>
-              <option value="Networking">Networking</option>
-            </select>
+            <div className="relative mb-4">
+              <label className="block text-sm font-medium text-gray-700">Tags (Optional)</label>
+              <div 
+                className="border border-gray-300 rounded-3xl px-3 py-2 mt-1 cursor-pointer text-ellipsis whitespace-nowrap overflow-hidden"
+                onClick={() => setTagsDropdownOpen(!tagsDropdownOpen)}
+              >
+                {formData.tags.length > 0 ? formData.tags.join(', ') : <div className='flex flex-row justify-between'><h2>Select Tags</h2><span className="ml-2">▾</span></div>}
+              </div>
+
+              {tagsDropdownOpen && (
+                <div className="font-satoshi-regular absolute z-90 bg-white border border-gray-300 rounded-3xl shadow-md mt-1 w-full p-3 space-y-2">
+                  {['Seminar', 'Webinar', 'Training', 'Hackathon', 'Meetup', 'Networking'].map((tag) => (
+                    <label key={tag} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        className='accent-primary cursor-pointer'
+                        checked={formData.tags.includes(tag)}
+                        onChange={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            tags: prev.tags.includes(tag)
+                              ? prev.tags.filter((t) => t !== tag)
+                              : [...prev.tags, tag]
+                          }))
+                        }}
+                      />
+                      <span>{tag}</span>
+                    </label>
+                  ))}
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Others..."
+                      value={customTag}
+                      onChange={(e) => setCustomTag(e.target.value)}
+                      className="border px-2 py-1 rounded w-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (customTag.trim() !== '' && !formData.tags.includes(customTag.trim())) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            tags: [...prev.tags, customTag.trim()]
+                          }))
+                          setCustomTag('')
+                        }
+                      }}
+                      className="text-sm text-white rounded-xl bg-primary p-2"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-400 rounded-3xl p-6">
