@@ -30,7 +30,7 @@ function AdminEditNewsletter() {
       </button>
 
       {/* Title */}
-      <h1 className="font-satoshi-bold text-5xl mb-6">Create a Newsletter</h1>
+      <h1 className="font-satoshi-bold text-5xl mb-6">Edit a Newsletter</h1>
 
       <form className="flex flex-col gap-6">
 
