@@ -59,6 +59,9 @@ import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincount
 import AdminEventsLayout from "./RootPages/AdminPages/Layouts/AdminEventsLayout";
 import AdminCreateEvent from "./RootPages/AdminPages/Events/AdminCreateEvent";
 import AdminEventDetails from "./RootPages/AdminPages/Events/AdminEventDetails";
+
+import NewsletterLanding from "./RootPages/AlumniPages/Newsletter/newsletterlanding";
+
 const isSignedIn = !!localStorage.getItem("token");
 console.log("isSignedIn:", isSignedIn);
 
@@ -69,8 +72,6 @@ import EventCardsMain from "./RootPages/Events/eventCardsMain";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
-
-
 
 
 function App() {
@@ -138,6 +139,7 @@ function App() {
 
             
             <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+            <Route path="alumni/newsletter" element={<NewsletterLanding />} />
 
             <Route path="*" element={<Unauthorized />} />
 
