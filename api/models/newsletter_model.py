@@ -28,9 +28,8 @@ class Newsletter(Base):
 class NewsletterLink(Base):
     __tablename__ = 'newsletter_link'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    newsletter_id = Column(UUID(as_uuid=True), ForeignKey('newsletter.newsletter_id'), nullable=False)
-    link = Column(Text, nullable=False)
+    newsletter_id = Column(UUID(as_uuid=True), ForeignKey('newsletter.newsletter_id'), nullable=False,  primary_key=True)
+    link = Column(Text, nullable=False,  primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
@@ -40,9 +39,8 @@ class NewsletterLink(Base):
 class NewsletterTag(Base):
     __tablename__ = 'newsletter_tag'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    newsletter_id = Column(UUID(as_uuid=True), ForeignKey('newsletter.newsletter_id'), nullable=False)
-    tag = Column(Text, nullable=False)
+    newsletter_id = Column(UUID(as_uuid=True), ForeignKey('newsletter.newsletter_id'),  primary_key=True, nullable=False)
+    tag = Column(Text, nullable=False,  primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
