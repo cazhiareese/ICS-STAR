@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MoveLeft, UploadCloud } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -26,6 +26,7 @@ function AdminCreateEvent() {
   })
 
   const [linkInput, setLinkInput] = useState('')
+  const [imageName, setImageName] = useState(null)
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -37,10 +38,12 @@ function AdminCreateEvent() {
   }
 
   const handleFileChange = (e) => {
+    const file = e.target.files[0];
     setFormData(prev => ({
       ...prev,
-      image: e.target.files[0]
+      image: file
     }))
+    setImageName(file.name)
   }
 
   const handleAddLink = () => {
@@ -60,6 +63,11 @@ function AdminCreateEvent() {
       [field]: options
     }))
   }
+
+  useEffect(() => {
+    console.log("formData updated:", formData)
+  }, [formData])
+  
 
   const options = ["Batch", "Affiliation", "Employment Status", "Job Fields"];
   const [filterOpen, setFilterOpen] = useState(false)
@@ -134,19 +142,29 @@ function AdminCreateEvent() {
             {/* Date */}
             <div className='flex-1'>
               <label className="block mb-1 font-satoshi-medium">Date <span className='text-red-600'>*</span></label>
-              {/* <MultiDatePicker
-                initialDates={formData.date}
-                onApply={(datesString) =>
-                  setFormData((prev) => ({ ...prev, date: datesString }))
+              <MultiDatePicker
+                initialDates={formData.date && formData.time
+                  ? formData.date.split(',').map((d, i) => {
+                      const t = formData.time.split(',')[i]?.trim() || "00:00"
+                      return `${d.trim()} ${t}`
+                    }).join(', ')
+                  : ''
                 }
-              /> */}
-              <input type="text" name="date" value={formData.date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-2xl p-2" placeholder="YYYY-MM-DD" />
+                onApply={({ date, time }) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    date,
+                    time
+                  }))
+                }
+              />
+              {/* <input type="text" name="date" value={formData.date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-2xl p-2" placeholder="YYYY-MM-DD" /> */}
             </div>
             {/* Time */}
-            <div className='flex-1'>
+            {/* <div className='flex-1'>
               <label className="block mb-1 font-satoshi-medium">Time <span className='text-red-600'>*</span></label>
               <input type="text" name="time" value={formData.time} onChange={handleInputChange} className="w-full border border-gray-300 rounded-2xl p-2" placeholder="08:00" />
-            </div>
+            </div> */}
           </div>
 
           {/* Tags */}
@@ -178,7 +196,7 @@ function AdminCreateEvent() {
               <div className="flex flex-col items-center justify-center h-full p-4 pointer-events-none z-0">
                 <UploadCloud className='text-primary'/>
                 <h2 className="text-gray-500 text-center">Drag and drop file here or</h2>
-                <h2 className='text-primary underline'>choose file</h2>
+                <h2 className='text-primary underline'>{imageName === null ? 'choose file' : imageName}</h2>
               </div>
             </div>
           </div>
@@ -233,7 +251,9 @@ function AdminCreateEvent() {
                 {activeFilter != null && (
                   <div className="absolute left-full top-0 ml-2 w-60 h-full bg-white border shadow-lg rounded-2xl z-50">
                     {activeFilter === 'Batch' ? (
-                      <></>
+                      <>
+                        <h2>Batch of Alumni</h2>
+                      </>
                     ) : activeFilter === 'Affiliation' ? (
                       <></>
                     ) : activeFilter === 'Employment Status' ? (
