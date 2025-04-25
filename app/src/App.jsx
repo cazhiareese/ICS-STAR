@@ -64,6 +64,9 @@ import AdminCreateNewsletter from "./RootPages/AdminPages/NewsLetter/AdminCreate
 import AdminNewsletterDetails from "./RootPages/AdminPages/NewsLetter/AdminNewsletterDetails";
 
 
+
+import NewsletterLanding from "./RootPages/AlumniPages/Newsletter/newsletterlanding";
+
 const isSignedIn = !!localStorage.getItem("token");
 //const isSignedIn = true;
 console.log("isSignedIn:", isSignedIn);
@@ -77,8 +80,6 @@ import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewl
 
 
 //const isSignedIn = !!localStorage.getItem("token");
-
-
 
 
 function App() {
@@ -170,6 +171,7 @@ function App() {
 
                 
                 <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+            <Route path="alumni/newsletter" element={<NewsletterLanding />} />
 
                 <Route path="*" element={<Unauthorized />} />
               </>

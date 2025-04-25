@@ -80,11 +80,9 @@ const EventsLanding = () => {
 
     useEffect(() => {
         console.log("SDFSDD")
+        console.log(API_BASE_URL)
 
         const fetchReservations = async () => {
-            
-
-            
             try {
                 const response = await axios.get(`${API_BASE_URL}/events/confirmed`, {
                     headers: {
