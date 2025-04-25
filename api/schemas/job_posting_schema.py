@@ -29,6 +29,8 @@ class JobPostingOut(BaseModel):
     interested_count: int
     employment_type: EmploymentTypeEnum
     mode: JobModeEnum
+    link: str
+    image: Optional[str] = None
     
     class Config:
         from_attributes = True

@@ -8,52 +8,98 @@ from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostin
 import datetime
 from uuid import UUID
 
-def search_job(
+def admin_search_job(
         db: Session,
-        title_string: str = "",
-        company: str = ""
+        creator_name: str = "",
+        tag: str = "",
+        company: str = "",
+        employment_type: str = "",
+        sort_by: str = "date_desc"
 ) -> list[JobSearchOut]:
     
-    # Base query
+    # Start with a base query
+    post_query = db.query(JobPosting.post_id)\
+        .join(User, User.user_id == JobPosting.user_id)\
+        .filter(JobPosting.is_deleted == False)
+
+    # Apply optional filters
+    if creator_name:
+        post_query = post_query.filter(func.concat(User.first_name, ' ', User.last_name).ilike(f"%{creator_name}%"))
+
+    if company:
+        post_query = post_query.filter(JobPosting.company.ilike(f"%{company}%"))
+        
+    if employment_type:
+        post_query = post_query.filter(JobPosting.employment_type == employment_type)
+
+    if tag:
+        tags_list = [t.strip() for t in tag.split(',') if t.strip()]
+        
+        if tags_list:
+            tag_post_ids = db.query(JobPostingTag.post_id).filter(or_(*[JobPostingTag.tag.ilike(f"%{t}%") for t in tags_list])).distinct()
+            
+            post_query = post_query.filter(JobPosting.post_id.in_(tag_post_ids))
+    
+    matching_post_ids = [post_id for (post_id,) in post_query.all()]
+    
+    if not matching_post_ids:
+        return []
+    
+    # Now we create the bigger query
     query = db.query(
-    JobPosting.post_id,
-    JobPosting.title,
-    JobPosting.company,
-    JobPosting.description,
-    func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
-    func.count(JobPostingInterestedIn.post_id).label("interested_in")
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.created_at,
+        JobPosting.employment_type,
+        func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
+        func.count(JobPostingInterestedIn.post_id).label("interested_in")
     ).join(
         User, User.user_id == JobPosting.user_id
     ).outerjoin(
         JobPostingInterestedIn, JobPostingInterestedIn.post_id == JobPosting.post_id
     ).filter(
-        JobPosting.is_deleted == False
+        JobPosting.post_id.in_(matching_post_ids)
     ).group_by(
         JobPosting.post_id, User.first_name, User.last_name
     )
-
-    # Apply search filter if provided
-    if title_string:
-        query = query.filter(JobPosting.title.ilike(f"%{title_string}%"))
-
-    if company:
-        query = query.filter(JobPosting.company.ilike(f"%{company}%"))
+    
+    # Apply sorting based on sort_by parameter
+    if sort_by == "date_desc":
+        query = query.order_by(JobPosting.created_at.desc())
+    elif sort_by == "date_asc":
+        query = query.order_by(JobPosting.created_at.asc())
+    elif sort_by == "creator_asc":
+        query = query.order_by(func.concat(User.first_name, ' ', User.last_name).asc())
+    elif sort_by == "interested_desc":
+        query = query.order_by(func.count(JobPostingInterestedIn.post_id).desc())
+    elif sort_by == "interested_asc":
+        query = query.order_by(func.count(JobPostingInterestedIn.post_id).asc())
 
     jobs = query.all()
-
-    if not jobs:
-        return []
-
+    
+    all_tags = db.query(JobPostingTag.post_id, JobPostingTag.tag).filter(JobPostingTag.post_id.in_(matching_post_ids)).all()
+    
+    # Organize tags by post_id
+    tags_by_post = {}
+    for post_id, tag in all_tags:
+        if post_id not in tags_by_post:
+            tags_by_post[post_id] = []
+        tags_by_post[post_id].append(tag)
+    
     jobs_out_list = []
-
     for job in jobs:
         job_out = JobSearchOut(
             id=job.post_id,
             title=job.title,
             company=job.company,
             description=job.description,
+            employment_type=job.employment_type,
             posted_by=job.posted_by,
-            interested_in=job.interested_in
+            created_at=job.created_at.strftime("%m/%d/%Y") if job.created_at else None,
+            interested_in=job.interested_in,
+            tags=tags_by_post.get(job.post_id, [])
         )
         jobs_out_list.append(job_out)
 
@@ -85,7 +131,7 @@ def view_interested_in(
     interested_users = query.all()
 
     if not interested_users:
-        return [], {}
+        return []
 
     interested_out_list = []
 
@@ -167,6 +213,312 @@ def get_current_interested(
         JobPostingInterestedIn.post_id == post_id,
         JobPostingInterestedIn.created_at.between(start_of_today, end_of_today)
     )
+
+    interested_users = query.all()
+
+    if not interested_users:
+        return []
+
+    interested_out_list = []
+
+    for user in interested_users:
+        user_out = UserInterestedOut(
+            id=user.user_id,
+            name=user.name,
+            batch=user.student_number[:4],
+            image=f"{STORAGE_STRING}{user.image}" if user.image else None,
+            location=user.location,
+            title=user.title,
+            industry=user.industry,
+            date_of_interest=user.created_at.strftime("%m/%d/%Y") if user.created_at else None
+        )
+        interested_out_list.append(user_out)
+
+    return interested_out_list
+
+def add_user_interested(
+        db: Session,
+        user_id: UUID,
+        post_id: UUID
+) -> dict:
+    
+    query = db.query(JobPostingInterestedIn).filter(JobPostingInterestedIn.user_id == user_id,JobPostingInterestedIn.post_id == post_id).first()
+
+    if query:
+        return False
+
+    # Add the user to the interested list
+    new_interest = JobPostingInterestedIn(user_id=user_id, post_id=post_id)
+    db.add(new_interest)
+    db.commit()
+    db.refresh(new_interest)
+
+    success_message = {
+        "success": True,
+        "message": "User added to interested list successfully.",
+        "user_id": user_id,
+        "post_id": post_id
+    }
+
+    return success_message
+
+def get_all_user_interested_by_name_alphabetical(
+        db: Session,
+        post_id: UUID
+) -> list[UserInterestedOut]:
+    
+    # Query to get all interested users sorted by name
+    query = db.query(
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name).label("name"),
+        User.student_number,
+        func.concat(User.state, ', ', User.country).label("location"),
+        User.industry,
+        User.image,
+        JobPosting.title,
+        JobPostingInterestedIn.created_at
+    ).join(
+        JobPostingInterestedIn, JobPostingInterestedIn.user_id == User.user_id
+    ).join(
+        JobPosting, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPostingInterestedIn.post_id == post_id
+    ).order_by(func.concat(User.first_name, ' ', User.last_name).asc())
+
+    interested_users = query.all()
+
+    if not interested_users:
+        return []
+
+    interested_out_list = []
+
+    for user in interested_users:
+        user_out = UserInterestedOut(
+            id=user.user_id,
+            name=user.name,
+            batch=user.student_number[:4],
+            image=f"{STORAGE_STRING}{user.image}" if user.image else None,
+            location=user.location,
+            title=user.title,
+            industry=user.industry,
+            date_of_interest=user.created_at.strftime("%m/%d/%Y") if user.created_at else None
+        )
+        interested_out_list.append(user_out)
+
+    return interested_out_list
+
+def get_all_user_interested_by_name_reverse(
+        db: Session,
+        post_id: UUID
+) -> list[UserInterestedOut]:
+    
+    # Query to get all interested users sorted by name in reverse
+    query = db.query(
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name).label("name"),
+        User.student_number,
+        func.concat(User.state, ', ', User.country).label("location"),
+        User.industry,
+        User.image,
+        JobPosting.title,
+        JobPostingInterestedIn.created_at
+    ).join(
+        JobPostingInterestedIn, JobPostingInterestedIn.user_id == User.user_id
+    ).join(
+        JobPosting, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPostingInterestedIn.post_id == post_id
+    ).order_by(func.concat(User.first_name, ' ', User.last_name).desc())
+
+    interested_users = query.all()
+
+    if not interested_users:
+        return []
+
+    interested_out_list = []
+
+    for user in interested_users:
+        user_out = UserInterestedOut(
+            id=user.user_id,
+            name=user.name,
+            batch=user.student_number[:4],
+            image=f"{STORAGE_STRING}{user.image}" if user.image else None,
+            location=user.location,
+            title=user.title,
+            industry=user.industry,
+            date_of_interest=user.created_at.strftime("%m/%d/%Y") if user.created_at else None
+        )
+        interested_out_list.append(user_out)
+
+    return interested_out_list
+
+def get_all_user_interested_by_batch_descending(
+        db: Session,
+        post_id: UUID
+) -> list[UserInterestedOut]:
+    
+    # Student number is first four characters of the user_id
+
+    query = db.query(
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name).label("name"),
+        User.student_number,
+        func.concat(User.state, ', ', User.country).label("location"),
+        User.industry,
+        User.image,
+        JobPosting.title,
+        JobPostingInterestedIn.created_at
+    ).join(
+        JobPostingInterestedIn, JobPostingInterestedIn.user_id == User.user_id
+    ).join(
+        JobPosting, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPostingInterestedIn.post_id == post_id
+    )
+
+    interested_users = query.all()
+
+    if not interested_users:
+        return []
+    
+    interested_out_list = []
+
+    for user in interested_users:
+        user_out = UserInterestedOut(
+            id=user.user_id,
+            name=user.name,
+            batch=user.student_number[:4],
+            image=f"{STORAGE_STRING}{user.image}" if user.image else None,
+            location=user.location,
+            title=user.title,
+            industry=user.industry,
+            date_of_interest=user.created_at.strftime("%m/%d/%Y") if user.created_at else None
+        )
+        interested_out_list.append(user_out)
+
+    # Sort by batch (first four characters of student_number) in descending order
+
+    interested_out_list.sort(key=lambda x: x.batch, reverse=True)
+
+    return interested_out_list
+
+def get_all_user_interested_by_batch_ascending(
+        db: Session,
+        post_id: UUID
+) -> list[UserInterestedOut]:
+    
+    # Student number is first four characters of the user_id
+
+    query = db.query(
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name).label("name"),
+        User.student_number,
+        func.concat(User.state, ', ', User.country).label("location"),
+        User.industry,
+        User.image,
+        JobPosting.title,
+        JobPostingInterestedIn.created_at
+    ).join(
+        JobPostingInterestedIn, JobPostingInterestedIn.user_id == User.user_id
+    ).join(
+        JobPosting, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPostingInterestedIn.post_id == post_id
+    )
+
+    interested_users = query.all()
+
+    if not interested_users:
+        return []
+    
+    interested_out_list = []
+
+    for user in interested_users:
+        user_out = UserInterestedOut(
+            id=user.user_id,
+            name=user.name,
+            batch=user.student_number[:4],
+            image=f"{STORAGE_STRING}{user.image}" if user.image else None,
+            location=user.location,
+            title=user.title,
+            industry=user.industry,
+            date_of_interest=user.created_at.strftime("%m/%d/%Y") if user.created_at else None
+        )
+        interested_out_list.append(user_out)
+
+    # Sort by batch (first four characters of student_number) in ascending order
+
+    interested_out_list.sort(key=lambda x: x.batch)
+
+    return interested_out_list
+
+def get_all_user_interested_by_date_of_interest_newest(
+        db: Session,
+        post_id: UUID
+) -> list[UserInterestedOut]:
+    
+    # Query to get all interested users sorted by date of interest (newest first)
+    query = db.query(
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name).label("name"),
+        User.student_number,
+        func.concat(User.state, ', ', User.country).label("location"),
+        User.industry,
+        User.image,
+        JobPosting.title,
+        JobPostingInterestedIn.created_at
+    ).join(
+        JobPostingInterestedIn, JobPostingInterestedIn.user_id == User.user_id
+    ).join(
+        JobPosting, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPostingInterestedIn.post_id == post_id
+    ).order_by(JobPostingInterestedIn.created_at.desc())
+
+    interested_users = query.all()
+
+    if not interested_users:
+        return []
+
+    interested_out_list = []
+
+    for user in interested_users:
+        user_out = UserInterestedOut(
+            id=user.user_id,
+            name=user.name,
+            batch=user.student_number[:4],
+            image=f"{STORAGE_STRING}{user.image}" if user.image else None,
+            location=user.location,
+            title=user.title,
+            industry=user.industry,
+            date_of_interest=user.created_at.strftime("%m/%d/%Y") if user.created_at else None
+        )
+        interested_out_list.append(user_out)
+
+    return interested_out_list
+
+def get_all_user_interested_by_date_of_interest_oldest(
+        db: Session,
+        post_id: UUID
+) -> list[UserInterestedOut]:
+    
+    # Query to get all interested users sorted by date of interest (oldest first)
+    query = db.query(
+        User.user_id,
+        func.concat(User.first_name, ' ', User.last_name).label("name"),
+        User.student_number,
+        func.concat(User.state, ', ', User.country).label("location"),
+        User.industry,
+        User.image,
+        JobPosting.title,
+        JobPostingInterestedIn.created_at
+    ).join(
+        JobPostingInterestedIn, JobPostingInterestedIn.user_id == User.user_id
+    ).join(
+        JobPosting, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPostingInterestedIn.post_id == post_id
+    ).order_by(JobPostingInterestedIn.created_at.asc())
 
     interested_users = query.all()
 
