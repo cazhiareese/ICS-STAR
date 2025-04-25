@@ -15,14 +15,14 @@ function AdminNewsletter() {
   useEffect(() => {
     const dummy = {
       title: 'Sample Title',
-      image: 'https://via.placeholder.com/150',
+      image: null,
       date_posted: '2025-04-26',
       context: 'This is a sample context description for the dummy data.'
     };
 
     const tags = ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5'];
     setTags(tags);
-    const duplicatedData = Array(5).fill().map(() => ({ ...dummy }));
+    const duplicatedData = Array(4).fill().map(() => ({ ...dummy }));
 
     setNewsletter(duplicatedData);
   }, []);
@@ -59,7 +59,7 @@ function AdminNewsletter() {
 
       {/* Card display section */}
       <div className="flex flex-col items-center w-full mt-4">
-      <div className="flex flex-col  w-full max-w-full px-5">
+      <div className="flex flex-col  w-full max-w-full px-5 ">
           {newsletter.map((item, index) => (
             <AdminNewsletterCard
   key={index}
