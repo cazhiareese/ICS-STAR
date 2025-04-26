@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { MoveLeft, Plus, Upload, X } from 'lucide-react';  // Import the X icon from lucide-react
+import React, { useEffect, useState } from 'react';
+import { MoveLeft, Plus, Upload, X, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
 
@@ -10,18 +10,24 @@ function AdminCreateNewsletter() {
   const [content, setContent] = useState('');
   const [link, setLink] = useState('');
   const [tags, setTags] = useState([]);
-  const [selectedTag, setSelectedTag] = useState('');
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const [allAlumni, setAllAlumni] = useState(false);
-  const [filterBy, setFilterBy] = useState('');
-  const [image, setImage] = useState(null); // Store the uploaded image
+  const [image, setImage] = useState(null);
   const [careerList, setCareerList] = useState([]);
   const [dateList, setDateList] = useState([]);
 
-  console.log(dateList, careerList);
+  //console.log(dateList, careerList,selectedTags);
+
+  useEffect(() => {
+    const tags = ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5', 'Tag6'];
+    setTags(tags);
+  }, []);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file)); // Create a URL for the selected image to show preview
+      setImage(URL.createObjectURL(file));
     }
   };
 
@@ -29,16 +35,29 @@ function AdminCreateNewsletter() {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file)); // Create a URL for the dropped image to show preview
+      setImage(URL.createObjectURL(file));
     }
   };
 
   const handleDragOver = (e) => {
-    e.preventDefault(); // Allow drop by preventing default behavior
+    e.preventDefault();
   };
 
   const handleRemoveImage = () => {
-    setImage(null); // Remove the image by setting the state to null
+    setImage(null);
+  };
+
+  const handleTagChange = (e) => {
+    const value = e.target.value;
+    setSelectedTags((prevSelectedTags) =>
+      prevSelectedTags.includes(value)
+        ? prevSelectedTags.filter((tag) => tag !== value)
+        : [...prevSelectedTags, value]
+    );
+  };
+
+  const toggleTagDropdown = () => {
+    setTagDropdownOpen((prev) => !prev);
   };
 
   return (
@@ -106,18 +125,34 @@ function AdminCreateNewsletter() {
           </div>
 
           {/* Tags */}
-          <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
+          <div className="flex-1 p-6 border border-gray-400 rounded-3xl relative">
             <label className="block mb-1 font-satoshi-medium">Tags (Optional)</label>
-            <select
-              className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
-              value={selectedTag}
-              onChange={(e) => setSelectedTag(e.target.value)}
+            <div
+              className="w-full border border-gray-300 rounded-2xl p-2 outline-none flex justify-between items-center cursor-pointer"
+              onClick={toggleTagDropdown}
             >
-              <option value="">Select tag</option>
-              <option value="Event">Event</option>
-              <option value="Update">Update</option>
-              <option value="Reminder">Reminder</option>
-            </select>
+              <span className="text-gray-600">
+                {selectedTags.length > 0 ? selectedTags.join(', ') : 'Select tags'}
+              </span>
+              <ChevronDown size={18} className="text-gray-600" />
+            </div>
+
+            {tagDropdownOpen && (
+              <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto">
+                {tags.map((tag) => (
+                  <label key={tag} className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100">
+                    <input
+                      type="checkbox"
+                      value={tag}
+                      checked={selectedTags.includes(tag)}
+                      onChange={handleTagChange}
+                      className="rounded-sm"
+                    />
+                    {tag}
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -153,10 +188,10 @@ function AdminCreateNewsletter() {
                   />
                   <button
                     onClick={handleRemoveImage}
-                    className="absolute bottom-32 left-29 bg-red-500 text-white rounded-full p-1"
+                    className="absolute bottom-32 left-28 bg-red-500 text-white rounded-full p-1"
                     type="button"
                   >
-                    <X size={11} /> {/* Use the X icon from lucide-react */}
+                    <X size={11} />
                   </button>
                 </div>
               ) : (
