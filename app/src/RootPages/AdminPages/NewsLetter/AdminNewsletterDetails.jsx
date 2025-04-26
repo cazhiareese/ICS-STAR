@@ -6,7 +6,6 @@ import NewsletterModal from '../../../components/AdminComponents/Adminnewsletter
 
 function AdminNewsletterDetails() {
   const { id } = useParams() // Get newsletter ID from URL params
-  console.log(id);
   const navigate = useNavigate()
   const [newsletter, setNewsletter] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)

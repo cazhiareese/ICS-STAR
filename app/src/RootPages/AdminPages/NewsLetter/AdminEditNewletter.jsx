@@ -1,12 +1,12 @@
-import React, { use, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MoveLeft, Plus, Upload, X, ChevronDown } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
 import NewsletterModal from '../../../components/AdminComponents/Adminnewslettermodal';
 
 function AdminEditNewsletter() {
-  //use params to get the id of the newsletter
-  const id = "naondandasndaldlasdas";  //palitan mo to ng actual using params
+  const { newsletter_id } = useParams(); // Get newsletter ID from URL params
 
   const navigate = useNavigate();
   const option = "edit";
@@ -27,44 +27,42 @@ function AdminEditNewsletter() {
   const [contentError, setContentError] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newsletter, setNewsletter] = useState(null);
-  
-
 
   useEffect(() => {
+    const fetchNewsletter = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/newsletter/${newsletter_id}`
+        );
+        const news = response.data;
+        setNewsletter(news);
+        setTitle(news.title || '');
+        setContent(news.content || '');
+        setLinkList(news.links || []);
+        setSelectedTags(news.tags || []);
+        setImage(news.image || null);
+        setAllAlumni(news.sendAll || false);
+        setCareerList(news.sendEmployment || []);
+        setDateList(news.sendtoBatch || []);
+      } catch (err) {
+        console.error(
+          err.response?.status === 404
+            ? 'Newsletter not found'
+            : err.response?.status === 422
+            ? 'Invalid newsletter ID format'
+            : 'Failed to fetch newsletter'
+        );
+      }
+    };
 
-        //fetch mo dito actual newsletter using id, tapos i set mo
-        const longcontent = `Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+    if (newsletter_id) {
+      fetchNewsletter();
+    }
 
-        Mauris nec lorem quis orci pharetra aliquet. Nulla facilisi. Curabitur id libero vitae magna commodo lacinia. Suspendisse potenti. Vestibulum tincidunt ipsum sed erat dapibus, vitae fermentum nunc blandit. Phasellus sit amet ex nec arcu finibus elementum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed accumsan, sem in fringilla tincidunt, nulla nulla cursus nulla, sed cursus sapien libero eu odio.
-        
-        Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morbi bibendum tincidunt tortor, nec facilisis magna malesuada ac. Sed sed nibh ut massa posuere rhoncus nec at augue. Integer sed nisi non tellus fermentum venenatis ut nec metus. Etiam vehicula consequat orci, vitae dapibus libero aliquet vel. Nullam non justo nec sapien tristique volutpat.`;
-        
-        
-            const news = {
-              title: 'Sample Titfsle',
-              image: null, // no image
-              date_posted: '2025-04-26',
-              content: longcontent,
-              tags: ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5'],
-              link: [
-                'https://www.youtube.com/watch?v=oXdw4w9WgXcQ&pp=ygUJcmlnYnkgZG9n',
-                'https://www.youtube.com/watch?v=oXdw4w9WgXcQ&pp=ygUJcmlnYnkgZG9n'
-              ]
-            };
-        
-            setNewsletter(news);
-            console.log(newsletter);
-            setTitle(news.title || '');
-            setContent(news.content || '');
-            setLinkList(news.link || []);
-            setSelectedTags(news.tags || []);
-            setImage(news.image || null);
-
-    //fetch  mo mga tags
+    // Fetch tags (keeping dummy data as no API endpoint provided for tags)
     const dummy = ["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"];
     setTags(dummy);
-  
-  }, []);
+  }, [newsletter_id]);
 
   const handleLinkAdd = () => {
     if (link.trim() !== '') {
@@ -76,7 +74,7 @@ function AdminEditNewsletter() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Check if title and content are empty
@@ -87,15 +85,46 @@ function AdminEditNewsletter() {
     setContentError(!contentIsValid);
 
     if (titleIsValid && contentIsValid) {
-      // Proceed with form submission if no errors
-      console.log('Form submitted');
-      setIsModalOpen(true);
-      // Add actual submission logic here (API call, etc.)
+      try {
+        const payload = new FormData();
+        payload.append("title", title);
+        payload.append("content", content);
+        if (image) payload.append("image", image);
+        payload.append("sendEmail", false); // Assuming email is not sent on edit
+        payload.append("sendAll", allAlumni);
+        payload.append("links", JSON.stringify(linklist));
+        payload.append("tags", JSON.stringify(selectedTags));
+        payload.append("sendtoBatch", JSON.stringify(dateList));
+        payload.append("sendEmployment", JSON.stringify(careerList));
+        payload.append("sendtoJob", JSON.stringify([])); // No job roles in form
+
+        const response = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/edit/${newsletter_id}`,
+          payload,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+        );
+
+        console.log('Newsletter updated:', response.data);
+        setIsModalOpen(true);
+      } catch (err) {
+        console.error(
+          err.response?.status === 404
+            ? 'Newsletter not found'
+            : err.response?.status === 422
+            ? 'Invalid data format'
+            : 'Failed to update newsletter'
+        );
+      }
     }
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    navigate('/admin/newsletters'); // Redirect after modal close
   };
 
   const formData = {
@@ -262,7 +291,7 @@ function AdminEditNewsletter() {
                 e.preventDefault();
                 const file = e.dataTransfer.files[0];
                 if (file) {
-                  setImage(URL.createObjectURL(file));
+                  setImage(file); // Store the actual File object
                 }
               }}
               onDragOver={(e) => e.preventDefault()}
@@ -270,7 +299,7 @@ function AdminEditNewsletter() {
               {image ? (
                 <div className="relative">
                   <img
-                    src={image}
+                    src={typeof image === 'string' ? image : URL.createObjectURL(image)}
                     alt="Selected"
                     className="w-32 h-32 object-cover rounded-lg mb-4"
                   />
@@ -292,7 +321,7 @@ function AdminEditNewsletter() {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => setImage(URL.createObjectURL(e.target.files[0]))}
+                  onChange={(e) => setImage(e.target.files[0])} // Store the actual File object
                 />
               </label>
             </div>
