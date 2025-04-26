@@ -7,10 +7,15 @@ function AdminNewsletterDetails() {
   const [newsletter, setNewsletter] = useState(null);
 
   useEffect(() => {
-    const longContext = `Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis... (etc)`;
+    const longContext = `Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+
+Mauris nec lorem quis orci pharetra aliquet. Nulla facilisi. Curabitur id libero vitae magna commodo lacinia. Suspendisse potenti. Vestibulum tincidunt ipsum sed erat dapibus, vitae fermentum nunc blandit. Phasellus sit amet ex nec arcu finibus elementum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed accumsan, sem in fringilla tincidunt, nulla nulla cursus nulla, sed cursus sapien libero eu odio.
+
+Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morbi bibendum tincidunt tortor, nec facilisis magna malesuada ac. Sed sed nibh ut massa posuere rhoncus nec at augue. Integer sed nisi non tellus fermentum venenatis ut nec metus. Etiam vehicula consequat orci, vitae dapibus libero aliquet vel. Nullam non justo nec sapien tristique volutpat.`;
+
 
     const dummy = {
-      title: 'Sample Title',
+      title: 'Sample Titfsle',
       image: null, // no image
       date_posted: '2025-04-26',
       context: longContext,
@@ -55,7 +60,7 @@ function AdminNewsletterDetails() {
 
       {/* Card */}
       <div className="flex justify-center w-full">
-      <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-6 w-[1350px] justify">
+      <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-4 w-[1350px] ">
         {/* Image or Placeholder */}
         {newsletter.image ? (
           <img
@@ -70,10 +75,10 @@ function AdminNewsletterDetails() {
         )}
 
         {/* Title */}
-        <h1 className="text-3xl font-satoshi-bold">{newsletter.title}</h1>
+        <h1 className="text-[40px] font-satoshi-bold">{newsletter.title}</h1>
 
         {/* Date */}
-        <div className="flex items-center gap-2 text-gray-500">
+        <div className="flex items-center gap-2 text-black font-satoshi-regular ">
           <CalendarDays className="w-5 h-5" />
           <p className="font-satoshi-regular">{new Date(newsletter.date_posted).toLocaleDateString('en-US', {
             month: 'short', day: 'numeric', year: 'numeric'
@@ -90,9 +95,10 @@ function AdminNewsletterDetails() {
         </div>
 
         {/* Context */}
-        <div className="text-gray-700 whitespace-pre-line leading-relaxed font-satoshi-regular">
-          {newsletter.context}
-        </div>
+        <div className="text-black whitespace-pre-line leading-relaxed font-satoshi-regular w-full">
+  {newsletter.context}
+</div>
+
 
         {/* Links */}
         {newsletter.link.length > 0 && (
