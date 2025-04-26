@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MoveLeft, Plus, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CareerModal from '../../../components/AdminComponents/CareerModalSelection';
+const FilterDropdown = React.lazy(() => import("../../../components/AdminComponents/newsletterfilterdropdown"));
 
 function AdminCreateNewsletter() {
   const navigate = useNavigate();
@@ -126,16 +127,7 @@ function AdminCreateNewsletter() {
               />
               <span>All Alumni</span>
             </div>
-            <select
-              className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
-              value={filterBy}
-              onChange={(e) => setFilterBy(e.target.value)}
-            >
-              <option value="">Filter by</option>
-              <option value="Batch">Batch</option>
-              <option value="Location " onClick={() => setIsCareerModalOpen(true)}>Location</option>
-              <option value="Program">Program</option>
-            </select>
+    <FilterDropdown/>
           </div>
 
 {/* Image Upload */}
