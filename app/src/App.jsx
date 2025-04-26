@@ -66,6 +66,7 @@ console.log("isSignedIn:", isSignedIn);
 
 import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
+import AdminUserReports from "./RootPages/AdminPages/Layouts/adminuserreports";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
@@ -177,6 +178,7 @@ function App() {
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
               <Route path="industry-reports" element={<AdminIndustryInformation/>}/>
               <Route path="country-reports" element={<AdminCountryInformation/>}/>
+              <Route path="user-engagement-reports" element={<AdminUserReports/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
