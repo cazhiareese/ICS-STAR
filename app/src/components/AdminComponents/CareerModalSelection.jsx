@@ -59,15 +59,26 @@ const CareerModal = ({ setCareerList, setIsCareerModalOpen }) => {
     job.toLowerCase().includes(careerInput.toLowerCase())
   );
 
+  const handleSubmit = () => {
+    setCareerList(careerList);
+    setIsCareerModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    internalSetCareerList([]); // Clear the career list
+    setCareerList([]); // Ensure the parent component's state is also cleared
+    setIsCareerModalOpen(false); // Close the modal
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="bg-white border border-disabled p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
-        <div className="flex justify-between items-center border-b pb-2">
-          <h2 className="text-lg font-satoshi-bold sm:text-[24px]">Add Affiliations</h2>
+      <div className="bg-white border border-disabled p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen overflow-auto">
+        <div className="flex justify-between items-center pb-2">
+          <h2 className="text-lg font-satoshi-bold sm:text-[24px]">Alumni Career</h2>
           <XCircle
             size={24}
             className="cursor-pointer text-white bg-error rounded-full hover:bg-red-800"
-            onClick={() => setIsCareerModalOpen(false)} // Close modal on click
+            onClick={handleCloseModal} // Close modal and clear career list
           />
         </div>
 
@@ -92,11 +103,11 @@ const CareerModal = ({ setCareerList, setIsCareerModalOpen }) => {
                 {career}
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent triggering any unintended event listeners
+                    e.stopPropagation();
                     removeCareer(index);
                   }}
                   className="ml-2"
-                  type="button" // Prevent form submission behavior
+                  type="button"
                 >
                   <X size={18} />
                 </button>
@@ -106,7 +117,7 @@ const CareerModal = ({ setCareerList, setIsCareerModalOpen }) => {
         )}
 
         <div className="text-sm text-gray-500 mb-2">Suggestions</div>
-        <div className="space-y-2 max-h-40 overflow-y-auto">
+        <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-blue">
           {(careerInput ? filteredJobs : jobs.slice(0, 4)).map((job, index) =>
             !careerList.includes(job) ? (
               <div
@@ -118,6 +129,16 @@ const CareerModal = ({ setCareerList, setIsCareerModalOpen }) => {
               </div>
             ) : null
           )}
+        </div>
+
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleSubmit}
+            className="bg-primary text-white px-4 py-2 rounded-full hover:bg-primary-dark"
+            type="button"
+          >
+            Submit
+          </button>
         </div>
       </div>
     </div>
