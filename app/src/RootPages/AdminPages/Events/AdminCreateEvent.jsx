@@ -5,6 +5,10 @@ import axios from 'axios'
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
 
+
+// DON'T TOUCH GUMAGANA NA TO PERO DI KO ALAM KUNG BAKET
+// FOR EDIT AND CREATE EVENT
+// - redd
 function AdminCreateEvent({purpose}) {
   const navigate = useNavigate()
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
@@ -38,6 +42,8 @@ function AdminCreateEvent({purpose}) {
   const dropdownRef = useRef(null)
   const [linkInput, setLinkInput] = useState("")
   const [submitLoading, setSubmitLoading] = useState(false)
+  const [showSubmitModal, setShowSubmitModal] = useState(false)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
 
 function handleAddLink() {
   if (linkInput.trim() !== "") {
@@ -480,10 +486,67 @@ function removeLink(index) {
         </div>
 
         <div className="text-right">
-          <button onClick={handleSubmit} className="bg-primary text-white text-lg px-10 py-3 rounded-2xl cursor-pointer hover:bg-hover">{submitLoading ? (<CircularLoading/>) : ('Submit')}</button>
+          <button onClick={() => {setShowSubmitModal(true)}} className="bg-primary text-white text-lg px-10 py-3 rounded-2xl cursor-pointer hover:bg-hover">{submitLoading ? (<CircularLoading/>) : ('Submit')}</button>
         </div>
       </div>
+      {showSubmitModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 font-satoshi-regular">
+          <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
+            
+            {submitLoading ? (
+              <div className="h-full">
+                <CircularLoading />
+              </div>
+            ) : submitSuccess ? (
+              <>
+                <div className="text-success">
+                  <CheckCircle size={48} />
+                </div>
+                <p className="text-xl font-satoshi-medium mt-4 text-center">
+                  {purpose === 'create' ? 'Created event!' : 'Saved changes!'}
+                </p>
+                <button
+                  className="bg-primary text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
+                  onClick={() => {
+                    setShowSubmitModal(false)
+                    navigate(-1)
+                  }}
+                >
+                  Close
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-xl font-satoshi-medium text-center mt-4">
+                  {purpose === 'create'
+                    ? `Create event "${formData.title}"?`
+                    : `Save changes to "${formData.title}"?`}
+                </p>
+                <p className="text-gray-500 text-sm text-center mt-2">
+                  Email invites will be sent automatically.
+                </p>
+                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                  <button
+                    className="border border-primary text-primary px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    onClick={() => setShowSubmitModal(false)}
+                  >
+                    Not Yet
+                  </button>
+                  <button
+                    className="bg-primary text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    onClick={handleSubmit}
+                  >
+                    {purpose === 'create' ? 'Create Event' : 'Save Changes'}
+                  </button>
+                </div>
+              </>
+            )}
+            
+          </div>
+        </div>
+      )}
     </div>
+    
     )
   )
 }
