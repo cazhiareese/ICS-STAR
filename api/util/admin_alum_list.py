@@ -184,9 +184,10 @@ def get_alumni_filter(
     affiliation: Optional[str] = None,
     order_by: Optional[List[str]] = None,
     needs_verified: Optional[bool] = False,
+    page: int = 1
 ) -> List[Dict]:
     one_year_ago = datetime.now() - timedelta(days=365)
-    
+    ITEMS_PER_PAGE = 10
     # Base query
     query = db.query(
         User.user_id,
@@ -219,12 +220,7 @@ def get_alumni_filter(
         User.is_verified == True,
         User.user_type == 'alumni'
         )
-
-        # Append appropriate filters to the initial query
     if name:
-        # We have to also catch if full name was inputted (e.g. "John Doe" or "John Michael Doe")
-        #
-        # Split the name by space and filter for each part
         name_parts = name.split()
         if len(name_parts) == 1:
             query = query.filter(or_(User.first_name.ilike(f"%{name_parts[0]}%"), User.last_name.ilike(f"%{name_parts[0]}%")))
@@ -311,6 +307,9 @@ def get_alumni_filter(
             query = query.order_by(asc(User.last_name), asc(User.first_name))
 
 
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
+
     alumni = query.all()
 
     if not alumni:
@@ -360,9 +359,10 @@ def get_student_filter(
     affiliation: Optional[str] = None,
     order_by: Optional[List[str]] = None,
     needs_verified: Optional[bool] = False,
+    page: int=1
 ) -> List[Dict]:
     one_year_ago = datetime.now() - timedelta(days=365)
-    
+    ITEMS_PER_PAGE = 10
     # Base query
     query = db.query(
         User.user_id,
@@ -445,7 +445,8 @@ def get_student_filter(
         # Default ordering if none specified
             query = query.order_by(asc(User.last_name), asc(User.first_name))
 
-
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
     students = query.all()
 
     if not students:
