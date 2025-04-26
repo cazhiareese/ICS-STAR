@@ -24,7 +24,7 @@ function AdminEventCard({event}) {
     <div className='bg-primary h-24 w-full rounded-t-2xl'>
       <img src={event.image} alt="" className='h-full w-full object-cover rounded-t-2xl'/>
     </div>
-      <div className='flex flex-col flex-1 p-3 text-left'>
+      <div className='flex flex-col flex-1 p-3 text-left bg-zinc-50 rounded-b-3xl'>
         <div className='flex-1'>
           <h2 className='font-satoshi-bold text-2xl text-ellipsis whitespace-nowrap overflow-hidden'>{event.title}</h2>
           {/* Location */}
