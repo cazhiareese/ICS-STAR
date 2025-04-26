@@ -128,10 +128,10 @@ async def get_news(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
     
-@newsletter_router.delete("/delete")
+@newsletter_router.delete("/delete/{newsletter_id}")
 async def delete_news(
-        db: Session = Depends(get_db),
-        newsletter_id: UUID = Form(...)
+        newsletter_id: UUID,
+        db: Session = Depends(get_db)
 ):
     try:
         delete_util(
