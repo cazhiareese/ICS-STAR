@@ -47,7 +47,6 @@ def create_util(
         newsletter = Newsletter(
             title = title,
             content=content,
-            user_id = "61984760-9a95-42ec-a1f6-67f71370e1a5",
             image= image_url
         )
         db.add(newsletter)
@@ -167,7 +166,6 @@ def edit_util(
 
         newsletter.title = title 
         newsletter.content = content 
-        newsletter.user_id = "61984760-9a95-42ec-a1f6-67f71370e1a5",
         newsletter.image=image_url
 
         db.commit()  
