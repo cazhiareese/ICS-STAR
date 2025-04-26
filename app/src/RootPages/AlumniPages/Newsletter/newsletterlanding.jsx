@@ -15,7 +15,7 @@ export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick
     // };
 
     return (
-        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative  border-gray-200 border shadow-md p-5">
+        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative  border-gray-300 border shadow-md p-5">
             <div className=" "
             onClick={() => navigate(`/alumni/newsletter/${id}`)}
         >
