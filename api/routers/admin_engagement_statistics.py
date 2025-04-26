@@ -205,7 +205,7 @@ def get_top_interested_jobs(
     
     return result
 
-@router.get("/donation-drives/top", response_model=List[TopDriveResponse])
+@router.get("/donation-drives/most-donations", response_model=List[TopDriveResponse])
 def get_top_donation_drives(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -303,12 +303,11 @@ def get_top_donation_drives(
     
     return result
 
-@router.get("/donation-drives/top-donations", response_model=TopDonationDriveResponse)
+@router.get("/donation-drives/most-donors", response_model=TopDonationDriveResponse)
 def get_top_donation_drive(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
 ):
-    # --- Utility: Calculate start date based on time_range ---
     today = datetime.utcnow()
     if time_range == TimeRange.WEEK:
         start_date = today - timedelta(days=7)
@@ -317,7 +316,6 @@ def get_top_donation_drive(
     else:  # YEAR
         start_date = datetime(today.year - 1, today.month, today.day)
 
-    # --- Main Query ---
     drive = (
         db.query(
             DonationDrive.title,
@@ -339,6 +337,118 @@ def get_top_donation_drive(
         )
         .group_by(DonationDrive.drive_id, DonationDrive.title, DonationDrive.target_cost)
         .order_by(desc('amount_gathered'))
+        .first()
+    )
+
+    if not drive:
+        raise HTTPException(status_code=404, detail="No donation drives found for the selected time range.")
+
+    return TopDonationDriveResponse(
+        title=drive.title,
+        donor_count=drive.donor_count,
+        amount_gathered=float(drive.amount_gathered),
+        target_cost=float(drive.target_cost),
+        percentage_progress=float(drive.percentage_progress)
+    )
+
+@router.get("/donation-drives/top-donors", response_model=TopDonationDriveResponse)
+def get_top_donation_drive_by_donors(
+    time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
+    db: Session = Depends(get_db)
+):
+    today = datetime.utcnow()
+    if time_range == TimeRange.WEEK:
+        start_date = today - timedelta(days=7)
+    elif time_range == TimeRange.MONTH:
+        start_date = today - timedelta(days=30)
+    else:  # YEAR
+        start_date = datetime(today.year - 1, today.month, today.day)
+
+    # Create subqueries for monetary and in-kind donations to get unique donors per drive
+    monetary_donors = (
+        db.query(
+            MonetaryDonation.drive_id,
+            MonetaryDonation.user_id
+        )
+        .filter(
+            and_(
+                MonetaryDonation.date_donated >= start_date,
+                MonetaryDonation.is_acknowledged == True
+            )
+        )
+        .distinct()
+        .subquery('monetary_donors')
+    )
+    
+    in_kind_donors = (
+        db.query(
+            InKindDonation.drive_id,
+            InKindDonation.user_id
+        )
+        .filter(
+            and_(
+                InKindDonation.date_donated >= start_date,
+                InKindDonation.is_acknowledged == True
+            )
+        )
+        .distinct()
+        .subquery('in_kind_donors')
+    )
+    
+    # Union of both donor types
+    all_donors = (
+        db.query(
+            monetary_donors.c.drive_id.label('drive_id'), 
+            monetary_donors.c.user_id.label('user_id')
+        )
+        .union(
+            db.query(
+                in_kind_donors.c.drive_id.label('drive_id'), 
+                in_kind_donors.c.user_id.label('user_id')
+            )
+        )
+        .distinct()
+        .subquery('all_donors')
+    )
+    
+    # Get monetary amount for calculating progress
+    monetary_amounts = (
+        db.query(
+            MonetaryDonation.drive_id,
+            func.coalesce(func.sum(MonetaryDonation.amount), 0).label('amount_gathered')
+        )
+        .filter(
+            and_(
+                MonetaryDonation.date_donated >= start_date,
+                MonetaryDonation.is_acknowledged == True
+            )
+        )
+        .group_by(MonetaryDonation.drive_id)
+        .subquery('monetary_amounts')
+    )
+    
+    # Final query to get the drive with most donors
+    drive = (
+        db.query(
+            DonationDrive.title,
+            func.count(all_donors.c.user_id).label('donor_count'),
+            func.coalesce(monetary_amounts.c.amount_gathered, 0).label('amount_gathered'),
+            DonationDrive.target_cost,
+            (
+                func.coalesce(monetary_amounts.c.amount_gathered, 0) /
+                func.nullif(DonationDrive.target_cost, 0) * 100
+            ).label('percentage_progress')
+        )
+        .join(all_donors, DonationDrive.drive_id == all_donors.c.drive_id)
+        .outerjoin(monetary_amounts, DonationDrive.drive_id == monetary_amounts.c.drive_id)
+        .filter(DonationDrive.is_deleted == False)
+        .group_by(
+            DonationDrive.drive_id,
+            DonationDrive.title,
+            DonationDrive.target_cost,
+            monetary_amounts.c.amount_gathered
+        )
+        .order_by(desc('donor_count'))
         .first()
     )
 
