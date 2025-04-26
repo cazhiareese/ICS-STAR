@@ -19,7 +19,7 @@ function AdminCreateNewsletter() {
   };
 
   return (
-    <div className="p-6">
+    <div className="px-30 py-6 overflow-y-auto">
       {/* Back Button */}
       <button
         className="flex gap-2 mb-3 flex-row items-center cursor-pointer"
