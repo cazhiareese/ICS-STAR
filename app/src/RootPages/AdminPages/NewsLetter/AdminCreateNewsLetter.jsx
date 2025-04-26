@@ -13,15 +13,27 @@ function AdminCreateNewsletter() {
   const [selectedTag, setSelectedTag] = useState('');
   const [allAlumni, setAllAlumni] = useState(false);
   const [filterBy, setFilterBy] = useState('');
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(null); // Store the uploaded image
   const [careerList, setCareerList] = useState([]);
 
-
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file)); // Create a URL for the selected image to show preview
+    }
   };
 
-  console.log("Career List: ", careerList);
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file)); // Create a URL for the dropped image to show preview
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault(); // Allow drop by preventing default behavior
+  };
 
   return (
     <div className="px-30 py-6 overflow-y-auto">
@@ -38,7 +50,6 @@ function AdminCreateNewsletter() {
       <h1 className="font-satoshi-bold text-5xl mb-6">Create a Newsletter</h1>
 
       <form className="flex flex-col gap-6">
-
         {/* Title Input */}
         <div className="p-6 border border-gray-400 rounded-3xl">
           <label className="block mb-1 font-satoshi-medium">
@@ -66,43 +77,44 @@ function AdminCreateNewsletter() {
           />
         </div>
 
-{/* Links and Tags */}
-<div className="flex gap-4 flex-wrap md:flex-nowrap">
-  {/* Links */}
-  <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
-    <label className="block mb-1 font-satoshi-medium">Links (Optional)</label>
-    <div className="flex gap-2">
-      <input
-        type="text"
-        className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none"
-        placeholder="Enter link"
-        value={link}
-        onChange={(e) => setLink(e.target.value)}
-      />
-      <button
-        type="button"
-        className="bg-primary text-white rounded-full p-2"
-      >
-        <Plus size={18} />
-      </button>
-    </div>
-  </div>
+        {/* Links and Tags */}
+        <div className="flex gap-4 flex-wrap md:flex-nowrap">
+          {/* Links */}
+          <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
+            <label className="block mb-1 font-satoshi-medium">Links (Optional)</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none"
+                placeholder="Enter link"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+              />
+              <button
+                type="button"
+                className="bg-primary text-white rounded-full p-2"
+              >
+                <Plus size={18} />
+              </button>
+            </div>
+          </div>
 
-  {/* Tags */}
-  <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
-    <label className="block mb-1 font-satoshi-medium">Tags (Optional)</label>
-    <select
-      className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
-      value={selectedTag}
-      onChange={(e) => setSelectedTag(e.target.value)}
-    >
-      <option value="">Select tag</option>
-      <option value="Event">Event</option>
-      <option value="Update">Update</option>
-      <option value="Reminder">Reminder</option>
-    </select>
-  </div>
-</div>
+          {/* Tags */}
+          <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
+            <label className="block mb-1 font-satoshi-medium">Tags (Optional)</label>
+            <select
+              className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
+              value={selectedTag}
+              onChange={(e) => setSelectedTag(e.target.value)}
+            >
+              <option value="">Select tag</option>
+              <option value="Event">Event</option>
+              <option value="Update">Update</option>
+              <option value="Reminder">Reminder</option>
+            </select>
+          </div>
+        </div>
+
         {/* Email Send Options */}
         <div className="flex flex-wrap md:flex-nowrap gap-4">
           <div className="basis-[65%] p-6 border border-gray-400 rounded-3xl">
@@ -115,27 +127,38 @@ function AdminCreateNewsletter() {
               />
               <span>All Alumni</span>
             </div>
-    <FilterDropdown setCareerList={setCareerList}/>
+            <FilterDropdown setCareerList={setCareerList} />
           </div>
 
-{/* Image Upload */}
-<div className="basis-[35%] p-6 border border-gray-400 rounded-3xl">
-  <label className="block mb-1 font-satoshi-medium">Image (Optional)</label>
-  <div className="border border-dashed border-gray-400 rounded-2xl text-center flex flex-col items-center justify-center p-6">
-    <Upload className="text-primary mb-2" />
-    <p className="text-gray-600 text-sm mb-2">Drag and drop file here or</p>
-    <label className="text-blue-600 font-medium cursor-pointer">
-      Choose file
-      <input
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleImageChange}
-      />
-    </label>
-  </div>
-</div>
-
+          {/* Image Upload */}
+          <div className="basis-[35%] p-6 border border-gray-400 rounded-3xl">
+            <label className="block mb-1 font-satoshi-medium">Image (Optional)</label>
+            <div
+              className="border border-dashed border-gray-400 rounded-2xl text-center flex flex-col items-center justify-center p-6"
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+            >
+              {image ? (
+                <img
+                  src={image}
+                  alt="Selected"
+                  className="w-32 h-32 object-cover rounded-lg mb-4"
+                />
+              ) : (
+                <Upload className="text-primary mb-2" />
+              )}
+              <p className="text-gray-600 text-sm mb-2">Drag and drop file here or</p>
+              <label className="text-blue-600 font-medium cursor-pointer">
+                Choose file
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </label>
+            </div>
+          </div>
         </div>
 
         {/* Submit Button */}
