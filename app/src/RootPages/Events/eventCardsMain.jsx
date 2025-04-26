@@ -15,10 +15,12 @@ const EventCardsMain = () => {
     const token = localStorage.getItem("token");
     const [reservationSignal, setReservationSignal] = useState(false);
 
+
     const [userId, setUserId] = useState(null);
     const [event, setEvent] = useState(null);
     
     const navigate = useNavigate();
+    const [isGoing, setIsGoing] = useState(null);
     const [isGoing, setIsGoing] = useState(null);
     const [user, setUser] = useState(null);
     const id = useParams(); // Get the drive_id from the URL params
