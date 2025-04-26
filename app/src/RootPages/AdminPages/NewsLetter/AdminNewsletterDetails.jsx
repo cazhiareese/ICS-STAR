@@ -60,7 +60,7 @@ Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morb
 
       {/* Card */}
       <div className="flex justify-center w-full">
-      <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-4 w-[1350px] ">
+      <div className="bg-whitey rounded-[20px] border border-disabled  p-6 flex flex-col gap-4 w-[1350px] ">
         {/* Image or Placeholder */}
         {newsletter.image ? (
           <img
@@ -69,7 +69,7 @@ Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morb
             className="w-full h-[500px] object-cover rounded-xl"
           />
         ) : (
-          <div className="w-full h-[500px] bg-blue-200 rounded-xl flex items-center justify-center text-blue-600 font-bold text-2xl">
+          <div className="w-full h-[500px] bg-primary rounded-xl flex items-center justify-center text-white font-bold text-2xl">
             No Image Available
           </div>
         )}
