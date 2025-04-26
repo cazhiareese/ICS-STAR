@@ -8,7 +8,7 @@ from models.log import Log
 from models.usermodel import User
 from models.job_posting_model import JobPosting, JobPostingInterestedIn
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation
-from schemas.log import VisitResponse, TimeRange, TopJobResponse, TopDriveResponse, TopDonationDriveResponse
+from schemas.log import VisitResponse, TimeRange, TopJobResponse, TopDriveResponse, TopDonationDriveResponse, JobsResponse
 
 router = APIRouter(
     prefix="/admin/engagement-statistics",
@@ -149,7 +149,7 @@ def get_visits(
         
     return result
 
-@router.get("/jobs/top-interested", response_model=List[TopJobResponse])
+@router.get("/jobs/top-3-interested", response_model=List[TopJobResponse])
 def get_top_interested_jobs(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for job posting data"),
     db: Session = Depends(get_db)
@@ -205,7 +205,7 @@ def get_top_interested_jobs(
     
     return result
 
-@router.get("/donation-drives/most-donations", response_model=List[TopDriveResponse])
+@router.get("/donation-drives/top-3-donors", response_model=List[TopDriveResponse])
 def get_top_donation_drives(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -303,7 +303,7 @@ def get_top_donation_drives(
     
     return result
 
-@router.get("/donation-drives/most-donors", response_model=TopDonationDriveResponse)
+@router.get("/donation-drives/most-donations", response_model=TopDonationDriveResponse)
 def get_top_donation_drive(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -351,7 +351,7 @@ def get_top_donation_drive(
         percentage_progress=float(drive.percentage_progress)
     )
 
-@router.get("/donation-drives/top-donors", response_model=TopDonationDriveResponse)
+@router.get("/donation-drives/most-donors", response_model=TopDonationDriveResponse)
 def get_top_donation_drive_by_donors(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -462,3 +462,63 @@ def get_top_donation_drive_by_donors(
         target_cost=float(drive.target_cost),
         percentage_progress=float(drive.percentage_progress)
     )
+
+@router.get("/jobs/top-interested", response_model=List[JobsResponse])
+def get_top_interested_jobs(
+    time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for job posting data"),
+    db: Session = Depends(get_db),
+    skip: int = Query(0, description="Number of records to skip"),
+    limit: int = Query(10, description="Number of records to return")
+):
+    today = datetime.utcnow()
+
+    # Determine the start date based on the time range
+    if time_range == TimeRange.WEEK:
+        start_date = today - timedelta(days=7)
+    elif time_range == TimeRange.MONTH:
+        start_date = today - timedelta(days=30)
+    else:  # time_range == TimeRange.YEAR
+        start_date = datetime(today.year - 1, today.month, today.day)
+    
+    # Query to get top 3 job postings with most interest
+    top_jobs = (
+        db.query(
+            JobPosting.title,
+            JobPosting.company,
+            JobPosting.link,
+            JobPosting.date_posted,
+            func.count(JobPostingInterestedIn.user_id).label('interested_count')
+        )
+        .join(JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id)
+        .filter(
+            and_(
+                JobPosting.date_posted >= start_date,
+                JobPosting.is_deleted == False
+            )
+        )
+        .group_by(
+            JobPosting.post_id,
+            JobPosting.title,
+            JobPosting.company,
+            JobPosting.link,
+            JobPosting.date_posted
+        )
+        .order_by(desc('interested_count'))
+        .all()
+    )
+
+    # Apply pagination
+    top_jobs = top_jobs[skip: skip + limit]
+    
+    # Format the results
+    result = []
+    for job in top_jobs:
+        result.append({
+            "title": job.title,
+            "company": job.company,
+            "date_posted": job.date_posted.strftime("%Y-%m-%d"),
+            "link": job.link,
+            "interested_count": job.interested_count
+        })
+    
+    return result
