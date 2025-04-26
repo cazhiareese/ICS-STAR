@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-const NewsletterModal = ({ isOpen, onClose, formData, option }) => {
+const NewsletterModal = ({ isOpen, onClose, formData, option , id}) => {
   if (!isOpen) return null;
+  console.log(id);
+
+  useEffect(() => {
+    const handledata = async () => {
+        if (option === "create") {
+          // Handle create logic here
+          console.log("Creating newsletter with data:", formData);
+        } else if (option === "edit") {
+          // Handle edit logic here
+          console.log("Editing newsletter with ID:", id, "and data:", formData);
+        } else if (option === "delete") {
+            // Handle delete logic here
+            console.log("Deleting newsletter with ID:", id);
+        }
+
+    }
+
+    handledata();
+  }, [option, id, formData]);
 
   return (
     <div className="fixed inset-0 flex justify-center items-center">

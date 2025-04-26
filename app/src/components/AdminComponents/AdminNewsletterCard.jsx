@@ -1,11 +1,15 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminNewsletterCard = ({ title, image, date_posted, context, tags = [] }) => {
-  console.log("Tags:", tags); // Debugging line to check the tags array
+  const navigate = useNavigate();
+
   return (
-    <div className="flex w-full bg-whitey border border-disabled shadow-sm p-4 gap-4 h-[179px]">
-      
+    <div
+      className="flex w-full bg-whitey border border-disabled shadow-sm p-4 gap-4 h-[179px] cursor-pointer hover:shadow-md transition-shadow"
+      onClick={() => navigate('newsletter-details')}
+    >
       {/* Left Side Image */}
       <div
         className={`w-55 h-35 rounded-[20px] object-cover flex items-center justify-center ${

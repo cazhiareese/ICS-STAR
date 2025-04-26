@@ -15,6 +15,7 @@ function AdminNewsletter() {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
+    //fetch mo dito lahat ng newsletters
     const dummy = {
       title: 'Sample Title',
       image: null,

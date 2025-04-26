@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import NewsletterModal from '../../../components/AdminComponents/Adminnewslettermodal';
 
 function AdminNewsletterDetails() {
+  //use params to get the id of the newsletter
+  const id = "naondandasndaldlasdas";  //palitan mo to ng actual using params
   const navigate = useNavigate();
   const [newsletter, setNewsletter] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const option = "delete"; // or "edit" based on your logic
-  
+
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
@@ -17,7 +19,9 @@ function AdminNewsletterDetails() {
 
 
   useEffect(() => {
-    const longContext = `Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+
+    //fetch mo dito actual newsletter using id, tapos i set mo
+    const longcontent = `Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
 
 Mauris nec lorem quis orci pharetra aliquet. Nulla facilisi. Curabitur id libero vitae magna commodo lacinia. Suspendisse potenti. Vestibulum tincidunt ipsum sed erat dapibus, vitae fermentum nunc blandit. Phasellus sit amet ex nec arcu finibus elementum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed accumsan, sem in fringilla tincidunt, nulla nulla cursus nulla, sed cursus sapien libero eu odio.
 
@@ -28,7 +32,7 @@ Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morb
       title: 'Sample Titfsle',
       image: null, // no image
       date_posted: '2025-04-26',
-      context: longContext,
+      content: longcontent,
       tags: ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5'],
       link: [
         'https://www.youtube.com/watch?v=oXdw4w9WgXcQ&pp=ygUJcmlnYnkgZG9n',
@@ -104,9 +108,9 @@ Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morb
           ))}
         </div>
 
-        {/* Context */}
+        {/* content */}
         <div className="text-black whitespace-pre-line leading-relaxed font-satoshi-regular w-full">
-  {newsletter.context}
+  {newsletter.content}
 </div>
 
 
@@ -130,7 +134,7 @@ Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morb
 )}
       </div>
       </div>
-      <NewsletterModal isOpen={isModalOpen} onClose={handleModalClose} option={option} />
+      <NewsletterModal isOpen={isModalOpen} onClose={handleModalClose} option={option} id={id} />
     </div>
   )
 }
