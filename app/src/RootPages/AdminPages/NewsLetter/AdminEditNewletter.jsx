@@ -6,6 +6,7 @@ import NewsletterModal from '../../../components/AdminComponents/Adminnewsletter
 
 function AdminEditNewsletter() {
   const navigate = useNavigate();
+  const option = "edit";
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -273,7 +274,7 @@ function AdminEditNewsletter() {
           </button>
         </div>
       </form>
-      <NewsletterModal isOpen={isModalOpen} onClose={handleModalClose} formData={formData} />
+      <NewsletterModal isOpen={isModalOpen} onClose={handleModalClose} formData={formData} option={option} />
     </div>
   );
 }

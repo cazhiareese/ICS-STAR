@@ -11,17 +11,17 @@ const NewsletterModal = ({ isOpen, onClose, formData, option }) => {
       {/* Modal */}
       <div className="bg-white p-6 rounded-2xl w-96 max-w-full relative flex flex-col justify-center items-center" style={{ height: '250px' }}>
         
-        {option === "create" && (
+        {(option === "create" || option === "edit") && (
           <>
             {/* Header */}
             <h2 className="font-satoshi-bold text-2xl text-center mb-8">
-              Create News Letter
+              {option === "create" ? "Create News Letter" : "Edit News Letter"}
             </h2>
 
             {/* Buttons */}
             <div className="flex justify-center gap-4">
               <button
-                className="bg-white border-[2px] border-primary text-primary px-6  py-2 rounded-3xl"
+                className="bg-white border-[2px] border-primary text-primary px-6 py-2 rounded-3xl"
                 onClick={onClose}
               >
                 Not Yet
@@ -35,7 +35,7 @@ const NewsletterModal = ({ isOpen, onClose, formData, option }) => {
             </div>
           </>
         )}
-
+        
       </div>
     </div>
   );
