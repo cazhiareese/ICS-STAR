@@ -67,8 +67,8 @@ const Newsletter = () => {
         <div className='flex flex-col space-x-10 mx-10 my-10'>
 
             <div className='lg:mx-20 '><BackButton/></div>
-            <div className='flex md:flex-row flex-col space-x-5 justify-center lg:mx-20 xl:mx-20 xl:space-x-40'>
-                <div className="flex flex-col h-full lg:w-[80%] md:w-[70%] rounded-2xl min-w-70 border-gray-200 border shadow-md mt-5 p-5"
+            <div className='flex md:flex-row flex-col sm:space-x-5 justify-center lg:mx-20 xl:mx-20 xl:space-x-40'>
+                <div className="flex flex-col h-full lg:w-[80%] md:w-[70%] rounded-2xl min-w-70 sm:border-gray-200 sm:border sm:shadow-md mt-5 sm:p-5"
 
                 >
                    
@@ -118,9 +118,9 @@ const Newsletter = () => {
                         
               
                 </div>
-                <div className='flex-col items-center justify-cente</div>r md:w-[50%] xl:w-[30%]   mt-5  md:h-[70vh]'>
-                    <label className='text-primary font-satoshi-bold text-3xl mx-5'>More like this</label>
-                    <div className="mt-5 flex md:flex-col flex-row md:h-[70vh] overflow-y-scroll md:space-x-0 space-x-10">
+                <div className='flex-col items-center justify-cente</div>r md:w-[50%] xl:w-[30%]  sm:mt-5 mt-10  md:h-[70vh]'>
+                    <label className='text-primary font-satoshi-bold text-3xl sm:mx-5'>More like this</label>
+                    <div className="mt-5 flex md:flex-col flex-row md:h-[70vh] overflow-y-auto md:space-x-0 space-x-5">
                         {forYou !=null&& forYou.length > 0 ? (
                             forYou.map((item) => (
                                 <div className='sm:my-3'>
