@@ -66,6 +66,7 @@ console.log("isSignedIn:", isSignedIn);
 
 import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
+import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
@@ -189,6 +190,7 @@ function App() {
               <Route path="create-event" element={<AdminCreateEvent purpose="create"/>}/>
               <Route path="edit-event/:eventid" element={<AdminCreateEvent purpose="edit"/>}/>
               <Route path="event-details/:eventid" element={<AdminEventDetails/>}/>
+              <Route path="event-demographics/:eventid" element={<AdminEventDemographics/>}/>
             </Route>
             <Route path="newsletter" element={<AdminNewsletter />} />
             <Route path="career" element={<AdminCareerLayout />}>
