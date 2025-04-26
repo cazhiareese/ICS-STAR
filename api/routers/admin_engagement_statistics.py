@@ -254,18 +254,19 @@ def get_top_donation_drives(
     # Union of both donor types
     all_donors = (
         db.query(
-            monetary_donors.c.drive_id, 
-            monetary_donors.c.user_id
+            monetary_donors.c.drive_id.label('drive_id'), 
+            monetary_donors.c.user_id.label('user_id')
         )
         .union(
             db.query(
-                in_kind_donors.c.drive_id, 
-                in_kind_donors.c.user_id
+                in_kind_donors.c.drive_id.label('drive_id'), 
+                in_kind_donors.c.user_id.label('user_id')
             )
         )
         .distinct()
         .subquery('all_donors')
     )
+
     
     # Join with DonationDrive to get the top 3 drives with most donors
     top_drives = (
