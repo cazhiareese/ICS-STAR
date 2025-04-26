@@ -64,8 +64,8 @@ import AdminCreateNewsletter from "./RootPages/AdminPages/NewsLetter/AdminCreate
 import AdminNewsletterDetails from "./RootPages/AdminPages/NewsLetter/AdminNewsletterDetails";
 
 
-//const isSignedIn = !!localStorage.getItem("token");
-const isSignedIn = true;
+const isSignedIn = !!localStorage.getItem("token");
+//const isSignedIn = true;
 console.log("isSignedIn:", isSignedIn);
 
 
@@ -82,15 +82,15 @@ import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewl
 
 function App() {
   function checkType() {
-    //const User = localStorage.getItem("token");
-    const User = true;
+    const User = localStorage.getItem("token");
+    //const User = true;
     let tokenType = null;
     if (User) {
-      //const decoded = jwtDecode(User);
-      //console.log("Decoded token:", decoded);
-      tokenType = "admin";
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      //tokenType = "admin";
       //tokenType = "alumni";
-      //const tokenType = decoded.role; // Adjust this based on your token structure
+      const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
     } else {
