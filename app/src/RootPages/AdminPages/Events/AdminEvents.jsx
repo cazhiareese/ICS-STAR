@@ -26,7 +26,10 @@ function AdminEvents() {
         endpoint = "/api/admin/events/all-concluded-events";
       }
   
-      const response = await axios.get(`${API_BASE_URL}${endpoint}`, {headers: {Authorization: `Bearer ${token}`}});
+      const response = await axios.get(`${API_BASE_URL}${endpoint}`,
+        {headers: {
+          Authorization: `Bearer ${token}`,
+      }});
       setEvents(response.data.data);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -36,7 +39,7 @@ function AdminEvents() {
   }
 
   useEffect(() => {
-    const token = localStorage.get("token")
+    const token = localStorage.getItem("token")
     fetchEvents(eventType, token)
   }, [eventType])
 
