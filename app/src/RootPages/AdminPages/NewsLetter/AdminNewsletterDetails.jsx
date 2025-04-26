@@ -1,10 +1,20 @@
 import { useEffect, useState } from 'react'
 import { MoveLeft, Pencil, Trash2, CalendarDays, Link } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import NewsletterModal from '../../../components/AdminComponents/Adminnewslettermodal';
 
 function AdminNewsletterDetails() {
   const navigate = useNavigate();
   const [newsletter, setNewsletter] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const option = "delete"; // or "edit" based on your logic
+  
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+
+
 
   useEffect(() => {
     const longContext = `Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
@@ -51,7 +61,7 @@ Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morb
             <Pencil />
             <p className="font-satoshi-regular text-lg">Edit Newsletter</p>
           </button>
-          <button className="bg-red-700 rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer">
+          <button className="bg-red-700 rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer" onClick={() => setIsModalOpen(true)}>
             <Trash2 />
             <p className="font-satoshi-regular text-lg">Delete Newsletter</p>
           </button>
@@ -120,6 +130,7 @@ Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morb
 )}
       </div>
       </div>
+      <NewsletterModal isOpen={isModalOpen} onClose={handleModalClose} option={option} />
     </div>
   )
 }
