@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MoveLeft, Plus, Upload } from 'lucide-react';
+import { MoveLeft, Plus, Upload, X } from 'lucide-react';  // Import the X icon from lucide-react
 import { useNavigate } from 'react-router-dom';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
 
@@ -33,6 +33,10 @@ function AdminCreateNewsletter() {
 
   const handleDragOver = (e) => {
     e.preventDefault(); // Allow drop by preventing default behavior
+  };
+
+  const handleRemoveImage = () => {
+    setImage(null); // Remove the image by setting the state to null
   };
 
   return (
@@ -139,11 +143,20 @@ function AdminCreateNewsletter() {
               onDragOver={handleDragOver}
             >
               {image ? (
-                <img
-                  src={image}
-                  alt="Selected"
-                  className="w-32 h-32 object-cover rounded-lg mb-4"
-                />
+                <div className="relative">
+                  <img
+                    src={image}
+                    alt="Selected"
+                    className="w-32 h-32 object-cover rounded-lg mb-4"
+                  />
+                  <button
+                    onClick={handleRemoveImage}
+                    className="absolute bottom-32 left-29 bg-red-500 text-white rounded-full p-1"
+                    type="button"
+                  >
+                    <X size={11} /> {/* Use the X icon from lucide-react */}
+                  </button>
+                </div>
               ) : (
                 <Upload className="text-primary mb-2" />
               )}
