@@ -56,12 +56,12 @@ function AdminEvents() {
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
         <div className='w-full lg:w-auto  min-w-xs'>
           {/* Alumni button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'active' ? 'border-primary' : 'border-transparent'}`} onClick={() => setEventType('active')}>
-            <p className='text-black font-satoshi-medium text-md'> Active </p>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'active' ? 'border-primary font-satoshi-bold' : 'border-transparent font-satoshi-light'}`} onClick={() => setEventType('active')}>
+            <p className='text-black text-md'> Active </p>
           </button>
           {/* Student button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'finished' ? ' border-primary' : 'border-transparent'}`} onClick={() => setEventType('finished')}>
-            <p className='text-black font-satoshi-medium text-md'> Finished </p>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'finished' ? ' border-primary font-satoshi-bold' : 'border-transparent font-satoshi-light'}`} onClick={() => setEventType('finished')}>
+            <p className='text-black text-md'> Finished </p>
           </button>
         </div>
         {/* Page */}
