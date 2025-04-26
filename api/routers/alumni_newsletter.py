@@ -115,21 +115,19 @@ def get_more_like_this(
     
     # Create the base query
     query = db.query(Newsletter).filter(Newsletter.is_deleted == False)
-    
+
     # Apply tag filtering if tags are provided
-    if tags and len(tags) > 0:
-        # For each tag in the list, filter newsletters that have that tag
-        for tag in tags:
-            query = query.filter(
-                Newsletter.newsletter_id.in_(
-                    db.query(NewsletterTag.newsletter_id)
-                    .filter(NewsletterTag.tag == tag)
-                )
+    if tags:
+        query = query.filter(
+            Newsletter.newsletter_id.in_(
+                db.query(NewsletterTag.newsletter_id)
+                .filter(NewsletterTag.tag.in_(tags))
             )
-    
+        )
+
     # Exclude the current newsletter from the results
     query = query.filter(Newsletter.newsletter_id != newsletter_id)
-    
+
     # Apply pagination and get results
     newsletters = query.offset(skip).limit(limit).all()
     
