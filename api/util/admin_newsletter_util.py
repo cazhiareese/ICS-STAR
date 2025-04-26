@@ -6,8 +6,10 @@ from requests import Session
 from sqlalchemy import UUID, func, or_
 from models.newsletter_model import Newsletter, NewsletterLink, NewsletterTag
 from models.usermodel import User
+from schemas.newsletter_schema import ListNewsletterOut
 from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET
 from config.database import get_db
+from datetime import datetime
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -234,3 +236,57 @@ def edit_util(
                 sendSet.update(employFiltered)
    
     return newsletter.newsletter_id
+
+def get_util(
+        db: Session
+) -> List[ListNewsletterOut]:
+    newsletters = db.query(Newsletter).all()
+    if not newsletters:
+        raise HTTPException(status_code=404, detail="No newsletters found")
+    
+    newsletter_list_out = []
+
+    for newsletter in newsletters:
+        # Get the tags for each newsletter
+        tags = db.query(NewsletterTag).filter(NewsletterTag.newsletter_id == newsletter.newsletter_id).all()
+
+        # Get the links for each newsletter
+        links = db.query(NewsletterLink).filter(NewsletterLink.newsletter_id == newsletter.newsletter_id).all()
+
+        date = newsletter.date_posted.strftime("%b %d, %Y, %-I:%M %p")
+        
+        newsletter_list = ListNewsletterOut(
+            newsletter_id = newsletter.newsletter_id,
+            title = newsletter.title,
+            image = newsletter.image,
+            date_posted = date,
+            is_deleted = newsletter.is_deleted,
+            tags = [tag.tag for tag in tags],
+            links = [link.link for link in links]
+        )
+
+        newsletter_list_out.append(newsletter_list)
+
+    return newsletter_list_out
+
+def delete_util(
+        db: Session,
+        newsletter_id: UUID
+):
+    newsletter = db.query(Newsletter).filter(Newsletter.newsletter_id == newsletter_id, Newsletter.is_deleted == False).first()
+    if not newsletter:
+        raise HTTPException(status_code=404, detail="Newsletter not found")
+    
+    try:
+        if newsletter.image:
+            old_file_path = newsletter.image.replace(STORAGE_STRING, "")
+            supabase_client.storage.from_(SUPABASE_BUCKET).remove([old_file_path])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to delete old profile picture: {e}")
+    
+    try:
+        newsletter.is_deleted = True
+        db.commit()
+        db.refresh(newsletter)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete newsletter: {e}")

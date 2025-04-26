@@ -67,7 +67,6 @@ def get_all_newsletters(
             "image": newsletter.image,
             "date_posted": newsletter.date_posted.strftime("%B %d, %Y, %I:%M %p"),
             "content": newsletter.content,
-            "user_id": newsletter.user_id,
             "tags": [tag.tag for tag in newsletter.tags]
         }
         result.append(newsletter_data)
@@ -92,11 +91,59 @@ def get_newsletter_by_id(
         "image": newsletter.image,
         "date_posted": newsletter.date_posted.strftime("%B %d, %Y, %I:%M %p"),
         "content": newsletter.content,
-        "user_id": newsletter.user_id,
         "tags": [tag.tag for tag in newsletter.tags],
         "links": [link.link for link in newsletter.links]
     }
     
     return newsletter_data
 
-#TODO: More Like this and For you (?)
+# Get more like this newsletters based on the tags of a given newsletter
+@router.get("/more_like_this/{newsletter_id}", response_model=List[NewsLetterOut])
+def get_more_like_this(
+    newsletter_id: UUID,
+    db=Depends(get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=100),
+):
+    # Get the tags of the given newsletter
+    newsletter = db.query(Newsletter).filter(Newsletter.newsletter_id == newsletter_id, Newsletter.is_deleted == False).first()
+    
+    if not newsletter:
+        raise HTTPException(status_code=404, detail="Newsletter not found")
+    
+    tags = [tag.tag for tag in newsletter.tags]
+    
+    # Create the base query
+    query = db.query(Newsletter).filter(Newsletter.is_deleted == False)
+
+    # Apply tag filtering if tags are provided
+    if tags:
+        query = query.filter(
+            Newsletter.newsletter_id.in_(
+                db.query(NewsletterTag.newsletter_id)
+                .filter(NewsletterTag.tag.in_(tags))
+            )
+        )
+
+    # Exclude the current newsletter from the results
+    query = query.filter(Newsletter.newsletter_id != newsletter_id)
+
+    # Apply pagination and get results
+    newsletters = query.offset(skip).limit(limit).all()
+    
+    if not newsletters:
+        raise HTTPException(status_code=404, detail="No newsletters found")
+    
+    result = []
+    for newsletter in newsletters:
+        newsletter_data = {
+            "newsletter_id": newsletter.newsletter_id,
+            "title": newsletter.title,
+            "image": newsletter.image,
+            "date_posted": newsletter.date_posted.strftime("%B %d, %Y, %I:%M %p"),
+            "content": newsletter.content,
+            "tags": [tag.tag for tag in newsletter.tags]
+        }
+        result.append(newsletter_data)
+    
+    return result

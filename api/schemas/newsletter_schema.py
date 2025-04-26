@@ -8,7 +8,6 @@ class NewsLetterOut(BaseModel):
     image: Optional[str] = None
     date_posted: str
     content: str
-    user_id: UUID
     tags: list[str]
 
     class Config:
@@ -20,9 +19,20 @@ class SingleNewsLetterOut(BaseModel):
     image: Optional[str] = None
     date_posted: str
     content: str
-    user_id: UUID
     tags: list[str]
     links: list[str]
+
+    class Config:
+        from_attributes = True
+
+class ListNewsletterOut(BaseModel):
+    newsletter_id: UUID
+    title: str
+    image: Optional[str] = None
+    date_posted: str
+    is_deleted: bool
+    tags: Optional[list[str]] = None
+    links: Optional[list[str]] = None
 
     class Config:
         from_attributes = True

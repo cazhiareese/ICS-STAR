@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, Query
 from requests import Session
 from uuid import UUID
 
-from util.admin_newsletter_util import create_util, edit_util
+from util.admin_newsletter_util import create_util, edit_util, get_util, delete_util
 from config.database import get_db
 from models.usermodel import User
 from models.newsletter_model import Newsletter
@@ -108,6 +108,39 @@ async def edit_news(
         return {
             "message": "success",
             "id": edited_news
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
+
+@newsletter_router.get("/get")
+async def get_news(
+        db: Session = Depends(get_db)
+):
+    try:
+        news = get_util(
+            db = db
+        )
+
+        return {
+            "message": "success",
+            "news": news
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
+    
+@newsletter_router.delete("/delete/{newsletter_id}")
+async def delete_news(
+        newsletter_id: UUID,
+        db: Session = Depends(get_db)
+):
+    try:
+        delete_util(
+            db = db,
+            newsletter_id=newsletter_id
+        )
+
+        return {
+            "message": "success",
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
