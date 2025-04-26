@@ -3,6 +3,7 @@ import { MoveLeft, UploadCloud, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker'
+import CircularLoading from '../../../components/LoadingComponents/circularloading'
 
 function AdminCreateEvent() {
   const navigate = useNavigate()
@@ -27,6 +28,7 @@ function AdminCreateEvent() {
 
   const [linkInput, setLinkInput] = useState('')
   const [imageName, setImageName] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -72,10 +74,28 @@ function AdminCreateEvent() {
     setImageName(null)
   }
   
+  async function fetchTags() {
+    const response = await axios.get(`${API_BASE_URL}/api/admin/events/get-tags`)
+    console.log(response.data.data)
+    setTags(response.data.data)
+  }
 
   useEffect(() => {
-    console.log("formData updated:", formData)
-  }, [formData])
+    async function fetchInitial(){
+      setLoading(true)
+      try {
+        fetchTags()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInitial()
+
+    // console.log("formData updated:", formData)
+  }, [])
   
 
   const options = ["Batch", "Affiliation", "Employment Status", "Job Fields"];
@@ -84,6 +104,7 @@ function AdminCreateEvent() {
   const [activeFilter, setActiveFilter] = useState(null)
   const [tagsDropdownOpen, setTagsDropdownOpen] = useState(false)
   const [customTag, setCustomTag] = useState('')
+  const [tags, setTags] = useState([])
   
 
   const handleSubmit = async () => {
@@ -125,6 +146,9 @@ function AdminCreateEvent() {
   }
 
   return (
+    loading ? (
+      <CircularLoading/>
+    ) : (
     <div className='p-6 px-24'>
       <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
         <MoveLeft className='text-primary' />
@@ -181,7 +205,7 @@ function AdminCreateEvent() {
           {/* Tags */}
           <div className='p-6 border border-gray-400 rounded-3xl w-2/5'>
             <div className="relative">
-              <label className="block font-satoshi-medium">Tags (Optional)</label>
+              <label className="block font-satoshi-medium">Tags (optional)</label>
               <div 
                 className="border border-gray-300 rounded-3xl px-3 py-2 mt-1 cursor-pointer text-ellipsis whitespace-nowrap overflow-hidden"
                 onClick={() => setTagsDropdownOpen(!tagsDropdownOpen)}
@@ -190,8 +214,8 @@ function AdminCreateEvent() {
               </div>
 
               {tagsDropdownOpen && (
-                <div className="font-satoshi-regular absolute z-90 bg-white border border-gray-300 rounded-3xl shadow-md mt-1 w-full p-3 space-y-2">
-                  {['Seminar', 'Webinar', 'Training', 'Hackathon', 'Meetup', 'Networking'].map((tag) => (
+                <div className="font-satoshi-regular absolute z-90 bg-white border border-gray-300 rounded-3xl shadow-md mt-1 w-full p-3 space-y-2 max-h-90 overflow-auto">
+                  {tags.map((tag) => (
                     <label key={tag} className="flex items-center space-x-2">
                       <input
                         type="checkbox"
@@ -366,6 +390,7 @@ function AdminCreateEvent() {
         </div>
       </div>
     </div>
+    )
   )
 }
 
