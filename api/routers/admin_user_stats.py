@@ -125,22 +125,22 @@ async def get_country_cities(db:Session=Depends(get_db), country:str=""):
 
 ##ADD ORDER BY- pwede input ay 'name', 'batch', 'last_updated'
 @router.get("/admin/stats/alumni_batch_filter")
-async def get_alumni_batch(db: Session = Depends(get_db), batch: str="", order_by: list[str]=Query([])):
-    alumni_batch = get_alumni_list_filter(db, batch=batch, industry = None, country=None, order_by= order_by)
+async def get_alumni_batch(db: Session = Depends(get_db), batch: str="", order_by: list[str]=Query([]), page:int=1):
+    alumni_batch, total_pages = get_alumni_list_filter(db, batch=batch, industry = None, country=None, page=page, order_by= order_by)
 
-    return{"message":"success", "data":alumni_batch}
+    return{"message":"success", "page":page, "total_pages": total_pages, "data":alumni_batch}
 
 @router.get("/admin/stats/alumni_industry_filter")
-async def get_alumni_industry(db: Session = Depends(get_db), industry: str="", order_by: list[str]=Query([])):
-    alumni_industry = get_alumni_list_filter(db, batch=None, industry = industry, country=None, order_by= order_by)
+async def get_alumni_industry(db: Session = Depends(get_db), industry: str="", order_by: list[str]=Query([]), page: int=1):
+    alumni_industry, total_pages = get_alumni_list_filter(db, batch=None, industry = industry, country=None, order_by= order_by, page=page)
 
-    return{"message":"success", "data":alumni_industry}
+    return{"message":"success","page":page, "total_pages": total_pages,   "data":alumni_industry}
 
 @router.get("/admin/stats/alumni_country_filter")
-async def get_alumni_country(db: Session = Depends(get_db), country: str="",order_by: list[str]=Query([])):
-    alumni_country = get_alumni_list_filter(db, batch=None, industry = None, country=country, order_by= order_by)
+async def get_alumni_country(db: Session = Depends(get_db), country: str="",order_by: list[str]=Query([]), page:int=1):
+    alumni_country, total_pages = get_alumni_list_filter(db, batch=None, industry = None, country=country, page=page,order_by= order_by)
 
-    return{"message":"success", "data":alumni_country}
+    return{"message":"success","page":page, "total_pages": total_pages, "data":alumni_country}
 
 @router.get("/admin/filter/alum")
 async def search_alumni(

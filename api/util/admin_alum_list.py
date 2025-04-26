@@ -67,9 +67,10 @@ def get_all_alumni(db: Session):
     return {"list": alum_list, "count": count_alumni}
 
 
-def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: Optional[str] = None, country: Optional[str] = None, order_by:list[str] = None):
+def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None, industry: Optional[str] = None, country: Optional[str] = None, order_by:list[str] = None):
 
     one_year_ago = datetime.now() - timedelta(days=365)
+    ITEMS_PER_PAGE = 10
     query = db.query(
         User.user_id,
         User.first_name, 
@@ -103,6 +104,10 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         query = query.filter(
         User.country == country
     )
+    
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
 
     if order_by:
         for order in order_by:
@@ -142,6 +147,8 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         # Default ordering if none specified
         query = query.order_by(asc(User.last_name), asc(User.first_name))
     
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
     alumni = query.all()
 
     if not alumni:
@@ -169,7 +176,7 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         }
         alum_list.append(al)
 
-    return alum_list
+    return alum_list, total_pages
 
 
 def get_alumni_filter(
