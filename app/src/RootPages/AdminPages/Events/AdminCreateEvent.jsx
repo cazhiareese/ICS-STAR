@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { MoveLeft, UploadCloud } from 'lucide-react'
+import { MoveLeft, UploadCloud, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker'
@@ -63,6 +63,15 @@ function AdminCreateEvent() {
       [field]: options
     }))
   }
+
+  function removeImage() {
+    setFormData(prev => ({
+      ...prev,
+      image: null
+    }))
+    setImageName(null)
+  }
+  
 
   useEffect(() => {
     console.log("formData updated:", formData)
@@ -230,14 +239,25 @@ function AdminCreateEvent() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-400 rounded-3xl p-6">
+        <div className="h-70 grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-400 rounded-3xl p-6">
+          {/* Description */}
           <div className='flex flex-col'>
             <label className="block mb-1 font-satoshi-medium">Description <span className='text-red-600'>*</span></label>
-            <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full border border-gray-300 rounded-2xl p-2 h-32 resize-none" placeholder="Describe your event here..." />
+            <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full border border-gray-300 rounded-2xl p-2 h-full resize-none" placeholder="Describe your event here..." />
           </div>
           {/* Image */}
           <div className='flex flex-col'>
-            <label className="block mb-1 font-medium">Image (optional)</label>
+            <div className='flex flex-row justify-between'>
+              <label className="block mb-1 font-satoshi-medium">Image (optional)</label>
+              {formData.image === null ? (
+                <></>
+              ) : (
+                <div className='flex flex-row gap-1 items-center text-red-700 rounded-3xl hover:bg-gray-100 px-2 py-1 cursor-pointer'>
+                  <X className='stroke-1' size={20}/>
+                  <button className='font-satoshi-light text-sm cursor-pointer' onClick={() => {removeImage()}}>Remove Image</button>
+                </div>
+              )}
+            </div>
             <div className="flex-1 border border-dashed border-gray-300 hover:border-primary rounded-2xl relative overflow-hidden">
               <input
                 type="file"
@@ -246,12 +266,25 @@ function AdminCreateEvent() {
                 title=""
                 accept="image/*"
               />
-              <div className="flex flex-col items-center justify-center h-full p-4 pointer-events-none z-0">
-                <UploadCloud className='text-primary'/>
-                <h2 className="text-gray-500 text-center">Drag and drop file here or</h2>
-                <h2 className='text-primary underline'>{imageName === null ? 'choose file' : imageName}</h2>
-              </div>
+              {formData.image === null ? (
+                <div className="flex flex-col items-center justify-center h-full p-4 pointer-events-none z-0">
+                  <UploadCloud className="text-primary" />
+                  <h2 className="text-gray-500 text-center">Drag and drop file here or</h2>
+                  <h2 className="text-primary underline">
+                    {imageName === null ? 'choose file' : imageName}
+                  </h2>
+                </div>
+              ) : (
+                <div className="absolute inset-0 z-0">
+                  <img
+                    src={URL.createObjectURL(formData.image)}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
             </div>
+
           </div>
         </div>
 
