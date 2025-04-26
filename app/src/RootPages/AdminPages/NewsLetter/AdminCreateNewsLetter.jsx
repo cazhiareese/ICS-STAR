@@ -8,16 +8,17 @@ function AdminCreateNewsletter() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [link, setLink] = useState([]);
+  const [link, setLink] = useState('');
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const [allAlumni, setAllAlumni] = useState(false);
   const [image, setImage] = useState(null);
   const [careerList, setCareerList] = useState([]);
+  const [linklist, setLinkList] = useState([]);
   const [dateList, setDateList] = useState([]);
 
-  //console.log(dateList, careerList,selectedTags);
+  console.log(dateList, careerList, selectedTags, linklist,image);
 
   useEffect(() => {
     const tags = ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5', 'Tag6'];
@@ -28,6 +29,7 @@ function AdminCreateNewsletter() {
     const file = e.target.files[0];
     if (file) {
       setImage(URL.createObjectURL(file));
+      console.log(image);
     }
   };
 
@@ -58,6 +60,16 @@ function AdminCreateNewsletter() {
 
   const toggleTagDropdown = () => {
     setTagDropdownOpen((prev) => !prev);
+  };
+
+  const handleLinkAdd = () => {
+    if (link.trim() !== '') {
+      setLinkList((prev) => {
+        const updatedList = [...prev, link.trim()];
+        setLink(''); // Clear the input field after adding the link
+        return updatedList;
+      });
+    }
   };
 
   return (
@@ -104,46 +116,59 @@ function AdminCreateNewsletter() {
 
         {/* Links and Tags */}
         <div className="flex gap-4 flex-wrap md:flex-nowrap">
-{/* Links */}
-<div className="flex-1 p-6 border border-gray-400 rounded-3xl">
-  <label className="block mb-1 font-satoshi-medium">Links (Optional)</label>
-  <div className="flex gap-2">
-    <input
-      type="text"
-      className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none"
-      placeholder="Enter link"
-      value={link}
-      onChange={(e) => setLink(e.target.value)}
-    />
-    <button
-      type="button"
-      className="bg-primary text-white rounded-full p-2"
-      onClick={() => {
-        if (link.trim() !== '') {
-          setCareerList((prev) => [...prev, link.trim()]);
-          setLink('');
-        }
-      }}
-    >
-      <Plus size={18} />
-    </button>
-  </div>
+          {/* Links */}
+          <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
+            <label className="block basis-[65%] mb-1 font-satoshi-medium">Links (Optional)</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none"
+                placeholder="Enter link"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+              />
+              <button
+                type="button"
+                className="bg-primary text-white rounded-full p-2"
+                onClick={handleLinkAdd}
+              >
+                <Plus size={18} />
+              </button>
+            </div>
 
-  {/* List of added links */}
-  <div className="mt-4 flex flex-col gap-2">
-    {careerList.map((item, index) => (
-      <div key={index} className="flex items-center justify-between border border-gray-200 rounded-lg p-2">
-        <span className="text-gray-700 text-sm truncate">{item}</span>
-        {/* (Optional: You could add a remove button here later if needed) */}
-      </div>
-    ))}
-  </div>
-</div>
-
+            {/* List of added links */}
+            <div className="mt-4 flex flex-col gap-2">
+              {linklist.map((item, index) => {
+                const shortItem = item.length > 200 ? item.slice(0, 200) + '...' : item;
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between border border-gray-200 rounded-lg p-2"
+                  >
+                    <span
+                      className="text-primary text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[calc(100%-2rem)]"
+                      title={item} // Full link on hover
+                    >
+                      {shortItem}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLinkList((prev) => prev.filter((_, i) => i !== index));
+                      }}
+                      className="text-red-500 hover:text-red-700 ml-2"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Tags */}
           <div className="flex-1 p-6 border border-gray-400 rounded-3xl relative">
-            <label className="block mb-1 font-satoshi-medium">Tags (Optional)</label>
+            <label className="basis-[35%] mb-1 font-satoshi-medium">Tags (Optional)</label>
             <div
               className="w-full border border-gray-300 rounded-2xl p-2 outline-none flex justify-between items-center cursor-pointer"
               onClick={toggleTagDropdown}
