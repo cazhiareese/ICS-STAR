@@ -64,12 +64,13 @@ function AdminDonationDriveDemographics() {
       setAmountByBatch([])
     }
 
-    // try{
-    //   const getDonationTypeData = await axios.get(`${API_BASE_URL}/admin/donations/donation-totals?drive_id=${driveid}`)
-    //   setDonationTypeData(getDonationTypeData.data)
-    // }catch (error){
+    try{
+      const getDonationTypeData = await axios.get(`${API_BASE_URL}/admin/donations/donation-totals?drive_id=${driveid}`)
+      // console.log(getDonationTypeData.data)
+      setDonationTypeData(getDonationTypeData.data.slice(0,2))
+    }catch (error){
 
-    // }
+    }
 
     try{
       const getAmountTimeData = await axios.get(`${API_BASE_URL}/admin/donations/weekly-amounts?drive_id=${driveid}`)
@@ -187,7 +188,7 @@ function AdminDonationDriveDemographics() {
                     cx="50%"
                     cy="50%"
                     outerRadius="80%"
-                    dataKey="amount"
+                    dataKey="count"
                     stroke="none"
                     >
                     {donationTypeData.map((entry, index) => (
@@ -204,7 +205,7 @@ function AdminDonationDriveDemographics() {
               {donationTypeData.map((entry, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm font-satoshi-regular">
                   <div className="w-4 h-4" style={{ backgroundColor: COLORS[index] }} />
-                  <p className=""> {entry.type}: {entry.amount} </p>
+                  <p className=""> {entry.name}: {entry.percentage} </p>
                 </div>
               ))}
             </div>
