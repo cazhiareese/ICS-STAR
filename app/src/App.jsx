@@ -61,7 +61,7 @@ import AdminCreateEvent from "./RootPages/AdminPages/Events/AdminCreateEvent";
 import AdminEventDetails from "./RootPages/AdminPages/Events/AdminEventDetails";
 
 import NewsletterLanding from "./RootPages/AlumniPages/Newsletter/newsletterlanding";
-
+import Newsletter from "./RootPages/AlumniPages/Newsletter/newsletter";
 const isSignedIn = !!localStorage.getItem("token");
 console.log("isSignedIn:", isSignedIn);
 
@@ -140,6 +140,7 @@ function App() {
             
             <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
             <Route path="alumni/newsletter" element={<NewsletterLanding />} />
+            <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
             <Route path="*" element={<Unauthorized />} />
 

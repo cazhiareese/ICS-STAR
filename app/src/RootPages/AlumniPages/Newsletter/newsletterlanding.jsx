@@ -3,45 +3,58 @@ import { Search, Calendar } from "lucide-react";
 import star from "../../../assets/star.png";
 import "../../../index.css";
 import { select } from "framer-motion/client";
-import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selectedTags }) => {
-    const formatDate = (utcDate) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-        return new Date(utcDate).toLocaleString('en-US', options);
-    };
+export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selectedTags }) => {
+    const navigate = useNavigate();
+
+    // const formatDate = (utcDate) => {
+    //     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+    //     return new Date(utcDate).toLocaleString('en-US', options);
+    // };
 
     return (
-        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 border-gray-200 border shadow-md p-5">
-            <div className="flex flex-col h-full">
-                <div className="w-full h-45 bg-primary rounded-lg overflow-hidden">
-                    <img src={imageUrl} alt="" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex flex-col mt-4 flex-grow">
-                    <p className="text-2xl font-bold text-gray-800 line-clamp-2">{title}</p>
-                    <p className="text-sm text-gray-500 mt-1 flex items-center ">
-                        <span className="mr-2"><Calendar className="w-5 h-5" /></span>
-                        {formatDate(date)}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-3">{description}</p>
-                </div>
-                <div className="flex flex-row mt-4 space-x-2 overflow-x-scroll">
-                    {tags.map((tag, index) => (
-                        <span
-                            key={index}
-                            onClick={() => onTagClick(tag)}
-                            className={`px-3 py-2 text-sm ${selectedTags.includes(tag) ? 'bg-primary  text-white hover:bg-white hover:text-primary': 'bg-white  text-primary hover:bg-primary hover:text-white'}  border-primary border rounded-full cursor-pointer `}
-                        >
-                            {tag}
-                        </span>
-                    ))}
+        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative  border-gray-200 border shadow-md p-5">
+            <div className=" "
+            onClick={() => navigate(`/alumni/newsletter/${id}`)}
+        >
+                <div className="flex flex-col h-full ">
+                    <div className="w-full h-45 bg-primary rounded-lg overflow-hidden">
+                        <img src={imageUrl} alt="" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex flex-col mt-4 flex-grow">
+                        <p className="text-2xl font-bold text-gray-800 line-clamp-2">{title}</p>
+                        <p className="text-sm text-gray-500 mt-1 flex items-center ">
+                            <span className="mr-2"><Calendar className="w-5 h-5" /></span>
+                            {date}
+                        </p>
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-3">{description}</p>
+                    </div>
+                    
                 </div>
             </div>
+            <div className="flex flex-row sm:mt-4 space-x-2 overflow-x-scroll absolute bottom-2 left-5 right-5 py-3">
+                        {tags.map((tag, index) => (
+                            <span
+                                key={index}
+                                onClick={() => onTagClick(tag)}
+                                className={`sm:px-4 px-2 sm:py-1 py-0.5 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap font-satoshi-light sm:text-md text-sm ${
+                                    selectedTags.includes(tag.name)
+                                        ? "bg-primary text-white"
+                                        : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
+                                }`}
+                            >
+                                {tag}
+                            </span>
+                        ))}
+            </div>
         </div>
+        
     );
 };
 
-const SkeletonCards = () => {
+export const SkeletonCards = () => {
     return (
         <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 border-gray-200 border shadow-md p-5">
             <div className="flex flex-col h-full">
@@ -69,6 +82,15 @@ const NewsletterLanding = () => {
     const [card, setCard] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
 
+    const URL = import.meta.env.VITE_BACKEND_URL;
+
+    const toggleTagSelection = (tagName) => {
+        setSelectedTags((prevSelectedTags) =>
+            prevSelectedTags.includes(tagName)
+                ? prevSelectedTags.filter((tag) => tag !== tagName)
+                : [...prevSelectedTags, tagName]
+        );
+    };
     const mockCards = [
         {
             id: 1,
@@ -134,11 +156,12 @@ const NewsletterLanding = () => {
             imageUrl: "https://images.unsplash.com/photo-1584697964154-3c1b5f3c6c9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
             tags: ["Education", "Technology"]
         }
+        
     ];
 
-    useEffect(() => {
-        setCard(mockCards);
-    }, []);
+    // useEffect(() => {
+    //     setCard(mockCards);
+    // }, []);
 
     const mockTag = [
         { id: 1, name: "Technology" },
@@ -153,13 +176,16 @@ const NewsletterLanding = () => {
         { id: 10, name: "Environment" }
     ];
 
-    const [tags, setTags] = useState(mockTag);
+    const [tags, setTags] = useState(null);
 
-    const toggleTagSelection = (tagName) => {
-        setSelectedTags((prevSelectedTags) =>
-            prevSelectedTags.includes(tagName)
-                ? prevSelectedTags.filter((tag) => tag !== tagName)
-                : [...prevSelectedTags, tagName]
+
+
+    const initializeTags = (tagData) => {
+        setTags(
+            tagData.map((tag, index) => ({
+                id: index + 1,
+                name: tag
+            }))
         );
     };
 
@@ -169,7 +195,31 @@ const NewsletterLanding = () => {
       )
     : card;
 
-    
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/newsletter/tags`);
+                initializeTags(response.data);
+                console.log(response.data)
+            } catch (error) {
+                console.error("Error fetching tags:", error);
+            }
+        };
+
+        const fetchNewsletters = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/newsletter/all`);
+                setCard(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error("Error fetching newsletters:", error);
+            }
+        };
+
+        fetchNewsletters();
+
+        fetchTags();
+    }, []);
     
     return (
         <div className={`flex-1 overflow-y-hidden sm:mx-10 md:mx-15 lg:mx-20 mx-3`}>
@@ -178,22 +228,22 @@ const NewsletterLanding = () => {
                     <input
                         type="text"
                         placeholder="Search newsletters..."
-                        className="w-full h-14 px-4 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full sm:h-14 h-10 px-4 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <div className="flex items-center justify-center absolute w-20 bg-primary h-14 rounded-3xl right-0">
-                        <Search className="w-7 h-7 text-white mr" />
+                    <div className="flex items-center justify-center absolute sm:w-20 w-10 bg-primary sm:h-14 h-10 rounded-3xl right-0">
+                        <Search className="sm:w-7 sm:h-7 h-5 w-5 text-white mr" />
                     </div>
                 </div>
             </div>
-            { card.length>0 ? 
+            { card.length>0 && tags!=null? 
 
-                (<><div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+            (<><div className={`h-7 flex flex-row items-center justify-start mt-7`}>
                 <div className="flex overflow-x-auto space-x-4 py-4">
                     {tags.map((tag) => (
                         <div
                             key={tag.id}
                             onClick={() => toggleTagSelection(tag.name)}
-                            className={`px-4 py-1 border rounded-2xl cursor-pointer transition font-satoshi-main-regular ${
+                            className={`px-4 py-1 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap ${
                                 selectedTags.includes(tag.name)
                                     ? "bg-primary text-white"
                                     : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
@@ -210,12 +260,12 @@ const NewsletterLanding = () => {
             >
                 {filteredCards.map((item) => (
                     <Cards
-                        key={item.id}
-                        id={item.id}
+                        key={item.newsletter_id}
+                        id={item.newsletter_id}
                         title={item.title}
-                        date={item.date}
-                        description={item.description}
-                        imageUrl={item.imageUrl}
+                        date={item.date_posted}
+                        description={item.content}
+                        imageUrl={item.image}
                         tags={item.tags}
                         onTagClick={toggleTagSelection}
                         selectedTags={selectedTags}
