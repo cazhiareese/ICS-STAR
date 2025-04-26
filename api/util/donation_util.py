@@ -9,6 +9,9 @@ from schemas.donation_schema import MonetaryDonationOut, InKindDonationOut, Dona
 from fastapi import HTTPException
 from fastapi import UploadFile, File, Depends 
 from uuid import UUID
+import os
+import csv
+import tempfile
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -223,53 +226,66 @@ async def create_donation_drive(
 
     return donation_drive
 
-def get_donors(
+def get_donors_csv(
     drive_id: UUID,
     db: Session
 ):
-    # Get monetary donors
-    monetary_donors = (
-        db.query(
-            User.user_id,
-            User.first_name,
-            User.last_name
-        )
-        .join(MonetaryDonation, MonetaryDonation.user_id == User.user_id)
-        .filter(MonetaryDonation.drive_id == drive_id)
-        .distinct()
-        .all()
-    )
+    with tempfile.NamedTemporaryFile(delete=False, mode="w", newline='', encoding="utf-8", suffix=".csv") as tmpfile:
+        file_path = tmpfile.name
 
-    # Get in-kind donors
-    in_kind_donors = (
-        db.query(
-            User.user_id,
-            User.first_name,
-            User.last_name
-        )
-        .join(InKindDonation, InKindDonation.user_id == User.user_id)
-        .filter(InKindDonation.drive_id == drive_id)
-        .distinct()
-        .all()
-    )
+        writer = csv.writer(tmpfile)
+        writer.writerow(["Date Donated", "First Name", "Last Name", "Email", "Donation Type", "Donation"])
 
-    result = []
-    if monetary_donors:
+        # Monetary donors
+        monetary_donors = (
+            db.query(
+                MonetaryDonation.date_donated,
+                User.first_name,
+                User.last_name,
+                User.email,
+                func.sum(MonetaryDonation.amount).label("total_amount")
+            )
+            .join(MonetaryDonation, MonetaryDonation.user_id == User.user_id)
+            .filter(MonetaryDonation.drive_id == drive_id)
+            .group_by(User.user_id, User.first_name, User.last_name, MonetaryDonation.date_donated)
+            .all()
+        )
+
         for donor in monetary_donors:
-            result.append({
-                "user_id": donor.user_id,
-                "first_name": donor.first_name,
-                "last_name": donor.last_name,
-                "donation_type": "monetary"
-            })
-            
-    if in_kind_donors:
-        for donor in in_kind_donors:
-            result.append({
-                "user_id": donor.user_id,
-                "first_name": donor.first_name,
-                "last_name": donor.last_name,
-                "donation_type": "in-kind"
-            })
+            formatted_date = donor.date_donated.strftime('%Y-%m-%d')
+            writer.writerow([
+                f'`{formatted_date}`',
+                donor.first_name,
+                donor.last_name,
+                donor.email,
+                "monetary",
+                f'`{str(donor.total_amount)}`'
+            ])
 
-    return result
+        # In-kind donors
+        in_kind_donors = (
+            db.query(
+                InKindDonation.date_donated,
+                User.first_name,
+                User.last_name,
+                User.email,
+                func.array_agg(InKindDonation.description).label("donated_items")
+            )
+            .join(InKindDonation, InKindDonation.user_id == User.user_id)
+            .filter(InKindDonation.drive_id == drive_id)
+            .group_by(User.user_id, User.first_name, User.last_name, InKindDonation.date_donated)
+            .all()
+        )
+
+        for donor in in_kind_donors:
+            formatted_date = donor.date_donated.strftime('%Y-%m-%d')
+            writer.writerow([
+                f'`{formatted_date}`',
+                donor.first_name,
+                donor.last_name,
+                donor.email,
+                "in-kind",
+                ", ".join(donor.donated_items)
+            ])
+
+    return file_path
