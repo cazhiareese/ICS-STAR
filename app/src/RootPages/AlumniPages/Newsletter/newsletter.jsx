@@ -52,7 +52,7 @@ const Newsletter = () => {
         fetchMoreLikeThis();
 
         fetchData();
-    }, []); // Empty dependency array means this runs once after the component mounts
+    }, [newsletterid]); // Empty dependency array means this runs once after the component mounts
 
     if (!newsletter) {
         return (
@@ -120,10 +120,10 @@ const Newsletter = () => {
                 </div>
                 <div className='flex-col items-center justify-cente</div>r md:w-[50%] xl:w-[30%]  sm:mt-5 mt-10  md:h-[70vh]'>
                     <label className='text-primary font-satoshi-bold text-3xl sm:mx-5'>More like this</label>
-                    <div className="mt-5 flex md:flex-col flex-row md:h-[70vh] overflow-y-auto md:space-x-0 space-x-5">
+                    <div className="mt-5 flex md:flex-col flex-row md:h-[70vh] overflow-y-auto md:space-x-0 space-x-5 py-5">
                         {forYou !=null&& forYou.length > 0 ? (
                             forYou.map((item) => (
-                                <div className='sm:my-3'>
+                                <div key={item.newsletter_id} className='sm:my-3 '>
                                 
                                 <Cards
                                     key={item.newsletter_id}
