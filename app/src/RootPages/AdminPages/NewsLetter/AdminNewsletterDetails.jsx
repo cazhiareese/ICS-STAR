@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MoveLeft, Pencil, Trash2, CalendarDays } from 'lucide-react'
+import { MoveLeft, Pencil, Trash2, CalendarDays, Link } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 function AdminNewsletterDetails() {
@@ -102,21 +102,22 @@ Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morb
 
         {/* Links */}
         {newsletter.link.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4">
-            <h2 className="text-lg font-satoshi-medium text-gray-800">Relevant Links:</h2>
-            {newsletter.link.map((link, index) => (
-              <a
-                key={index}
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline break-all"
-              >
-                {link}
-              </a>
-            ))}
-          </div>
-        )}
+  <div className="flex flex-col gap-2 mt-4">
+    <h2 className="text-l font-satoshi-medium text-black">Relevant Links:</h2>
+    {newsletter.link.map((link, index) => (
+      <a
+        key={index}
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary underline break-all flex items-center gap-2 font-satoshi-regular"
+      >
+        <Link className="w-4 h-4" />
+        {link}
+      </a>
+    ))}
+  </div>
+)}
       </div>
       </div>
     </div>
