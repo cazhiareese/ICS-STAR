@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Modal = ({ isOpen, onClose, formData }) => {
+const NewsletterModal = ({ isOpen, onClose, formData }) => {
   if (!isOpen) return null;
 
   return (
@@ -97,4 +97,4 @@ const Modal = ({ isOpen, onClose, formData }) => {
   );
 };
 
-export default Modal;
+export default NewsletterModal;

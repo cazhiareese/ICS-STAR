@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { use, useState, useEffect } from 'react';
 import { MoveLeft, Plus, Upload, X, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
+import NewsletterModal from '../../../components/AdminComponents/Adminnewslettermodal';
 
 function AdminCreateNewsletter() {
   const navigate = useNavigate();
@@ -20,6 +21,13 @@ function AdminCreateNewsletter() {
 
   const [titleError, setTitleError] = useState(false);
   const [contentError, setContentError] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  useEffect(() => {
+    const dummy = ["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"];
+    setTags(dummy);
+  }, []);
 
   const handleLinkAdd = () => {
     if (link.trim() !== '') {
@@ -44,8 +52,24 @@ function AdminCreateNewsletter() {
     if (titleIsValid && contentIsValid) {
       // Proceed with form submission if no errors
       console.log('Form submitted');
+      setIsModalOpen(true);
       // Add actual submission logic here (API call, etc.)
     }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const formData = {
+    title,
+    content,
+    linklist,
+    selectedTags,
+    allAlumni,
+    image,
+    careerList,
+    dateList,
   };
 
   return (
@@ -248,6 +272,7 @@ function AdminCreateNewsletter() {
           </button>
         </div>
       </form>
+      <NewsletterModal isOpen={isModalOpen} onClose={handleModalClose} formData={formData} />
     </div>
   );
 }
