@@ -14,7 +14,7 @@ function AdminNewsletter() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const limit = 5; // Number of newsletters per page
+  const limit = 10; // Number of newsletters per page
 
   useEffect(() => {
     const fetchNewsletters = async () => {
@@ -63,7 +63,14 @@ function AdminNewsletter() {
     }
   };
 
-  if (loading) return <CircularLoading />;
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+        <CircularLoading />
+      </div>
+    );
+  }
+
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
   return (
