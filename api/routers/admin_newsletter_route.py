@@ -130,8 +130,8 @@ async def get_news(
     
 @newsletter_router.delete("/delete/{newsletter_id}")
 async def delete_news(
-        db: Session = Depends(get_db),
-        newsletter_id: UUID = Form(...)
+        newsletter_id: UUID,
+        db: Session = Depends(get_db)
 ):
     try:
         delete_util(
