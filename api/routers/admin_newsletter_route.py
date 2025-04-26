@@ -67,7 +67,7 @@ async def create_news(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
 
-@newsletter_router.post("/edit/{newsletter_id}")
+@newsletter_router.put("/edit/{newsletter_id}")
 async def edit_news(
         newsletter_id: UUID,
         db: Session = Depends(get_db),
