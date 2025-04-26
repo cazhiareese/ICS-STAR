@@ -5,8 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, declarative_base
 import uuid
 from datetime import datetime
-
-Base = declarative_base()
+from config.config import Base
 
 class Newsletter(Base):
     __tablename__ = 'newsletter'
