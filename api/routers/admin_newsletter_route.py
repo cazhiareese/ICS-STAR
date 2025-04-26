@@ -114,18 +114,29 @@ async def edit_news(
 
 @newsletter_router.get("/get")
 async def get_news(
+        skip: int = Query(0, ge=0, description="Number of items to skip"),
+        limit: int = Query(10, ge=1, le=100, description="Number of items to return"),
         db: Session = Depends(get_db)
 ):
     try:
+        # Get paginated newsletters
         news = get_util(
-            db = db
+            db=db,
+            skip=skip,
+            limit=limit
         )
-
+        
+        # Get total count separately
+        total_count = db.query(Newsletter).count()
+        
         return {
             "message": "success",
-            "news": news["data"],
-            "length": news["length"]
+            "news": news,
+            "total_count": total_count
         }
+    except HTTPException as e:
+        # Re-raise HTTP exceptions
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
     
