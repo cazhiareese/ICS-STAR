@@ -27,7 +27,7 @@ const FilterDropdown = ({ setCareerList, setDateList, disabled }) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative font-satoshi-regular">
       <select
         className={`w-full border ${disabled ? "border-neutral-c text-neutral-c" : "border-disabled text-black"} rounded-2xl p-2 outline-none`} // Adjusted the color based on disabled state
         value={filterBy}

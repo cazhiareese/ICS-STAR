@@ -94,7 +94,7 @@ function AdminCreateNewsletter() {
           </label>
           <input
             type="text"
-            className={`w-full border ${titleError ? 'border-red-500' : 'border-gray-300'} rounded-2xl p-2 outline-none`}
+            className={`w-full border ${titleError ? 'border-red-500' : 'border-gray-300'} rounded-2xl p-2 outline-none font-satoshi-regular`}
             placeholder="Enter title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -107,7 +107,7 @@ function AdminCreateNewsletter() {
             Content <span className="text-red-500">*</span>
           </label>
           <textarea
-            className={`w-full border ${titleError ? 'border-red-500' : 'border-gray-300'} rounded-2xl p-2 outline-none resize-none h-40`}
+            className={`w-full border ${titleError ? 'border-red-500' : 'border-gray-300'} rounded-2xl p-2 outline-none resize-none h-40 font-satoshi-regular`}
             placeholder="Content of the newsletter"
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -122,7 +122,7 @@ function AdminCreateNewsletter() {
             <div className="flex gap-2">
               <input
                 type="text"
-                className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none"
+                className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none font-satoshi-regular"
                 placeholder="Enter link"
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
@@ -146,7 +146,7 @@ function AdminCreateNewsletter() {
                     className="flex items-center justify-between border border-gray-200 rounded-lg p-2"
                   >
                     <span
-                      className="text-primary text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[calc(100%-2rem)]"
+                      className="text-primary  font-satoshi-regular text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[calc(100%-2rem)]"
                       title={item} // Full link on hover
                     >
                       {shortItem}
@@ -170,7 +170,7 @@ function AdminCreateNewsletter() {
           <div className="flex-1 p-6 border border-gray-400 rounded-3xl relative">
             <label className="basis-[35%] mb-1 font-satoshi-medium">Tags (Optional)</label>
             <div
-              className="w-full border border-gray-300 rounded-2xl p-2 outline-none flex justify-between items-center cursor-pointer"
+              className="w-full border border-gray-300 rounded-2xl p-2 outline-none flex justify-between items-center cursor-pointer font-satoshi-regular"
               onClick={() => setTagDropdownOpen((prev) => !prev)}
             >
               <span className="text-gray-600">
@@ -179,7 +179,7 @@ function AdminCreateNewsletter() {
               <ChevronDown size={18} className="text-gray-600" />
             </div>
             {tagDropdownOpen && (
-              <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto">
+              <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto font-satoshi-regular">
                 {tags.map((tag) => (
                   <label key={tag} className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100">
                     <input
@@ -205,7 +205,7 @@ function AdminCreateNewsletter() {
         <div className="flex flex-wrap md:flex-nowrap gap-4">
           <div className="basis-[65%] p-6 border border-gray-400 rounded-3xl">
             <label className="block mb-2 font-satoshi-medium">Who to send?</label>
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-3 font-satoshi-regular">
               <input
                 type="checkbox"
                 checked={allAlumni}
@@ -217,7 +217,7 @@ function AdminCreateNewsletter() {
           </div>
 
           {/* Image Upload */}
-          <div className="basis-[35%] p-6 border border-gray-400 rounded-3xl">
+          <div className="basis-[35%] p-6 border border-gray-400 rounded-3xl ">
             <label className="block mb-1 font-satoshi-medium">Image (Optional)</label>
             <div
               className="border border-dashed border-gray-400 rounded-2xl text-center flex flex-col items-center justify-center p-6"
@@ -248,8 +248,8 @@ function AdminCreateNewsletter() {
               ) : (
                 <Upload className="text-primary mb-2" />
               )}
-              <p className="text-gray-600 text-sm mb-2">Drag and drop file here or</p>
-              <label className="text-blue-600 font-medium cursor-pointer">
+              <p className="text-gray-600 text-sm mb-2 font-satoshi-regular">Drag and drop file here or</p>
+              <label className="text-primary font-medium cursor-pointer font-satoshi-bold">
                 Choose file
                 <input
                   type="file"
