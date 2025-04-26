@@ -15,15 +15,18 @@ def fetch_newsletter_suggestions(
 
     if title:
         query = query.filter(Newsletter.title.ilike(f"%{title}%"))
+        
+    if tags:
+        # query = query.outerjoin(NewsletterTag).filter(
+        #     or_(
+        #         NewsletterTag.tag.in_(tags),
+        #         NewsletterTag.tag.is_(None)
+        #     )
+        # )
+        
+        query = query.outerjoin(NewsletterTag).filter(NewsletterTag.tag.in_(tags))
 
-    final = query.outerjoin(NewsletterTag).filter(
-        or_(
-            NewsletterTag.tag.in_(tags),
-            NewsletterTag.tag.is_(None)
-        )
-    )
-
-    newsletters = final.order_by(Newsletter.date_posted.desc()).limit(limit).all()
+    newsletters = query.order_by(Newsletter.date_posted.desc()).limit(limit).all()
 
     results = [
         {
