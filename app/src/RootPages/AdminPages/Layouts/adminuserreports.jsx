@@ -25,10 +25,11 @@ const newsletters = [
 
 // Sample job offers data
 const jobOffers = [
-    { id: 1, title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", date: "01/01/25", person: 1 },
-    { id: 2, title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", date: "01/01/25", person: 1 },
-    { id: 3, title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", date: "01/01/25", person: 1 },
-  ];
+  { id: 1, title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", date: "01/01/25", person: 1 },
+  { id: 2, title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", date: "01/01/25", person: 1 },
+  { id: 3, title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", date: "01/01/25", person: 1 },
+];
+
 
 
 
@@ -39,13 +40,15 @@ function AdminEngagementReports() {
 
   // Filtered chart data
   const filteredData = fullEngagementReport.slice(-daysFilter);
-
+  const goToMostEngagedJob = () =>{
+    navigate('most-engaged-job-offers', { relative: 'path' });
+  }
   return (
     <div className="bg-[rgb(243,241,244)] p-6 min-h-screen">
       {/* Back Link */}
       <div className="flex items-center mb-6 cursor-pointer" onClick={() => navigate(-1)}>
         <MoveLeft className="text-primary" />
-        <p className="text-primary font-satoshi-medium text-lg ml-2 underline">Back to Dashboard</p>
+        <p className="text-primary font-satoshi-medium text-lg ml-2 ">Back to Dashboard</p>
       </div>
 
       {/* Filters Row */}
@@ -124,22 +127,7 @@ function AdminEngagementReports() {
                     <h1 className="text-3xl font-satoshi-bold text-black">Most Viewed Newsletters</h1>
                     <p className="text-gray-500 text-sm font-satoshi-light pb-3">Last {daysFilter} Days</p>
                 </div>
-                    {/* Tabs */}
-                    <div className="flex gap-2 overflow-x-auto">
-                        {["Overall", "Software Development", "Systems", "HCI", "A.I."].map((tab, idx) => (
-                            <button
-                            key={idx}
-                            onClick={() => setSelectedTab(idx)}
-                            className={`cursor-pointer flex items-center h-5 w-fit border rounded-lg px-4 py-1 text-xs font-satoshi-medium border-primary ${
-                                selectedTab === idx
-                                ? 'bg-primary text-white'
-                                : 'bg-transparent text-primary'
-                            } whitespace-nowrap`}
-                            >
-                            {tab}
-                            </button>
-                        ))}
-                    </div>
+                    
                 </div>
 
                 {/* List of Newsletters */}
@@ -168,26 +156,10 @@ function AdminEngagementReports() {
             {/* Most Job offers */}
             <div className="bg-white rounded-2xl shadow p-6 w-1/2">
                 <div className="flex flex-col justify-between  mb-6">
-                <div>
-                    <h1 className="text-3xl font-satoshi-bold text-black">Job Offers Highlight</h1>
-                    <p className="text-gray-500 text-sm font-satoshi-light pb-3">Last {daysFilter} Days</p>
-                </div>
-                    {/* Tabs */}
-                    <div className="flex gap-2 overflow-x-auto">
-                        {["Overall", "Software Development", "Systems", "HCI", "A.I."].map((tab, idx) => (
-                            <button
-                            key={idx}
-                            onClick={() => setSelectedTab(idx)}
-                            className={`cursor-pointer flex items-center h-5 w-fit border rounded-lg px-4 py-1 text-xs font-satoshi-medium border-primary ${
-                                selectedTab === idx
-                                ? 'bg-primary text-white'
-                                : 'bg-transparent text-primary'
-                            } whitespace-nowrap`}
-                            >
-                            {tab}
-                            </button>
-                        ))}
-                    </div>
+                  <div>
+                      <h1 className="text-3xl font-satoshi-bold text-black">Job Offers Highlight</h1>
+                      <p className="text-gray-500 text-sm font-satoshi-light pb-3">Last {daysFilter} Days</p>
+                  </div>
                 </div>
 
                 {/* List of Job offers */}
@@ -217,7 +189,7 @@ function AdminEngagementReports() {
 
                 {/* Footer Link */}
                 <div className="text-right mt-6">
-                <button className="text-primary font-satoshi-medium cursor-pointer">See Full Report →</button>
+                <button onClick={goToMostEngagedJob} className="text-primary font-satoshi-medium cursor-pointer">See Full Report →</button>
                 </div>
             </div>
         </div>
