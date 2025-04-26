@@ -1,6 +1,6 @@
 
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from fastapi import Depends, Form, HTTPException, UploadFile
 from requests import Session
 from sqlalchemy import UUID, func, or_
@@ -237,10 +237,9 @@ def edit_util(
    
     return newsletter.newsletter_id
 
-def get_util(
-        db: Session
-) -> List[ListNewsletterOut]:
+def get_util(db: Session) -> Dict[str, Any]: 
     newsletters = db.query(Newsletter).all()
+    sum_query = db.query(func.count()).select_from(Newsletter).scalar()
     if not newsletters:
         raise HTTPException(status_code=404, detail="No newsletters found")
     
@@ -253,7 +252,7 @@ def get_util(
         # Get the links for each newsletter
         links = db.query(NewsletterLink).filter(NewsletterLink.newsletter_id == newsletter.newsletter_id).all()
 
-        date = newsletter.date_posted.strftime("%b %d, %Y, %-I:%M %p")
+        date = newsletter.date_posted.strftime("%b %d, %Y, %I:%M %p").lstrip('0')
         
         newsletter_list = ListNewsletterOut(
             newsletter_id = newsletter.newsletter_id,
@@ -267,7 +266,7 @@ def get_util(
 
         newsletter_list_out.append(newsletter_list)
 
-    return newsletter_list_out
+    return {"data": newsletter_list_out, "length": sum_query}
 
 def delete_util(
         db: Session,
