@@ -273,6 +273,10 @@ def get_alumni_filter(
 
             query = query.filter(User.user_id.in_(db.query(affiliation_subquery.c.user_id)))
 
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
+
     if order_by:
         for order in order_by:
             order_parts = order.lower().split('_')
@@ -348,7 +352,7 @@ def get_alumni_filter(
             }
         alum_list.append(al)
 
-    return alum_list
+    return alum_list, total_pages
 
 
 def get_student_filter(
@@ -413,7 +417,9 @@ def get_student_filter(
         if affiliation_list:
             affiliation_subquery = db.query(UserAffiliation.user_id).filter(or_(*[UserAffiliation.affiliation.ilike(f"%{a}%") for a in affiliation_list])).distinct().subquery()
             query = query.filter(User.user_id.in_(db.query(affiliation_subquery.c.user_id)))
-
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
     if order_by:
         for order in order_by:
             order_parts = order.lower().split('_')
@@ -480,5 +486,5 @@ def get_student_filter(
             }
         student_list.append(student_data)
 
-    return student_list
+    return student_list, total_pages
 
