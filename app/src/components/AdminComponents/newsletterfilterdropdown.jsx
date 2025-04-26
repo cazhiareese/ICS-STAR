@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CareerModal from "./CareerModalSelection";
 import DatePickerModal from "./YearPickerModal";
 
@@ -29,6 +29,16 @@ const FilterDropdown = ({ setCareerList, setDateList, disabled }) => {
     setDateListState(updatedDateList); // Update local state for date list
     setDateList(updatedDateList); // Pass updated date list to parent
   };
+
+  // Effect to clear lists when disabled is true
+  useEffect(() => {
+    if (disabled) {
+      setCareerListState([]); // Clear career list
+      setDateListState([]); // Clear date list
+      setCareerList([]); // Clear parent career list
+      setDateList([]); // Clear parent date list
+    }
+  }, [disabled, setCareerList, setDateList]);
 
   return (
     <div className="relative font-satoshi-regular">
