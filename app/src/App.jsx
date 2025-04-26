@@ -261,7 +261,8 @@ function App() {
             </Route>
             <Route path="events" element={<AdminEventsLayout />}>
               <Route index element={<AdminEvents/>}/>
-              <Route path="create-event" element={<AdminCreateEvent/>}/>
+              <Route path="create-event" element={<AdminCreateEvent purpose="create"/>}/>
+              <Route path="edit-event/:eventid" element={<AdminCreateEvent purpose="edit"/>}/>
               <Route path="event-details/:eventid" element={<AdminEventDetails/>}/>
             </Route>
             <Route path="newsletter" element={<AdminNewsletterLayout />} >
