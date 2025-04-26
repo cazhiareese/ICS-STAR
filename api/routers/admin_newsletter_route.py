@@ -123,7 +123,8 @@ async def get_news(
 
         return {
             "message": "success",
-            "news": news
+            "news": news["data"],
+            "length": news["length"]
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
