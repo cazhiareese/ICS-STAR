@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { MoveLeft, UploadCloud, X } from 'lucide-react'
+import { MoveLeft, UploadCloud, X, Trash2, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker'
@@ -33,10 +33,31 @@ function AdminCreateEvent() {
   const [tagsDropdownOpen, setTagsDropdownOpen] = useState(false)
   const [customTag, setCustomTag] = useState('')
   const [tags, setTags] = useState([])
-  const [linkInput, setLinkInput] = useState('')
   const [imageName, setImageName] = useState(null)
   const [loading, setLoading] = useState(true)
   const dropdownRef = useRef(null)
+  const [linkInput, setLinkInput] = useState("")
+
+function handleAddLink() {
+  if (linkInput.trim() !== "") {
+    setFormData((prev) => ({
+      ...prev,
+      links: [...prev.links, linkInput.trim()]
+    }))
+    setLinkInput("")
+  }
+}
+
+function updateLink(index, newValue) {
+  const updated = [...formData.links]
+  updated[index] = newValue
+  setFormData((prev) => ({ ...prev, links: updated }))
+}
+
+function removeLink(index) {
+  const filtered = formData.links.filter((_, i) => i !== index)
+  setFormData((prev) => ({ ...prev, links: filtered }))
+}
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -54,16 +75,6 @@ function AdminCreateEvent() {
       image: file
     }))
     setImageName(file.name)
-  }
-
-  const handleAddLink = () => {
-    if (linkInput.trim() !== '') {
-      setFormData(prev => ({
-        ...prev,
-        links: [...prev.links, linkInput]
-      }))
-      setLinkInput('')
-    }
   }
 
   const handleMultiChange = (e, field) => {
@@ -326,21 +337,45 @@ function AdminCreateEvent() {
           </div>
         </div>
 
-        {/* Links */}
-        <div className='p-6 border border-gray-400 rounded-3xl'>
-          <label className="block mb-1 font-satoshi-medium">Links</label>
-          <div className="flex gap-2 w-1/2">
-            <input value={linkInput} onChange={(e) => setLinkInput(e.target.value)} className="w-full border border-gray-300 rounded-2xl p-2" placeholder="Add a link" />
-            <button type="button" onClick={handleAddLink} className="bg-primary text-white px-3 rounded-full h-10 w-10 text-xl font-bold flex items-center justify-center">+</button>
-          </div>
-          {/* {formData.links.length > 0 && (
-            <ul className="mt-2 list-disc pl-6 text-sm text-gray-700">
-              {formData.links.map((link, idx) => (
-                <li key={idx}>{link}</li>
-              ))}
-            </ul>
-          )} */}
+        <div className="p-6 border border-gray-400 rounded-3xl">
+        <label className="block mb-1 font-satoshi-medium">Links</label>
+
+        <div className="flex gap-2 w-1/2 mb-4">
+          <input
+            value={linkInput}
+            onChange={(e) => setLinkInput(e.target.value)}
+            className="w-full border border-gray-300 rounded-2xl p-2"
+            placeholder="Add a link"
+          />
+          <button
+            type="button"
+            onClick={handleAddLink}
+            className="bg-primary text-white p-2 rounded-full h-10 w-10 text-xl font-bold flex items-center justify-center cursor-pointer hover:bg-hover"
+          >
+            <Plus size={24} className='stroke-2'/>
+          </button>
         </div>
+
+        <div className="space-y-2 w-1/2">
+          {formData.links.map((link, idx) => (
+            <div key={idx} className="flex gap-2 items-center">
+              <input
+                type="text"
+                value={link}
+                onChange={(e) => updateLink(idx, e.target.value)}
+                className="w-full border border-gray-300 rounded-2xl p-2"
+              />
+              <button
+                type="button"
+                onClick={() => removeLink(idx)}
+                className="text-primary border border-gray-300 p-2 rounded-full h-10 w-10 text-xl font-bold flex items-center justify-center cursor-pointer hover:bg-gray-300">
+                <Trash2 size={24} className='stroke-2' />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
 
         <div className='p-6 border border-gray-400 rounded-3xl space-y-2'>
           <h2 className='font-satoshi-medium'>Visibility and Invitations</h2>
