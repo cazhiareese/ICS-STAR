@@ -260,6 +260,7 @@ def get_util(
             title = newsletter.title,
             image = newsletter.image,
             date_posted = date,
+            is_deleted = newsletter.is_deleted,
             tags = [tag.tag for tag in tags],
             links = [link.link for link in links]
         )
@@ -272,7 +273,7 @@ def delete_util(
         db: Session,
         newsletter_id: UUID
 ):
-    newsletter = db.query(Newsletter).filter(Newsletter.newsletter_id == newsletter_id).first()
+    newsletter = db.query(Newsletter).filter(Newsletter.newsletter_id == newsletter_id, Newsletter.is_deleted == False).first()
     if not newsletter:
         raise HTTPException(status_code=404, detail="Newsletter not found")
     
@@ -282,6 +283,10 @@ def delete_util(
             supabase_client.storage.from_(SUPABASE_BUCKET).remove([old_file_path])
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to delete old profile picture: {e}")
-
-    db.delete(newsletter)
-    db.commit()
+    
+    try:
+        newsletter.is_deleted = True
+        db.commit()
+        db.refresh(newsletter)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete newsletter: {e}")
