@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { MoveLeft, Plus, Upload, X, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
@@ -18,49 +18,8 @@ function AdminCreateNewsletter() {
   const [linklist, setLinkList] = useState([]);
   const [dateList, setDateList] = useState([]);
 
-  console.log(dateList, careerList, selectedTags, linklist,image);
-
-  useEffect(() => {
-    const tags = ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5', 'Tag6'];
-    setTags(tags);
-  }, []);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-      console.log(image);
-    }
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleRemoveImage = () => {
-    setImage(null);
-  };
-
-  const handleTagChange = (e) => {
-    const value = e.target.value;
-    setSelectedTags((prevSelectedTags) =>
-      prevSelectedTags.includes(value)
-        ? prevSelectedTags.filter((tag) => tag !== value)
-        : [...prevSelectedTags, value]
-    );
-  };
-
-  const toggleTagDropdown = () => {
-    setTagDropdownOpen((prev) => !prev);
-  };
+  const [titleError, setTitleError] = useState(false);
+  const [contentError, setContentError] = useState(false);
 
   const handleLinkAdd = () => {
     if (link.trim() !== '') {
@@ -69,6 +28,23 @@ function AdminCreateNewsletter() {
         setLink(''); // Clear the input field after adding the link
         return updatedList;
       });
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Check if title and content are empty
+    const titleIsValid = title.trim() !== '';
+    const contentIsValid = content.trim() !== '';
+
+    setTitleError(!titleIsValid);
+    setContentError(!contentIsValid);
+
+    if (titleIsValid && contentIsValid) {
+      // Proceed with form submission if no errors
+      console.log('Form submitted');
+      // Add actual submission logic here (API call, etc.)
     }
   };
 
@@ -86,15 +62,15 @@ function AdminCreateNewsletter() {
       {/* Title */}
       <h1 className="font-satoshi-bold text-5xl mb-6">Create a Newsletter</h1>
 
-      <form className="flex flex-col gap-6">
+      <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         {/* Title Input */}
-        <div className="p-6 border border-gray-400 rounded-3xl">
+        <div className="p-6 border rounded-3xl border-gray-400">
           <label className="block mb-1 font-satoshi-medium">
             Title <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
+            className={`w-full border ${titleError ? 'border-red-500' : 'border-gray-300'} rounded-2xl p-2 outline-none`}
             placeholder="Enter title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -102,12 +78,12 @@ function AdminCreateNewsletter() {
         </div>
 
         {/* Content Input */}
-        <div className="p-6 border border-gray-400 rounded-3xl">
+        <div className="p-6 border rounded-3xl  border-gray-400">
           <label className="block mb-1 font-satoshi-medium">
             Content <span className="text-red-500">*</span>
           </label>
           <textarea
-            className="w-full border border-gray-300 rounded-2xl p-2 outline-none resize-none h-40"
+            className={`w-full border ${titleError ? 'border-red-500' : 'border-gray-300'} rounded-2xl p-2 outline-none resize-none h-40`}
             placeholder="Content of the newsletter"
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -171,14 +147,13 @@ function AdminCreateNewsletter() {
             <label className="basis-[35%] mb-1 font-satoshi-medium">Tags (Optional)</label>
             <div
               className="w-full border border-gray-300 rounded-2xl p-2 outline-none flex justify-between items-center cursor-pointer"
-              onClick={toggleTagDropdown}
+              onClick={() => setTagDropdownOpen((prev) => !prev)}
             >
               <span className="text-gray-600">
                 {selectedTags.length > 0 ? selectedTags.join(', ') : 'Select tags'}
               </span>
               <ChevronDown size={18} className="text-gray-600" />
             </div>
-
             {tagDropdownOpen && (
               <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto">
                 {tags.map((tag) => (
@@ -187,7 +162,11 @@ function AdminCreateNewsletter() {
                       type="checkbox"
                       value={tag}
                       checked={selectedTags.includes(tag)}
-                      onChange={handleTagChange}
+                      onChange={(e) => setSelectedTags((prev) =>
+                        prev.includes(tag)
+                          ? prev.filter((selectedTag) => selectedTag !== tag)
+                          : [...prev, tag]
+                      )}
                       className="rounded-sm"
                     />
                     {tag}
@@ -218,8 +197,14 @@ function AdminCreateNewsletter() {
             <label className="block mb-1 font-satoshi-medium">Image (Optional)</label>
             <div
               className="border border-dashed border-gray-400 rounded-2xl text-center flex flex-col items-center justify-center p-6"
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
+              onDrop={(e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                  setImage(URL.createObjectURL(file));
+                }
+              }}
+              onDragOver={(e) => e.preventDefault()}
             >
               {image ? (
                 <div className="relative">
@@ -229,7 +214,7 @@ function AdminCreateNewsletter() {
                     className="w-32 h-32 object-cover rounded-lg mb-4"
                   />
                   <button
-                    onClick={handleRemoveImage}
+                    onClick={() => setImage(null)}
                     className="absolute bottom-32 left-28 bg-red-500 text-white rounded-full p-1"
                     type="button"
                   >
@@ -246,7 +231,7 @@ function AdminCreateNewsletter() {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={handleImageChange}
+                  onChange={(e) => setImage(URL.createObjectURL(e.target.files[0]))}
                 />
               </label>
             </div>
