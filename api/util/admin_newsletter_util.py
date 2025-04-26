@@ -238,10 +238,12 @@ def edit_util(
     return newsletter.newsletter_id
 
 def get_util(
-        db: Session
+        db: Session,
+        skip: int = 0,
+        limit: int = 10
 ) -> List[ListNewsletterOut]:
-    newsletters = db.query(Newsletter).all()
-    if not newsletters:
+    newsletters = db.query(Newsletter).order_by(Newsletter.date_posted.desc()).offset(skip).limit(limit).all()
+    if not newsletters and skip == 0:  
         raise HTTPException(status_code=404, detail="No newsletters found")
     
     newsletter_list_out = []
@@ -253,7 +255,7 @@ def get_util(
         # Get the links for each newsletter
         links = db.query(NewsletterLink).filter(NewsletterLink.newsletter_id == newsletter.newsletter_id).all()
 
-        date = newsletter.date_posted.strftime("%b %d, %Y, %-I:%M %p")
+        date = newsletter.date_posted.strftime("%b %d, %Y, %I:%M %p")
         
         newsletter_list = ListNewsletterOut(
             newsletter_id = newsletter.newsletter_id,
