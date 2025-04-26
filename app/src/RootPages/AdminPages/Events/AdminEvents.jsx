@@ -16,7 +16,7 @@ function AdminEvents() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
-  async function fetchEvents(type) {
+  async function fetchEvents(type, token) {
     setLoading(true)
     try {
       let endpoint = "";
@@ -26,7 +26,7 @@ function AdminEvents() {
         endpoint = "/api/admin/events/all-concluded-events";
       }
   
-      const response = await axios.get(`${API_BASE_URL}${endpoint}`);
+      const response = await axios.get(`${API_BASE_URL}${endpoint}`, {headers: {Authorization: `Bearer ${token}`}});
       setEvents(response.data.data);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -36,11 +36,12 @@ function AdminEvents() {
   }
 
   useEffect(() => {
-    fetchEvents(eventType)
+    const token = localStorage.get("token")
+    fetchEvents(eventType, token)
   }, [eventType])
 
   return (
-    <div className='h-screen w-full p-6 flex flex-col'>
+    <div className='h-screen w-full p-6 flex flex-col bg-white'>
       {/* Events header and new event button */}
       <div className='flex flex-row justify-between mb-10'>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Events</h1>
