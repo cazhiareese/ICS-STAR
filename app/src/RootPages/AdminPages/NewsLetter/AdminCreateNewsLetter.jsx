@@ -102,7 +102,7 @@ function AdminCreateNewsletter() {
 
         {/* Email Send Options */}
         <div className="flex flex-wrap md:flex-nowrap gap-4">
-          <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
+          <div className="basis-[65%] p-6 border border-gray-400 rounded-3xl">
             <label className="block mb-2 font-satoshi-medium">Who to send?</label>
             <div className="flex items-center gap-2 mb-3">
               <input
@@ -125,7 +125,7 @@ function AdminCreateNewsletter() {
           </div>
 
 {/* Image Upload */}
-<div className="flex-1 p-6 border border-gray-400 rounded-3xl">
+<div className="basis-[35%] p-6 border border-gray-400 rounded-3xl">
   <label className="block mb-1 font-satoshi-medium">Image (Optional)</label>
   <div className="border border-dashed border-gray-400 rounded-2xl text-center flex flex-col items-center justify-center p-6">
     <Upload className="text-primary mb-2" />
