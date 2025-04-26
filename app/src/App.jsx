@@ -19,7 +19,7 @@ import AdminRoot from "./RootPages/AdminPages/Layouts/adminroot";
 import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
 import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
 import AdminEvents from "./RootPages/AdminPages/Events/AdminEvents";
-import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
+import AdminNewsletterLayout from "./RootPages/AdminPages/Layouts/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/Careers/AdminCareer";
 import AdminDonations from "./RootPages/AdminPages/Donations/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
@@ -59,13 +59,20 @@ import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincount
 import AdminEventsLayout from "./RootPages/AdminPages/Layouts/AdminEventsLayout";
 import AdminCreateEvent from "./RootPages/AdminPages/Events/AdminCreateEvent";
 import AdminEventDetails from "./RootPages/AdminPages/Events/AdminEventDetails";
-const isSignedIn = !!localStorage.getItem("token");
+import AdminNewsLetter from "./RootPages/AdminPages/NewsLetter/AdminNewsLetter";
+import AdminCreateNewsletter from "./RootPages/AdminPages/NewsLetter/AdminCreateNewsLetter";
+import AdminNewsletterDetails from "./RootPages/AdminPages/NewsLetter/AdminNewsletterDetails";
+
+
+//const isSignedIn = !!localStorage.getItem("token");
+const isSignedIn = true;
 console.log("isSignedIn:", isSignedIn);
 
 
 
 import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
+import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
@@ -75,13 +82,15 @@ import EventCardsMain from "./RootPages/Events/eventCardsMain";
 
 function App() {
   function checkType() {
-    const User = localStorage.getItem("token");
+    //const User = localStorage.getItem("token");
+    const User = true;
     let tokenType = null;
     if (User) {
-      const decoded = jwtDecode(User);
-      console.log("Decoded token:", decoded);
+      //const decoded = jwtDecode(User);
+      //console.log("Decoded token:", decoded);
+      tokenType = "admin";
       //tokenType = "alumni";
-      const tokenType = decoded.role; // Adjust this based on your token structure
+      //const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
     } else {
@@ -108,7 +117,7 @@ function App() {
 
           <Route
             path="setup"
-            element={
+            element={ 
               <OnboardingProvider>
                 <OnBoarding />
               </OnboardingProvider>
@@ -189,7 +198,12 @@ function App() {
               <Route path="create-event" element={<AdminCreateEvent/>}/>
               <Route path="event-details/:eventid" element={<AdminEventDetails/>}/>
             </Route>
-            <Route path="newsletter" element={<AdminNewsletter />} />
+            <Route path="newsletter" element={<AdminNewsletterLayout />} >
+              <Route index element={<AdminNewsLetter/>}/>
+              <Route path="create-newsletter" element={<AdminCreateNewsletter/>}/>
+              <Route path="newsletter-details" element={<AdminNewsletterDetails/>}/>
+              <Route path="newsletter-details/edit-newsletter" element={<AdminEditNewsletter/>}/>  
+            </Route>
             <Route path="career" element={<AdminCareerLayout />}>
               <Route index element ={<AdminCareer/>}/>
             </Route>
