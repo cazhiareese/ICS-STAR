@@ -8,7 +8,7 @@ function AdminCreateNewsletter() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [link, setLink] = useState('');
+  const [link, setLink] = useState([]);
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
@@ -104,25 +104,42 @@ function AdminCreateNewsletter() {
 
         {/* Links and Tags */}
         <div className="flex gap-4 flex-wrap md:flex-nowrap">
-          {/* Links */}
-          <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
-            <label className="block mb-1 font-satoshi-medium">Links (Optional)</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none"
-                placeholder="Enter link"
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-              />
-              <button
-                type="button"
-                className="bg-primary text-white rounded-full p-2"
-              >
-                <Plus size={18} />
-              </button>
-            </div>
-          </div>
+{/* Links */}
+<div className="flex-1 p-6 border border-gray-400 rounded-3xl">
+  <label className="block mb-1 font-satoshi-medium">Links (Optional)</label>
+  <div className="flex gap-2">
+    <input
+      type="text"
+      className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none"
+      placeholder="Enter link"
+      value={link}
+      onChange={(e) => setLink(e.target.value)}
+    />
+    <button
+      type="button"
+      className="bg-primary text-white rounded-full p-2"
+      onClick={() => {
+        if (link.trim() !== '') {
+          setCareerList((prev) => [...prev, link.trim()]);
+          setLink('');
+        }
+      }}
+    >
+      <Plus size={18} />
+    </button>
+  </div>
+
+  {/* List of added links */}
+  <div className="mt-4 flex flex-col gap-2">
+    {careerList.map((item, index) => (
+      <div key={index} className="flex items-center justify-between border border-gray-200 rounded-lg p-2">
+        <span className="text-gray-700 text-sm truncate">{item}</span>
+        {/* (Optional: You could add a remove button here later if needed) */}
+      </div>
+    ))}
+  </div>
+</div>
+
 
           {/* Tags */}
           <div className="flex-1 p-6 border border-gray-400 rounded-3xl relative">
