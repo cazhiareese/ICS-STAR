@@ -14,7 +14,7 @@ function AdminNewsletter() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const limit = 10; // Number of newsletters per page
+  const limit = 5; // Number of newsletters per page, matching updated code
 
   useEffect(() => {
     const fetchNewsletters = async () => {
@@ -23,26 +23,19 @@ function AdminNewsletter() {
         setError(null);
 
         const skip = (page - 1) * limit;
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/newsletter/all?skip=${skip}&limit=${limit}&sort_by=newest`;
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/get?skip=${skip}&limit=${limit}`;
 
         const response = await axios.get(url);
-        setNewsletters(response.data);
+        const { news, total_count } = response.data;
 
-        // Get total count from response header or fallback to response data
-        let totalNewsletters = parseInt(response.headers['x-total-count']) || 0;
-        
-        // Fallback: If no header, check if response data length < limit to infer last page
-        if (!totalNewsletters && response.data.length > 0) {
-          // If we get fewer items than the limit, this is likely the last page
-          totalNewsletters = skip + response.data.length;
-        }
+        // Set newsletters directly, as API returns only non-deleted entries
+        setNewsletters(news);
 
-        // Compute total pages
-        const computedTotalPages = Math.max(1, Math.ceil(totalNewsletters / limit));
-        setTotalPages(computedTotalPages);
+        // Calculate total pages using total_count (non-deleted newsletters only)
+        setTotalPages(Math.max(1, Math.ceil(total_count / limit)));
 
         // Extract unique tags from newsletters
-        const allTags = response.data.reduce((acc, newsletter) => {
+        const allTags = news.reduce((acc, newsletter) => {
           return [...acc, ...newsletter.tags];
         }, []);
         setTags([...new Set(allTags)]); // Remove duplicates
@@ -121,12 +114,12 @@ function AdminNewsletter() {
             newsletters.map((item) => (
               <AdminNewsletterCard
                 key={item.newsletter_id}
+                id={item.newsletter_id} // Pass newsletter_id as id prop
                 title={item.title}
                 image={item.image}
                 date_posted={item.date_posted}
-                context={item.content}
+                context={item.content || 'No content available'} // Fallback for missing content
                 tags={item.tags}
-                id={item.newsletter_id}
               />
             ))
           )}

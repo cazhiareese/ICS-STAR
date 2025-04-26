@@ -6,7 +6,7 @@ from requests import Session
 from sqlalchemy import UUID, func, or_
 from models.newsletter_model import Newsletter, NewsletterLink, NewsletterTag
 from models.usermodel import User
-from schemas.newsletter_schema import ListNewsletterOut
+from schemas.newsletter_schema import ListNewsletterOut, SingleNewsLetterOut
 from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET
 from config.database import get_db
 from datetime import datetime
@@ -242,7 +242,7 @@ def get_util(
         skip: int = 0,
         limit: int = 10
 ) -> List[ListNewsletterOut]:
-    newsletters = db.query(Newsletter).order_by(Newsletter.date_posted.desc()).offset(skip).limit(limit).all()
+    newsletters = db.query(Newsletter).filter(Newsletter.is_deleted == False).order_by(Newsletter.date_posted.desc()).offset(skip).limit(limit).all()
     if not newsletters and skip == 0:  
         raise HTTPException(status_code=404, detail="No newsletters found")
     
@@ -257,19 +257,20 @@ def get_util(
 
         date = newsletter.date_posted.strftime("%b %d, %Y, %I:%M %p")
         
-        newsletter_list = ListNewsletterOut(
+        newsletter_list = SingleNewsLetterOut(
             newsletter_id = newsletter.newsletter_id,
             title = newsletter.title,
             image = newsletter.image,
             date_posted = date,
             is_deleted = newsletter.is_deleted,
+            content = newsletter.content,
             tags = [tag.tag for tag in tags],
             links = [link.link for link in links]
         )
 
         newsletter_list_out.append(newsletter_list)
 
-    return {"data": newsletter_list_out, "length": sum_query}
+    return newsletter_list_out
 
 def delete_util(
         db: Session,
