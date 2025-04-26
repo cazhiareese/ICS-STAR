@@ -4,8 +4,9 @@ const NewsletterModal = ({ isOpen, onClose, formData }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg w-96 max-w-full">
+    <div className="fixed inset-0 flex justify-center items-center  ">
+        <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
+      <div className="bg-white p-6 rounded-lg w-96 max-w-full relative">
         <h2 className="font-satoshi-bold text-xl mb-4">Newsletter Preview</h2>
         
         {/* Title */}
