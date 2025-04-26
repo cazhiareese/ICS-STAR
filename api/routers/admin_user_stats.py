@@ -11,7 +11,10 @@ from util.user_information_stats import  employment_class_util, get_active_alumn
 
 from util.admin_alum_list import get_alumni_list_filter,  get_alumni_filter, get_all_alumni, get_student_filter
 
-router = APIRouter()
+router = APIRouter(
+    tags=["Admin Stats"],
+    responses={404: {"description": "Not found"}}
+)
 
 
 
@@ -150,10 +153,21 @@ async def search_alumni(
     batch: Optional[str] = None,
     affiliation: Optional[str] = None,
     order_by: list[str]=Query([]),
+    page: int = 1,
     db: Session = Depends(get_db)
 ):
     
-    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation, order_by=order_by, needs_verified=True)
+    results = get_alumni_filter(db, 
+                                name=name,
+                                page=page,
+                                graduation_year=graduation_year, 
+                                job_title=job_title, 
+                                city=city, skill=skill, 
+                                industry=industry, 
+                                batch=batch, 
+                                affiliation=affiliation, 
+                                order_by=order_by, 
+                                needs_verified=True)
 
     
     # Raise 404 if no results found
@@ -169,10 +183,22 @@ async def search_alumni_unverified(
     graduation_year: Optional[int] = None,
     batch: Optional[str] = None,
     order_by: list[str]=Query([]),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = 1
 ):
     
-    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=None, city=None, skill=None, industry=None, batch=batch, affiliation=None, order_by=order_by, needs_verified=False)
+    results = get_alumni_filter(db, 
+                                name=name, 
+                                graduation_year=graduation_year,
+                                page =page, 
+                                job_title=None, 
+                                city=None, 
+                                skill=None, 
+                                industry=None, 
+                                batch=batch, 
+                                affiliation=None, 
+                                order_by=order_by, 
+                                needs_verified=False)
     
     # Raise 404 if no results found
     if not results:
@@ -188,10 +214,17 @@ async def search_student(
     affiliation: Optional[str] = None,
     order_by: list[str]=Query([]),
     standing: Optional[str] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int =1
 ):
     
-    results = get_student_filter(db, name=name, batch=batch, standing=standing, affiliation=affiliation, order_by=order_by, needs_verified=True)
+    results = get_student_filter(db, name=name, 
+                                 batch=batch, 
+                                 standing=standing, 
+                                 affiliation=affiliation, 
+                                 order_by=order_by, 
+                                 page=page,
+                                 needs_verified=True)
     
     # Raise 404 if no results found
     if not results:
@@ -204,10 +237,18 @@ async def search_student(
     name: Optional[str] = None,
     batch: Optional[str] = None,
     order_by: list[str]=Query([]),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page:int =1
 ):
     
-    results = get_student_filter(db, name=name, batch=batch, standing=None, affiliation=None, order_by=order_by, needs_verified=False)
+    results = get_student_filter(db, 
+                                 name=name, 
+                                 batch=batch, 
+                                 standing=None, 
+                                 affiliation=None, 
+                                 order_by=order_by, 
+                                 page =page,
+                                 needs_verified=False)
     
     # Raise 404 if no results found
     if not results:
