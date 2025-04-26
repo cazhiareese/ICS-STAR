@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import Date, cast, extract, func
+from sqlalchemy import Date, and_, cast, desc, extract, func
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from config.database import get_db
 from models.log import Log
 from models.usermodel import User
-from schemas.log import VisitResponse, TimeRange
+from models.job_posting_model import JobPosting, JobPostingInterestedIn
+from schemas.log import VisitResponse, TimeRange, TopJobResponse
 
 router = APIRouter(
     prefix="/admin/engagement-statistics",
@@ -147,3 +148,58 @@ def get_visits(
         
     return result
 
+@router.get("/jobs/top-interested", response_model=List[TopJobResponse])
+def get_top_interested_jobs(
+    time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for job posting data"),
+    db: Session = Depends(get_db)
+):
+    today = datetime.utcnow()
+
+    # Determine the start date based on the time range
+    if time_range == TimeRange.WEEK:
+        start_date = today - timedelta(days=7)
+    elif time_range == TimeRange.MONTH:
+        start_date = today - timedelta(days=30)
+    else:  # time_range == TimeRange.YEAR
+        start_date = datetime(today.year - 1, today.month, today.day)
+    
+    # Query to get top 3 job postings with most interest
+    top_jobs = (
+        db.query(
+            JobPosting.title,
+            JobPosting.company,
+            JobPosting.image,
+            JobPosting.date_posted,
+            func.count(JobPostingInterestedIn.user_id).label('interested_count')
+        )
+        .join(JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id)
+        .filter(
+            and_(
+                JobPosting.date_posted >= start_date,
+                JobPosting.is_deleted == False
+            )
+        )
+        .group_by(
+            JobPosting.post_id,
+            JobPosting.title,
+            JobPosting.company,
+            JobPosting.image,
+            JobPosting.date_posted
+        )
+        .order_by(desc('interested_count'))
+        .limit(3)
+        .all()
+    )
+    
+    # Format the results
+    result = []
+    for job in top_jobs:
+        result.append({
+            "title": job.title,
+            "company": job.company,
+            "image": job.image,
+            "date_posted": job.date_posted.strftime("%Y-%m-%d"),
+            "interested_count": job.interested_count
+        })
+    
+    return result

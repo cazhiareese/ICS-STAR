@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 from pydantic import BaseModel
 class Log(BaseModel):
     log_id : int
@@ -17,3 +18,9 @@ class TimeRange(str, Enum):
 class VisitResponse(BaseModel):
     date: str
     visits: int
+class TopJobResponse(BaseModel):
+    title: str
+    company: str
+    image: Optional[str]
+    date_posted: str
+    interested_count: int
