@@ -213,7 +213,7 @@ function AdminCreateNewsletter() {
               />
               <span>All Alumni</span>
             </div>
-            <FilterDropdown setCareerList={setCareerList} setDateList={setDateList} />
+            <FilterDropdown setCareerList={setCareerList} setDateList={setDateList} disabled={allAlumni} />
           </div>
 
           {/* Image Upload */}

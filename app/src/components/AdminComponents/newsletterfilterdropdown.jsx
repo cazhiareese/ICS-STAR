@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CareerModal from "./CareerModalSelection";
 import DatePickerModal from "./YearPickerModal";
 
-const FilterDropdown = ({ setCareerList, setDateList }) => {
+const FilterDropdown = ({ setCareerList, setDateList, disabled }) => {
   const [isCareerModalOpen, setIsCareerModalOpen] = useState(false);
   const [isDatePickerModalOpen, setIsDatePickerModalOpen] = useState(false);
   const [filterBy, setFilterBy] = useState("");
@@ -29,9 +29,10 @@ const FilterDropdown = ({ setCareerList, setDateList }) => {
   return (
     <div className="relative">
       <select
-        className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
+        className={`w-full border ${disabled ? "border-neutral-c text-neutral-c" : "border-disabled text-black"} rounded-2xl p-2 outline-none`} // Adjusted the color based on disabled state
         value={filterBy}
         onChange={handleSelectChange}
+        disabled={disabled}
       >
         <option value="">Filter by</option>
         <option value="Batch">Batch</option>
