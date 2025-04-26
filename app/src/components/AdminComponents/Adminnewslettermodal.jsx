@@ -35,6 +35,31 @@ const NewsletterModal = ({ isOpen, onClose, formData, option }) => {
             </div>
           </>
         )}
+
+        {option === "delete" && (
+          <>
+            {/* Delete Header */}
+            <h2 className="font-satoshi-bold text-2xl text-center mb-8">
+              Are you sure you want to delete the Newsletter?
+            </h2>
+
+            {/* Buttons */}
+            <div className="flex justify-center gap-4">
+              <button
+                className="bg-white border-[2px] border-gray-400 text-gray-700 px-6 py-2 rounded-3xl"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-error text-white px-6 py-2 rounded-3xl hover:bg-hover"
+                onClick={onClose}
+              >
+                Confirm
+              </button>
+            </div>
+          </>
+        )}
         
       </div>
     </div>
