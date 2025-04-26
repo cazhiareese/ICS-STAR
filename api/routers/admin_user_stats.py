@@ -25,10 +25,10 @@ async def get_all_alumni_route(db: Session = Depends(get_db)):
     return{"message": "success", "data": all_alumni}
 
 @router.get("/admin/stats/get_active_by_batch")
-async def get_active_batch(db: Session= Depends(get_db), order:Optional[str] = None):
-    active_batch = get_active_alumni_stats(db, order=order, alumni_general=False)
+async def get_active_batch(db: Session= Depends(get_db), order:Optional[str] = None, page: int =1):
+    active_batch, total_pages = get_active_alumni_stats(db, order=order, page=page, alumni_general=False)
 
-    return{"message": "success", "data": active_batch}
+    return{"message": "success", "total_pages": total_pages, "data": active_batch}
 
 @router.get("/admin/stats/get_active/{batch}")
 async def get_active_batch(db: Session= Depends(get_db), batch:Optional[str] = None):
@@ -157,7 +157,7 @@ async def search_alumni(
     db: Session = Depends(get_db)
 ):
     
-    results = get_alumni_filter(db, 
+    results,total_pages = get_alumni_filter(db, 
                                 name=name,
                                 page=page,
                                 graduation_year=graduation_year, 
@@ -174,7 +174,12 @@ async def search_alumni(
     if not results:
         raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
     
-    return results
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "items": results
+    }
 
 
 @router.get("/admin/filter/unverified/alum")
@@ -187,7 +192,7 @@ async def search_alumni_unverified(
     page: int = 1
 ):
     
-    results = get_alumni_filter(db, 
+    results, total_pages = get_alumni_filter(db, 
                                 name=name, 
                                 graduation_year=graduation_year,
                                 page =page, 
@@ -204,7 +209,12 @@ async def search_alumni_unverified(
     if not results:
         raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
     
-    return results
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "items": results
+    }
 
 
 @router.get("/admin/filter/student")
@@ -218,7 +228,7 @@ async def search_student(
     page: int =1
 ):
     
-    results = get_student_filter(db, name=name, 
+    results, total_pages = get_student_filter(db, name=name, 
                                  batch=batch, 
                                  standing=standing, 
                                  affiliation=affiliation, 
@@ -230,7 +240,12 @@ async def search_student(
     if not results:
         raise HTTPException(status_code=404, detail="No student found matching the search criteria")
     
-    return results
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "items": results
+    }
 
 @router.get("/admin/filter/unverified/student")
 async def search_student(
@@ -241,7 +256,7 @@ async def search_student(
     page:int =1
 ):
     
-    results = get_student_filter(db, 
+    results, total_pages = get_student_filter(db, 
                                  name=name, 
                                  batch=batch, 
                                  standing=None, 
@@ -254,7 +269,12 @@ async def search_student(
     if not results:
         raise HTTPException(status_code=404, detail="No alumni student matching the search criteria")
     
-    return results
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "items": results
+    }
 
 @router.get("/admin/unverified/count")
 async def count_unverified(db: Session = Depends(get_db)):
@@ -331,7 +351,7 @@ async def country_route(db: Session = Depends(get_db), batch: Optional[str] = No
 
 @router.get("/admin/stats/activity")
 async def general_activity_route(db: Session = Depends(get_db)):
-    activity_data= get_active_alumni_stats(db, alumni_general = True)
+    activity_data= get_active_alumni_stats(db, alumni_general = True, page=1)
 
 
     return{"message": "success", "data": activity_data}
