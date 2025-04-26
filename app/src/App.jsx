@@ -72,6 +72,7 @@ console.log("isSignedIn:", isSignedIn);
 
 import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
+import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
 import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
 
 

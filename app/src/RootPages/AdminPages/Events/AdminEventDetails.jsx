@@ -116,7 +116,7 @@ function AdminEventDetails() {
           </div>
         </div>
         <div className='flex-1 flex justify-end'>
-          <button className='flex flex-row items-center gap-2 text-primary font-satoshi-regular cursor-pointer hover:text-hover'>
+          <button className='flex flex-row items-center gap-2 text-primary font-satoshi-regular cursor-pointer hover:text-hover' onClick={() => {navigate(`/admin/events/event-demographics/${eventid}`)}}>
             View Demographics
             <SquareArrowOutUpRight size={20} className='stroke-2'/> 
           </button>
