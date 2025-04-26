@@ -1,10 +1,11 @@
 from fastapi import Depends, HTTPException, APIRouter, Form, UploadFile, File
+from fastapi.responses import FileResponse
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from models.donationmodel import DonationDrive, DonationDriveLink
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from config.database import get_db
-from util.donation_util import create_donation_drive, get_donors
+from util.donation_util import create_donation_drive, get_donors_csv
 from uuid import UUID
 
 router = APIRouter()
@@ -28,7 +29,7 @@ async def create_donation_drive_endpoint(
         db=db
     )
     
-@router.get("/get-donors/{drive_id}")
+@router.get("/get-donors-csv/{drive_id}")
 def donor_list(
     drive_id: UUID,
     db: Session = Depends(get_db)
@@ -37,4 +38,11 @@ def donor_list(
     if not drive:
         raise HTTPException(status_code=404, detail="Donation drive not found.")
     
-    return get_donors(drive.drive_id, db)
+    csv_file_path = get_donors_csv(drive.drive_id, db)
+    filename = f"{drive.title}.csv"
+
+    return FileResponse(
+        path=csv_file_path,
+        filename=filename,
+        media_type="text/csv"
+    )
