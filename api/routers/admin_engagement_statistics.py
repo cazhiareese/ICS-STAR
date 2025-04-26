@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import Date, and_, cast, desc, extract, func
+from sqlalchemy import Date, and_, cast, desc, distinct, extract, func
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from config.database import get_db
@@ -8,7 +8,7 @@ from models.log import Log
 from models.usermodel import User
 from models.job_posting_model import JobPosting, JobPostingInterestedIn
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation
-from schemas.log import VisitResponse, TimeRange, TopJobResponse, TopDriveResponse
+from schemas.log import VisitResponse, TimeRange, TopJobResponse, TopDriveResponse, TopDonationDriveResponse
 
 router = APIRouter(
     prefix="/admin/engagement-statistics",
@@ -302,3 +302,53 @@ def get_top_donation_drives(
         })
     
     return result
+
+@router.get("/donation-drives/top-donations", response_model=TopDonationDriveResponse)
+def get_top_donation_drive(
+    time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
+    db: Session = Depends(get_db)
+):
+    # --- Utility: Calculate start date based on time_range ---
+    today = datetime.utcnow()
+    if time_range == TimeRange.WEEK:
+        start_date = today - timedelta(days=7)
+    elif time_range == TimeRange.MONTH:
+        start_date = today - timedelta(days=30)
+    else:  # YEAR
+        start_date = datetime(today.year - 1, today.month, today.day)
+
+    # --- Main Query ---
+    drive = (
+        db.query(
+            DonationDrive.title,
+            func.count(distinct(MonetaryDonation.user_id)).label('donor_count'),
+            func.coalesce(func.sum(MonetaryDonation.amount), 0).label('amount_gathered'),
+            DonationDrive.target_cost,
+            (
+                func.coalesce(func.sum(MonetaryDonation.amount), 0) /
+                func.nullif(DonationDrive.target_cost, 0) * 100
+            ).label('percentage_progress')
+        )
+        .join(MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id)
+        .filter(
+            and_(
+                DonationDrive.is_deleted == False,
+                MonetaryDonation.is_acknowledged == True,
+                MonetaryDonation.date_donated >= start_date
+            )
+        )
+        .group_by(DonationDrive.drive_id, DonationDrive.title, DonationDrive.target_cost)
+        .order_by(desc('amount_gathered'))
+        .first()
+    )
+
+    if not drive:
+        raise HTTPException(status_code=404, detail="No donation drives found for the selected time range.")
+
+    return TopDonationDriveResponse(
+        title=drive.title,
+        donor_count=drive.donor_count,
+        amount_gathered=float(drive.amount_gathered),
+        target_cost=float(drive.target_cost),
+        percentage_progress=float(drive.percentage_progress)
+    )

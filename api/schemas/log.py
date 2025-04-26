@@ -24,8 +24,14 @@ class TopJobResponse(BaseModel):
     image: Optional[str]
     date_posted: str
     interested_count: int
-
 class TopDriveResponse(BaseModel):
     title: str
     image: Optional[str]
     donor_count: int
+    
+class TopDonationDriveResponse(BaseModel):
+    title: str
+    donor_count: int
+    amount_gathered: float
+    target_cost: float
+    percentage_progress: float
