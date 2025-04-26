@@ -24,3 +24,14 @@ class SingleNewsLetterOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ListNewsletterOut(BaseModel):
+    newsletter_id: UUID
+    title: str
+    image: Optional[str] = None
+    date_posted: str
+    tags: Optional[list[str]] = None
+    links: Optional[list[str]] = None
+
+    class Config:
+        from_attributes = True
