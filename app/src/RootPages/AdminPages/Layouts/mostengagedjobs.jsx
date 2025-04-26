@@ -1,6 +1,6 @@
 import { MoveLeft, ArrowLeft, ArrowRight } from 'lucide-react';
 import React, { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 const dummyJobs = [
     { date: 'Mar 8, 2025', name: 'Software Developer', company: 'ABCDE and Co.', link: '#', interested: 200 },
     { date: 'Mar 9, 2025', name: 'Frontend Engineer', company: 'XYZ Corp.', link: '#', interested: 180 },
@@ -23,6 +23,7 @@ const dummyJobs = [
 function MostEngagedJobs() {
     const [page, setPage] = useState(0);
     const [daysFilter, setDaysFilter] = useState(30);
+    const navigate = useNavigate();
     const rowsPerPage = 6;
 
     const handlePrev = () => {
