@@ -64,8 +64,7 @@ import AdminCreateNewsletter from "./RootPages/AdminPages/NewsLetter/AdminCreate
 import AdminNewsletterDetails from "./RootPages/AdminPages/NewsLetter/AdminNewsletterDetails";
 
 
-//const isSignedIn = !!localStorage.getItem("token");
-const isSignedIn = true;
+const isSignedIn = !!localStorage.getItem("token");
 console.log("isSignedIn:", isSignedIn);
 
 
@@ -86,10 +85,10 @@ function App() {
     const User = true;
     let tokenType = null;
     if (User) {
-      //const decoded = jwtDecode(User);
-      //console.log("Decoded token:", decoded);
-      tokenType = "admin";
-      //tokenType = "alumni";
+      // const decoded = jwtDecode(User);
+      // console.log("Decoded token:", decoded);
+      // tokenType = "admin";
+      tokenType = "alumni";
       //const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
@@ -99,6 +98,7 @@ function App() {
   }
 
   console.log(isSignedIn);
+  console.log(checkType())
 
   return (
     <Routes>
@@ -220,7 +220,7 @@ function App() {
       )}
 
       {/* Redirect unknown routes */}
-      <Route path="*" element={<LoginPage />} />
+      {/* <Route path="*" element={<LoginPage />} /> */}
     </Routes>
   );
 }

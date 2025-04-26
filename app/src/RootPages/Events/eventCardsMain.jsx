@@ -14,11 +14,12 @@ const EventCardsMain = () => {
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const token = localStorage.getItem("token");
     const [reservationSignal, setReservationSignal] = useState(false);
+
     const [userId, setUserId] = useState(null);
     const [event, setEvent] = useState(null);
     
     const navigate = useNavigate();
-    const [isGoing, setIsGoing] = useState(false);
+    const [isGoing, setIsGoing] = useState(null);
     const [user, setUser] = useState(null);
     const id = useParams(); // Get the drive_id from the URL params
     const event_id = id.eventid; // Extract the drive_id from the params
@@ -75,6 +76,15 @@ const EventCardsMain = () => {
             console.log("Event data:", event);     
         },[])
 
+    
+    useEffect(() => {
+        if (event && reservations.length > 0) {
+            const going = reservations.some(reservation => reservation.event_id === event.event_id);
+            setIsGoing(going);
+            console.log("isGoing computed:", going);
+        }
+    }, [event, reservations]);
+
     useEffect(() => {
 
         const fetchReservations = async () => {
@@ -86,16 +96,18 @@ const EventCardsMain = () => {
                     }
                   });
                   setReservations(response.data);
-                  console.log(reservations.length)
-                
+                  console.log(reservations.length);
+                  console.log(reservations);
+                  
             } catch (error) {
                 
                 console.error('Error fetching reservations:', error);
             }
+            
         };
 
-        // fetchReservations();
-        // setReservationSignal(false);
+
+        
         console.log("RESERVATION SIGNAL")
         
 
@@ -108,6 +120,7 @@ const EventCardsMain = () => {
                 });
                 setAllEvents(response.data);
                 console.log(allEvents)
+                fetchReservations();
 
             } catch (error) {
                 console.error('Error fetching all events:', error);
@@ -165,8 +178,8 @@ const EventCardsMain = () => {
         // setReservations([])
         
         
-        if (!isGoing) {  
-            setIsGoing (true)
+        if (isGoing) {  
+            setIsGoing (false)
             console.log(event)
             console.log("Event ID here:", eventId)
             console.log("User ID here: ", userId)
@@ -188,7 +201,7 @@ const EventCardsMain = () => {
                 console.error("Error canceling RSVP:", error);
             });
         } else {
-            setIsGoing (false)
+            setIsGoing (true)
             console.log("User ID being sent:", userId);
             axios.post(`${API_BASE_URL}/events/${eventId}/confirm-rsvp`, {
                 user_id: userId
@@ -204,7 +217,7 @@ const EventCardsMain = () => {
         }
     }
 
-    if (!event) {
+    if (!event && isGoing===null) {
         return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
     }
     return (
@@ -235,12 +248,12 @@ const EventCardsMain = () => {
                 {user?.role !== "student" && (
                     <button
                         className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                        !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
+                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                         }`}
                         onClick={() => handleRSVPClick(event.event_id)}
                     >
-                        <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                        <label>{!isGoing ? 'Going' : 'RSVP'}</label>
+                        <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
+                        <label>{isGoing ? 'Going' : 'RSVP'}</label>
                     </button>
                 )}
                 <div className="p-4 mx-5 flex flex-col">

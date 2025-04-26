@@ -238,10 +238,10 @@ const EventsLanding = () => {
     }
     return (
         <>
-            <div className="flex flex-col items-center ">
-                <div className={`w-full z-40 transition-all duration-800 ease-in-out items-center justify-center flex ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
+            <div className="flex flex-col sm:items-center ">
+                <div className={`w-full z-40 transition-all duration-800 ease-in-out sm:items-center sm:justify-center flex ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
 
-                    <div className="flex overflow-hidden items-center bg-white justify-center p-5 shadow-xl rounded-2xl w-full mx-auto h-25">
+                    <div className="flex overflow-y-hidden items-center bg-white justify-center p-5 shadow-xl rounded-2xl w-full mx-auto h-25">
                         
                         <div className='flex flex-row  z-10 w-full lg:w-1/2 h-16 max-w-[600px] px-4  border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'>
                             <input
@@ -290,7 +290,7 @@ const EventsLanding = () => {
 
                 </div>
                 
-                <div className="flex flex-col -mt-20 mb-8 w-full sm:px-15 sm:items-start items-center">
+                <div className="flex flex-col -mt-20 mb-8 sm:w-full sm:px-15  px-10 sm:items-start items-center">
                     <div className="flex flex-row items-end space-x-5">
                         <label className="text-3xl text-primary font-satoshi-bold">Your Reservations</label>
                         <label className="text-xl text-primary font-satoshi-light">({reservations == null ? "0" : reservations.length})</label>
@@ -332,7 +332,7 @@ const EventsLanding = () => {
                     
                 </div>
 
-                <div className="flex flex-col mt-10 w-full mb-10 sm:px-15">
+                <div className="flex flex-col mt-10 w-full mb-10 sm:px-15 px-10">
                     <div className="flex md:flex-row flex-col wrap items-center sm:justify-start justify-center space-x-5">
                         <label ref={exploreRef} className="text-3xl text-primary font-satoshi-bold lg:text-4xl">
                             Explore Events
@@ -435,7 +435,7 @@ const EventsLanding = () => {
 
                         {/* Calendar pop‑up */}
                         {showCalendar && (
-                            <div className="absolute m-auto z-50 w-full h-full">
+                            <div className="absolute m-auto mt-20 ml-30 z-50 w-70 h-full">
                                 <DatePicker
                             selected={pickedDate}
                             onChange={(date) => {
@@ -461,7 +461,7 @@ const EventsLanding = () => {
 
                     
 
-                    <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto">
+                    <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto items-center sm:justify-normal justify-center">
                         {suggestions!= "none" ? (
                             
                         // <div className="absolute top-full mt-5 bg-white w-full max-w-[600px] border-gray-400 border-2 z-20 rounded-2xl">
