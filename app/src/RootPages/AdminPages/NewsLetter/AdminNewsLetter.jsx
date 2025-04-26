@@ -126,6 +126,7 @@ function AdminNewsletter() {
                 date_posted={item.date_posted}
                 context={item.content}
                 tags={item.tags}
+                id={item.newsletter_id}
               />
             ))
           )}
