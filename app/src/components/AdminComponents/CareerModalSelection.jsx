@@ -1,12 +1,10 @@
 import { motion } from "framer-motion";
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronDown, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import axios from "axios";
 
-const CareerModal = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
+const CareerModal = ({ setCareerList }) => {
   const [careerInput, setCareerInput] = useState("");
-  const [careerList, setCareerList] = useState([]);
   const [jobs, setJobs] = useState([]);
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -50,13 +48,13 @@ const CareerModal = () => {
 
   const handleCareerSearch = (e) => {
     if (e.key === "Enter" && careerInput.trim()) {
-      setCareerList([...careerList, careerInput.trim()]);
+      setCareerList((prevList) => [...prevList, careerInput.trim()]);
       setCareerInput("");
     }
   };
 
   const removeCareer = (index) => {
-    setCareerList(careerList.filter((_, i) => i !== index));
+    setCareerList((prevList) => prevList.filter((_, i) => i !== index));
   };
 
   const filteredJobs = jobs.filter((job) =>
@@ -68,8 +66,8 @@ const CareerModal = () => {
       <motion.h1
         className="text-lg font-satoshi-medium mb-3"
         animate={{
-          fontWeight: isExpanded ? 600 : 500,
-          fontSize: isExpanded ? "1.25rem" : "1rem",
+          fontWeight: 600,
+          fontSize: "1.25rem",
         }}
         transition={{ duration: 0.2 }}
       >
@@ -90,32 +88,17 @@ const CareerModal = () => {
         </span>
       </div>
 
-      {careerList.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {careerList.map((career, index) => (
-            <div key={index} className="flex items-center bg-primary text-white rounded-full px-3 py-1 text-sm">
-              {career}
-              <button onClick={() => removeCareer(index)}>
-                <X size={16} className="ml-2" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
       <div className="text-sm text-gray-500 mb-2">Suggestions</div>
       <div className="space-y-2 max-h-40 overflow-y-auto">
-        {(careerInput ? filteredJobs : jobs.slice(0, 4)).map((job, index) =>
-          !careerList.includes(job) ? (
-            <div
-              key={index}
-              className="bg-gray-100 rounded-full py-2 px-4 cursor-pointer hover:bg-gray-200"
-              onClick={() => setCareerList([...careerList, job])}
-            >
-              {job}
-            </div>
-          ) : null
-        )}
+        {(careerInput ? filteredJobs : jobs.slice(0, 4)).map((job, index) => (
+          <div
+            key={index}
+            className="bg-gray-100 rounded-full py-2 px-4 cursor-pointer hover:bg-gray-200"
+            onClick={() => setCareerList((prevList) => [...prevList, job])}
+          >
+            {job}
+          </div>
+        ))}
       </div>
     </div>
   );

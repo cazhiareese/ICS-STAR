@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MoveLeft, Plus, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import CareerModal from '../../../components/AdminComponents/CareerModalSelection';
 
 function AdminCreateNewsletter() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ function AdminCreateNewsletter() {
   const [allAlumni, setAllAlumni] = useState(false);
   const [filterBy, setFilterBy] = useState('');
   const [image, setImage] = useState(null);
+
+  const [isCareerModalOpen, setIsCareerModalOpen] = useState(false);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -98,7 +101,18 @@ function AdminCreateNewsletter() {
     </select>
   </div>
 </div>
-
+      {isCareerModalOpen && (
+        <>
+          {/* Optional: backdrop */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-40 z-40"
+            onClick={() => setIsCareerModalOpen(false)}
+          />
+          
+          {/* Modal itself */}
+          <CareerModal />
+        </>
+      )}
 
         {/* Email Send Options */}
         <div className="flex flex-wrap md:flex-nowrap gap-4">
@@ -119,7 +133,7 @@ function AdminCreateNewsletter() {
             >
               <option value="">Filter by</option>
               <option value="Batch">Batch</option>
-              <option value="Location">Location</option>
+              <option value="Location " onClick={() => setIsCareerModalOpen(true)}>Location</option>
               <option value="Program">Program</option>
             </select>
           </div>
@@ -154,6 +168,18 @@ function AdminCreateNewsletter() {
           </button>
         </div>
       </form>
+      {isCareerModalOpen && (
+        <>
+          {/* Optional: backdrop */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-40 z-40"
+            onClick={() => setIsCareerModalOpen(false)}
+          />
+          
+          {/* Modal itself */}
+          <CareerModal />
+        </>
+      )}
     </div>
   );
 }
