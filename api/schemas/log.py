@@ -24,6 +24,13 @@ class TopJobResponse(BaseModel):
     image: Optional[str]
     date_posted: str
     interested_count: int
+
+class JobsResponse(BaseModel):
+    title: str
+    company: str
+    date_posted: str
+    link: str
+    interested_count: int
 class TopDriveResponse(BaseModel):
     title: str
     image: Optional[str]
