@@ -5,6 +5,9 @@ import FilterDropdown from '../../../components/AdminComponents/newsletterfilter
 import NewsletterModal from '../../../components/AdminComponents/Adminnewslettermodal';
 
 function AdminEditNewsletter() {
+  //use params to get the id of the newsletter
+  const id = "naondandasndaldlasdas";  //palitan mo to ng actual using params
+
   const navigate = useNavigate();
   const option = "edit";
 
@@ -23,9 +26,41 @@ function AdminEditNewsletter() {
   const [titleError, setTitleError] = useState(false);
   const [contentError, setContentError] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newsletter, setNewsletter] = useState(null);
+  
 
 
   useEffect(() => {
+
+        //fetch mo dito actual newsletter using id, tapos i set mo
+        const longcontent = `Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+
+        Mauris nec lorem quis orci pharetra aliquet. Nulla facilisi. Curabitur id libero vitae magna commodo lacinia. Suspendisse potenti. Vestibulum tincidunt ipsum sed erat dapibus, vitae fermentum nunc blandit. Phasellus sit amet ex nec arcu finibus elementum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed accumsan, sem in fringilla tincidunt, nulla nulla cursus nulla, sed cursus sapien libero eu odio.
+        
+        Aliquam erat volutpat. Donec porttitor dignissim magna, ut fermentum purus. Morbi bibendum tincidunt tortor, nec facilisis magna malesuada ac. Sed sed nibh ut massa posuere rhoncus nec at augue. Integer sed nisi non tellus fermentum venenatis ut nec metus. Etiam vehicula consequat orci, vitae dapibus libero aliquet vel. Nullam non justo nec sapien tristique volutpat.`;
+        
+        
+            const news = {
+              title: 'Sample Titfsle',
+              image: null, // no image
+              date_posted: '2025-04-26',
+              content: longcontent,
+              tags: ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5'],
+              link: [
+                'https://www.youtube.com/watch?v=oXdw4w9WgXcQ&pp=ygUJcmlnYnkgZG9n',
+                'https://www.youtube.com/watch?v=oXdw4w9WgXcQ&pp=ygUJcmlnYnkgZG9n'
+              ]
+            };
+        
+            setNewsletter(news);
+            console.log(newsletter);
+            setTitle(news.title || '');
+            setContent(news.content || '');
+            setLinkList(news.link || []);
+            setSelectedTags(news.tags || []);
+            setImage(news.image || null);
+
+    //fetch  mo mga tags
     const dummy = ["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"];
     setTags(dummy);
   
@@ -109,7 +144,7 @@ function AdminEditNewsletter() {
             Content <span className="text-red-500">*</span>
           </label>
           <textarea
-            className={`w-full border ${titleError ? 'border-red-500' : 'border-gray-300'} rounded-2xl p-2 outline-none resize-none h-40 font-satoshi-regular`}
+            className={`w-full border ${titleError ? 'border-red-500' : 'border-gray-300'} rounded-2xl p-2 outline-none resize-none h-40 font-satoshi-regular scrollbar-blue`}
             placeholder="Content of the newsletter"
             value={content}
             onChange={(e) => setContent(e.target.value)}
