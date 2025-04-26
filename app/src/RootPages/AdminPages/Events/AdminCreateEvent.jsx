@@ -231,7 +231,7 @@ function removeLink(index) {
         <p className='text-primary font-satoshi-medium text-lg'>Back to events</p>
       </button>
 
-      <h1 className='font-satoshi-bold text-5xl mb-6'>Create an Event</h1>
+      <h1 className='font-satoshi-bold text-5xl mb-6'>{purpose === 'create' ? 'Create' : "Edit"} an Event</h1>
 
       {/* Title and location */}
       <div className='flex flex-col gap-4'>
