@@ -1,17 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import CareerModal from "./CareerModalSelection";
+import DatePickerModal from "./YearPickerModal";
 
-const FilterDropdown = ({setCareerList}) => {
+const FilterDropdown = ({ setCareerList, setDateList }) => {
   const [isCareerModalOpen, setIsCareerModalOpen] = useState(false);
+  const [isDatePickerModalOpen, setIsDatePickerModalOpen] = useState(false);
   const [filterBy, setFilterBy] = useState("");
 
   const handleSelectChange = (e) => {
     const selected = e.target.value;
     setFilterBy(selected);
 
-    // Open modal only after render completes to avoid select quirks
     if (selected === "Location") {
-        setIsCareerModalOpen(true);
+      setIsCareerModalOpen(true);
+    } else if (selected === "Batch") {
+      setIsDatePickerModalOpen(true);
     }
   };
 
@@ -19,9 +22,12 @@ const FilterDropdown = ({setCareerList}) => {
     setCareerList(updatedCareerList);
   };
 
+  const updateDateList = (updatedDateList) => {
+    setDateList(updatedDateList);
+  };
+
   return (
     <div className="relative">
-      {/* Dropdown Select */}
       <select
         className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
         value={filterBy}
@@ -33,11 +39,17 @@ const FilterDropdown = ({setCareerList}) => {
         <option value="Program">Program</option>
       </select>
 
-      {/* Modal for Location */}
       {isCareerModalOpen && (
         <CareerModal
           setIsCareerModalOpen={setIsCareerModalOpen}
           setCareerList={updateCareerList}
+        />
+      )}
+
+      {isDatePickerModalOpen && (
+        <DatePickerModal
+          setIsDatePickerModalOpen={setIsDatePickerModalOpen}
+          setDateList={updateDateList}
         />
       )}
     </div>

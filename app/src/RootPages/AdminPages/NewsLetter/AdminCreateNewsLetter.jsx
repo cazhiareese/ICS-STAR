@@ -15,7 +15,9 @@ function AdminCreateNewsletter() {
   const [filterBy, setFilterBy] = useState('');
   const [image, setImage] = useState(null); // Store the uploaded image
   const [careerList, setCareerList] = useState([]);
+  const [dateList, setDateList] = useState([]);
 
+  console.log(dateList, careerList);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -131,7 +133,7 @@ function AdminCreateNewsletter() {
               />
               <span>All Alumni</span>
             </div>
-            <FilterDropdown setCareerList={setCareerList} />
+            <FilterDropdown setCareerList={setCareerList} setDateList={setDateList} />
           </div>
 
           {/* Image Upload */}
