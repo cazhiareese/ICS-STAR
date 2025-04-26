@@ -30,6 +30,7 @@ class ListNewsletterOut(BaseModel):
     title: str
     image: Optional[str] = None
     date_posted: str
+    is_deleted: bool
     tags: Optional[list[str]] = None
     links: Optional[list[str]] = None
 
