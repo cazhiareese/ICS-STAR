@@ -92,7 +92,7 @@ function AdminEventDetails() {
         {/* Edit Event and Delete Event */}
         <div className='flex flex-row gap-2'>
           {/* Edit event */}
-          <button className='bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer'>
+          <button className='bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer' onClick={() => {navigate(`/admin/events/edit-event/${eventid}`)}}>
             <Pencil/>
             <p className='font-satoshi-regular text-lg'>Edit Event</p>
           </button>

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { MoveLeft, UploadCloud, X, Trash2, Plus } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
 
-function AdminCreateEvent() {
+function AdminCreateEvent({purpose}) {
   const navigate = useNavigate()
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
+  const { eventid } = useParams()
 
   const [formData, setFormData] = useState({
     title: '',
@@ -28,7 +29,6 @@ function AdminCreateEvent() {
 
   const options = ["Batch", "Affiliation", "Employment Status", "Job Fields"];
   const [filterOpen, setFilterOpen] = useState(false)
-  const [activeOptionIndex, setActiveOptionIndex] = useState(null);
   const [activeFilter, setActiveFilter] = useState(null)
   const [tagsDropdownOpen, setTagsDropdownOpen] = useState(false)
   const [customTag, setCustomTag] = useState('')
@@ -37,6 +37,7 @@ function AdminCreateEvent() {
   const [loading, setLoading] = useState(true)
   const dropdownRef = useRef(null)
   const [linkInput, setLinkInput] = useState("")
+  const [submitLoading, setSubmitLoading] = useState(false)
 
 function handleAddLink() {
   if (linkInput.trim() !== "") {
@@ -77,14 +78,6 @@ function removeLink(index) {
     setImageName(file.name)
   }
 
-  const handleMultiChange = (e, field) => {
-    const options = Array.from(e.target.selectedOptions, option => option.value)
-    setFormData(prev => ({
-      ...prev,
-      [field]: options
-    }))
-  }
-
   function removeImage() {
     setFormData(prev => ({
       ...prev,
@@ -100,18 +93,18 @@ function removeLink(index) {
   }
 
   useEffect(() => {
-    async function fetchInitial(){
-      setLoading(true)
-      try {
-        fetchTags()
-      } catch (error) {
-        console.log(error)
-      } finally {
-        setLoading(false)
+      async function fetchInitial(){
+        setLoading(true)
+        try {
+          fetchTags()
+        } catch (error) {
+          console.log(error)
+        } finally {
+          setLoading(false)
+        }
       }
-    }
-
-    fetchInitial()
+      
+      fetchInitial()
 
     // console.log("formData updated:", formData)
   }, [])
@@ -132,43 +125,95 @@ function removeLink(index) {
     }
   }, [tagsDropdownOpen])
 
-  const handleSubmit = async () => {
-    const payload = new FormData()
 
+  useEffect(() => {
+    console.log(purpose)
+    console.log(eventid)
+    if (purpose === 'edit' && eventid) {
+      axios.get(`${API_BASE_URL}/api/admin/events/event-by-id/${eventid}`)
+        .then((res) => {
+          const data = res.data.data
+          const [date = '', time = ''] = data.datetime[0]?.split(' ') || []
+          setFormData({
+            title: data.title,
+            location: data.location,
+            date,
+            time,
+            tags: data.tags || [],
+            description: data.description,
+            image: data.image,
+            links: data.links || [],
+            isAll: false,
+            batch: [],
+            employmentStatus: '',
+            job: [],
+            affiliation: [],
+            sendEmail: false,
+          })
+        })
+        .catch((err) => console.error('Failed to fetch event:', err))
+    }
+  }, [purpose, eventid])
+
+  const handleSubmit = async () => {
+    console.log("submit clicked")
+    setSubmitLoading(true)
+    const payload = new FormData()
+  
     payload.append('title', formData.title)
     payload.append('location', formData.location)
     payload.append('description', formData.description)
-
+  
     if (formData.image) payload.append('image', formData.image)
-
-    payload.append('date', formData.date)
-    payload.append('time', formData.time)    
-    payload.append('tags', formData.tags.join(', '))
-    payload.append('links', formData.links.join(', '))
+  
+    // For edit, date and time should be arrays
+    const dateArray = Array.isArray(formData.date) ? formData.date : [formData.date]
+    const timeArray = Array.isArray(formData.time) ? formData.time : [formData.time]
+  
+    dateArray.forEach((d) => payload.append('date', d))
+    timeArray.forEach((t) => payload.append('time', t))
+  
+    formData.tags.forEach((tag) => payload.append('tags', tag))
+    formData.links.forEach((link) => payload.append('links', link))
+  
     payload.append('isAll', String(formData.isAll))
-    payload.append('batch', formData.batch.join(', '))
+    formData.batch.forEach((b) => payload.append('batch', b))
     payload.append('employmentStatus', formData.employmentStatus)
-    payload.append('job', formData.job.join(', '))
-    payload.append('affiliation', formData.affiliation.join(', '))
+    formData.job.forEach((j) => payload.append('job', j))
+    formData.affiliation.forEach((a) => payload.append('affiliation', a))
     payload.append('sendEmail', String(formData.sendEmail))
 
-    console.log(formData.date)
-    console.log(formData.time)
-
-    try {
-      const res = await axios.post(`${API_BASE_URL}/api/admin/events/create`, payload, {
+    setSubmitLoading(true)
+    if (purpose === 'create'){
+      try {
+        const res = await axios.post(`${API_BASE_URL}/api/admin/events/create`, payload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
-      console.log(res)
-      if (res.data.message === 'success') {
-        alert('Event created successfully!')
-        navigate(-1)
-      } 
-    } catch (err) {
-      console.error(err)
-      alert('Something went wrong.')
+        console.log(res)
+        if (res.data.message === 'success') {
+          alert('Event created successfully!')
+          navigate(-1)
+        } 
+      } catch (err) {
+        console.error(err)
+        alert('Something went wrong.')
+      } finally {
+        setSubmitLoading(false)
+      }
+    } else if (purpose === 'edit') {
+      try {
+        const res = await axios.put(`${API_BASE_URL}/api/admin/events/edit/${eventid}`, payload, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        console.log(res)
+        alert('Event successfully edited')
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setSubmitLoading(false)
+      }
     }
-  }
+  }  
 
   return (
     loading ? (
@@ -435,7 +480,7 @@ function removeLink(index) {
         </div>
 
         <div className="text-right">
-          <button onClick={handleSubmit} className="bg-primary text-white text-lg px-10 py-3 rounded-2xl cursor-pointer hover:bg-hover">Submit</button>
+          <button onClick={handleSubmit} className="bg-primary text-white text-lg px-10 py-3 rounded-2xl cursor-pointer hover:bg-hover">{submitLoading ? (<CircularLoading/>) : ('Submit')}</button>
         </div>
       </div>
     </div>
