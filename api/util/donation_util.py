@@ -4,6 +4,7 @@ from config.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from models.donationmodel import MonetaryDonation, InKindDonation, DonationDriveLink, DonationDrive
+from models.usermodel import User
 from schemas.donation_schema import MonetaryDonationOut, InKindDonationOut, DonationDriveOut, OneDonationDriveOut, DonationHistoryOut
 from fastapi import HTTPException
 from fastapi import UploadFile, File, Depends 
@@ -221,3 +222,54 @@ async def create_donation_drive(
         db.refresh(donation_drive)
 
     return donation_drive
+
+def get_donors(
+    drive_id: UUID,
+    db: Session
+):
+    # Get monetary donors
+    monetary_donors = (
+        db.query(
+            User.user_id,
+            User.first_name,
+            User.last_name
+        )
+        .join(MonetaryDonation, MonetaryDonation.user_id == User.user_id)
+        .filter(MonetaryDonation.drive_id == drive_id)
+        .distinct()
+        .all()
+    )
+
+    # Get in-kind donors
+    in_kind_donors = (
+        db.query(
+            User.user_id,
+            User.first_name,
+            User.last_name
+        )
+        .join(InKindDonation, InKindDonation.user_id == User.user_id)
+        .filter(InKindDonation.drive_id == drive_id)
+        .distinct()
+        .all()
+    )
+
+    result = []
+    if monetary_donors:
+        for donor in monetary_donors:
+            result.append({
+                "user_id": donor.user_id,
+                "first_name": donor.first_name,
+                "last_name": donor.last_name,
+                "donation_type": "monetary"
+            })
+            
+    if in_kind_donors:
+        for donor in in_kind_donors:
+            result.append({
+                "user_id": donor.user_id,
+                "first_name": donor.first_name,
+                "last_name": donor.last_name,
+                "donation_type": "in-kind"
+            })
+
+    return result
