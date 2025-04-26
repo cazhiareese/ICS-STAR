@@ -11,7 +11,7 @@ const FilterDropdown = ({ setCareerList, setDateList, disabled }) => {
     const selected = e.target.value;
     setFilterBy(selected);
 
-    if (selected === "Location") {
+    if (selected === "Job Fields") {
       setIsCareerModalOpen(true);
     } else if (selected === "Batch") {
       setIsDatePickerModalOpen(true);
@@ -34,10 +34,9 @@ const FilterDropdown = ({ setCareerList, setDateList, disabled }) => {
         onChange={handleSelectChange}
         disabled={disabled}
       >
-        <option value="">Filter by</option>
         <option value="Batch">Batch</option>
-        <option value="Location">Location</option>
-        <option value="Program">Program</option>
+        <option value="Job Fields">Job Fields</option>
+
       </select>
 
       {isCareerModalOpen && (
