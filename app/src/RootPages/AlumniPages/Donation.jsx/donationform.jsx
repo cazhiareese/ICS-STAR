@@ -61,7 +61,6 @@ function Donationform() {
         
     }, [summary]);
 
-        
     
         useEffect(() => {
             const token = localStorage.getItem("token");

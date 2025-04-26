@@ -182,7 +182,7 @@ function Step1Onboarding() {
       <div className="flex flex-col space-y-3 items-center pt-15 sm:mx-30 mx-10">
         <label className="font-satoshi-bold md:text-5xl sm:text-3xl text-2xl text-left w-full">1. Update your profile</label>
         <label className="font-satoshi-light md:text-2xl sm:text-xl text-lg text-left w-full">Add a profile picture</label>
-        <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-175 sm:w-150 w-95 h-40">
+        <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-120 w-75 h-40">
             <div className="flex items-center justify-center rounded-full bg-white md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0">
               <div className="relative w-full h-full flex justify-center items-center">
                 {userData.profilePicture==null ? 
@@ -459,7 +459,7 @@ function Step1Onboarding() {
 
               
 
-              <img src={editImage} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" />
+              {/* <img src={editImage} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" /> */}
               <div className="flex flex-row justify-between items-center w-full md:px-30 pb-10 px-10">
                 <label className="w-30 h-15 bg-primary flex items-center justify-center text-white font-satoshi-bold rounded-3xl"
                   onClick={()=>{setSelectPicture(false)}}>

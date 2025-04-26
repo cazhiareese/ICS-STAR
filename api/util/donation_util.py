@@ -1,13 +1,17 @@
 from typing import List, Optional
-from config.config import STORAGE_STRING, supabase_client
+from config.config import STORAGE_STRING, SUPABASE_BUCKET, supabase_client
 from config.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from models.donationmodel import MonetaryDonation, InKindDonation, DonationDriveLink, DonationDrive
+from models.usermodel import User
 from schemas.donation_schema import MonetaryDonationOut, InKindDonationOut, DonationDriveOut, OneDonationDriveOut, DonationHistoryOut
 from fastapi import HTTPException
 from fastapi import UploadFile, File, Depends 
 from uuid import UUID
+import os
+import csv
+import tempfile
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -190,7 +194,7 @@ async def create_donation_drive(
         file_name = f"donation_drive/{title.replace(' ', '_')}.{file_extension}"
 
         try:
-            supabase_client.storage.from_("128storage").upload(file_name, file)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload image. Error: {str(e)}")
         
@@ -221,3 +225,67 @@ async def create_donation_drive(
         db.refresh(donation_drive)
 
     return donation_drive
+
+def get_donors_csv(
+    drive_id: UUID,
+    db: Session
+):
+    with tempfile.NamedTemporaryFile(delete=False, mode="w", newline='', encoding="utf-8", suffix=".csv") as tmpfile:
+        file_path = tmpfile.name
+
+        writer = csv.writer(tmpfile)
+        writer.writerow(["Date Donated", "First Name", "Last Name", "Email", "Donation Type", "Donation"])
+
+        # Monetary donors
+        monetary_donors = (
+            db.query(
+                MonetaryDonation.date_donated,
+                User.first_name,
+                User.last_name,
+                User.email,
+                func.sum(MonetaryDonation.amount).label("total_amount")
+            )
+            .join(MonetaryDonation, MonetaryDonation.user_id == User.user_id)
+            .filter(MonetaryDonation.drive_id == drive_id)
+            .group_by(User.user_id, User.first_name, User.last_name, MonetaryDonation.date_donated)
+            .all()
+        )
+
+        for donor in monetary_donors:
+            formatted_date = donor.date_donated.strftime('%Y-%m-%d')
+            writer.writerow([
+                f'`{formatted_date}`',
+                donor.first_name,
+                donor.last_name,
+                donor.email,
+                "monetary",
+                f'`{str(donor.total_amount)}`'
+            ])
+
+        # In-kind donors
+        in_kind_donors = (
+            db.query(
+                InKindDonation.date_donated,
+                User.first_name,
+                User.last_name,
+                User.email,
+                func.array_agg(InKindDonation.description).label("donated_items")
+            )
+            .join(InKindDonation, InKindDonation.user_id == User.user_id)
+            .filter(InKindDonation.drive_id == drive_id)
+            .group_by(User.user_id, User.first_name, User.last_name, InKindDonation.date_donated)
+            .all()
+        )
+
+        for donor in in_kind_donors:
+            formatted_date = donor.date_donated.strftime('%Y-%m-%d')
+            writer.writerow([
+                f'`{formatted_date}`',
+                donor.first_name,
+                donor.last_name,
+                donor.email,
+                "in-kind",
+                ", ".join(donor.donated_items)
+            ])
+
+    return file_path

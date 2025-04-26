@@ -1,13 +1,19 @@
 import { Star } from 'lucide-react'
 import React from 'react'
 
-function JobCard({job}) {
+function JobCard({job, selectedJobId, setSelectedJobId}) {
+    const handleJobClick = () => {
+        // store the card's post id to selected post_id
+        setSelectedJobId(job.post_id);
+        console.log(job.post_id + " selected!");
+    }
+    
     return (
-        <div className='flex flex-col outline-1 outline-neutral-300 w-lg rounded-2xl p-10 cursor cursor-pointer'>
+        <div onClick={handleJobClick} className='flex flex-col outline-1 outline-neutral-300 w-lg rounded-2xl p-8 cursor cursor-pointer'>
             {/* Title and Company */}
             <h1 className='font-satoshi-bold text-3xl'>{job.title}</h1>
             <h1 className='font-satoshi-bold text-lg pt-2'>{job.company}</h1>
-            <p className='font-satoshi-regular text-md pt-4 text-justify'>{job.description}</p>
+            <p className='font-satoshi-regular text-md mt-4 text-justify max-h-40 overflow-y-auto'>{job.description}</p>
             
             {/* user name and interested count */}
             <div className="flex justify-between items-center">

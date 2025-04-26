@@ -4,7 +4,7 @@ from typing import List, Optional, Literal
 
 from sqlalchemy import UUID, func, or_
 from models.usermodel import User, UserAffiliation
-from config.config import STORAGE_STRING, supabase_client
+from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from schemas.events_schema import DemographicsOut
@@ -39,7 +39,7 @@ async def create_event_util(
         file_extension = image.filename.split(".")[-1].lower()
         file_name = f"events/{title.replace(' ', '_')}.{file_extension}"
         try:
-            supabase_client.storage.from_("128storage").upload(file_name, file)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload image. Error: {str(e)}")
         
@@ -182,14 +182,14 @@ async def edit_event_util (
         if event.image:
             try:
                 old_file_path = event.image.replace(STORAGE_STRING, "")
-                supabase_client.storage.from_("128storage").remove([old_file_path])
+                supabase_client.storage.from_(SUPABASE_BUCKET).remove([old_file_path])
             except Exception as e:
                 raise HTTPException(status_code=500, detail="Failed to delete old profile picture: {e}")
             
         file_extension = image.filename.split(".")[-1].lower()
         file_name = f"events/{title.replace(' ', '_')}.{file_extension}"
         try:
-            supabase_client.storage.from_("128storage").upload(file_name, file)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload image. Error: {str(e)}")
         

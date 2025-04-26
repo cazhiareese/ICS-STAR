@@ -138,6 +138,9 @@ def get_job_postings(db: Session = Depends(get_db)):
         JobPosting.employment_type,
         JobPosting.mode,
         User.user_id,
+        JobPosting.salary,
+        JobPosting.link,
+        JobPosting.image,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -169,6 +172,9 @@ def get_job_postings(db: Session = Depends(get_db)):
             "employment_type": row.employment_type,
             "mode": row.mode,
             "user_name": row.user_name,
+            "link": row.link,
+            "image": row.image,
+            "salary": row.salary,
             "tags": tag_list,
             "interested_count": row.interested_count
         })
@@ -190,6 +196,8 @@ def get_job_posting(
         JobPosting.employment_type,
         JobPosting.mode,
         JobPosting.salary,
+        JobPosting.link,
+        JobPosting.image,
         User.user_id,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
@@ -231,6 +239,8 @@ def get_job_posting(
         "employment_type": query_result.employment_type,
         "mode": query_result.mode,
         "salary": query_result.salary,
+        "link": query_result.link,
+        "image": query_result.image,
         "tags": tag_list,
         "interested_count": query_result.interested_count
     }
@@ -482,3 +492,12 @@ def get_post_reports(post_id: str, db: Session = Depends(get_db)):
         })
 
     return result
+
+@router.get("/get-company-by-id/{user_id}")
+async def get_comp_by_id(user_id: UUID, db: Session=Depends(get_db)):
+    query= db.query(User.user_id, User.company_name).filter(User.user_id == user_id).first()
+
+    if query:
+        return {"message": "success", "data": {"id": query.user_id, "comapany": query.company_name}}
+    else:
+        raise HTTPException(status_code=404, detail="Cant find company name")
