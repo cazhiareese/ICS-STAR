@@ -7,7 +7,8 @@ from config.database import get_db
 from models.log import Log
 from models.usermodel import User
 from models.job_posting_model import JobPosting, JobPostingInterestedIn
-from schemas.log import VisitResponse, TimeRange, TopJobResponse
+from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation
+from schemas.log import VisitResponse, TimeRange, TopJobResponse, TopDriveResponse
 
 router = APIRouter(
     prefix="/admin/engagement-statistics",
@@ -200,6 +201,103 @@ def get_top_interested_jobs(
             "image": job.image,
             "date_posted": job.date_posted.strftime("%Y-%m-%d"),
             "interested_count": job.interested_count
+        })
+    
+    return result
+
+@router.get("/donation-drives/top", response_model=List[TopDriveResponse])
+def get_top_donation_drives(
+    time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
+    db: Session = Depends(get_db)
+):
+    today = datetime.utcnow()
+    
+    # Determine the start date based on the time range
+    if time_range == TimeRange.WEEK:
+        start_date = today - timedelta(days=7)
+    elif time_range == TimeRange.MONTH:
+        start_date = today - timedelta(days=30)
+    else:  # time_range == TimeRange.YEAR
+        start_date = datetime(today.year - 1, today.month, today.day)
+    
+    # Create subqueries for monetary and in-kind donations to get unique donors per drive
+    monetary_donors = (
+        db.query(
+            MonetaryDonation.drive_id,
+            MonetaryDonation.user_id
+        )
+        .filter(
+            and_(
+                MonetaryDonation.date_donated >= start_date,
+                MonetaryDonation.is_acknowledged == True
+            )
+        )
+        .distinct()
+        .subquery('monetary_donors')
+    )
+    
+    in_kind_donors = (
+        db.query(
+            InKindDonation.drive_id,
+            InKindDonation.user_id
+        )
+        .filter(
+            and_(
+                InKindDonation.date_donated >= start_date,
+                InKindDonation.is_acknowledged == True
+            )
+        )
+        .distinct()
+        .subquery('in_kind_donors')
+    )
+    
+    # Union of both donor types
+    all_donors = (
+        db.query(
+            monetary_donors.c.drive_id, 
+            monetary_donors.c.user_id
+        )
+        .union(
+            db.query(
+                in_kind_donors.c.drive_id, 
+                in_kind_donors.c.user_id
+            )
+        )
+        .distinct()
+        .subquery('all_donors')
+    )
+    
+    # Join with DonationDrive to get the top 3 drives with most donors
+    top_drives = (
+        db.query(
+            DonationDrive.title,
+            DonationDrive.image,
+            func.count(all_donors.c.user_id).label('donor_count')
+        )
+        .join(all_donors, DonationDrive.drive_id == all_donors.c.drive_id)
+        .filter(
+            and_(
+                DonationDrive.is_deleted == False,
+                DonationDrive.created_at >= start_date
+            )
+        )
+        .group_by(
+            DonationDrive.drive_id,
+            DonationDrive.title,
+            DonationDrive.image
+        )
+        .order_by(desc('donor_count'))
+        .limit(3)
+        .all()
+    )
+    
+    # Format the results
+    result = []
+    for drive in top_drives:
+        result.append({
+            "title": drive.title,
+            "image": drive.image,
+            "donor_count": drive.donor_count
         })
     
     return result
