@@ -35,13 +35,13 @@ function AdminCreateNewsletter() {
       <form className="flex flex-col gap-6">
 
         {/* Title Input */}
-        <div>
-          <label className="block font-satoshi-medium text-gray-700 mb-1">
+        <div className="p-6 border border-gray-400 rounded-3xl">
+          <label className="block mb-1 font-satoshi-medium">
             Title <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none"
+            className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
             placeholder="Enter title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -49,68 +49,57 @@ function AdminCreateNewsletter() {
         </div>
 
         {/* Content Input */}
-        <div>
-          <label className="block font-satoshi-medium text-gray-700 mb-1">
+        <div className="p-6 border border-gray-400 rounded-3xl">
+          <label className="block mb-1 font-satoshi-medium">
             Content <span className="text-red-500">*</span>
           </label>
           <textarea
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none resize-none h-40"
+            className="w-full border border-gray-300 rounded-2xl p-2 outline-none resize-none h-40"
             placeholder="Content of the newsletter"
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
         </div>
 
-        {/* Links and Tags */}
-        <div className="flex gap-4 flex-wrap md:flex-nowrap">
-          {/* Links */}
-          <div className="flex-1">
-            <label className="block font-satoshi-medium text-gray-700 mb-1">
-              Links (Optional)
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 outline-none"
-                placeholder="Enter link"
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-              />
-              <button
-                type="button"
-                className="bg-primary text-white rounded-full p-2"
-              >
-                <Plus size={18} />
-              </button>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="flex-1">
-            <label className="block font-satoshi-medium text-gray-700 mb-1">
-              Tags (Optional)
-            </label>
-            <select
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none"
-              value={selectedTag}
-              onChange={(e) => setSelectedTag(e.target.value)}
+        {/* Link Input */}
+        <div className="p-6 border border-gray-400 rounded-3xl">
+          <label className="block mb-1 font-satoshi-medium">Links (Optional)</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              className="flex-1 border border-gray-300 rounded-2xl p-2 outline-none"
+              placeholder="Enter link"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+            />
+            <button
+              type="button"
+              className="bg-primary text-white rounded-full p-2"
             >
-              <option value="">Select tag</option>
-              <option value="Event">Event</option>
-              <option value="Update">Update</option>
-              <option value="Reminder">Reminder</option>
-              {/* Add more options as needed */}
-            </select>
+              <Plus size={18} />
+            </button>
           </div>
         </div>
 
+        {/* Tag Select */}
+        <div className="p-6 border border-gray-400 rounded-3xl">
+          <label className="block mb-1 font-satoshi-medium">Tags (Optional)</label>
+          <select
+            className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
+            value={selectedTag}
+            onChange={(e) => setSelectedTag(e.target.value)}
+          >
+            <option value="">Select tag</option>
+            <option value="Event">Event</option>
+            <option value="Update">Update</option>
+            <option value="Reminder">Reminder</option>
+          </select>
+        </div>
+
         {/* Email Send Options */}
-        <div className="flex gap-4 flex-wrap md:flex-nowrap">
-          {/* Who to Send */}
-          <div className="flex-1 border border-gray-300 rounded-lg p-4">
-            <label className="block font-satoshi-medium text-gray-700 mb-2">
-              Who to send?
-            </label>
+        <div className="flex flex-wrap md:flex-nowrap gap-4">
+          <div className="flex-1 p-6 border border-gray-400 rounded-3xl">
+            <label className="block mb-2 font-satoshi-medium">Who to send?</label>
             <div className="flex items-center gap-2 mb-3">
               <input
                 type="checkbox"
@@ -120,7 +109,7 @@ function AdminCreateNewsletter() {
               <span>All Alumni</span>
             </div>
             <select
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none"
+              className="w-full border border-gray-300 rounded-2xl p-2 outline-none"
               value={filterBy}
               onChange={(e) => setFilterBy(e.target.value)}
             >
@@ -132,9 +121,9 @@ function AdminCreateNewsletter() {
           </div>
 
           {/* Image Upload */}
-          <div className="flex-1 border border-dashed border-gray-400 rounded-lg p-4 flex flex-col items-center justify-center text-center">
+          <div className="flex-1 p-6 border border-dashed border-gray-400 rounded-3xl text-center flex flex-col items-center justify-center">
             <Upload className="text-primary mb-2" />
-            <p className="text-gray-600 text-sm">Drag and drop file here or</p>
+            <p className="text-gray-600 text-sm mb-2">Drag and drop file here or</p>
             <label className="text-blue-600 font-medium cursor-pointer">
               Choose file
               <input
