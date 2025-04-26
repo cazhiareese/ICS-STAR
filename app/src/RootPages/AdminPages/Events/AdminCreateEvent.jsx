@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { MoveLeft, UploadCloud, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -26,9 +26,17 @@ function AdminCreateEvent() {
     sendEmail: false,
   })
 
+  const options = ["Batch", "Affiliation", "Employment Status", "Job Fields"];
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [activeOptionIndex, setActiveOptionIndex] = useState(null);
+  const [activeFilter, setActiveFilter] = useState(null)
+  const [tagsDropdownOpen, setTagsDropdownOpen] = useState(false)
+  const [customTag, setCustomTag] = useState('')
+  const [tags, setTags] = useState([])
   const [linkInput, setLinkInput] = useState('')
   const [imageName, setImageName] = useState(null)
   const [loading, setLoading] = useState(true)
+  const dropdownRef = useRef(null)
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -96,16 +104,22 @@ function AdminCreateEvent() {
 
     // console.log("formData updated:", formData)
   }, [])
-  
 
-  const options = ["Batch", "Affiliation", "Employment Status", "Job Fields"];
-  const [filterOpen, setFilterOpen] = useState(false)
-  const [activeOptionIndex, setActiveOptionIndex] = useState(null);
-  const [activeFilter, setActiveFilter] = useState(null)
-  const [tagsDropdownOpen, setTagsDropdownOpen] = useState(false)
-  const [customTag, setCustomTag] = useState('')
-  const [tags, setTags] = useState([])
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setTagsDropdownOpen(false)
+      }
+    }
   
+    if (tagsDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [tagsDropdownOpen])
 
   const handleSubmit = async () => {
     const payload = new FormData()
@@ -214,7 +228,7 @@ function AdminCreateEvent() {
               </div>
 
               {tagsDropdownOpen && (
-                <div className="font-satoshi-regular absolute z-90 bg-white border border-gray-300 rounded-3xl shadow-md mt-1 w-full p-3 space-y-2 max-h-90 overflow-auto">
+                <div ref={dropdownRef} className="font-satoshi-regular absolute z-90 bg-white border border-gray-300 rounded-3xl shadow-md mt-1 w-full p-3 space-y-2 max-h-90 overflow-auto">
                   {tags.map((tag) => (
                     <label key={tag} className="flex items-center space-x-2">
                       <input
