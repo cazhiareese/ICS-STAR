@@ -89,6 +89,7 @@ function App() {
       //const decoded = jwtDecode(User);
       //console.log("Decoded token:", decoded);
       tokenType = "admin";
+      //tokenType = "alumni";
       //const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
