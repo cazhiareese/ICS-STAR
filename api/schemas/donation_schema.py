@@ -39,7 +39,7 @@ class MonetaryDonationOut(BaseModel):
     amount: float
     drive_id: UUID
     user_id: UUID
-    is_acknowledged: bool = False
+    is_acknowledged: Optional[bool] = None
     donation_drive_title: Optional[str] = None
     proof: Optional[str] = None
     is_anonymous: bool = False
@@ -54,7 +54,7 @@ class InKindDonationOut(BaseModel):
     description: str
     drive_id: UUID
     user_id: UUID
-    is_acknowledged: bool = False
+    is_acknowledged: Optional[bool] = None
     donation_drive_title: Optional[str] = None
     type: str = "In-Kind"
 
@@ -67,7 +67,7 @@ class DonationHistoryOut(BaseModel):
     details: float | str = None
     drive_id: UUID
     user_id: UUID
-    is_acknowledged: bool = False
+    is_acknowledged: Optional[bool] = None
     donation_drive_title: Optional[str] = None
     type: str = None
       
