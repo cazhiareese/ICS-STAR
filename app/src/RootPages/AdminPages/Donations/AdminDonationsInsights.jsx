@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
+import SortModal from '../../../components/AdminComponents/sortmodal'
+import OrderToggle from '../../../components/AdminComponents/ordertoggle'
+import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
+import InsightsDonationsTable from '../../../components/AdminComponents/InsightsDonationsTable'
 
 function AdminDonationsInsights() {
   const [token, setToken] = useState(null)
   const {timeFilter, setTimeFilter} = useState('last_7_days')
+  const [query, setQuery] = useState('')
+  const [focused, setFocused] = useState(false)
   const [topPerformingDrives, setTopPerformingDrives] = useState([])
   const [drivesWithGoalsReached, setDrivesWithGoalsReached] = useState([])
+  const [donationType, setDonationType] = useState('verified')
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   async function fetchInitialData() {
@@ -38,7 +47,7 @@ function AdminDonationsInsights() {
     loading ? (
       <CircularLoading/>
     ) : (
-      <div className='p-6 h-screen w-full overflow-auto'>
+      <div className='flex flex-col p-6 h-screen w-full overflow-auto'>
           {/* header */}
         <h1 className='text-primary text-5xl font-satoshi-bold'>General Insights</h1>
         {/* Filter */}
@@ -88,6 +97,57 @@ function AdminDonationsInsights() {
               ))
             )}
           </div>
+        </div>
+        <h1 className='text-5xl text-primary font-satoshi-bold'>Donations</h1>
+        {/* Buttons and filters */}
+        <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
+          <div className='w-full lg:w-auto  min-w-xs'>
+            {/* Verified button */}
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'verified' ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('verified')}>
+               Verified
+            </button>
+            {/* Unverified button */}
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'unverified' ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('unverified')}>
+              Unverified
+            </button>
+          </div>
+          {/* Sort by */}
+          <div className='flex gap-2'>
+            {/* <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
+              <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
+                <p className='font-satoshi-medium text-primary block'>Name</p>
+            </button> */}
+          <div className='relative flex items-center justify-end flex-1'>
+            {/* <input
+              type="text"
+              placeholder="Search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+            />
+            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} /> */}
+          </div>
+            {/* <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/> */}
+            {/* Order Toggle */}
+            {/* <OrderToggle direction={sortDirection} onToggle={setSortDirection}/> */}
+            {/* Filter */}
+            {/* <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
+              <Filter className='text-primary'/>
+              <p className='text-primary font-satoshi-medium text-sm'> Filter</p>
+            </button> */}
+            {/* Page */}
+            {/* <PaginationComponent
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+            /> */}
+          </div>
+        </div>
+        {/* Table of donations */}
+        <div className='flex-1 border border-gray-300 rounded-3xl'>
+          <InsightsDonationsTable data={[]}/>
         </div>
       </div>
     )
