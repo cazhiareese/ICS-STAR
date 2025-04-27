@@ -349,16 +349,34 @@ def open_drives(
         data=results
     )
 
-@router.get("/admin/donations/open-drives-by-amount-raised-descending", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/open-drives-by-amount-raised-descending", response_model=PaginatedDonationDrivesResponse)
 def open_drives_by_amount_raised(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
 ):
     results = get_all_open_drives_by_amount_raised_descending(db)
 
+    page_size = 10
+
     if not results:
         raise HTTPException(status_code=404, detail="No open drives found")
+    
+    total_items = len(results)
+    total_pages = (total_items + page_size - 1) // page_size  # ceiling division
 
-    return results
+    if page > total_pages and total_pages != 0:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+    paginated_results = results[start_idx:end_idx]
+
+    return PaginatedDonationDrivesResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
 
 @router.get("/admin/donations/open-drives-by-amount-raised-ascending", response_model=List[AdminDonationDriveOut])
 def open_drives_by_amount_raised_ascending(
