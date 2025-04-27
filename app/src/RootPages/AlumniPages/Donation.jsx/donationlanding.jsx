@@ -117,8 +117,8 @@ function DonationLanding() {
   return (
     <div className="flex flex-col  p-4 space-y-5">
       {/* Search bar */}
-      <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-whitey">
-  <div className="flex flex-row gap-5 w-[543px] h-[57.7px] items-center justify-center mt-4">
+      <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white">
+  <div className="relative flex flex-row gap-5 w-full max-w-[600px] items-center justify-center mt-4">
     {/* The Search Bar */}
     <input
       type="text"
@@ -127,13 +127,14 @@ function DonationLanding() {
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
     />
-                    <button  className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
-                    <Search size={20} />
-                </button>
-
-    {/* Filter Button */}
+    
+    {/* Search Button */}
+    <button className="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+      <Search size={20} />
+    </button>
   </div>
 </div>
+
 
 
   
