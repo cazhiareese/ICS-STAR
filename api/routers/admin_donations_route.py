@@ -721,30 +721,26 @@ def verified_inkind(
         data=paginated_results
     )
 
-@router.get("/admin/donations/verified-monetary", response_model=List[ShortenedMonetaryDonationsOut])
+@router.get("/admin/donations/verified-monetary", response_model=PaginatedMonetaryDonationsResponse)
 def verified_monetary(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1)
 ):
     results = get_all_verified_monetary_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No verified monetary donations found")
 
-    return results
+    page_size = 10
+    total_pages, paginated_results = paginate_results(results, page, page_size)
 
-@router.get("/admin/donations/view/generic-drive", response_model=AdminGenericDriveView)
-def view_generic_donation_drive(
-    db: Session = Depends(get_db)
-):
-    
-    drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
-    results = view_generic_drive(db, drive_id)
-
-    if not results:
-        raise HTTPException(status_code=404, detail="Drive not found")
-
-    return results
+    return PaginatedMonetaryDonationsResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
 
 @router.get("/admin/donations/view/{drive_id}", response_model=AdminOneDonationDriveOut)
 def view_drive(
