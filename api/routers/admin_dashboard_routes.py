@@ -1,15 +1,17 @@
 import math
 from typing import Dict, List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, and_, select
+from sqlalchemy import String, cast, desc, func, and_, literal, select, union_all
 from sqlalchemy.orm import Session
 from config.database import get_db
 from models.usermodel import User
 from models.donationmodel import MonetaryDonation, InKindDonation
 from models.report_model import Report, ReportStatusEnum
 from models.event_model import Event, EventDate
+from models.donationmodel import DonationDrive
 from datetime import datetime, timezone
 from schemas.events_schema import UpcomingEventResponse
+from schemas.donation_schema import RecentDonationResponse
 
 router = APIRouter(
     prefix="/admin_dashboard",
@@ -74,7 +76,9 @@ async def get_reported_users_count(
     return {"pending_reported_users_count": count}
 
 @router.get("/upcoming-events", response_model=List[UpcomingEventResponse])
-async def get_upcoming_events(db: Session = Depends(get_db)):
+async def get_upcoming_events(
+    db: Session = Depends(get_db)
+    ):
     # Current date and time
     now = datetime.now(timezone.utc)
     
@@ -121,6 +125,71 @@ async def get_upcoming_events(db: Session = Depends(get_db)):
             "date": result.earliest_date,
             "location": result.location,
             "days_left": days_left
+        })
+    
+    return response
+
+@router.get("/recent-donors", response_model=List[RecentDonationResponse])
+async def get_recent_donations(
+    db: Session = Depends(get_db)
+    ):
+    # Query for monetary donations - cast amount to String for type compatibility
+    monetary_query = (
+        select(
+            DonationDrive.title.label("drive_title"),
+            User.first_name.label("first_name"),
+            User.last_name.label("last_name"),
+            MonetaryDonation.is_anonymous.label("is_anonymous"),
+            cast(MonetaryDonation.amount, String).label("details"),
+            MonetaryDonation.date_donated.label("date_donated"),
+            literal("monetary").label("donation_type")
+        )
+        .select_from(MonetaryDonation)
+        .join(DonationDrive, MonetaryDonation.drive_id == DonationDrive.drive_id)
+        .join(User, MonetaryDonation.user_id == User.user_id)
+    )
+
+    # Query for in-kind donations
+    in_kind_query = (
+        select(
+            DonationDrive.title.label("drive_title"),
+            User.first_name.label("first_name"),
+            User.last_name.label("last_name"),
+            literal(False).label("is_anonymous"),
+            InKindDonation.description.label("details"),
+            InKindDonation.date_donated.label("date_donated"),
+            literal("in-kind").label("donation_type")
+        )
+        .select_from(InKindDonation)
+        .join(DonationDrive, InKindDonation.drive_id == DonationDrive.drive_id)
+        .join(User, InKindDonation.user_id == User.user_id)
+    )
+
+    # Combine queries with union_all
+    combined_query = union_all(monetary_query, in_kind_query).alias("combined_donations")
+
+    # Final query to get the 5 most recent donations
+    results = db.execute(
+        select(combined_query)
+        .order_by(desc(combined_query.c.date_donated))
+        .limit(5)
+    ).all()
+
+    # Format response with only the required fields
+    response = []
+    for result in results:
+        # Format the donor name based on anonymity
+        donor_name = "Anonymous" if result.is_anonymous else f"{result.first_name} {result.last_name}"
+        
+        # Format monetary details with currency symbol
+        details = result.details
+        if result.donation_type == "monetary":
+            details = f"₱{details}"
+        
+        response.append({
+            "drive_title": result.drive_title,
+            "donor_name": donor_name,
+            "donation_details": details
         })
     
     return response
