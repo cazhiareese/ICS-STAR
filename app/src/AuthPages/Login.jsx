@@ -155,10 +155,10 @@ function LoginPage() {
         </div>
 
         {/* Lower Portion */}
-        <div className="flex flex-col overflow-auto [@media(max-height:800px)]:justify-normal items-center justify-center w-screen h-screen p-10 z-10">
+        <div className="flex flex-col overflow-clip [@media(max-height:800px)]:justify-normal items-center md:justify-center w-screen h-screen sm:p-30 p-10 z-10">
             
             {/* Mobile COnstellation */}
-            <div className="sm:hidden block w-screen -mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 [@media(max-height:800px)]:opacity-40">
+            <div className="sm:hidden block w-screen -mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 overflow-clip">
                 <img 
                     src={ConstellationsMobile}
                     alt="Login Background" 
@@ -183,7 +183,7 @@ function LoginPage() {
             </div>
 
             {/* Login Signup */}
-            <div onClick={() => setCodeError(false)} className=" flex flex-col items-center justify-center h-screen sm:mt-10 w-[30%]  min-h-110 max-h-150 sm:min-h-140 min-w-sm sm:min-w-md sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
+            <div onClick={() => setCodeError(false)} className=" flex flex-col items-center justify-center h-screen sm:mt-0 w-[30%]  min-h-110 max-h-150 sm:min-h-140 min-w-sm sm:min-w-md sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
                     <h1 className="hidden sm:block text-8xl font-satoshi-light mb-0 text-[#102E46]">Login</h1> 
                     
                     

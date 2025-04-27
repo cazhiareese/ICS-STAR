@@ -10,4 +10,7 @@ class Log(Base):
     is_active = Column(Boolean, nullable = False)
     user_id = Column(UUID(as_uuid = True), ForeignKey('users.user_id', ondelete = 'CASCADE'), nullable = False)
 
+    created_at = Column(DateTime, default = func.now(), nullable = False)
+    updated_at = Column(DateTime, default = func.now(), onupdate = func.now(), nullable = False)
+
     user = relationship("User", back_populates = "logs")
