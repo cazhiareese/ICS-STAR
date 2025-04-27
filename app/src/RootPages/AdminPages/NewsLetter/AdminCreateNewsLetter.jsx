@@ -7,9 +7,9 @@ import CircularLoading from '../../../components/LoadingComponents/circularloadi
 
 function AdminEditNewsletter() {
   const { newsletter_id } = useParams(); // Get newsletter ID from URL params
+  const option = newsletter_id ? "edit" : "create"; // Dynamically set option based on presence of newsletter_id
 
   const navigate = useNavigate();
-  const option = "edit";
 
   const fileInputRef = useRef(null);
   const [fileName, setFileName] = useState('');
@@ -28,6 +28,7 @@ function AdminEditNewsletter() {
   const [careerList, setCareerList] = useState([]);
   const [linklist, setLinkList] = useState([]);
   const [dateList, setDateList] = useState([]);
+  const [jobList, setJobList] = useState([]); // Added for sendtoJob field
 
   const [titleError, setTitleError] = useState(false);
   const [contentError, setContentError] = useState(false);
@@ -54,6 +55,7 @@ function AdminEditNewsletter() {
         setAllAlumni(news.sendAll || false);
         setCareerList(news.sendEmployment || []);
         setDateList(news.sendtoBatch || []);
+        setJobList(news.sendtoJob || []); // Added for sendtoJob
       } catch (err) {
         const error = err.response?.status === 404
           ? 'Newsletter not found'
@@ -65,14 +67,14 @@ function AdminEditNewsletter() {
       }
     };
 
-    if (newsletter_id) {
+    if (option === "edit" && newsletter_id) {
       fetchNewsletter();
     }
 
     // Fetch tags (keeping dummy data as no API endpoint provided for tags)
     const dummy = ["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"];
     setTags(dummy);
-  }, [newsletter_id]);
+  }, [newsletter_id, option]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0] || e.dataTransfer?.files[0]; // Support both input and drag-and-drop
@@ -148,21 +150,23 @@ function AdminEditNewsletter() {
         payload.append('image', image);
       }
     }
-    payload.append('sendEmail', 'true');
+    payload.append('sendEmail', 'true'); // Always true as per current logic
     payload.append('sendAll', allAlumni.toString());
     if (linklist.length > 0) {
-      payload.append('links', linklist.join(','));
+      payload.append('links', linklist.join(',')); // Comma-separated string
     }
     if (selectedTags.length > 0) {
-      payload.append('tags', selectedTags.join(','));
+      payload.append('tags', selectedTags.join(',')); // Comma-separated string
     }
     if (dateList.length > 0) {
-      payload.append('sendtoBatch', dateList.join(','));
+      payload.append('sendtoBatch', dateList.join(',')); // Comma-separated string
     }
     if (careerList.length > 0) {
-      payload.append('sendEmployment', careerList.join(','));
+      payload.append('sendEmployment', careerList.join(',')); // Comma-separated string
     }
-    // Omit sendtoJob if empty (optional field)
+    if (jobList.length > 0) {
+      payload.append('sendtoJob', jobList.join(',')); // Comma-separated string
+    }
 
     // Log FormData for debugging
     for (const [key, value] of payload.entries()) {
@@ -170,12 +174,13 @@ function AdminEditNewsletter() {
     }
 
     try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/edit/${newsletter_id}`,
-        payload
-      );
+      const baseUrl = `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter`;
+      const url = option === "edit" ? `${baseUrl}/edit/${newsletter_id}` : `${baseUrl}/create`;
+      const method = option === "edit" ? axios.put : axios.post;
 
-      console.log('Newsletter updated:', response.data);
+      const response = await method(url, payload);
+
+      console.log(`Newsletter ${option === "edit" ? 'updated' : 'created'}:`, response.data);
       setModalSuccess(true); // Show success state
     } catch (err) {
       const errorMsg = err.response?.status === 404
@@ -183,10 +188,10 @@ function AdminEditNewsletter() {
         : err.response?.status === 400
         ? `Failed to upload image: ${err.response?.data?.error || 'Invalid file'}`
         : err.response?.status === 500
-        ? 'Server error: Unable to update newsletter. There may be an issue with the image upload.'
+        ? 'Server error: Unable to process newsletter. There may be an issue with the image upload.'
         : err.response?.status === 422
         ? `Invalid data format: ${err.response?.data?.message || 'Check the submitted data'}`
-        : 'Failed to update newsletter';
+        : `Failed to ${option === "edit" ? 'update' : 'create'} newsletter`;
       console.error('Error:', err.message, err.response?.data);
       setErrorMessage(errorMsg);
       setIsModalOpen(false); // Close modal on error
@@ -200,7 +205,7 @@ function AdminEditNewsletter() {
     setErrorMessage(''); // Clear error message when closing modal
     if (modalSuccess) {
       setModalSuccess(false);
-      navigate('/admin/newsletters'); // Redirect after successful edit
+      navigate('/admin/newsletters'); // Redirect after successful edit or create
     }
   };
 
@@ -213,6 +218,7 @@ function AdminEditNewsletter() {
     image,
     careerList,
     dateList,
+    jobList, // Added for sendtoJob
   };
 
   return (
@@ -227,7 +233,9 @@ function AdminEditNewsletter() {
       </button>
 
       {/* Title */}
-      <h1 className="font-satoshi-bold text-5xl mb-6">Edit a Newsletter</h1>
+      <h1 className="font-satoshi-bold text-5xl mb-6">
+        {option === "edit" ? "Edit a Newsletter" : "Create a Newsletter"}
+      </h1>
 
       {/* Display Error Message */}
       {errorMessage && (
@@ -363,7 +371,12 @@ function AdminEditNewsletter() {
               />
               <span>All Alumni</span>
             </div>
-            <FilterDropdown setCareerList={setCareerList} setDateList={setDateList} disabled={allAlumni} />
+            <FilterDropdown 
+              setCareerList={setCareerList} 
+              setDateList={setDateList} 
+              setJobList={setJobList} // Added for sendtoJob
+              disabled={allAlumni} 
+            />
           </div>
 
           {/* Image Upload */}
@@ -444,7 +457,7 @@ function AdminEditNewsletter() {
                   <CheckCircle size={48} />
                 </div>
                 <p className="text-xl font-satoshi-medium mt-4 text-center">
-                  Successfully updated newsletter!
+                  Successfully {option === "edit" ? "updated" : "created"} newsletter!
                 </p>
                 <button
                   className="bg-success text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
@@ -456,7 +469,7 @@ function AdminEditNewsletter() {
             ) : (
               <div>
                 <p className="text-xl font-satoshi-medium text-center mt-4">
-                  Are you sure you want to update this newsletter?
+                  Are you sure you want to {option === "edit" ? "update" : "create"} this newsletter?
                 </p>
                 <div className="flex gap-3 mt-6 w-full h-full justify-center">
                   <button
