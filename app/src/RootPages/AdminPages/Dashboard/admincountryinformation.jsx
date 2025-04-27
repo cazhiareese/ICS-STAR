@@ -98,8 +98,9 @@ function AdminCountryInformation() {
 
             setCountryTotalCount(allCountry[index].count)
         }
-      
-      fetchData();
+      if (selectedCountry){
+        fetchData();
+      }
       
     }, [selectedCountry])
 
