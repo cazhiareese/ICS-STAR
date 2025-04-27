@@ -82,6 +82,10 @@ def get_all_open_drives(db: Session, page: int = 1, page_size: int = 10) -> list
     
     drive_out_list = []
     for drive in drives:
+
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(
             MonetaryDonation.drive_id == drive.drive_id, 
@@ -484,6 +488,10 @@ def get_all_closed_drives(db: Session) -> list[AdminClosedDonationDriveOut]:
     
     drive_out_list = []
     for drive in drives:
+        
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
         # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
         total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
 
