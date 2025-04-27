@@ -4,13 +4,14 @@ import {User}  from 'lucide-react'
 import Camera from "../../assets/onBoardingAssets/camera.png";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import Unathorized from "../Unauthorized";
+import CircularLoading from "../../components/LoadingComponents/circularloading";
 function Step1Onboarding() {
   const canvasRef = useRef(null);
   const [file, setFile] = useState(null);
   const [userImage, setUserImage] = useState("")
   const {currentSection, setCurrentSection, name, email, userData, updateUserData} = useOnboardingContext()
   const [selectPicture, setSelectPicture] = useState(false)
-  
+  const [loading1, setIsLoading1] = useState(false)
 
 
 
@@ -160,9 +161,11 @@ function Step1Onboarding() {
           
           if (response.ok) {
               alert("Profile Submission Successful!");
+              setIsLoading1(false)
               setCurrentSection(2)
           } else {
               alert(data.message || JSON.stringify(data) || "Registration failed!");
+              setIsLoading1(false)
           }
       } catch (error) {
           console.error("Error:", error);
@@ -182,25 +185,29 @@ function Step1Onboarding() {
       <div className="flex flex-col space-y-3 items-center pt-15 sm:mx-30 mx-10">
         <label className="font-satoshi-bold md:text-5xl sm:text-3xl text-2xl text-left w-full">1. Update your profile</label>
         <label className="font-satoshi-light md:text-2xl sm:text-xl text-lg text-left w-full">Add a profile picture</label>
-        <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-120 w-75 h-40">
-            <div className="flex items-center justify-center rounded-full bg-white md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0">
-              <div className="relative w-full h-full flex justify-center items-center">
-                {userData.profilePicture==null ? 
-                (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>):
-                <img src={userData.profilePicture} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" />
-                }
+        <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-150 w-100 h-40">
+            <div className="flex items-center justify-center rounded-full md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0">
+              <div className="w-full h-full flex justify-center items-center relative">
+                
+                  {userData.profilePicture==null ? 
+                    (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>):
+                  <img src={userData.profilePicture} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" />
+                  }
+                  <label htmlFor="fileInput" className= "absolute w-55 bottom-0 left-30 cursor-pointer">
+                    <img src={Camera} />
+                  </label>
+                
+                
               
                 <input 
                     type="file" 
                     accept="image/*" 
                     className="hidden"
                     id="fileInput"
-                    onChange={handleFileChange}
+                    onChange={handleFileChange}Proceed
                 />
 
-                <label htmlFor="fileInput" className= "absolute pt-35 pl-45 w-55 cursor-pointer">
-                  <img src={Camera} />
-                </label>
+                
               </div>
               
 
@@ -224,17 +231,23 @@ function Step1Onboarding() {
           <div className="md:w-[70%]">
 
           </div> 
-          <div className="w-70 sm:h-17 h-14 bg-primary text-white flex items-center justify-center rounded-3xl cursor-pointer"
-              onClick={()=>{if (file !=null){
-                submitStep1()
-              } else {
-                setCurrentSection(2)
-              }}}
-          >
-                  <label className="font-satoshi-bold cursor-pointer">Proceed</label>
+
+          {setIsLoading1 ?
+            <div className="w-70 sm:h-17 h-14 bg-primary text-white flex items-center justify-center rounded-3xl cursor-pointer"
+            onClick={()=>{if (file !=null){
+              submitStep1()
+              setIsLoading1(true)
+            } else {
+              setCurrentSection(2)
+            }}}
+            >       
+                    <label className="font-satoshi-bold cursor-pointer">Proceed</label>
+            
+            
+            </div> :
+            <CircularLoading/>
+          }
           
-          
-          </div>
           
         </div>
           

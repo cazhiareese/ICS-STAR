@@ -99,12 +99,11 @@ function LoginPage() {
                 window.location.href = "/alumni/dashboard";
 
             } else if (userData.user_type=="student"){
+                console.log("User Type", userData.user_type)
                 window.location.href = "/student/dashboard";
-
             } else if (userData.user_type=="admin"){
                 window.location.href = "/admin";
             }
-
         } catch (error) {
             console.error("Error fetching user data:", error);
         }

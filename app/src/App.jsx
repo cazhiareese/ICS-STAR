@@ -81,21 +81,38 @@ import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewl
 
 function App() {
   function checkType() {
-    //const User = localStorage.getItem("token");
-    const User = true;
+    const User = localStorage.getItem("token");
+    // const User = true;
     let tokenType = null;
     if (User) {
-      // const decoded = jwtDecode(User);
+      const decoded = jwtDecode(User);
       // console.log("Decoded token:", decoded);
       // tokenType = "admin";
-      tokenType = "alumni";
-      //const tokenType = decoded.role; // Adjust this based on your token structure
+      // tokenType = "student";
+      const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
     } else {
       console.warn("⚠️ No token found in sessionStorage");
     }
-  }
+  } 
+
+  function checkOnboardedStatus() {
+    const User = localStorage.getItem("token");
+    // const User = true;
+    let tokenType = null;
+    if (User) {
+      
+      const decoded = jwtDecode(User);
+      console.log("OSDNFJKDSFJKDSHJFJKDSF ONBOARDED HERE")
+      
+      const tokenType = decoded.is_onboarded; 
+      console.log("is onboarded:", tokenType)
+      return tokenType;
+    } else {
+      console.warn("⚠️ No token found in sessionStorage");
+    }
+  } 
 
   console.log(isSignedIn);
   console.log(checkType())
@@ -129,35 +146,51 @@ function App() {
       {isSignedIn && checkType() === "alumni" && (
         <>
           <Route path="/" element={<Root />}>
-            <Route path="alumni/dashboard" element={<AlumniLanding />} />
-            <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
-            <Route path="alumni/profile" element={<UserProfile />} />
-            <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
-            <Route path="alumni/donations" element={<DonationLanding />} />
-            <Route path="alumni/events" element={<EventsLanding />} />
-            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
-            
-            <Route path="alumni/donations/:driveid" element={<Donation />} />
-            <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
-            <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
-            <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
-            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
-            <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
-            <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
+            {checkOnboardedStatus() === true ?
 
-            
-            <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+              <>
+                <Route path="alumni/dashboard" element={<AlumniLanding />} />
+                <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
+                <Route path="alumni/profile" element={<UserProfile />} />
+                <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
+                <Route path="alumni/donations" element={<DonationLanding />} />
+                <Route path="alumni/events" element={<EventsLanding />} />
+                <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
+                
+                <Route path="alumni/donations/:driveid" element={<Donation />} />
+                <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
+                <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
+                <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
+                <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
+                <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
+                <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
 
-            <Route path="*" element={<Unauthorized />} />
+                
+                <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
 
-            <Route
-            path="setup"
-            element={
-              <OnboardingProvider>
-                <OnBoarding />
-              </OnboardingProvider>
+                <Route path="*" element={<Unauthorized />} />
+              </>
+              
+              :
+              // <Route path="alumni/dashboard" element={<AlumniLanding />} />
+              <>
+              <Route
+              path="alumni/dashboard"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+              />
+              <Route path="*" element={<Unauthorized />}
+              
+              
+              />
+              </>
             }
-            />
+            
+
+            
           </Route>
         </>
       )} 
@@ -165,12 +198,39 @@ function App() {
       {isSignedIn && checkType() === "student" && (
         <>
           <Route path="/" element={<Root />}>
-            <Route path="student/dashboard" element={<StudentLanding />} />
-            <Route path="student/events" element={<EventsLanding />} />
-            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
-            <Route path="student/alumnisearch" element={<AlumniSearch />} />
-            <Route path="alumni/donations" element={<DonationLanding />} />
-            <Route path="*" element={<UserProfile />} />
+            
+            
+            
+
+            {checkOnboardedStatus() === true ?
+              <>
+              <Route path="student/dashboard" element={<StudentLanding />} />
+              <Route path="student/events" element={<EventsLanding />} />
+              <Route path="student/events/:eventid" element={<EventCardsMain />} />
+              <Route path="student/alumnisearch" element={<AlumniSearch />} />
+              <Route path="student/donations" element={<DonationLanding />} />
+
+              </>
+              
+              :
+              <>
+              <Route
+              path="student/dashboard"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+              
+              />
+              <Route path="*" element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              } />
+              </>
+              
+            }
           </Route>
         </>
       )}
@@ -220,7 +280,7 @@ function App() {
       )}
 
       {/* Redirect unknown routes */}
-      {/* <Route path="*" element={<LoginPage />} /> */}
+      <Route path="*" element={<LoginPage />} />
     </Routes>
   );
 }

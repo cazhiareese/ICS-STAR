@@ -65,27 +65,9 @@ function AlumniLanding() {
     
         const id = result.user_id;
         setid(id); // still set state if needed elsewhere
-        await fetchSkills(id); // pass directly
       } catch (err) {
         console.error("Error fetching data: ", err);
         setError("Failed to load profile data. Please try again.");
-      }
-    };
-    
-    const fetchSkills = async (id) => {
-      try {
-        console.log({ id });
-        const data = await apiFetchPublicProfile({ userId: id });
-        setSkills(data.skills || []);
-    
-        if (!data.skills || data.skills.length === 0) {
-          navigate("/setup");
-        }
-    
-        console.log(data.skills);
-      } catch (err) {
-        setError("Failed to load profile");
-        console.log("SDFDSF Reached here:");
       }
     };
     
