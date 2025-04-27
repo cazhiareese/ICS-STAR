@@ -64,7 +64,7 @@ function AdminPendingVerifications() {
 
 
 
-    const fetchUnverifiedUsers = async (type) => {
+    const fetchUnverifiedUsers = async (type, token) => {
       try {
         const params = new URLSearchParams();
 
@@ -84,7 +84,7 @@ function AdminPendingVerifications() {
         const url = `${API_BASE_URL}/admin/filter/unverified/${type}?${queryString}`
 
 
-        const response = await axios.get(url);
+        const response = await axios.get(url, {headers: {Authorization: `Bearer ${token}`}});
 
         setPendingUsers(response.data);
       } catch (error) {
@@ -94,9 +94,9 @@ function AdminPendingVerifications() {
     };
     
 
-    const fetchUsersCount = async () => {
+    const fetchUsersCount = async (token) => {
       // Fetch unverified alumni count
-      await axios.get(`${API_BASE_URL}/admin/unverified/alumni/count`)
+      await axios.get(`${API_BASE_URL}/admin/unverified/alumni/count`, {headers: {Authorization: `Bearer ${token}`}})
       .then(response => {
         console.log(response.data);
         setAlumniUserCount(response.data.unverified_alumni_count);
@@ -106,7 +106,7 @@ function AdminPendingVerifications() {
       })
 
       // Fetch unverified students count
-      await axios.get(`${API_BASE_URL}/admin/unverified/students/count`)
+      await axios.get(`${API_BASE_URL}/admin/unverified/students/count`, {headers: {Authorization: `Bearer ${token}`}})
       .then(response => {
         console.log(response.data);
         setStudentUserCount(response.data.unverified_students_count);
@@ -117,12 +117,13 @@ function AdminPendingVerifications() {
     };
     
     useEffect(() => {
+      const token = localStorage.getItem("token")
       const fetchData = async () => {
         setLoading(true)
         try {
           await Promise.all([
-            fetchUnverifiedUsers(userType),
-            fetchUsersCount()
+            fetchUnverifiedUsers(userType, token),
+            fetchUsersCount(token)
           ])
         } catch (error) {
           console.log(error)
@@ -135,11 +136,12 @@ function AdminPendingVerifications() {
     }, [userType])
 
     useEffect(() => {
+      const token = localStorage.getItem("token")
       const fetchData = async () => {
         setLoading(true)
         try {
           await Promise.all([
-            fetchUnverifiedUsers(userType),
+            fetchUnverifiedUsers(userType, token),
           ])
         } catch (error) {
           console.log(error)
