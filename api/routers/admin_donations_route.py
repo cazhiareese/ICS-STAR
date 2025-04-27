@@ -700,17 +700,26 @@ def pending_monetary(
         data=paginated_results
     )
 
-@router.get("/admin/donations/verified-inkind", response_model=List[ShortenedInKindDonationsOut])
+@router.get("/admin/donations/verified-inkind", response_model=PaginatedInKindDonationsResponse)
 def verified_inkind(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1)
 ):
     results = get_all_verified_inkind_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No verified in-kind donations found")
 
-    return results
+    page_size = 10
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+
+    return PaginatedInKindDonationsResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
 
 @router.get("/admin/donations/verified-monetary", response_model=List[ShortenedMonetaryDonationsOut])
 def verified_monetary(
