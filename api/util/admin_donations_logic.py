@@ -1757,9 +1757,32 @@ def get_weekly_donation_amounts(db: Session, drive_id: UUID):
 
 def get_top_drives_with_goals_reached(
     db: Session,
-    start_date: datetime,
-    end_date: datetime,
+    time_filter: str,
+    month: int = None,
+    year: int = None,
 ):
+    # Calculate date range based on the time filter
+    current_date = datetime.now()
+    
+    if time_filter == "last_7_days":
+        start_date = current_date - timedelta(days=7)
+        end_date = current_date
+    elif time_filter == "last_30_days":
+        start_date = current_date - timedelta(days=30)
+        end_date = current_date
+    elif time_filter == "monthly":
+        if not month or not year:
+            raise ValueError("Month and year must be provided when using monthly filter")
+        start_date = datetime(year, month, 1)
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1) - timedelta(days=1)
+        else:
+            end_date = datetime(year, month + 1, 1) - timedelta(days=1)
+        # Set to end of day
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+    else:
+        raise ValueError("Invalid time filter. Must be 'last_7_days', 'last_30_days', or 'monthly'")
+
     # Get top 3 drives that have >= 100% of their percent funded
     drives = db.query(
         DonationDrive.drive_id,
@@ -1799,12 +1822,30 @@ def get_top_drives_with_goals_reached(
 
 def get_top_performing_drives(
     db: Session,
-    start_date: datetime,
-    end_date: datetime,
-    limit: int = 3
+    time_filter: str,
+    month: int = None,
+    year: int = None
 ):
-    # donation_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.created_at <= end_date).scalar()
-    # print(f"Found {donation_count} donations before {end_date}")
+    # Calculate date range based on the time filter
+    current_date = datetime.now()
+    
+    if time_filter == "last_7_days":
+        end_date = current_date
+        start_date = current_date - timedelta(days=7)
+    elif time_filter == "last_30_days":
+        end_date = current_date
+        start_date = current_date - timedelta(days=30)
+    elif time_filter == "monthly":
+        if not month or not year:
+            raise ValueError("Month and year must be provided when using monthly filter")
+        start_date = datetime(year, month, 1)
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1) - timedelta(days=1)
+        else:
+            end_date = datetime(year, month + 1, 1) - timedelta(days=1)
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+    else:
+        raise ValueError("Invalid time filter. Must be 'last_7_days', 'last_30_days', or 'monthly'")
 
     # Calculate funding at the start of the period
     subquery_start = db.query(
@@ -1818,10 +1859,6 @@ def get_top_performing_drives(
     ).group_by(
         DonationDrive.drive_id
     ).subquery()
-
-    # subquery_start_test = db.query(subquery_start).all()
-
-    # print(f"Found {len(subquery_start_test)} drives with funding at start of period")
     
     # Calculate funding at the end of the period
     subquery_end = db.query(
@@ -1835,9 +1872,6 @@ def get_top_performing_drives(
     ).group_by(
         DonationDrive.drive_id
     ).subquery()
-
-    # subquery_end_test = db.query(subquery_end).all()
-    # print(f"Found {len(subquery_end_test)} drives with funding at end of period")
     
     # Get drives with highest percentage increase
     query = db.query(
@@ -1857,13 +1891,9 @@ def get_top_performing_drives(
         DonationDrive.target_cost > 0
     ).order_by(
         desc("percent_increase")  # Order by the increase in percentage
-    ).limit(limit)
-
-    # print(str(query.statement))
+    ).limit(3)
 
     drives = query.all()
-
-    # print(f"Found {len(drives)} drives with funding increase")
 
     top_drives = []
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 from schemas.donation_schema import (
@@ -629,35 +629,35 @@ def weekly_monetary_donations(
 # Get the top drives with goals reached
 @router.get("/admin/donations/top-drives-with-goals-reached", tags=["Donations"])
 def top_drives_with_goals_reached(
-    start_date: str = None,
-    end_date: str = None,
+    time_filter: str = Query(..., description="Filter type: 'last_7_days', 'last_30_days', or 'monthly'"),
+    month: int = Query(None, description="Month number (1-12) - required for monthly filter", ge=1, le=12),
+    year: int = Query(None, description="Year - required for monthly filter", ge=2000),
     db: Session = Depends(get_db)
 ):
-    
-    start_dt = datetime.strptime(start_date, "%m/%d/%Y") if start_date else None
-    end_dt = datetime.strptime(end_date, "%m/%d/%Y") if end_date else None
-
-    results = get_top_drives_with_goals_reached(db, start_dt, end_dt)
-
-    if not results:
-        raise HTTPException(status_code=404, detail="No drives found with goals reached")
-    
-    return results
+    try:
+        results = get_top_drives_with_goals_reached(db, time_filter, month, year)
+        
+        if not results:
+            raise HTTPException(status_code=404, detail="No drives found with goals reached")
+        
+        return results
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 # Get the top performing drives
 @router.get("/admin/donations/top-performing-drives", tags=["Donations"])
 def top_performing_drives(
-    start_date: str = None,
-    end_date: str = None,
+    time_filter: str = Query(..., description="Filter type: 'last_7_days', 'last_30_days', or 'monthly'"),
+    month: int = Query(None, description="Month number (1-12) - required for monthly filter", ge=1, le=12),
+    year: int = Query(None, description="Year - required for monthly filter", ge=2000),
     db: Session = Depends(get_db)
 ):
-    
-    start_dt = datetime.strptime(start_date, "%m/%d/%Y") if start_date else None
-    end_dt = datetime.strptime(end_date, "%m/%d/%Y") if end_date else None
-
-    results = get_top_performing_drives(db, start_dt, end_dt)
-
-    if not results:
-        raise HTTPException(status_code=404, detail="No drives found")
-    
-    return results
+    try:
+        results = get_top_performing_drives(db, time_filter, month, year)
+        
+        if not results:
+            raise HTTPException(status_code=404, detail="No drives found")
+        
+        return results
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
