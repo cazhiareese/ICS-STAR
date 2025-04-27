@@ -111,7 +111,7 @@ function DonationLanding() {
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (
-    <div className="flex flex-col p-4 space-y-5 min-h-screen ">
+    <div className="flex flex-col p-4 space-y-5 h-[100px] ">
       {/* Search bar */}
       <div className="flex justify-center p-5">
         <input
