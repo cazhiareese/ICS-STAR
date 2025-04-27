@@ -93,12 +93,14 @@ def process_student_onboarding(
 
         if standing:
             user.standing = standing
+            
+        user.is_onboarded = True
 
         db.commit()
         db.refresh(user)
         
     except Exception as e:
-            raise HTTPException(status_code=500, detail="Error updating info")
+            raise HTTPException(status_code=500, detail="Error updating info {e}")
         
 
 def process_alumni_onboarding(
@@ -165,12 +167,13 @@ def process_alumni_onboarding(
         user.employer_class = employer_class
         user.tenured_status = tenured_status
         user.salary_grade = salary_grade
+        user.is_onboarded = True
 
         db.commit()
         db.refresh(user)
         
     except Exception as e:
-            raise HTTPException(status_code=500, detail="Error updating info")
+            raise HTTPException(status_code=500, detail=f'"Error updating info {e}"')
 
 
 async def register_user(
