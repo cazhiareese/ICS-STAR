@@ -374,15 +374,7 @@ def open_drives_by_amount_raised(
     if not results:
         raise HTTPException(status_code=404, detail="No open drives found")
     
-    total_items = len(results)
-    total_pages = (total_items + page_size - 1) // page_size  # ceiling division
-
-    if page > total_pages and total_pages != 0:
-        raise HTTPException(status_code=404, detail="Page not found")
-
-    start_idx = (page - 1) * page_size
-    end_idx = start_idx + page_size
-    paginated_results = results[start_idx:end_idx]
+    total_pages, paginated_results = paginate_results(results, page, page_size)
 
     return PaginatedDonationDrivesResponse(
         message="success",
@@ -403,15 +395,7 @@ def open_drives_by_amount_raised_ascending(
     if not results:
         raise HTTPException(status_code=404, detail="No open drives found")
     
-    total_items = len(results)
-    total_pages = (total_items + page_size - 1) // page_size  # ceiling division
-
-    if page > total_pages and total_pages != 0:
-        raise HTTPException(status_code=404, detail="Page not found")
-
-    start_idx = (page - 1) * page_size
-    end_idx = start_idx + page_size
-    paginated_results = results[start_idx:end_idx]
+    total_pages, paginated_results = paginate_results(results, page, page_size)
 
     return PaginatedDonationDrivesResponse(
         message="success",
