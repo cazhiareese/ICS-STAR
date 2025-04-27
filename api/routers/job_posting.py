@@ -7,10 +7,10 @@ from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
-from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut, EmploymentTypeEnum, JobModeEnum, PaginationMeta, PaginatedJobPostingResponse
-from schemas.report_schema import ReportedJobPostingOut, PostReportDetailOut, PaginationMeta, PaginatedReportedResponse
+from schemas.job_posting_schema import JobPostingOut, PaginatedJobPostingResponse
+from schemas.report_schema import PostReportDetailOut, PaginatedReportedResponse
 from models.report_model import Report, ReportAttachment
-from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
+from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn
 from util.job_posting_util import create_job_posting, edit_job_posting
 from config.database import get_db
 
