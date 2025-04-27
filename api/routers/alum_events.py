@@ -6,7 +6,7 @@ from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, g
 from uuid import UUID
 from models.usermodel import User
 from util.userutil import get_current_user
-from schemas.events_schema import EventOut, OneEventOut, EventConfirmedOut
+from schemas.events_schema import EventOut, OneEventOut
 from datetime import date
 
 router = APIRouter()
@@ -44,7 +44,7 @@ def cancel_rsvp(event_id: UUID, user: User = Depends(get_current_user), db: Sess
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@router.get("/events/confirmed", response_model=List[EventConfirmedOut])
+@router.get("/events/confirmed", response_model=List[EventOut])
 def get_user_confirmed_events(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     
     if user.user_type != user.user_type.alumni:
