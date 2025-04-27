@@ -235,7 +235,7 @@ function ProfileSection({
       </h2>
     ) : (
       <div
-        className="w-[200px] h-[32px] sm:w-[300px] sm:h-[40px] bg-gray-300 animate-pulse rounded-[12px]"
+        className="w-[200px] h-[32px] sm:w-[300px] sm:h-[40px] bg-disabled animate-pulse rounded-[12px]"
       />
     )}
     {userDetails.email ? (
@@ -244,7 +244,7 @@ function ProfileSection({
       </p>
     ) : (
       <div
-        className="w-[150px] h-[20px] sm:w-[200px] sm:h-[24px] bg-gray-300 animate-pulse rounded-[12px]"
+        className="w-[150px] h-[20px] sm:w-[200px] sm:h-[24px] bg-disabled animate-pulse rounded-[12px]"
       />
     )}
   </>
