@@ -54,7 +54,7 @@ export default function DonationCard({driveDetails, driveId}) {
         ₱{driveDetails.total_amount_donated.toLocaleString()} <label className="text-black">raised</label>
         </h2>
         <h2 className="text-3xl font-satoshi-black text-primary">
-        {driveDetails.in_kind_count.toLocaleString()} in-kind<label className="text-black"> goods</label>
+        {/*{driveDetails.in_kind_count.toLocaleString()} in-kind<label className="text-black"> goods</label>*/}
         </h2>
         
       </div>

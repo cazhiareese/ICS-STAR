@@ -54,7 +54,8 @@ console.log(token);
 
         {/* Footer info */}
         <div className="mt-4 flex justify-between text-sm text-black font-satoshi-medium">
-          <p>{new Date(drive.created_at).toLocaleDateString()}</p>
+          {/*<p>{new Date(drive.created_at).toLocaleDateString()}</p>*/}
+          <p>"1212121"</p>
           <p className="text-primary font-satoshi-medium">
             {drive.donation_count} Donations
           </p>
