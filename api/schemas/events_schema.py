@@ -33,3 +33,13 @@ class OneEventOut(BaseModel):
 class DemographicsOut(BaseModel):
     batch: str
     rsvp_count: int
+
+class UpcomingEventResponse(BaseModel):
+    event_id: str
+    title: str
+    date: datetime
+    location: str
+    days_left: int
+
+    class Config:
+        from_attributes = True
