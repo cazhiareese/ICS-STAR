@@ -40,28 +40,79 @@ const donation = {name: "Hey bro", currentRaised: 70000, maxAmount: 100000, date
 function AdminEngagementReports() {
   const navigate = useNavigate();
   const [daysFilter, setDaysFilter] = useState("30days");
+  const [batchFilter, setBatchFilter] = useState("2022");
   const [selectedTab, setSelectedTab] = useState(null);
 
   const [fullEngagementReport, setFullEngagementReport] = useState(null);
   const [fullEngagementReportLoading, setFullEngagementReportLoading] = useState(false);
 
+  const [mostDonations, setMostDonations] = useState([]);
+  // TODO: Add loading
+
+  const [mostInterested, setMostInterested] = useState([]);
+
+
   // BASE URL ENV
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
   // Getting engagement statistics
   useEffect(() => {
     const fetchEngagement = async () => {
       setFullEngagementReportLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}`);
+        let response;
+  
+        if (batchFilter !== 0) {
+          response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}&batch=${batchFilter}`);
+        } else {
+          response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}`);
+        }
+  
         console.log(response.data);
         setFullEngagementReport(response.data);
         setFullEngagementReportLoading(false);
       } catch (err) {
         console.log(err.message || 'Something went wrong');
+        setFullEngagementReportLoading(false);
       }
     };
   
     fetchEngagement();
+  }, [daysFilter, batchFilter]);
+  
+
+  // Getting top 3 most donations
+  useEffect(() => {
+    const fetchMostDonations = async () => {
+      // setFullEngagementReportLoading(true);
+      try {
+        const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
+        console.log(response.data);
+        setMostDonations(response.data);
+        // setFullEngagementReportLoading(false);
+      } catch (err) {
+        console.log(err.message || 'Something went wrong');
+      }
+    };
+  
+    fetchMostDonations();
+  }, [daysFilter]);
+
+  // Getting top 3 most donations
+  useEffect(() => {
+    const fetchMostInterested = async () => {
+      // setFullEngagementReportLoading(true);
+      try {
+        const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`);
+        console.log(response.data);
+        setMostInterested(response.data);
+        // setFullEngagementReportLoading(false);
+      } catch (err) {
+        console.log(err.message || 'Something went wrong');
+      }
+    };
+  
+    fetchMostInterested();
   }, [daysFilter]);
   
 
@@ -110,12 +161,14 @@ function AdminEngagementReports() {
           {/* Batch filter */}
           <div className="flex items-center gap-2 ml-auto">
             <label className="text-sm text-gray-700 font-satoshi-bold">Batch:</label>
-            <select className="w-36 rounded-md px-2 py-1 shadow-md">
-              <option>All</option>
-              <option>2022</option>
-              <option>2023</option>
-              <option>2024</option>
+            <select className="w-36 rounded-md px-2 py-1 shadow-md" onChange={(e) => setBatchFilter(e.target.value)}>
+              <option value={0}>All</option>
+              {/* <option>All</option> */}
+              {Array.from({ length: 51 }, (_, i) => 1975 + i).map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
             </select>
+
           </div>
         </div>
         {fullEngagementReportLoading ? (
@@ -152,11 +205,11 @@ function AdminEngagementReports() {
 
       </div>
       <div className='flex md:flex-row flex-col gap-5'>
-          {/* Most Viewed Newsletters */}
+          {/* Most Donations */}
           <div className="bg-white rounded-2xl shadow p-6 md:w-1/2">
               <div className="flex flex-col justify-between  mb-6">
               <div>
-                  <h1 className="text-3xl font-satoshi-bold text-black">Most Viewed Newsletters</h1>
+                  <h1 className="text-3xl font-satoshi-bold text-black">Donation Highlights</h1>
                   <p className="text-gray-500 text-sm font-satoshi-light pb-3">Last {daysFilter} Days</p>
               </div>
                   
@@ -164,16 +217,20 @@ function AdminEngagementReports() {
 
               {/* List of Newsletters */}
               <div className="flex flex-col gap-6">
-              {newsletters.map((item, idx) => (
+              {mostDonations.map((item, idx) => (
                   <div key={item.id} className="flex gap-4 items-center">
-                  <p className="text-primary font-satoshi-medium text-lg">#{item.id}</p>
-                  <img className="w-14 h-14 rounded-md bg-gray-300" />
+                  <p className="text-primary font-satoshi-medium text-lg">#{idx+1}</p>
+                  <img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />
                   <div className="flex flex-col">
-                      <p className="text-black font-satoshi-medium">{item.title}</p>
+                      <h1 className="text-black font-satoshi-bold text-lg">{item.title}</h1>
+                      <h1 className="text-black font-satoshi-regular text-md">₱{item.amount_gathered}/₱{item.target_cost} raised</h1>
+                      
                       <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
-                      <CalendarDays size={20} />
-                      <span>{item.date}</span>
+                          <Users size={20} />
+                          <span>{item.donor_count}</span>
+                          <span>donors</span>
                       </div>
+                      
                   </div>
                   </div>
               ))}
@@ -196,21 +253,22 @@ function AdminEngagementReports() {
 
               {/* List of Job offers */}
               <div className="flex flex-col gap-6">
-              {jobOffers.map((item, idx) => (
+              {mostInterested.map((item, idx) => (
                   <div key={item.id} className="flex gap-4 items-center">
-                  <p className="text-primary font-satoshi-medium text-lg">#{item.id}</p>
-                  <img className="w-14 h-14 rounded-md bg-gray-300" />
+                  <p className="text-primary font-satoshi-medium text-lg">#{idx+1}</p>
+                  <img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />
                   <div className="flex flex-col">
-                      <p className="text-black font-satoshi-medium">{item.title}</p>
+                      <h1 className="text-black font-satoshi-bold text-lg">{item.title}</h1>
+                      <h1 className="text-black font-satoshi-regular text-md">{item.company}</h1>
                       <div className='flex flex-row gap-5'>
                           <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
                               <CalendarDays size={20} />
-                              <span>{item.date}</span>
+                              <span>{item.date_posted}</span>
                           </div>
 
                           <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
                               <Users size={20} />
-                              <span>{item.person}</span>
+                              <span>{item.interested_count}</span>
                               <span>person</span>
                           </div>
                       </div>
