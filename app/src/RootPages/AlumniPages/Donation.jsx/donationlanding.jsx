@@ -135,7 +135,7 @@ function DonationLanding() {
             className="order-2 lg:order-1 flex-1 lg:max-w-[600px] overflow-y-auto scrollbar-blue"
             style={{ maxHeight: "calc(100vh - 200px)", direction: "rtl" }}
           >
-            <div className="flex flex-wrap gap-4 pl-2" style={{ direction: "ltr" }}>
+            <div className="flex flex-wrap gap-4  justify-center items-center" style={{ direction: "ltr" }}>
               {filteredData.length > 0 ? (
                 filteredData.map((drive, index) => (
                   <DonationCards key={index} drive={drive} />
@@ -149,15 +149,19 @@ function DonationLanding() {
           </div>
 
 {/* Right column: Announcements */}
-<div className="order-1 lg:order-2 lg:basis-[900px] px-4 rounded-xl text-center h-fit ">
+<div className=" order-1 lg:order-2  lg:basis-[950px] px-4 rounded-xl text-center h-fit ">
   {generalDrive ? (
-    <div className="-mt-5 flex flex-col sm:flex-row gap-4 justify-center">
+    <div className="-mt-5 flex flex-col sm:flex-row gap-4 justify-center sm:justify-center">
       {/* Container for DonationMainView */}
       <div className="bg-whitey border border-disabled rounded-xl p-4">
         <DonationMainView driveDetails={generalDrive} driveId={generalDrive.drive_id} />
       </div>
       {/* DonationCard */}
-      <DonationCard driveDetails={generalDrive} driveId={generalDrive.drive_id} />
+<div className="items-center justify-center sm:justify-start sm:items-start flex flex-col sm:flex-row gap-4">
+<DonationCard driveDetails={generalDrive} driveId={generalDrive.drive_id} />
+</div>
+
+
     </div>
   ) : (
     <p className="text-sm text-gray-600">
