@@ -6,6 +6,7 @@ import DonationMainView from "../../../components/donationMainView";
 import DonationCard from "../../../components/donationDonateView";
 import DonationCardSkeleton from "./Donationcomponent/DonationCardSkeleton";
 import DonationMainViewSkeleton from "./Donationcomponent/donationmainviewskeleton";
+import DonationCSkeleton from "./Donationcomponent/Donationcskeleton";
 
 function DonationLanding() {
   const [donationData, setDonationData] = useState(null); // Initialize as null
@@ -151,9 +152,10 @@ function DonationLanding() {
   </div>
 
   {/* Right column placeholder */}
-  <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit flex justify-center items-center">
+  <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit flex justify-center items-center gap-4">
     
   <DonationMainViewSkeleton  />
+  <DonationCSkeleton  />
   </div>
 </div>
 
