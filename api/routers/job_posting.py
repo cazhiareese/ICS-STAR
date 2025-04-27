@@ -337,10 +337,25 @@ def get_open_job_postings_count(
     return {"open_job_postings_count": count}
 
 # Get job postings that are closed
-@router.get("/admin/job-postings/closed", response_model=List[JobPostingForAdminOut])
+@router.get("/admin/job-postings/closed", response_model=PaginatedJobPostingResponse)
 def get_closed_job_postings(
+    page: int = Query(1, ge=1, description="Page number"),
     db: Session = Depends(get_db)
 ):
+    
+    per_page = 10  # Number of items per page
+
+    # Get total count for pagination
+    total_count = db.query(func.count(JobPosting.post_id))\
+        .filter(
+            JobPosting.is_closed == True,
+            JobPosting.is_deleted == False
+        ).scalar()
+    
+    # Calculate offset
+    offset = (page - 1) * per_page
+    
+    # Main query with pagination
     query_result = db.query(
         JobPosting.post_id,
         JobPosting.title,
@@ -360,9 +375,13 @@ def get_closed_job_postings(
         JobPosting.is_closed == True,
         JobPosting.is_deleted == False
     ).group_by(
-        JobPosting.post_id, JobPosting.title, JobPosting.date_posted, 'user_name' 
-    ).all()
+        JobPosting.post_id, JobPosting.title, JobPosting.date_posted, JobPosting.company,
+        JobPosting.description, JobPosting.employment_type, JobPosting.mode, JobPosting.salary, 'user_name'
+    ).order_by(
+        JobPosting.date_posted.desc()  # Order by most recent first
+    ).offset(offset).limit(per_page).all()
     
+    # Format results
     result = []
     for row in query_result:
         result.append({
@@ -378,7 +397,18 @@ def get_closed_job_postings(
             "interested_count": row.interested_count
         })
     
-    return result
+    # Calculate total pages
+    total_pages = math.ceil(total_count / per_page) if total_count > 0 else 1
+    
+    return {
+        "items": result,
+        "meta": {
+            "page": page,
+            "per_page": per_page,
+            "total_items": total_count,
+            "total_pages": total_pages
+        }
+    }
 
 # Get count job postings that are closed
 @router.get("/admin/job-postings/closed/count")
