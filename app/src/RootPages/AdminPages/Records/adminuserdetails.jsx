@@ -139,7 +139,9 @@ function AdminUserDetails() {
         </div>
         {/* Basic information */}
         <div className='flex flex-row border border-gray-300 rounded-xl w-full p-6 mb-6'>
-          <div className='border border-black rounded-full h-30 w-30'></div>
+          <div className='bg-primary rounded-full h-30 w-30'>
+            <img src={user.image} alt=""  className='object-cover w-full'/> 
+          </div>
           <div className='flex flex-col justify-center ml-8'>
             <h2 className='font-satoshi-bold text-2xl'>{`${user.first_name} ${user.last_name}`}</h2>
             <p className='font-satoshi-light'>{user.email}</p>
