@@ -679,17 +679,26 @@ def pending_inkind(
         data=paginated_results
     )
 
-@router.get("/admin/donations/pending-monetary", response_model=List[ShortenedMonetaryDonationsOut])
+@router.get("/admin/donations/pending-monetary", response_model=PaginatedMonetaryDonationsResponse)
 def pending_monetary(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1)
 ):
     results = get_all_pending_monetary_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No pending monetary donations found")
 
-    return results
+    page_size = 10
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+
+    return PaginatedMonetaryDonationsResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
 
 @router.get("/admin/donations/verified-inkind", response_model=List[ShortenedInKindDonationsOut])
 def verified_inkind(
