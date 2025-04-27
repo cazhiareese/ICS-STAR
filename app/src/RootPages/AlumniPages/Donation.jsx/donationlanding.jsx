@@ -132,18 +132,20 @@ function DonationLanding() {
         <div className="flex flex-col lg:flex-row gap-4 justify-center">
           {/* Left column: Donation cards */}
           <div
-  className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-wrap gap-4 overflow-y-auto scrollbar-blue"
-  style={{ maxHeight: "calc(100vh - 200px)" }}
->
-            {filteredData.length > 0 ? (
-              filteredData.map((drive, index) => (
-                <DonationCards key={index} drive={drive} />
-              ))
-            ) : (
-              <p className="w-full text-center text-gray-500">
-                No donation drives available at the moment.
-              </p>
-            )}
+            className="order-2 lg:order-1 flex-1 lg:max-w-[600px] overflow-y-auto scrollbar-blue"
+            style={{ maxHeight: "calc(100vh - 200px)", direction: "rtl" }}
+          >
+            <div className="flex flex-wrap gap-4 pl-2" style={{ direction: "ltr" }}>
+              {filteredData.length > 0 ? (
+                filteredData.map((drive, index) => (
+                  <DonationCards key={index} drive={drive} />
+                ))
+              ) : (
+                <p className="w-full text-center text-gray-500">
+                  No donation drives available at the moment.
+                </p>
+              )}
+            </div>
           </div>
 
 {/* Right column: Announcements */}
