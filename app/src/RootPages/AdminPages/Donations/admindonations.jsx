@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Plus, HandCoins, MoveLeft, MoveRight, List, LayoutGrid, Filter } from 'lucide-react'
+import { Plus, HandCoins, MoveLeft, MoveRight, List, LayoutGrid, Filter, Search } from 'lucide-react'
 import DonationsTable from '../../../components/AdminComponents/donationstable'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -9,7 +9,8 @@ import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 
 function AdminDonations() {
   const navigate = useNavigate()
-
+  const [query, setQuery] = useState('')
+  const [focused, setFocused] = useState(false)
   const [donationType, setDonationType] = useState('open')
   const [viewStyle, setViewStyle] = useState('List')
   const [page, setPage] = useState(1)
@@ -18,9 +19,14 @@ function AdminDonations() {
   const [loading, setLoading] = useState(false)
   const [genericDriveDetails, setGenericDriveDetails] = useState({})
 
-  const filters = ['Name', 'Batch', 'Last Update']
-  const [sortBy, setSortBy] = useState(filters[0]);
-  const [sortDirection, setSortDirection] = useState('asc');
+  const filters = [
+    { label: 'Amount Raised', value: 'by-amount-raised' },
+    {label: 'Percent Funded', value: 'by-percent-funded'},
+    {label: 'Donation Count', value: 'by-donation-count'},
+    {label: 'Date Created', value: 'by-date-created'}
+  ]
+  const [sortBy, setSortBy] = useState('by-amount-raised');
+  const [sortDirection, setSortDirection] = useState('desc');
 
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -28,8 +34,25 @@ function AdminDonations() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/${donationType}-drives`)      
-      setDonations(response.data)
+      let endpoint = '/admin/donations/open-drives'; // default fallback
+        console.log(sortBy)
+        console.log(sortDirection)
+      if (sortBy && sortDirection) {
+        var sortSuffix = sortDirection === 'asc' ? 'ascending' : 'descending';
+        if (sortBy === 'by-date-created'){
+          sortSuffix = sortDirection === 'asc'? 'newest':'oldest';
+        }
+        endpoint = `/admin/donations/open-drives-${sortBy}${sortSuffix ? `-${sortSuffix}` : ''}`;
+      }
+
+      try{
+       const response = await axios.get(`${API_BASE_URL}${endpoint}`);
+      setDonations(response.data);
+
+      }catch(error){
+        console.log(error)
+        setDonations([])
+      }
       // sessionStorage.setItem(`donations-${donationType}`, JSON.stringify(response.data));
 
       const genDriveResponse = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`)
@@ -52,6 +75,10 @@ function AdminDonations() {
   
     fetchData()
   }, [donationType])
+
+  useEffect(() =>{
+    fetchData()
+  }, [sortBy, sortDirection])
   
     
     return (
@@ -115,14 +142,26 @@ function AdminDonations() {
               <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
                 <p className='font-satoshi-medium text-primary block'>Name</p>
             </button> */}
+          <div className='relative flex items-center justify-end flex-1'>
+            <input
+              type="text"
+              placeholder="Search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+            />
+            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
+          </div>
             <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/>
             {/* Order Toggle */}
             <OrderToggle direction={sortDirection} onToggle={setSortDirection}/>
             {/* Filter */}
-            <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
+            {/* <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
               <Filter className='text-primary'/>
               <p className='text-primary fsont-satoshi-medium text-sm'> Filter</p>
-            </button>
+            </button> */}
             {/* Page */}
             <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
               <MoveLeft className='cursor-pointer' onClick={() => {}}/>

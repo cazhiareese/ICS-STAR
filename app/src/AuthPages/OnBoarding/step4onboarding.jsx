@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import axios from "axios";
 import Unauthorized from "../Unauthorized";
+import CircularLoading from "../../components/LoadingComponents/circularloading";
 
 export default function Step4Onboarding() {
   const suggestions = [
@@ -19,6 +20,8 @@ export default function Step4Onboarding() {
   const [customSkills, setCustomSkills] = useState([]);
   const [errorMessage, setErrorMessage] = useState(""); // State for error message
 
+  const [loading, setLoading] = useState(false);
+
   const { setCurrentSection, userData, updateUserData, userType } = useOnboardingContext();
 
   const toggleSuggestion = (skill) => {
@@ -34,6 +37,7 @@ export default function Step4Onboarding() {
       const newSkill = inputValue.trim();
 
       if (!customSkills.includes(newSkill)) {
+        setCustomSkills(prev => [...prev, newSkill]);   
         updateUserData("skillsInterests", [...userData.skillsInterests, newSkill]);
       }
 
@@ -46,9 +50,12 @@ export default function Step4Onboarding() {
   };
 
   const submitStep4 = () => {
+    
     if (userData.skillsInterests.length === 0) {
       setErrorMessage("At least one skill or interest must be added.");
       return;
+    } else {
+      setLoading(true);
     }
     setErrorMessage(""); // Clear error message if validation passes
     submitOnboardingInfo();
@@ -104,7 +111,7 @@ export default function Step4Onboarding() {
   };
 
   return (
-    <div className="flex flex-col items-center p-6 px-15 w-[50%] m-auto">
+    <div className="flex flex-col items-center p-6 xl:px-15 px-10 xl:w-[50%] m-auto">
       <h2 className="text-4xl font-semibold mb-3">Skills and Interests</h2>
 
       <input
@@ -117,11 +124,11 @@ export default function Step4Onboarding() {
       />
 
       <h3 className="text-xl font-satoshi-bold mb-6 mt-4 mr-auto ">Suggestions</h3>
-      <div className="flex flex-wrap gap-3 w-[80%] mr-auto">
+      <div className="flex flex-wrap gap-3 md:w-[80%] w-[100%] mr-auto pb-3">
         {userData.suggestions.map((skill) => (
           <button
             key={skill}
-            className={`px-4 py-2 border-2 rounded-full text-lg font-medium transition-all ${
+            className={`px-4 py-2 border-2 rounded-full xl:text-lg md:text-md sm:text-sm text-xs font-medium transition-all ${
               userData.skillsInterests.includes(skill)
                 ? "bg-primary text-white border-primary"
                 : "text-primary border-primary hover:bg-primary hover:text-white"
@@ -134,11 +141,15 @@ export default function Step4Onboarding() {
       </div>
 
       {customSkills.length > 0 && (
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 md:w-[80%] w-[100%] mr-auto">
           {customSkills.map((skill) => (
             <button
               key={skill}
-              className="px-4 py-2 bg-primary text-white rounded-full text-lg font-medium"
+              className={`px-4 py-2 border-2 rounded-full xl:text-lg md:text-md sm:text-sm text-xs font-medium transition-all ${
+                userData.skillsInterests.includes(skill)
+                  ? "bg-primary text-white border-primary"
+                  : "text-primary border-primary hover:bg-primary hover:text-white"
+              }`}
               onClick={() => removeCustomSkill(skill)}
             >
               {skill} ✖
@@ -151,9 +162,9 @@ export default function Step4Onboarding() {
 
       {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
 
-      <div className="flex flex-row items-center justify-center my-10 space-x-20 w-full">
+      <div className="flex flex-row items-center justify-center md:my-10 my-5 md:space-x-20 w-full">
         <div
-          className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl text-2xl"
+          className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl md:text-2xl text-xl "
           onClick={() => setCurrentSection(3)}
         > 
           <label className="font-satoshi-italic"> &lt; Previous </label>
@@ -161,12 +172,21 @@ export default function Step4Onboarding() {
 
         <div className="w-[70%]"></div>
 
-        <div
-          className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
+        { loading ? (
+          <CircularLoading />
+        ) : (
+          <div
+          className="w-70 md:h-17 h-10 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
           onClick={submitStep4}
-        >
-          <label className="font-satoshi-bold cursor-pointer">Proceed</label>
-        </div>
+          >
+
+
+            <label className="font-satoshi-bold cursor-pointer">Proceed</label>
+          </div>
+        )
+
+        }
+        
       </div>
     </div>
   );

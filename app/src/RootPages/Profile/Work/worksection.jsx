@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
 import SectionHeader from "../components/sectionheader"; 
 
-function WorkSection({ userDetails, handleChange }) {
+function WorkSection({ userDetails, handleChange, isVerified }) {
   const [showMore, setShowMore] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -97,6 +97,7 @@ function WorkSection({ userDetails, handleChange }) {
         title="Current Work"
         buttonText={isEditing ? "Save Work" : "Edit Work"}
         onButtonClick={isEditing? saveEmployment : handleEditToggle}
+        isVerified={isVerified}
       />
 
       {/* Work Experience Card */}
