@@ -78,7 +78,7 @@ function AdminEditNewsletter() {
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/newsletter/tags`
         );
-        setTags(response.data.tags || []);
+        setTags(response.data || []);
       } catch (err) {
         console.error('Failed to fetch tags:', err.message);
         setErrorMessage('Failed to fetch tags');
