@@ -61,20 +61,20 @@ export default function Step4Onboarding() {
     submitOnboardingInfo();
   };
 
-  const baseURL = "https://ics-star-api.vercel.app";
+  const baseURL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
   const submitOnboardingInfo = async () => {
-    try {
-      const endpoint =
+
+    const endpoint =
         userType === "student"
           ? `${baseURL}/onboarding-info-student`
           : `${baseURL}/onboarding-info-alum`;
       const payload =
         userType === "student"
           ? {
-              standing: userData.standing,
-              ...(userData.scholarshipList.length > 0 && { scholarships: userData.scholarshipList }),
+              standing: "freshman",
+              ...(userData.cholarshipList.length > 0 && { scholarships: userData.scholarshipList }),
               ...(userData.affiliationList.length > 0 && { affiliations: userData.affiliationList }),
               ...(userData.roleList.length > 0 && { roles: userData.roleList }),
               ...(userData.skillsInterests.length > 0 && { skills: userData.skillsInterests }),
@@ -90,7 +90,8 @@ export default function Step4Onboarding() {
                 job_title: userData.jobTitle,
                 country: userData.workCountry,
                 city: userData.workCity,
-                work_mode: userData.workType,
+              ...(userData.remote && {work_mode: "Work From Home"}),
+              ...(!userData.remote && {work_mode: "Face to Face"}),
                 employer_class: userData.workType,
                 tenured_status: userData.tenureStatus,
                 salary_grade: userData.salaryRange,
@@ -98,14 +99,18 @@ export default function Step4Onboarding() {
               ...(userData.employmentType === "unemployed" && { reasons: userData.reason }),
               employment_status: userData.employmentType,
             };
+    try {
+      
       await axios.post(endpoint, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(payload)
       console.log("Onboarding information submitted successfully.");
       setCurrentSection(5);
     } catch (error) {
+      console.log(payload)
       console.error("Error submitting onboarding information:", error);
     }
   };

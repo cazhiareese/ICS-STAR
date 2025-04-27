@@ -108,7 +108,8 @@ function App() {
       
       const tokenType = decoded.is_onboarded; 
       console.log("is onboarded:", tokenType)
-      return tokenType;
+      console.log(decoded)
+      return false;
     } else {
       console.warn("⚠️ No token found in sessionStorage");
     }
@@ -182,7 +183,11 @@ function App() {
                 </OnboardingProvider>
               }
               />
-              <Route path="*" element={<Unauthorized />}
+              <Route path="*" element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
               
               
               />
@@ -221,8 +226,8 @@ function App() {
                   <OnBoarding />
                 </OnboardingProvider>
               }
-              
               />
+              <Route path="student/profile" element={<UserProfile />} />
               <Route path="*" element={
                 <OnboardingProvider>
                   <OnBoarding />

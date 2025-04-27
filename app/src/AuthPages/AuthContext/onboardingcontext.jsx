@@ -21,7 +21,7 @@ export function OnboardingProvider({ children }) {
         industrySector: "",
         workType: "",
         employmentType: "employed",
-        tenureStatus: "",
+        tenureStatus: "Permanent",
         sameAsBase: false,
         salaryRange: 11,
         remote: false,
@@ -34,7 +34,7 @@ export function OnboardingProvider({ children }) {
         skillsInterests: [],
         profilePictureFile: null,
         workMode: "Onsite",     // Onsite or Remote
-        employerclass: "",
+        employerclass: "NGO",
         suggestions: [
             "Artificial Intelligence",
             "Cybersecurity",
