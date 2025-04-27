@@ -742,7 +742,7 @@ def verified_monetary(
         data=paginated_results
     )
 
-@router.get("/admin/donations/view/generic-drive-view", response_model=AdminGenericDriveView)
+@router.get("/admin/donations/generic-drive-view", response_model=AdminGenericDriveView)
 def view_generic_donation_drive(
     db: Session = Depends(get_db)
 ):
