@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import DonationDetailsModal from "./component/donationmodal";
 import ReactLoading from "react-loading";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
+import NewLoading from "../../../components/LoadingComponents/cyruscircular";
 
 function DonationHistoryUser({ userDetails }) {
   const [monetaryDonations, setMonetaryDonations] = useState([]);
@@ -191,7 +192,7 @@ function DonationHistoryUser({ userDetails }) {
       </div>
 
       {loading && (
-        <div className="flex justify-center items-center "><CircularLoading/></div>
+        <div className="flex justify-center items-center "><NewLoading size={50}/></div>
 
 
       )}
