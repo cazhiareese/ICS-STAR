@@ -10,7 +10,7 @@ const SidebarItem = ({ title, icon, isSelected, childrenItems, path, onClick }) 
       {/* Main Row */}
       <div
         className={`flex flex-row p-2 rounded-r-3xl items-center border-l-6 ${
-          isSelected ? "border-primary bg-blue-100" : "border-transparent hover:bg-gray-100 hover:text-hover"
+          isSelected ? "border-primary bg-blue-100 font-satoshi-bold" : "border-transparent hover:bg-gray-100 hover:text-hover"
         }`}
       >
         {/* Clicking on title navigates */}
@@ -20,7 +20,7 @@ const SidebarItem = ({ title, icon, isSelected, childrenItems, path, onClick }) 
           onClick={onClick}
         >
           <span className="mr-3">{icon}</span>
-          <p className="text-lg font-satoshi-medium">{title}</p>
+          <p className={`text-lg ${isSelected ? 'font-satoshi-medium' : 'font-satoshi-regular'}`}>{title}</p>
         </Link>
 
         {/* Clicking on dropdown toggles expand/collapse */}
@@ -31,7 +31,7 @@ const SidebarItem = ({ title, icon, isSelected, childrenItems, path, onClick }) 
               e.preventDefault();  // Prevent link click
               setIsExpanded(!isExpanded);
             }}
-            className="ml-2 text-gray-700 cursor-pointer hover:text-hover"
+            className="ml-2 text-black cursor-pointer hover:text-hover"
           >
             {isExpanded ? <ChevronUp/> : <ChevronDown/>}
           </button>
@@ -45,7 +45,7 @@ const SidebarItem = ({ title, icon, isSelected, childrenItems, path, onClick }) 
             <Link
               key={idx}
               to={`/admin/${child.path}`}
-              className="text-gray-700 text-sm hover:text-primary hover:underline"
+              className="text-black font-satoshi-light text-sm hover:text-primary hover:underline"
               onClick={onClick}
             >
               {child.title}
