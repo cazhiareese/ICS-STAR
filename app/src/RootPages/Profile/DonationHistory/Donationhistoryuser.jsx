@@ -179,8 +179,8 @@ function DonationHistoryUser({ userDetails }) {
               >
                 <div className="w-1/3">{formattedDate}</div>
                 <div className="w-1/3">{donation.donation_drive_title}</div>
-                <div className="w-1/3 text-right">
-  {selectedType === "Monetary" ? formattedAmount : donation.status}
+                <div className="w-1/3 text-left">
+  {selectedType === "Monetary" ? formattedAmount : donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
 </div>
               </div>
             );
