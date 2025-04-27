@@ -6,33 +6,23 @@ function DonationTableHeader({ onSort, getSortIcon, selectedType }) {
     <div className="mt-1 rounded-xl py-2 font-satoshi-bold">
       <div className="flex font-semibold text-primary">
         <div
-          className={selectedType === "Monetary" ? "w-1/4 cursor-pointer flex items-center gap-1" : "w-1/3 cursor-pointer flex items-center gap-1"}
+          className="w-1/3 cursor-pointer flex items-center gap-1"
           onClick={() => onSort("date_donated", selectedType)}
         >
           Date {getSortIcon("date_donated", selectedType)}
         </div>
 
-        <div className={selectedType === "Monetary" ? "w-1/4" : "w-1/3"}>
-          Donation
+        <div className="w-1/3">
+          Donation Drive
         </div>
 
-        {selectedType === "Monetary" ? (
-          <>
-            <div
-              className="w-1/4 text-right cursor-pointer flex justify-end items-center gap-1"
-              onClick={() => onSort("amount", selectedType)}
-            >
-              Amount {getSortIcon("amount", selectedType)}
-            </div>
-            <div className="w-1/4 text-right flex justify-end items-center gap-1">
-              Status <ChevronDown className="inline text-primary w-4 h-4 opacity-0" />
-            </div>
-          </>
-        ) : (
-          <div className="w-1/3 text-right flex justify-end items-center gap-1">
-            Status <ChevronDown className="inline text-primary w-4 h-4 opacity-0" />
-          </div>
-        )}
+        <div
+          className="w-1/3 text-left cursor-pointer flex items-center gap-1"
+          onClick={() => onSort(selectedType === "Monetary" ? "amount" : "is_acknowledged", selectedType)}
+        >
+          {selectedType === "Monetary" ? "Amount" : "Status"} 
+          {getSortIcon(selectedType === "Monetary" ? "amount" : "is_acknowledged", selectedType)}
+        </div>
       </div>
     </div>
   );
