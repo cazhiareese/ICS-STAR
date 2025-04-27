@@ -152,11 +152,20 @@ function DonationLanding() {
   </div>
 
   {/* Right column placeholder */}
-  <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit flex justify-center items-center gap-4">
-    
-  <DonationMainViewSkeleton  />
-  <DonationCSkeleton  />
+  <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit">
+  <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-center w-full">
+    {/* Container for DonationMainView */}
+    <div className="bg-disabled border border-disabled rounded-xl p-4 w-[650px]">
+    <DonationMainViewSkeleton />
+    </div>
+
+    {/* DonationCard */}
+    <div className="items-center justify-center sm:justify-start sm:items-start flex flex-col sm:flex-row gap-4 w-[300px]">
+      <DonationCSkeleton />
+    </div>
   </div>
+</div>
+
 </div>
 
       ) : (

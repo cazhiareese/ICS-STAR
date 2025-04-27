@@ -2,7 +2,7 @@ import React from 'react';
 
 function DonationMainViewSkeleton() {
   return (
-    <div className="flex flex-col w-full rounded-[20px] items-center overflow-y-auto h-[700px] justify-center p-4 bg-disabled animate-pulse">
+    <>
       
       {/* Image Skeleton */}
       <div className="w-[90%] h-50 max-h-85  mx-auto rounded-4xl bg-gray-400 animate-pulse"></div>
@@ -63,7 +63,7 @@ function DonationMainViewSkeleton() {
         <div className="h-4 bg-gray-400 animate-pulse w-[40%] rounded-lg"></div>
       </div>
 
-    </div>
+    </>
   );
 }
 
