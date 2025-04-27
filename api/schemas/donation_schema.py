@@ -180,6 +180,11 @@ class AdminClosedDonationDriveOut(BaseModel):
     class Config:
         from_attributes = True
 
+class PaginatedClosedDonationDrivesResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[AdminDonationDriveOut]
 class RecentDonationResponse(BaseModel):
     drive_title: str
     donor_name: str
