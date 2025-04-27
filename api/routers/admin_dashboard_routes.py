@@ -27,3 +27,16 @@ async def get_unverified_users_count(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+# Fetch number of not yet acknowledged donations
+@router.get("/not_yet_acknowledged_donations_count", response_model=Dict[str, int])
+async def get_not_yet_acknowledged_donations_count(
+    db: Session = Depends(get_db)
+    ):
+    try:
+        not_yet_acknowledged_motary_count = db.query(MonetaryDonation).filter(MonetaryDonation.is_acknowledged == None).count()
+        not_yet_acknowledged_in_kind_count = db.query(InKindDonation).filter(InKindDonation.is_acknowledged == None).count()
+        not_yet_acknowledged_donations_count = not_yet_acknowledged_motary_count + not_yet_acknowledged_in_kind_count
+        return {"not_yet_acknowledged_donations_count": not_yet_acknowledged_donations_count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
