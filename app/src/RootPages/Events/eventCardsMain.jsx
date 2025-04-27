@@ -228,11 +228,11 @@ const EventCardsMain = () => {
                 <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                     !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                    }`}
-                    onClick={() => handleRSVPClick(event.event_id)}
+                    } hover:scale-115 transform transition-transform duration-200`}
+                    onClick={event.is_closed ? () => handleRSVPClick(event.event_id): ""}
                 >
-                    <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                    <label>{!isGoing ? 'Going' : 'RSVP'}</label>
+                    <label>{event.is_closed ? !isGoing ? <Star className='fill-white'/> : <Star/>: <></>}</label>
+                    <label>{event.is_closed ? !isGoing ? 'Going' : 'RSVP': <></>}</label>
                 </button>
             )}
             <div className="sm:max-w-180 sm:w-[80%] w-[90%] h-185 rounded-4xl overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
@@ -249,7 +249,7 @@ const EventCardsMain = () => {
                     <button
                         className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                         isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                        }`}
+                        } hover:scale-115 transform transition-transform duration-200`}
                         onClick={() => handleRSVPClick(event.event_id)}
                     >
                         <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
