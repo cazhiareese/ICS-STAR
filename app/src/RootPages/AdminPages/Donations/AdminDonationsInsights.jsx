@@ -96,7 +96,7 @@ function AdminDonationsInsights() {
           )}
         </div>
         {/* Top performing drives and drives with goals reached */}
-        <div className='flex flex-row gap-4 h-1/3'>
+        <div className='flex flex-row gap-4 h-1/3 mt-2'>
           {/* Top performing drives */}
           <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl'>
             <h2 className='font-satoshi-medium text-2xl'>Top Performing Drives</h2>
@@ -142,7 +142,7 @@ function AdminDonationsInsights() {
             )}
           </div>
         </div>
-        <h1 className='text-5xl text-primary font-satoshi-bold'>Donations</h1>
+        <h1 className='text-5xl text-primary font-satoshi-bold mt-4'>Donations</h1>
         {/* Buttons and filters */}
         <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
           <div className='w-full lg:w-auto  min-w-xs'>
