@@ -6,6 +6,7 @@ import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
 import SortModal from '../../../components/AdminComponents/sortmodal'
 import OrderToggle from '../../../components/AdminComponents/ordertoggle'
+import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
 
 function AdminDonations() {
   const navigate = useNavigate()
@@ -14,13 +15,13 @@ function AdminDonations() {
   const [donationType, setDonationType] = useState('open')
   const [viewStyle, setViewStyle] = useState('List')
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
   const [donations, setDonations] = useState([])
   const [loading, setLoading] = useState(false)
   const [genericDriveDetails, setGenericDriveDetails] = useState({})
 
   const filters = [
-    { label: 'Amount Raised', value: 'by-amount-raised' },
+    {label: 'Amount Raised', value: 'by-amount-raised' },
     {label: 'Percent Funded', value: 'by-percent-funded'},
     {label: 'Donation Count', value: 'by-donation-count'},
     {label: 'Date Created', value: 'by-date-created'}
@@ -31,7 +32,7 @@ function AdminDonations() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  const fetchData = async () => {
+  async function fetchData (token) {
     setLoading(true)
     try {
       let endpoint = '/admin/donations/open-drives'; // default fallback
@@ -45,17 +46,22 @@ function AdminDonations() {
         endpoint = `/admin/donations/open-drives-${sortBy}${sortSuffix ? `-${sortSuffix}` : ''}`;
       }
 
+      const pageUrl = `${endpoint}?page=${page}`;
+      console.log(pageUrl)
+
+
       try{
-       const response = await axios.get(`${API_BASE_URL}${endpoint}`);
-      setDonations(response.data);
+       const response = await axios.get(`${API_BASE_URL}${pageUrl}`, {headers: {Authorization: `Bearer ${token}`}});
+       console.log(response)
+       setDonations(response.data.data);
+       setTotalPages(response.data.total_pages)
 
       }catch(error){
         console.log(error)
         setDonations([])
       }
-      // sessionStorage.setItem(`donations-${donationType}`, JSON.stringify(response.data));
 
-      const genDriveResponse = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`)
+      const genDriveResponse = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`, {headers: {Authorization: `Bearer ${token}`}})
       console.log(genDriveResponse.data)
       setGenericDriveDetails(genDriveResponse.data)
 
@@ -66,19 +72,10 @@ function AdminDonations() {
     }
   }
 
-  useEffect(() => {
-    // const cached = sessionStorage.getItem(`donations-${donationType}`);
-    // if (cached) {
-    //   setDonations(JSON.parse(cached));
-    //   return;
-    // }
-  
-    fetchData()
-  }, [donationType])
-
   useEffect(() =>{
-    fetchData()
-  }, [sortBy, sortDirection])
+    const token = localStorage.getItem("token")
+    fetchData(token)
+  }, [sortBy, sortDirection, page, donationType])
   
     
     return (
@@ -163,18 +160,11 @@ function AdminDonations() {
               <p className='text-primary fsont-satoshi-medium text-sm'> Filter</p>
             </button> */}
             {/* Page */}
-            <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-              <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-                <p> Page </p>
-                <input
-                  type="text"
-                  value={page}
-                  onChange={() => {}}
-                  className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-                />
-              <p>of {totalPages}</p>
-              <MoveRight className='cursor-pointer' onClick={() => {}}/>
-            </div>
+            <PaginationComponent
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+            />
           </div>
         </div>
         <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
