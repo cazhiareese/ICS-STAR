@@ -1,6 +1,6 @@
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import String, func, or_, union_all
+from sqlalchemy import String, func, or_, union_all, desc
 from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
@@ -1754,3 +1754,128 @@ def get_weekly_donation_amounts(db: Session, drive_id: UUID):
         current += timedelta(weeks=1)
 
     return result
+
+def get_top_drives_with_goals_reached(
+    db: Session,
+    start_date: datetime,
+    end_date: datetime,
+):
+    # Get top 3 drives that have >= 100% of their percent funded
+    drives = db.query(
+        DonationDrive.drive_id,
+        DonationDrive.title,
+        DonationDrive.target_cost,
+        func.sum(MonetaryDonation.amount).label("total_amount"),
+        (func.sum(MonetaryDonation.amount) * 100.0 / DonationDrive.target_cost).label("percent_funded")
+    ).join(
+        MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id
+    ).filter(
+        DonationDrive.is_closed == False,
+        DonationDrive.created_at >= start_date,
+        DonationDrive.created_at <= end_date,
+        DonationDrive.target_cost > 0
+    ).group_by(
+        DonationDrive.drive_id
+    ).having(
+        (func.sum(MonetaryDonation.amount) * 100.0 / DonationDrive.target_cost) >= 100.0
+    ).order_by(
+        func.sum(MonetaryDonation.amount).desc()
+    ).limit(3).all()
+
+    # Format the results
+    top_drives = []
+
+    for drive in drives:
+        drive_out = {
+            "drive_id": drive.drive_id,
+            "title": drive.title,
+            "target_cost": drive.target_cost,
+            "total_amount": drive.total_amount,
+            "percent_funded": drive.percent_funded
+        }
+        top_drives.append(drive_out)
+
+    return top_drives
+
+def get_top_performing_drives(
+    db: Session,
+    start_date: datetime,
+    end_date: datetime,
+    limit: int = 3
+):
+    # donation_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.created_at <= end_date).scalar()
+    # print(f"Found {donation_count} donations before {end_date}")
+
+    # Calculate funding at the start of the period
+    subquery_start = db.query(
+        DonationDrive.drive_id,
+        (func.sum(MonetaryDonation.amount) * 100.0 / DonationDrive.target_cost).label("percent_funded_start")
+    ).join(
+        MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id
+    ).filter(
+        MonetaryDonation.created_at < start_date,
+        DonationDrive.target_cost > 0  # Prevent division by zero
+    ).group_by(
+        DonationDrive.drive_id
+    ).subquery()
+
+    # subquery_start_test = db.query(subquery_start).all()
+
+    # print(f"Found {len(subquery_start_test)} drives with funding at start of period")
+    
+    # Calculate funding at the end of the period
+    subquery_end = db.query(
+        DonationDrive.drive_id,
+        (func.sum(MonetaryDonation.amount) * 100.0 / DonationDrive.target_cost).label("percent_funded_end")
+    ).join(
+        MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id
+    ).filter(
+        MonetaryDonation.created_at <= end_date,
+        DonationDrive.target_cost > 0
+    ).group_by(
+        DonationDrive.drive_id
+    ).subquery()
+
+    # subquery_end_test = db.query(subquery_end).all()
+    # print(f"Found {len(subquery_end_test)} drives with funding at end of period")
+    
+    # Get drives with highest percentage increase
+    query = db.query(
+        DonationDrive.drive_id,
+        DonationDrive.title,
+        DonationDrive.target_cost,
+        subquery_start.c.percent_funded_start,
+        subquery_end.c.percent_funded_end,
+        (subquery_end.c.percent_funded_end - func.coalesce(subquery_start.c.percent_funded_start, 0)).label("percent_increase")
+    ).join(
+        subquery_end, DonationDrive.drive_id == subquery_end.c.drive_id
+    ).outerjoin(
+        subquery_start, DonationDrive.drive_id == subquery_start.c.drive_id
+    ).filter(
+        DonationDrive.is_closed == False,
+        DonationDrive.created_at <= end_date,
+        DonationDrive.target_cost > 0
+    ).order_by(
+        desc("percent_increase")  # Order by the increase in percentage
+    ).limit(limit)
+
+    # print(str(query.statement))
+
+    drives = query.all()
+
+    # print(f"Found {len(drives)} drives with funding increase")
+
+    top_drives = []
+
+    for i, drive in enumerate(drives, 1):
+        percent_increase = round(drive.percent_increase) if drive.percent_increase else 0
+        
+        drive_out = {
+            "rank": i,
+            "drive_id": drive.drive_id,
+            "title": drive.title,
+            "percent_increase": percent_increase
+        }
+        top_drives.append(drive_out)
+
+    return top_drives
