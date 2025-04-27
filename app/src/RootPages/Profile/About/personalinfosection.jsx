@@ -143,7 +143,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             </div>
           ) : (
             <span className="text-primary font-satoshi-bold">
-              {userDetails.student_number || <CircularLoading />}
+              {userDetails.student_number || <div className="text-primary text-sm font-satoshi-bold bg-disabled border animate-pulse border-disabled rounded-[12px] px-2 py-1 w-[140px] h-[30px]"></div>}
             </span>
           )}
         </div>
