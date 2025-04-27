@@ -70,11 +70,22 @@ function AdminEditNewsletter() {
     if (option === "edit" && newsletter_id) {
       fetchNewsletter();
     }
-
-    // Fetch tags (keeping dummy data as no API endpoint provided for tags)
-    const dummy = ["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"];
-    setTags(dummy);
   }, [newsletter_id, option]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/newsletter/tags`
+        );
+        setTags(response.data.tags || []);
+      } catch (err) {
+        console.error('Failed to fetch tags:', err.message);
+        setErrorMessage('Failed to fetch tags');
+      }
+    };
+    fetchTags();
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0] || e.dataTransfer?.files[0]; // Support both input and drag-and-drop
