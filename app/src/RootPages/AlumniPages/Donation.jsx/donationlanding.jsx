@@ -1,45 +1,42 @@
 import React, { useEffect, useState } from "react";
 import DonationCard from "./Donationcomponent/Donationcard"; // Adjust the import path as necessary
 import DonationInfo from "../../../components/donationInfo";
+import NewLoading from "../../../components/LoadingComponents/cyruscircular";
 
 function DonationLanding() {
   const [donationData, setDonationData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [generalDriveLoading, setGeneralDriveLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [generalDrive, setGeneralDrive] = useState(null);
-  // console.log(generalDrive);
-
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
-
   useEffect(() => {
     const fetchGeneralDrive = async () => {
+      setGeneralDriveLoading(true);
       try {
         const response = await fetch(`${API_BASE_URL}/gen-donation-drive`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         if (!response.ok) {
           throw new Error("Failed to fetch general donation drive");
         }
-  
+
         const data = await response.json();
         setGeneralDrive(data);
       } catch (err) {
         console.error("Error fetching general donation drive:", err);
-        // optionally set an error state or silently fail
+      } finally {
+        setGeneralDriveLoading(false);
       }
     };
-  
-    if (token) {
-      fetchGeneralDrive();
-    }
 
     const fetchDonationDrives = async () => {
       if (!token) {
@@ -79,7 +76,13 @@ function DonationLanding() {
       }
     };
 
-    fetchDonationDrives();
+    if (token) {
+      fetchGeneralDrive();
+      fetchDonationDrives();
+    } else {
+      setGeneralDriveLoading(false);
+      setLoading(false);
+    }
   }, [token]);
 
   useEffect(() => {
@@ -88,7 +91,6 @@ function DonationLanding() {
     );
     setFilteredData(filtered);
   }, [searchQuery, donationData]);
-
 
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
@@ -105,37 +107,43 @@ function DonationLanding() {
         />
       </div>
 
+      {/* Loading State */}
+      {(loading || generalDriveLoading) && (
+        <div className="flex justify-center items-center min-h-[200px]">
+          <NewLoading size={40} text="Loading Donation Drives..." />
+        </div>
+      )}
+
       {/* Layout: Announcements and Donations */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-center">
-        {/* Left column: Donation cards */}
-        <div className="order-2 lg:order-1 flex-1 lg:max-w-[900px] flex flex-wrap gap-4 h-[50px]">
-          {filteredData.length > 0 ? (
-            filteredData.map((drive, index) => (
-              <DonationCard key={index} drive={drive} /> 
-            ))
-          ) : (
-            <p className="w-full text-center text-gray-500">
-              No donation drives available at the moment.
-            </p>
-          )}
+      {!loading && !generalDriveLoading && (
+        <div className="flex flex-col lg:flex-row gap-4 justify-center">
+          {/* Left column: Donation cards */}
+          <div className="order-2 lg:order-1 flex-1 lg:max-w-[900px] flex flex-wrap gap-4">
+            {filteredData.length > 0 ? (
+              filteredData.map((drive, index) => (
+                <DonationCard key={index} drive={drive} />
+              ))
+            ) : (
+              <p className="w-full text-center text-gray-500">
+                No donation drives available at the moment.
+              </p>
+            )}
+          </div>
+
+          {/* Right column: Announcements */}
+          <div className="order-1 lg:order-2 lg:basis-[900px] px-4 rounded-xl text-center h-fit pb-10">
+            {generalDrive ? (
+              <div className="-mt-5">
+                <DonationInfo generalDrive={generalDrive} />
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">
+                No general donation drive is currently available.
+              </p>
+            )}
+          </div>
         </div>
-
-        {/* Right column: Announcements */}
-        <div className="order-1 lg:order-2 lg:basis-[900px] px-4 rounded-xl text-center h-fit pb-10 ">
-          {generalDrive ? (
-            <div className="-mt-5">
-
-            <DonationInfo generalDrive={generalDrive}/>
-            </div>
-            // <DonationCard drive={generalDrive} />
-          ) : (
-            <p className="text-sm text-gray-600">
-              No general donation drive is currently available.
-            </p>
-          )}
-        </div>
-
-      </div>
+      )}
     </div>
   );
 }
