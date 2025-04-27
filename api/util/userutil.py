@@ -63,6 +63,9 @@ def process_student_onboarding(
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
+    if user.is_onboarded:
+        raise HTTPException(status_code=400, detail="User already onboarded")
+    
     if user.user_type.value == UserTypeEnum.alumni:
         raise HTTPException(status_code=400, detail="For student only")
     
@@ -90,12 +93,14 @@ def process_student_onboarding(
 
         if standing:
             user.standing = standing
+            
+        user.is_onboarded = True
 
         db.commit()
         db.refresh(user)
         
     except Exception as e:
-            raise HTTPException(status_code=500, detail="Error updating info")
+            raise HTTPException(status_code=500, detail="Error updating info {e}")
         
 
 def process_alumni_onboarding(
@@ -120,6 +125,9 @@ def process_alumni_onboarding(
     
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
+    
+    if user.is_onboarded:
+        raise HTTPException(status_code=400, detail="User already onboarded")
     
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -159,12 +167,13 @@ def process_alumni_onboarding(
         user.employer_class = employer_class
         user.tenured_status = tenured_status
         user.salary_grade = salary_grade
+        user.is_onboarded = True
 
         db.commit()
         db.refresh(user)
         
     except Exception as e:
-            raise HTTPException(status_code=500, detail="Error updating info")
+            raise HTTPException(status_code=500, detail=f'"Error updating info {e}"')
 
 
 async def register_user(
@@ -286,7 +295,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: int = payload.get("sub")
         role: str = payload.get("role")
-        if user_id is None or role is None:
+        is_onboarded: bool = payload.get("is_onboarded")
+        if user_id is None or role is None or is_onboarded is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception

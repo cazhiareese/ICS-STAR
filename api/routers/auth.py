@@ -68,15 +68,3 @@ async def login_for_access_token(
 async def read_users_me(current_user: Annotated[User, Depends(get_current_active_user)]):
     return UserOut.model_validate(current_user)
 
-@router.get("/dashboard/student")
-async def student_dashboard(current_user: User = Depends(require_student)):
-    return {"message": f"Welcome to the student dashboard"}
-
-@router.get("/dashboard/alum")
-async def alum_dashboard(current_user: User = Depends(require_alum)):
-    return {"message": f"Welcome to the alumni dashboard"}
-
-@router.get("/dashboard/admin")
-async def admin_dashboard(current_user: User = Depends(require_admin)):
-    return {"message": f"Welcome to the admin dashboard"}
-
