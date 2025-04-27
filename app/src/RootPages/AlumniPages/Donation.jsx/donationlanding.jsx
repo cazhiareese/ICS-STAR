@@ -131,27 +131,30 @@ function DonationLanding() {
   
       {/* Wrap everything else inside loading */}
       {loading || donationData === null || generalDrive === null ? (
-        <div className="flex flex-col lg:flex-row gap-4 justify-center">
-          {/* Left column placeholder */}
-          <div className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-col">
-            {/* Small device header (only shown on small screens) */}
-            <div className="flex justify-center items-center sm:hidden font-satoshi-bold text-[28px] text-primary mb-4">
-              Donation Drives
-            </div>
-  
-            <div className="flex justify-center items-center min-h-[200px]">
-            <DonationCardSkeleton/>
-            <DonationCardSkeleton/>
-            <DonationCardSkeleton/>
-            <DonationCardSkeleton/>
-            </div>
-          </div>
-  
-          {/* Right column placeholder */}
-          <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit flex justify-center items-center">
-            <NewLoading size={40} text="Loading Donation Details..." />
-          </div>
-        </div>
+<div className="flex flex-col lg:flex-row gap-4 justify-center">
+  {/* Left column placeholder */}
+  <div className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-col">
+    {/* Small device header (only shown on small screens) */}
+    <div className="flex justify-center items-center sm:hidden font-satoshi-bold text-[28px] text-primary mb-4">
+      Donation Drives
+    </div>
+<div className="flex flex-col gap-4 sm:flex-row ">
+    <DonationCardSkeleton  />
+    <DonationCardSkeleton  />
+  </div>
+  <div className="flex flex-col gap-4 mt-4 sm:flex-row ">
+    <DonationCardSkeleton  />
+    <DonationCardSkeleton  />
+  </div>
+
+  </div>
+
+  {/* Right column placeholder */}
+  <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit flex justify-center items-center">
+    <NewLoading size={40} text="Loading Donation Details..." />
+  </div>
+</div>
+
       ) : (
         <div className="flex flex-col lg:flex-row gap-4 justify-center">
           {/* Left column: Donation cards */}
