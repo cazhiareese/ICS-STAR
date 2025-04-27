@@ -19,7 +19,10 @@ console.log(token);
     //window.location.href = `/alumni/donationforms/${drive.drive_id}`; mar to janry
   }
   return (
-    <div onClick={handleClick} className="w-full md:w-[45%] rounded-[20px] border-disabled overflow-hidden shadow border bg-white ">
+    <div
+  onClick={handleClick}
+  className="w-full max-w-[400px] sm:w-[45%] md:w-[45%] mx-auto rounded-[20px] border-disabled overflow-hidden shadow border bg-white"
+>
       <div className="h-28 bg-primary flex items-center justify-center">
         {drive.image_url ? (
           <img
