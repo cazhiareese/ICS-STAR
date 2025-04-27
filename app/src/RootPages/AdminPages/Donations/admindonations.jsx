@@ -35,20 +35,27 @@ function AdminDonations() {
   async function fetchData (token) {
     setLoading(true)
     try {
-      let endpoint = '/admin/donations/open-drives'; // default fallback
-        console.log(sortBy)
-        console.log(sortDirection)
-      if (sortBy && sortDirection) {
-        var sortSuffix = sortDirection === 'asc' ? 'ascending' : 'descending';
-        if (sortBy === 'by-date-created'){
-          sortSuffix = sortDirection === 'asc'? 'newest':'oldest';
-        }
-        endpoint = `/admin/donations/open-drives-${sortBy}${sortSuffix ? `-${sortSuffix}` : ''}`;
+      let endpointBase = '/admin/donations/open-drives'; // default
+    
+      if (donationType === 'closed') {
+        endpointBase = '/admin/donations/closed-drives'; 
       }
-
+    
+      let endpoint = endpointBase; // start with base
+    
+      console.log(sortBy);
+      console.log(sortDirection);
+    
+      if (sortBy && sortDirection) {
+        let sortSuffix = sortDirection === 'asc' ? 'ascending' : 'descending';
+        if (sortBy === 'by-date-created') {
+          sortSuffix = sortDirection === 'asc' ? 'newest' : 'oldest';
+        }
+    
+        endpoint = `${endpointBase}-${sortBy}${sortSuffix ? `-${sortSuffix}` : ''}`;
+      }
+    
       const pageUrl = `${endpoint}?page=${page}`;
-      console.log(pageUrl)
-
 
       try{
        const response = await axios.get(`${API_BASE_URL}${pageUrl}`, {headers: {Authorization: `Bearer ${token}`}});
