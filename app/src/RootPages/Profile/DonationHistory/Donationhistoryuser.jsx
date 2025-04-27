@@ -192,7 +192,7 @@ function DonationHistoryUser({ userDetails }) {
       </div>
 
       {loading && (
-        <div className="flex justify-center items-center "><NewLoading size={50}/></div>
+        <div className="flex justify-center items-center p-40"><NewLoading size={50} text={"Please Wait as we fetch your Data"} ts={12}/></div>
 
 
       )}
