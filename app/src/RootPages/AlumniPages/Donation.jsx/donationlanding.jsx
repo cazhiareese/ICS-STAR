@@ -115,10 +115,10 @@ function DonationLanding() {
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (
-    <div className="flex flex-col  p-4 space-y-5">
+    <div className="flex flex-col   space-y-5 h-[100px]">
       {/* Search bar */}
       <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white">
-  <div className="relative flex flex-row gap-5 w-full max-w-[600px] items-center justify-center mt-4">
+  <div className="relative flex flex-row gap-5 w-full max-w-[350px] sm:max-w-[600px] items-center justify-center mt-6">
     {/* The Search Bar */}
     <input
       type="text"
@@ -164,7 +164,7 @@ function DonationLanding() {
   </div>
 
   {/* Right column placeholder */}
-  <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit">
+  <div className="order-1 lg:order-2 lg:basis-[950px] px-8 rounded-xl text-center h-fit">
   <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-center w-full">
     {/* Container for DonationMainView */}
     <div className="bg-disabled border border-disabled rounded-xl p-4 w-full sm:w-[650px]">
