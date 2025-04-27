@@ -288,7 +288,7 @@ function AdminEngagementReports() {
   <div className="bg-white rounded-2xl shadow p-6 mt-8">
     <div className="flex flex-col md:flex-row md:items-center md:justify-between">
       <div className="flex flex-col">
-        <h1 className="text-3xl font-satoshi-bold text-black">Donations Highlights</h1>
+        <h1 className="text-3xl font-satoshi-bold text-black">Newsletter Highlights</h1>
         <p className="text-gray-500 text-sm font-satoshi-light">
           User visit for the last {daysFilter} days
         </p>

@@ -1,42 +1,37 @@
 import { MoveLeft, ArrowLeft, ArrowRight } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const dummyJobs = [
-    { date: 'Mar 8, 2025', name: 'Software Developer', company: 'ABCDE and Co.', link: '#', interested: 200 },
-    { date: 'Mar 9, 2025', name: 'Frontend Engineer', company: 'XYZ Corp.', link: '#', interested: 180 },
-    { date: 'Mar 10, 2025', name: 'Backend Engineer', company: 'Techies Ltd.', link: '#', interested: 220 },
-    { date: 'Mar 11, 2025', name: 'Fullstack Developer', company: 'Innovate Inc.', link: '#', interested: 150 },
-    { date: 'Mar 12, 2025', name: 'QA Engineer', company: 'SoftWorks', link: '#', interested: 130 },
-    { date: 'Mar 13, 2025', name: 'DevOps Engineer', company: 'DeployHub', link: '#', interested: 210 },
-    { date: 'Mar 14, 2025', name: 'Product Manager', company: 'Visionary Co.', link: '#', interested: 175 },
-    { date: 'Mar 15, 2025', name: 'Data Scientist', company: 'DataGenius', link: '#', interested: 240 },
-    { date: 'Mar 8, 2025', name: 'Software Developer', company: 'ABCDE and Co.', link: '#', interested: 200 },
-    { date: 'Mar 9, 2025', name: 'Frontend Engineer', company: 'XYZ Corp.', link: '#', interested: 180 },
-    { date: 'Mar 10, 2025', name: 'Backend Engineer', company: 'Techies Ltd.', link: '#', interested: 220 },
-    { date: 'Mar 11, 2025', name: 'Fullstack Developer', company: 'Innovate Inc.', link: '#', interested: 150 },
-    { date: 'Mar 12, 2025', name: 'QA Engineer', company: 'SoftWorks', link: '#', interested: 130 },
-    { date: 'Mar 13, 2025', name: 'DevOps Engineer', company: 'DeployHub', link: '#', interested: 210 },
-    { date: 'Mar 14, 2025', name: 'Product Manager', company: 'Visionary Co.', link: '#', interested: 175 },
-    { date: 'Mar 15, 2025', name: 'Data Scientist', company: 'DataGenius', link: '#', interested: 240 },
-];
+import axios from 'axios';
+
 
 function MostEngagedJobs() {
-    const [page, setPage] = useState(0);
-    const [daysFilter, setDaysFilter] = useState(30);
+    const [daysFilter, setDaysFilter] = useState("30days");
+    const [mostInterested, setMostInterested] = useState([]);
+    const [skip, setSkip] = useState(0);
     const navigate = useNavigate();
-    const rowsPerPage = 6;
 
-    const handlePrev = () => {
-        if (page > 0) setPage(page - 1);
-    };
+    
 
-    const handleNext = () => {
-        if ((page + 1) * rowsPerPage < dummyJobs.length) setPage(page + 1);
-    };
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-    // Slice the job array 
-    const paginatedJobs = dummyJobs.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-
+    // API call for getting most interested list
+    useEffect(() => {
+        const fetchMostInterested = async () => {
+          // setFullEngagementReportLoading(true);
+          try {
+            const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-interested?time_range=${daysFilter}&skip=${skip}&limit=10`);
+            console.log(response.data);
+            setMostInterested(response.data);
+            const totalPages = Math.ceil(response.data.length / rowsPerPage);
+            // setFullEngagementReportLoading(false);
+          } catch (err) {
+            console.log(err.message || 'Something went wrong');
+          }
+        };
+      
+        fetchMostInterested();
+    }, [daysFilter, skip]);
     return (
         <div className="bg-[rgb(243,241,244)] p-6 min-h-screen">
             {/* Back Link */}
@@ -54,11 +49,11 @@ function MostEngagedJobs() {
                     <select
                     className="rounded-md px-2 py-1 shadow-sm font-satoshi-medium w-40"
                     value={daysFilter}
-                    onChange={(e) => setDaysFilter(Number(e.target.value))}
+                    onChange={(e) => setDaysFilter(e.target.value)}
                     >
-                    <option value={7}>Last 7 days</option>
-                    <option value={15}>Last 15 days</option>
-                    <option value={30}>Last 30 days</option>
+                    <option value={"7days"}>Last 7 days</option>
+                    <option value={"30days"}>Last 30 days</option>
+                    <option value={"year"}>Last year</option>
                     </select>
                 </div>
                 </div>
@@ -68,10 +63,10 @@ function MostEngagedJobs() {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-satoshi-bold text-black py-5">Most Engaged Job Offers</h1>
                 <div className="flex space-x-4">
-                    <button onClick={handlePrev} disabled={page === 0} className="p-2 rounded-full disabled:opacity-50 cursor-pointer">
+                    <button onClick={() => setSkip(prevSkip => prevSkip - 10)}  disabled={skip === 0} className="p-2 rounded-full disabled:opacity-50 cursor-pointer">
                         <ArrowLeft className="h-5 w-5 text-black" />
                     </button>
-                    <button onClick={handleNext} disabled={(page + 1) * rowsPerPage >= dummyJobs.length} className="p-2 rounded-full disabled:opacity-50 cursor-pointer">
+                    <button onClick={() => setSkip(prevSkip => prevSkip + 10)}  disabled={mostInterested.length < 10} className="p-2 rounded-full disabled:opacity-50 cursor-pointer">
                         <ArrowRight className="h-5 w-5 text-black" />
                     </button>
                 </div>
@@ -91,15 +86,15 @@ function MostEngagedJobs() {
                             </tr>
                         </thead>
                         <tbody className="font-satoshi-medium">
-                            {paginatedJobs.map((job, index) => (
+                            {mostInterested.map((job, index) => (
                                 <tr key={index} className="border-b border-gray-300 hover:bg-gray-50 h-20">
-                                    <td className="py-4 px-6 text-gray-500">{job.date}</td>
-                                    <td className="py-4 px-6 text-black">{job.name}</td>
+                                    <td className="py-4 px-6 text-gray-500">{job.date_posted}</td>
+                                    <td className="py-4 px-6 text-black">{job.title}</td>
                                     <td className="py-4 px-6 text-black">{job.company}</td>
                                     <td className="py-4 px-6 text-gray-500">
                                         <a href={job.link} className="text-primary underline">Link</a>
                                     </td>
-                                    <td className="py-4 px-6">{job.interested}</td>
+                                    <td className="py-4 px-6">{job.interested_count}</td>
                                 </tr>
                             ))}
                         </tbody>
