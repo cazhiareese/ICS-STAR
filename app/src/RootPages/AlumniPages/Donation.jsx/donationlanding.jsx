@@ -5,6 +5,7 @@ import NewLoading from "../../../components/LoadingComponents/cyruscircular";
 import DonationMainView from "../../../components/donationMainView";
 import DonationCard from "../../../components/donationDonateView";
 import DonationCardSkeleton from "./Donationcomponent/DonationCardSkeleton";
+import DonationMainViewSkeleton from "./Donationcomponent/donationmainviewskeleton";
 
 function DonationLanding() {
   const [donationData, setDonationData] = useState(null); // Initialize as null
@@ -138,11 +139,11 @@ function DonationLanding() {
     <div className="flex justify-center items-center sm:hidden font-satoshi-bold text-[28px] text-primary mb-4">
       Donation Drives
     </div>
-<div className="flex flex-col gap-4 sm:flex-row ">
+<div className="flex flex-col gap-4 sm:flex-row justify-center items-center">
     <DonationCardSkeleton  />
     <DonationCardSkeleton  />
   </div>
-  <div className="flex flex-col gap-4 mt-4 sm:flex-row ">
+  <div className="flex flex-col gap-4 mt-4 sm:flex-row justify-center items-cente">
     <DonationCardSkeleton  />
     <DonationCardSkeleton  />
   </div>
@@ -151,7 +152,8 @@ function DonationLanding() {
 
   {/* Right column placeholder */}
   <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit flex justify-center items-center">
-    <NewLoading size={40} text="Loading Donation Details..." />
+    
+  <DonationMainViewSkeleton  />
   </div>
 </div>
 
