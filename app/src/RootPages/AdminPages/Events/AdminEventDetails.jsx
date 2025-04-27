@@ -15,11 +15,14 @@ function AdminEventDetails() {
   const [rsvpList, setRsvpList] = useState(null)
   const [loading, setLoading] = useState(true)
   const [viewStyle, setViewStyle] = useState('rsvpList')
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [transitionComplete, setTransitionComplete] = useState(false)
 
   async function fetchEventDetails () {
       const response = await axios.get(`${API_BASE_URL}/api/admin/events/event-by-id/${eventid}`)
-      console.log(response)
-      setEventDetails(response.data)
+      console.log(response.data.data)
+      setEventDetails(response.data.data)
   }
 
   async function fetchRSVPClicks() {
@@ -29,9 +32,15 @@ function AdminEventDetails() {
   }
   
   async function fetchRSVPList() {
-    const response = await axios.get(`${API_BASE_URL}api/admin/events/getRSVPs/${eventid}`)
-    console.log(response.data)
+    const response = await axios.get(`${API_BASE_URL}/api/admin/events/getRSVPs/${eventid}`)
+    console.log(response.data.data)
     setRsvpList(response.data.data)
+  }
+
+  async function deleteEvent(){
+      const response = await axios.put(`${API_BASE_URL}/api/admin/events/delete/${eventid}`)
+      console.log(response)
+      navigate(-1)
   }
 
   useEffect(() => {
@@ -83,12 +92,12 @@ function AdminEventDetails() {
         {/* Edit Event and Delete Event */}
         <div className='flex flex-row gap-2'>
           {/* Edit event */}
-          <button className='bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer'>
+          <button className='bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer' onClick={() => {navigate(`/admin/events/edit-event/${eventid}`)}}>
             <Pencil/>
             <p className='font-satoshi-regular text-lg'>Edit Event</p>
           </button>
           {/* Delete event */}
-          <button className='bg-red-700 rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer'>
+          <button className='bg-red-700 rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer hover:bg-red-400' onClick={() => {setDeleteModal(true)}}>
             <Trash2/>
             <p className='font-satoshi-regular text-lg'>Delete Event</p>
           </button>
@@ -107,7 +116,7 @@ function AdminEventDetails() {
           </div>
         </div>
         <div className='flex-1 flex justify-end'>
-          <button className='flex flex-row items-center gap-2 text-primary font-satoshi-regular cursor-pointer hover:text-hover'>
+          <button className='flex flex-row items-center gap-2 text-primary font-satoshi-regular cursor-pointer hover:text-hover' onClick={() => {navigate(`/admin/events/event-demographics/${eventid}`)}}>
             View Demographics
             <SquareArrowOutUpRight size={20} className='stroke-2'/> 
           </button>
@@ -122,12 +131,12 @@ function AdminEventDetails() {
         </button>
         <div className='flex flex-row h-fit w-fit mr-5 self-end'>
           <button 
-            className={`${viewStyle == 'rsvpList' ? 'bg-primary text-white' : ''} border-x border-t border-primary rounded-tl-2xl py-1 px-8 cursor-pointer`} 
+            className={`${viewStyle == 'rsvpList' ? 'bg-primary text-white border-primary': ''} border-x border-t border-gray-300 rounded-tl-2xl py-1 px-8 cursor-pointer`} 
             onClick={() => {setViewStyle('rsvpList')}}> 
             RSVP List
           </button>
           <button 
-            className={`${viewStyle == 'eventDetails' ? 'bg-primary text-white' : ''} border-x border-t border-primary rounded-tr-2xl py-1 px-6 cursor-pointer`} 
+            className={`${viewStyle == 'eventDetails' ? 'bg-primary text-white border-primary' : ''} border-x border-t border-gray-300 rounded-tr-2xl py-1 px-6 cursor-pointer`} 
             onClick={() => {setViewStyle('eventDetails')}}> 
             Event Details
           </button>
@@ -144,15 +153,17 @@ function AdminEventDetails() {
             <RsvpListTable data={rsvpList}/>
           )
         ) : (
-          <div className='flex flex-col p-6'>
+          <div className='flex flex-col p-6 px-18'>
               <button 
-                className='bg-red-700 text-white text-lg font-satoshi-regular px-7 py-1 w-fit h-fit shadow-lg rounded-3xl self-end cursor-pointer'
-                onClick={() => {}} // TODO: Add close event
+                className='bg-red-700 text-white text-lg font-satoshi-regular px-7 py-1 w-fit h-fit shadow-lg rounded-3xl self-end cursor-pointer hover:bg-red-200'
+                onClick={() => {}}
               > 
                 Close Event
               </button>
               {/* Image placeholder */}
-              <div className='bg-primary rounded-3xl h-80 w-full mt-3'></div>
+              <div className='bg-primary rounded-3xl h-80 w-full mt-3 flex items-center justify-center'>
+                <img src={eventDetails.image} alt="" className='object-cover h-full ' />
+              </div>
               {/* Event details */}
               <div className='mt-4'>
                 {/* location and tags */}
@@ -176,7 +187,7 @@ function AdminEventDetails() {
                 {/* Date and time */}
                 <div>
                   <Calendar/>
-                  {/* <p>{eventDetails.}</p> TODO: Fix the date times */}
+                  {/* <p>{eventDetails.date}</p>  */} 
                 </div>
                 {/* Divider */}
                 <div className='border-t border-gray-300 w-full my-4'></div>
@@ -206,6 +217,56 @@ function AdminEventDetails() {
           </div>
         )}
       </div>
+      {/* Close Donation Confirmatino Modal */}
+      {deleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+          <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
+            {deleteLoading ? (
+              <div className="h-full">
+                <CircularLoading />
+              </div>
+            ) : transitionComplete ? (
+              <>
+                <div className="text-success">
+                  <CheckCircle size={48} />
+                </div>
+                <p className="text-xl font-satoshi-medium mt-4 text-center">
+                  Successfully deleted event!
+                </p>
+                <button
+                  className="bg-success text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
+                  onClick={() => {
+                    setDeleteModal(false)
+                    setTransitionComplete(false)
+                  }}
+                >
+                  Close
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-xl font-satoshi-medium text-center mt-4">
+                  Are you sure you want to delete this event?
+                </p>
+                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                  <button
+                    className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-400"
+                    onClick={() => setDeleteModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-error text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    onClick={() => deleteEvent()}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
     )
   )

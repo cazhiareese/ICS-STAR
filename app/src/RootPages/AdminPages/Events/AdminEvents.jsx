@@ -16,7 +16,7 @@ function AdminEvents() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
-  async function fetchEvents(type) {
+  async function fetchEvents(type, token) {
     setLoading(true)
     try {
       let endpoint = "";
@@ -26,7 +26,10 @@ function AdminEvents() {
         endpoint = "/api/admin/events/all-concluded-events";
       }
   
-      const response = await axios.get(`${API_BASE_URL}${endpoint}`);
+      const response = await axios.get(`${API_BASE_URL}${endpoint}`,
+        {headers: {
+          Authorization: `Bearer ${token}`,
+      }});
       setEvents(response.data.data);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -36,11 +39,12 @@ function AdminEvents() {
   }
 
   useEffect(() => {
-    fetchEvents(eventType)
+    const token = localStorage.getItem("token")
+    fetchEvents(eventType, token)
   }, [eventType])
 
   return (
-    <div className='h-screen w-full p-6 flex flex-col'>
+    <div className='h-screen w-full p-6 flex flex-col bg-white'>
       {/* Events header and new event button */}
       <div className='flex flex-row justify-between mb-10'>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Events</h1>
@@ -52,12 +56,12 @@ function AdminEvents() {
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
         <div className='w-full lg:w-auto  min-w-xs'>
           {/* Alumni button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'active' ? 'border-primary' : 'border-transparent'}`} onClick={() => setEventType('active')}>
-            <p className='text-black font-satoshi-medium text-md'> Active </p>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'active' ? 'border-primary font-satoshi-bold' : 'border-transparent font-satoshi-light'}`} onClick={() => setEventType('active')}>
+            <p className='text-black text-md'> Active </p>
           </button>
           {/* Student button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'finished' ? ' border-primary' : 'border-transparent'}`} onClick={() => setEventType('finished')}>
-            <p className='text-black font-satoshi-medium text-md'> Finished </p>
+          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'finished' ? ' border-primary font-satoshi-bold' : 'border-transparent font-satoshi-light'}`} onClick={() => setEventType('finished')}>
+            <p className='text-black text-md'> Finished </p>
           </button>
         </div>
         {/* Page */}
