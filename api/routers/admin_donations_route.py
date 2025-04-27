@@ -13,8 +13,11 @@ from schemas.donation_schema import (
     ShortenedInKindDonationsOut, 
     ShortenedMonetaryDonationsOut,
     AdminGenericDriveView,
-    AdminClosedDonationDriveOut
+    AdminClosedDonationDriveOut,
+    AdminDonationDriveOut,
+    PaginatedDonationDrivesResponse
     )
+from models.donationmodel import DonationDrive
 from config.database import get_db
 from util.admin_donations_logic import (search_donation_drives, 
                                         view_donation_drive, 
@@ -321,20 +324,30 @@ def closed_drives_by_date_created_oldest(
     return results
 
 
-@router.get("/admin/donations/open-drives", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/open-drives", response_model=PaginatedDonationDrivesResponse)
 def open_drives(
     page: int = Query(1, ge=1, description="Page number"),
     db: Session = Depends(get_db)
 ):
-    # Fixed page size of 10
     page_size = 10
     
+    # Get the total count for pagination
+    total_count = db.query(DonationDrive).filter(DonationDrive.is_closed == False).count()
+    total_pages = math.ceil(total_count / page_size) if total_count > 0 else 1
+    
+    # Get paginated results
     results = get_all_open_drives(db, page=page, page_size=page_size)
 
-    if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+    if not results and page > 1:
+        raise HTTPException(status_code=404, detail="Page not found")
 
-    return results
+    # Return the formatted response
+    return PaginatedDonationDrivesResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=results
+    )
 
 @router.get("/admin/donations/open-drives-by-amount-raised-descending", response_model=List[AdminDonationDriveOut])
 def open_drives_by_amount_raised(
