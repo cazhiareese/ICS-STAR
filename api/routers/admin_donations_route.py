@@ -73,6 +73,19 @@ from uuid import UUID
 
 router = APIRouter(tags=["Admin Donations View"])
 
+def paginate_results(results: list, page: int, page_size: int):
+    total_items = len(results)
+    total_pages = (total_items + page_size - 1) // page_size
+
+    if page > total_pages and total_pages != 0:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+    paginated_results = results[start_idx:end_idx]
+
+    return total_pages, paginated_results
+
 @router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
 def search_drives(
     title: str = "",
