@@ -742,6 +742,19 @@ def verified_monetary(
         data=paginated_results
     )
 
+@router.get("/admin/donations/generic-drive-view", response_model=AdminGenericDriveView)
+def view_generic_donation_drive(
+    db: Session = Depends(get_db)
+):
+    
+    drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
+    results = view_generic_drive(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="Drive not found")
+
+    return results
+
 @router.get("/admin/donations/view/{drive_id}", response_model=AdminOneDonationDriveOut)
 def view_drive(
     drive_id: UUID,
