@@ -56,7 +56,7 @@ function AdminVerificationConfirmation() {
         <CircularLoading size={90}/>
       </div>
     ) : (
-    <div className='p-6'>
+    <div className='p-6 flex flex-col h-screen w-full'>
       <div className='flex gap-2 mb-3'>
         <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
           <MoveLeft className='text-primary'/> 
@@ -69,17 +69,19 @@ function AdminVerificationConfirmation() {
           <h1 className='text-primary font-satoshi-bold text-5xl '> Records </h1>
           <p className='font-satoshi-light text-lg text-gray-500'>/ Pending Verifications</p>
         </div>
-        <button className='flex items-center bg-success text-white text-md font-satoshi-regular gap-2 rounded-3xl px-4 py-1 cursor-pointer' onClick={() => {setShowVerificationModal(true)}}>
+        <button className='flex items-center bg-success text-white text-md font-satoshi-regular gap-2 rounded-3xl px-4 py-1 cursor-pointer hover:bg-green-400' onClick={() => {setShowVerificationModal(true)}}>
           <Check className=''/>
           <p> Confirm Verification</p>
         </button>
       </div>
       {/* Information */}
-      <div className='w-full p-6 mt-10'>
+      <div className='w-full p-6 mt-10 flex flex-col'>
         {/* Basic information */}
         <div className='flex'>
           {/* Image placeholder */}
-          <div className='bg-primary rounded-full h-30 w-30'></div>
+          <div className='bg-primary rounded-full h-30 w-30'> 
+            <img src={user.image} alt='' className='object-contain w-full' />
+          </div>
             <div className='flex flex-col justify-between ml-6'>
               <div>
                 <p className='font-satoshi-bold text-3xl'> {user.name} </p>
@@ -105,10 +107,17 @@ function AdminVerificationConfirmation() {
             </div>
           </div>
         </div>
-        {/* Verification File */}
-        <div className='mt-10'>
-          <h2 className='font-satoshi-bold text-xl'>VERIFICATION FILE</h2>
-          <div className='border border-disabled'></div>
+      </div>
+      {/* Verification File */}
+      <div className='mt-4 flex-1 flex flex-col'>
+        <h2 className='font-satoshi-bold text-xl'>VERIFICATION FILE</h2>
+        <div className='border border-disabled mb-4'></div>
+        <div className='w-1/2 h-96'>
+        {user.verification_file === null ? (
+          <h2 className='font-satoshi-regular'>No verification file submitted</h2>
+        ) : (
+          <img src={user.verification_file} alt="verification file" className="object-cover h-full border" />
+        )}
         </div>
       </div>
 
