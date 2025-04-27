@@ -72,6 +72,7 @@ console.log("isSignedIn:", isSignedIn);
 
 import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
+import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
 import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
 
 
@@ -195,8 +196,10 @@ function App() {
             </Route>
             <Route path="events" element={<AdminEventsLayout />}>
               <Route index element={<AdminEvents/>}/>
-              <Route path="create-event" element={<AdminCreateEvent/>}/>
+              <Route path="create-event" element={<AdminCreateEvent purpose="create"/>}/>
+              <Route path="edit-event/:eventid" element={<AdminCreateEvent purpose="edit"/>}/>
               <Route path="event-details/:eventid" element={<AdminEventDetails/>}/>
+              <Route path="event-demographics/:eventid" element={<AdminEventDemographics/>}/>
             </Route>
             <Route path="newsletter" element={<AdminNewsletterLayout />} >
               <Route index element={<AdminNewsLetter/>}/>
