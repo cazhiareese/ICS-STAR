@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { ChevronsUpDown } from 'lucide-react'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
 import SortModal from '../../../components/AdminComponents/sortmodal'
@@ -8,7 +9,7 @@ import InsightsDonationsTable from '../../../components/AdminComponents/Insights
 
 function AdminDonationsInsights() {
   const [token, setToken] = useState(null)
-  const {timeFilter, setTimeFilter} = useState('last_7_days')
+  const [timeFilter, setTimeFilter] = useState('last_7_days')
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
   const [topPerformingDrives, setTopPerformingDrives] = useState([])
@@ -17,6 +18,10 @@ function AdminDonationsInsights() {
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const filters = ["This_Year", "This_Month", "This_Week", "Last_7_Days", "Custom"];
+  const [filterOpen, setFilterOpen] = useState(false);
+  const formatFilter = (filter) => filter.replaceAll("_", " ");
+
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   async function fetchInitialData() {
@@ -51,6 +56,45 @@ function AdminDonationsInsights() {
           {/* header */}
         <h1 className='text-primary text-5xl font-satoshi-bold'>General Insights</h1>
         {/* Filter */}
+        <div className="flex flex-row relative justify-end">
+          <button
+            className="flex flex-row items-center border border-gray-300 w-fit px-3 py-1 rounded-md bg-white cursor-pointer"
+            onClick={() => setFilterOpen(!filterOpen)}
+          >
+            <p className="mr-2">{formatFilter(timeFilter)}</p>
+            <ChevronsUpDown size={16} />
+          </button>
+
+          {filterOpen && (
+            <div className="absolute top-10 w-64 bg-white border border-gray-300 rounded-md shadow-lg p-4 z-10">
+              <p className="font-semibold mb-2">Filter:</p>
+              <div className="flex flex-col gap-2">
+                {filters.map((filter) => (
+                  <label key={filter} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="timeFilter"
+                      value={filter}
+                      checked={timeFilter === filter}
+                      onChange={() => {
+                        setTimeFilter(filter);
+                        setFilterOpen(false);
+                      }}
+                    />
+                    <span>{formatFilter(filter)}</span>
+                  </label>
+                ))}
+                {timeFilter === "Custom" && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <input type="date" className="border px-2 py-1 rounded-md" />
+                    <span>to</span>
+                    <input type="date" className="border px-2 py-1 rounded-md" />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
         {/* Top performing drives and drives with goals reached */}
         <div className='flex flex-row gap-4 h-1/3'>
           {/* Top performing drives */}
