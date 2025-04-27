@@ -2,13 +2,13 @@ import React from 'react';
 
 function DonationMainViewSkeleton() {
   return (
-    <>
-      
+    <div className="overflow-hidden max-h-[650px]">
+
       {/* Image Skeleton */}
-      <div className="w-[90%] h-50 max-h-85  mx-auto rounded-4xl bg-gray-400 animate-pulse"></div>
+      <div className="w-[90%] h-[250px] max-h-[250px] mx-auto rounded-4xl bg-gray-400 animate-pulse"></div>
 
       {/* Title Skeleton */}
-      <div className="lg:w-[95%] w-[90%] pt-15">
+      <div className="lg:w-[95%] w-[90%] pt-4">
         <div className="h-6 bg-gray-400 animate-pulse w-[60%] rounded-lg my-2"></div>
       </div>
 
@@ -48,12 +48,12 @@ function DonationMainViewSkeleton() {
       </div>
 
       {/* Relevant Links Skeleton */}
-      <div className="lg:w-[95%] w-[90%] font-satoshi-bold pt-10">
+      <div className="lg:w-[95%] w-[90%] font-satoshi-bold pt-6">
         <div className="h-4 bg-gray-400 animate-pulse w-[30%] rounded-lg"></div>
       </div>
 
       {/* Links List Skeleton */}
-      <div className="w-[80%]  mb-5 mt-5">
+      <div className="w-[80%] mb-5 mt-5">
         <div className="h-6 bg-gray-400 animate-pulse w-[50%] rounded-lg"></div>
         <div className="h-6 bg-gray-400 animate-pulse w-[50%] rounded-lg mt-2"></div>
       </div>
@@ -63,7 +63,7 @@ function DonationMainViewSkeleton() {
         <div className="h-4 bg-gray-400 animate-pulse w-[40%] rounded-lg"></div>
       </div>
 
-    </>
+    </div>
   );
 }
 

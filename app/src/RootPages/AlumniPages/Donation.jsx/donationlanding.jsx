@@ -144,7 +144,7 @@ function DonationLanding() {
     <DonationCardSkeleton  />
     <DonationCardSkeleton  />
   </div>
-  <div className="flex flex-col gap-4 mt-4 sm:flex-row justify-center items-cente">
+  <div className="flex flex-col gap-4 mt-4 sm:flex-row justify-center items-center">
     <DonationCardSkeleton  />
     <DonationCardSkeleton  />
   </div>
