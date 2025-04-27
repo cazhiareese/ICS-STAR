@@ -7,6 +7,7 @@ import UsersTable from '../../../components/AdminComponents/userstable';
 import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
 import FilterModal from '../../../components/AdminComponents/UserFilter';
+import PaginationComponent from '../../../components/AdminComponents/PaginationComponent';
 
 function AdminRecords() {
   const navigate = useNavigate()
@@ -14,7 +15,7 @@ function AdminRecords() {
 
   const [userType, setUserType] = useState('alum')
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(48)
+  const [totalPages, setTotalPages] = useState(1)
   const [viewStyle, setViewStye] = useState('List')
   const [maxRows, setMaxRows] = useState(12)
   const [users, setUsers] = useState([]);
@@ -80,11 +81,13 @@ function AdminRecords() {
         if (orderBy) {
           params.append('order_by', orderBy);
         }
+        params.append('page', page);
         const queryString = params.toString();
         const url = `${API_BASE_URL}/admin/filter/${userType}?${queryString}`
         const response = await axios.get(url, {headers: {Authorization: `Bearer ${token}`}});
-        console.log(response.data)
-        setUsers(response.data);
+        console.log(response)
+        setUsers(response.data.items);
+        setTotalPages(response.data.total_pages)
 
       } catch (error) {
         console.log('Error getting users');
@@ -95,7 +98,7 @@ function AdminRecords() {
     };
   
     fetchData();
-  }, [userType, sortBy, sortDirection, query, selectedFilters]);
+  }, [userType, sortBy, sortDirection, query, selectedFilters, page]);
   
   // Initial fetch
   useEffect(() => {
@@ -167,19 +170,12 @@ function AdminRecords() {
                 <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
               </button>
             </div>
-            {/* Page */}
-            <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-              <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-                <p> Page </p>
-                <input
-                  type="text"
-                  value={page}
-                  onChange={() => {}}
-                  className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-                />
-              <p>of {totalPages}</p>
-              <MoveRight className='cursor-pointer' onClick={() => {}}/>
-            </div>
+            <PaginationComponent 
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+            />
+
           </div>
         </div>
         {/* Table for desktop*/}
