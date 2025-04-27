@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from models.event_model import Event, EventConfirmedBy, EventDate, EventVisibleTo
 from uuid import UUID
 from datetime import datetime, timezone, date, timedelta
-from schemas.events_schema import OneEventOut, EventOut
+from schemas.events_schema import OneEventOut, EventOut, EventConfirmedOut
 from util.admin_events_util import add_user_clicks
 
 
@@ -71,9 +71,14 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
             [dt.date for dt in event.dates if dt.date >= now]
         )
         if not future_dates:
+            if not event.is_concluded:
+                event.is_concluded = True
+                db.add(event)
             continue
 
         tags = [tag.tag for tag in event.tags]
+        
+        going_count = len(event.confirmed_by)
 
         event_list.append({
             "event_id": event.event_id,
@@ -83,12 +88,14 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
             "location": event.location,
             "is_closed": event.is_closed,
             "dates": [d.isoformat() for d in future_dates],
-            "tags": tags
+            "tags": tags,
+            "going_count": going_count
         })
-
+    db.commit()
+    db.refresh(event)
     sorted_events = sorted(event_list, key=lambda e: e["dates"][0])
 
-    return [EventOut(**e) for e in sorted_events]
+    return [EventConfirmedOut(**e) for e in sorted_events]
 
 def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
     event = (
