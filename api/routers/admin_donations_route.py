@@ -427,14 +427,24 @@ def open_drives_by_percent_funded_descending(
 
 @router.get("/admin/donations/open-drives-by-percent-funded-ascending", response_model=List[AdminDonationDriveOut])
 def open_drives_by_percent_funded_ascending(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
 ):
     results = get_all_open_drives_by_percent_funded_ascending(db)
+    
+    page_size = 10
 
     if not results:
         raise HTTPException(status_code=404, detail="No open drives found")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
 
-    return results
+    return PaginatedDonationDrivesResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
 
 @router.get("/admin/donations/open-drives-by-donation-count-descending", response_model=List[AdminDonationDriveOut])
 def open_drives_by_donation_count_descending(
