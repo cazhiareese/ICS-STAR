@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { MoveLeft, Plus, Upload, X, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { MoveLeft, Plus, Upload, X, ChevronDown, CheckCircle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
-import NewsletterModal from '../../../components/AdminComponents/Adminnewslettermodal';
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
 
 function AdminEditNewsletter() {
   const { newsletter_id } = useParams(); // Get newsletter ID from URL params
 
   const navigate = useNavigate();
   const option = "edit";
+
+  const fileInputRef = useRef(null);
+  const [fileName, setFileName] = useState('');
+  const [fileError, setFileError] = useState(''); // For file validation errors
+  const [errorMessage, setErrorMessage] = useState(''); // For server errors
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -19,6 +24,7 @@ function AdminEditNewsletter() {
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const [allAlumni, setAllAlumni] = useState(false);
   const [image, setImage] = useState(null);
+  const [originalImage, setOriginalImage] = useState(null); // Store original image URL
   const [careerList, setCareerList] = useState([]);
   const [linklist, setLinkList] = useState([]);
   const [dateList, setDateList] = useState([]);
@@ -26,6 +32,8 @@ function AdminEditNewsletter() {
   const [titleError, setTitleError] = useState(false);
   const [contentError, setContentError] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [modalSuccess, setModalSuccess] = useState(false);
   const [newsletter, setNewsletter] = useState(null);
 
   useEffect(() => {
@@ -41,17 +49,19 @@ function AdminEditNewsletter() {
         setLinkList(news.links || []);
         setSelectedTags(news.tags || []);
         setImage(news.image || null);
+        setOriginalImage(news.image || null); // Store original image URL
+        setFileName(news.image ? 'Current Image' : '');
         setAllAlumni(news.sendAll || false);
         setCareerList(news.sendEmployment || []);
         setDateList(news.sendtoBatch || []);
       } catch (err) {
-        console.error(
-          err.response?.status === 404
-            ? 'Newsletter not found'
-            : err.response?.status === 422
-            ? 'Invalid newsletter ID format'
-            : 'Failed to fetch newsletter'
-        );
+        const error = err.response?.status === 404
+          ? 'Newsletter not found'
+          : err.response?.status === 422
+          ? 'Invalid newsletter ID format'
+          : 'Failed to fetch newsletter';
+        console.error(error);
+        setErrorMessage(error);
       }
     };
 
@@ -64,6 +74,42 @@ function AdminEditNewsletter() {
     setTags(dummy);
   }, [newsletter_id]);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0] || e.dataTransfer?.files[0]; // Support both input and drag-and-drop
+    setFileError(''); // Reset error
+
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        setFileError('Only JPEG, PNG, and GIF images are allowed.');
+        setImage(null);
+        setFileName('');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        setFileError('File size exceeds 5MB limit.');
+        setImage(null);
+        setFileName('');
+        return;
+      }
+
+      setImage(file);
+      setFileName(file.name);
+    } else {
+      setImage(null);
+      setFileName('');
+    }
+  };
+
+  const triggerFileSelect = () => {
+    setFileError(''); // Reset error
+    fileInputRef.current.click();
+  };
+
   const handleLinkAdd = () => {
     if (link.trim() !== '') {
       setLinkList((prev) => {
@@ -74,7 +120,7 @@ function AdminEditNewsletter() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     // Check if title and content are empty
@@ -83,48 +129,77 @@ function AdminEditNewsletter() {
 
     setTitleError(!titleIsValid);
     setContentError(!contentIsValid);
+    setErrorMessage(''); // Reset error message on new submission
 
     if (titleIsValid && contentIsValid) {
-      try {
-        const payload = new FormData();
-        payload.append("title", title);
-        payload.append("content", content);
-        if (image) payload.append("image", image);
-        payload.append("sendEmail", false); // Assuming email is not sent on edit
-        payload.append("sendAll", allAlumni);
-        payload.append("links", JSON.stringify(linklist));
-        payload.append("tags", JSON.stringify(selectedTags));
-        payload.append("sendtoBatch", JSON.stringify(dateList));
-        payload.append("sendEmployment", JSON.stringify(careerList));
-        payload.append("sendtoJob", JSON.stringify([])); // No job roles in form
+      setIsModalOpen(true); // Open confirmation modal
+    }
+  };
 
-        const response = await axios.put(
-          `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/edit/${newsletter_id}`,
-          payload,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          }
-        );
+  const handleModalConfirm = async () => {
+    setModalLoading(true);
 
-        console.log('Newsletter updated:', response.data);
-        setIsModalOpen(true);
-      } catch (err) {
-        console.error(
-          err.response?.status === 404
-            ? 'Newsletter not found'
-            : err.response?.status === 422
-            ? 'Invalid data format'
-            : 'Failed to update newsletter'
-        );
+    const payload = new FormData();
+    payload.append('title', title);
+    payload.append('content', content);
+    if (image && image !== originalImage) {
+      // Only append image if it's a new file (not the original URL)
+      if (typeof image !== 'string') {
+        payload.append('image', image);
       }
+    }
+    payload.append('sendEmail', 'true');
+    payload.append('sendAll', allAlumni.toString());
+    if (linklist.length > 0) {
+      payload.append('links', linklist.join(','));
+    }
+    if (selectedTags.length > 0) {
+      payload.append('tags', selectedTags.join(','));
+    }
+    if (dateList.length > 0) {
+      payload.append('sendtoBatch', dateList.join(','));
+    }
+    if (careerList.length > 0) {
+      payload.append('sendEmployment', careerList.join(','));
+    }
+    // Omit sendtoJob if empty (optional field)
+
+    // Log FormData for debugging
+    for (const [key, value] of payload.entries()) {
+      console.log(`${key}:`, value);
+    }
+
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/edit/${newsletter_id}`,
+        payload
+      );
+
+      console.log('Newsletter updated:', response.data);
+      setModalSuccess(true); // Show success state
+    } catch (err) {
+      const errorMsg = err.response?.status === 404
+        ? 'Newsletter not found'
+        : err.response?.status === 500
+        ? 'Server error: Unable to update newsletter. There may be an issue with the image upload.'
+        : err.response?.status === 422
+        ? `Invalid data format: ${err.response?.data?.message || 'Check the submitted data'}`
+        : 'Failed to update newsletter';
+      console.error('Error:', err.message, err.response?.data);
+      setErrorMessage(errorMsg);
+      setIsModalOpen(false); // Close modal on error
+    } finally {
+      setModalLoading(false);
     }
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    navigate('/admin/newsletters'); // Redirect after modal close
+    setErrorMessage(''); // Clear error message when closing modal
+    if (modalSuccess) {
+      setModalSuccess(false);
+      navigate('/admin/newsletters'); // Redirect after successful edit
+    }
   };
 
   const formData = {
@@ -152,6 +227,13 @@ function AdminEditNewsletter() {
       {/* Title */}
       <h1 className="font-satoshi-bold text-5xl mb-6">Edit a Newsletter</h1>
 
+      {/* Display Error Message */}
+      {errorMessage && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          {errorMessage}
+        </div>
+      )}
+
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         {/* Title Input */}
         <div className="p-6 border rounded-3xl border-gray-400">
@@ -168,7 +250,7 @@ function AdminEditNewsletter() {
         </div>
 
         {/* Content Input */}
-        <div className="p-6 border rounded-3xl  border-gray-400">
+        <div className="p-6 border rounded-3xl border-gray-400">
           <label className="block mb-1 font-satoshi-medium">
             Content <span className="text-red-500">*</span>
           </label>
@@ -212,7 +294,7 @@ function AdminEditNewsletter() {
                     className="flex items-center justify-between border border-gray-200 rounded-lg p-2"
                   >
                     <span
-                      className="text-primary  font-satoshi-regular text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[calc(100%-2rem)]"
+                      className="text-primary font-satoshi-regular text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[calc(100%-2rem)]"
                       title={item} // Full link on hover
                     >
                       {shortItem}
@@ -283,16 +365,14 @@ function AdminEditNewsletter() {
           </div>
 
           {/* Image Upload */}
-          <div className="basis-[35%] p-6 border border-gray-400 rounded-3xl ">
+          <div className="basis-[35%] p-6 border border-gray-400 rounded-3xl">
             <label className="block mb-1 font-satoshi-medium">Image (Optional)</label>
             <div
-              className="border border-dashed border-gray-400 rounded-2xl text-center flex flex-col items-center justify-center p-6"
+              className="border border-dashed border-gray-400 rounded-2xl text-center flex flex-col items-center justify-center p-6 cursor-pointer"
+              onClick={triggerFileSelect}
               onDrop={(e) => {
                 e.preventDefault();
-                const file = e.dataTransfer.files[0];
-                if (file) {
-                  setImage(file); // Store the actual File object
-                }
+                handleFileChange(e);
               }}
               onDragOver={(e) => e.preventDefault()}
             >
@@ -304,7 +384,12 @@ function AdminEditNewsletter() {
                     className="w-32 h-32 object-cover rounded-lg mb-4"
                   />
                   <button
-                    onClick={() => setImage(null)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering file select
+                      setImage(null);
+                      setFileName('');
+                      setFileError('');
+                    }}
                     className="absolute bottom-32 left-28 bg-red-500 text-white rounded-full p-1"
                     type="button"
                   >
@@ -314,17 +399,23 @@ function AdminEditNewsletter() {
               ) : (
                 <Upload className="text-primary mb-2" />
               )}
-              <p className="text-gray-600 text-sm mb-2 font-satoshi-regular">Drag and drop file here or</p>
-              <label className="text-primary font-medium cursor-pointer font-satoshi-bold">
-                Choose file
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => setImage(e.target.files[0])} // Store the actual File object
-                />
-              </label>
+              <p className="text-gray-600 text-sm mb-2 font-satoshi-regular">
+                Drag and drop file here or <span className="text-primary">Choose file</span>
+              </p>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/gif"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+              />
             </div>
+            {fileName && (
+              <p className="mt-2 text-sm text-gray-600">Selected: {fileName}</p>
+            )}
+            {fileError && (
+              <p className="mt-2 text-sm text-red-500">{fileError}</p>
+            )}
           </div>
         </div>
 
@@ -338,7 +429,52 @@ function AdminEditNewsletter() {
           </button>
         </div>
       </form>
-      <NewsletterModal isOpen={isModalOpen} onClose={handleModalClose} formData={formData} option={option} />
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+          <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
+            {modalLoading ? (
+              <div className="h-full">
+                <CircularLoading />
+              </div>
+            ) : modalSuccess ? (
+              <>
+                <div className="text-success">
+                  <CheckCircle size={48} />
+                </div>
+                <p className="text-xl font-satoshi-medium mt-4 text-center">
+                  Successfully updated newsletter!
+                </p>
+                <button
+                  className="bg-success text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
+                  onClick={handleModalClose}
+                >
+                  Close
+                </button>
+              </>
+            ) : (
+              <div>
+                <p className="text-xl font-satoshi-medium text-center mt-4">
+                  Are you sure you want to update this newsletter?
+                </p>
+                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                  <button
+                    className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-300"
+                    onClick={handleModalClose}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    onClick={handleModalConfirm}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
