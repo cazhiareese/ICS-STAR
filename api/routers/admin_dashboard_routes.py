@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import Date, String, case, cast, desc, func, and_, literal, select, union_all
 from sqlalchemy.orm import Session
 
-from models.usermodel import User
+from models.usermodel import User, UserTypeEnum
 from models.donationmodel import MonetaryDonation, InKindDonation
 from models.report_model import Report, ReportStatusEnum
 from models.event_model import Event, EventDate
@@ -293,3 +293,69 @@ def get_visits(
         })
     
     return result
+
+@router.get("/user_statistics")
+def get_alumni_statistics(db: Session = Depends(get_db)):
+    # Get number of verified alumni users
+    verified_alumni_count = db.query(func.count(User.user_id))\
+        .filter(User.is_verified == True)\
+        .filter(User.user_type == UserTypeEnum.alumni)\
+        .scalar()
+    
+    # Get top 4 countries of verified alumni with percentages, ignoring null values
+    country_counts = db.query(User.country, func.count(User.user_id).label('count'))\
+        .filter(User.is_verified == True)\
+        .filter(User.user_type == UserTypeEnum.alumni)\
+        .filter(User.country.isnot(None))\
+        .group_by(User.country)\
+        .order_by(func.count(User.user_id).desc())\
+        .limit(4)\
+        .all()
+    
+    # Count verified alumni country data 
+    alumni_with_country = db.query(func.count(User.user_id))\
+        .filter(User.is_verified == True)\
+        .filter(User.user_type == UserTypeEnum.alumni)\
+        .filter(User.country.isnot(None))\
+        .scalar()
+    
+    top_countries = []
+    for country, count in country_counts:
+        percentage = (count / alumni_with_country) * 100 if alumni_with_country else 0
+        top_countries.append({"country": country, "percentage": round(percentage, 2)})
+    
+    others_percentage = 100 - sum(loc["percentage"] for loc in top_countries)
+    if others_percentage > 0:
+        top_countries.append({"country": "others", "percentage": round(others_percentage, 2)})
+    
+    # Get top 4 industries of verified alumni with percentages, ignoring null values
+    industry_counts = db.query(User.industry, func.count(User.user_id).label('count'))\
+        .filter(User.is_verified == True)\
+        .filter(User.user_type == UserTypeEnum.alumni)\
+        .filter(User.industry.isnot(None))\
+        .group_by(User.industry)\
+        .order_by(func.count(User.user_id).desc())\
+        .limit(4)\
+        .all()
+    
+    # Count verified alumni with valid industry data (for accurate percentage calculation)
+    alumni_with_industry = db.query(func.count(User.user_id))\
+        .filter(User.is_verified == True)\
+        .filter(User.user_type == UserTypeEnum.alumni)\
+        .filter(User.industry.isnot(None))\
+        .scalar()
+    
+    top_industries = []
+    for industry, count in industry_counts:
+        percentage = (count / alumni_with_industry) * 100 if alumni_with_industry else 0
+        top_industries.append({"industry": industry, "percentage": round(percentage, 2)})
+    
+    others_percentage = 100 - sum(ind["percentage"] for ind in top_industries)
+    if others_percentage > 0:
+        top_industries.append({"industry": "others", "percentage": round(others_percentage, 2)})
+    
+    return {
+        "verified_alumni_count": verified_alumni_count,
+        "top_alumni_countries": top_countries,
+        "top_alumni_industries": top_industries
+    }
