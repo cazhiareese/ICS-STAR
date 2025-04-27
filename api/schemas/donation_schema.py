@@ -146,6 +146,18 @@ class ShortenedInKindDonationsOut(BaseModel):
     class Config:
         from_attributes = True
 
+class PaginatedMonetaryDonationsResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[ShortenedMonetaryDonationsOut]
+
+class PaginatedInKindDonationsResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[ShortenedInKindDonationsOut]
+
 class AdminOverviewDonationDrive(BaseModel):
     drive_id: UUID
     title: str
@@ -176,6 +188,7 @@ class AdminClosedDonationDriveOut(BaseModel):
     percent_funded: float
     amount_raised: float
     target_cost: float
+    donation_count: Optional[int] = None
 
     class Config:
         from_attributes = True

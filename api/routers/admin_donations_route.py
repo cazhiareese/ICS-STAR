@@ -16,7 +16,9 @@ from schemas.donation_schema import (
     AdminClosedDonationDriveOut,
     AdminDonationDriveOut,
     PaginatedDonationDrivesResponse,
-    PaginatedClosedDonationDrivesResponse
+    PaginatedClosedDonationDrivesResponse,
+    PaginatedInKindDonationsResponse,
+    PaginatedMonetaryDonationsResponse,
     )
 from models.donationmodel import DonationDrive
 from config.database import get_db
@@ -86,6 +88,14 @@ def paginate_results(results: list, page: int, page_size: int):
     paginated_results = results[start_idx:end_idx]
 
     return total_pages, paginated_results
+
+def paginate_results_donation(results: list, page: int, page_size: int):
+    total = len(results)
+    total_pages = (total + page_size - 1) // page_size  # ceiling division
+    start = (page - 1) * page_size
+    end = start + page_size
+    paginated = results[start:end]
+    return total_pages, paginated
 
 @router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
 def search_drives(
@@ -455,28 +465,6 @@ def closed_drives_by_target_cost_descending(
         data=paginated_results
     )
 
-@router.get("/admin/donations/closed-drives-by-date-created-oldest", response_model=PaginatedClosedDonationDrivesResponse)
-def closed_drives_by_date_created_oldest(
-    db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
-):
-    results = get_all_closed_drives_by_date_created_oldest(db)
-
-    page_size = 10
-
-    if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
-    
-    total_pages, paginated_results = paginate_results(results, page, page_size)
-
-    return PaginatedClosedDonationDrivesResponse(
-        message="success",
-        page=page,
-        total_pages=total_pages,
-        data=paginated_results
-    )
-
-
 @router.get("/admin/donations/open-drives", response_model=PaginatedDonationDrivesResponse)
 def open_drives(
     page: int = Query(1, ge=1, description="Page number"),
@@ -670,66 +658,89 @@ def open_drives_by_date_created_oldest(
         data=paginated_results
     )
 
-@router.get("/admin/donations/pending-inkind", response_model=List[ShortenedInKindDonationsOut])
+@router.get("/admin/donations/pending-inkind", response_model=PaginatedInKindDonationsResponse)
 def pending_inkind(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1)
 ):
     results = get_all_pending_inkind_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No pending in-kind donations found")
 
-    return results
+    page_size = 10
+    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
 
-@router.get("/admin/donations/pending-monetary", response_model=List[ShortenedMonetaryDonationsOut])
+    return PaginatedInKindDonationsResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
+
+@router.get("/admin/donations/pending-monetary", response_model=PaginatedMonetaryDonationsResponse)
 def pending_monetary(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1)
 ):
     results = get_all_pending_monetary_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No pending monetary donations found")
 
-    return results
+    page_size = 10
+    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
 
-@router.get("/admin/donations/verified-inkind", response_model=List[ShortenedInKindDonationsOut])
+    return PaginatedMonetaryDonationsResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
+
+@router.get("/admin/donations/verified-inkind", response_model=PaginatedInKindDonationsResponse)
 def verified_inkind(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1)
 ):
     results = get_all_verified_inkind_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No verified in-kind donations found")
 
-    return results
+    page_size = 10
+    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
 
-@router.get("/admin/donations/verified-monetary", response_model=List[ShortenedMonetaryDonationsOut])
+    return PaginatedInKindDonationsResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
+
+@router.get("/admin/donations/verified-monetary", response_model=PaginatedMonetaryDonationsResponse)
 def verified_monetary(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1)
 ):
     results = get_all_verified_monetary_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No verified monetary donations found")
 
-    return results
+    page_size = 10
+    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
 
-@router.get("/admin/donations/view/generic-drive", response_model=AdminGenericDriveView)
-def view_generic_donation_drive(
-    db: Session = Depends(get_db)
-):
-    
-    drive_id = UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384")
-    results = view_generic_drive(db, drive_id)
-
-    if not results:
-        raise HTTPException(status_code=404, detail="Drive not found")
-
-    return results
+    return PaginatedMonetaryDonationsResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
 
 @router.get("/admin/donations/view/{drive_id}", response_model=AdminOneDonationDriveOut)
 def view_drive(
