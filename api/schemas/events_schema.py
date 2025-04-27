@@ -7,11 +7,26 @@ class EventOut(BaseModel):
     event_id: UUID
     title: str
     image: Optional[str]
-    description: str
+    description: Optional[str]
+    location: str
+    dates: List[datetime]
+    tags: Optional[List[str]]
+    rsvp_closed: bool
+    going_count: int
+
+    class Config:
+        from_attributes = True
+        
+class EventConfirmedOut(BaseModel):
+    event_id: UUID
+    title: str
+    image: Optional[str]
+    description: Optional[str]
     location: str
     is_closed: bool
     dates: List[datetime]
     tags: Optional[List[str]]
+    going_count: int
 
     class Config:
         from_attributes = True
