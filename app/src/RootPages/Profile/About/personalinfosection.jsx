@@ -3,7 +3,10 @@ import { MapPin, Phone, IdCard, GraduationCap, Heart } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 
 const semester = ["1st Semester", "2nd Semester", "Mid Semester"];
-const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
+const years = Array.from({ length: 2025 - 1909 + 1 }, (_, i) => {
+  const year = 1909 + i;
+  return year < 2000 ? String(year).slice(-2) : String(year);
+});
 const maritalstat = ["Single", "Maried", "Divorced", "Widowed"];
 const standings = ["Freshman", "Sophomore", "Junior", "Senior"];
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
@@ -24,18 +27,37 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
       <MapPin size={20} className="text-black" />
       <span>Location</span>
     </div>
-    {editMode ? (
-      <input
-        type="text"
-        value={userDetails.location}
-        onChange={(e) => handleChange(e, "location")}
-        className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
-      />
-    ) : (
-      <span className="text-primary font-satoshi-bold">
-        {userDetails.location || <CircularLoading />}
-      </span>
-    )}
+{editMode ? (
+  <div className="flex flex-col gap-2">
+    <input
+      type="text"
+      value={userDetails.city || ""}
+      onChange={(e) => handleChange(e, "city")}
+      placeholder="City"
+      className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
+    />
+    <input
+      type="text"
+      value={userDetails.state || ""}
+      onChange={(e) => handleChange(e, "state")}
+      placeholder="State"
+      className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
+    />
+    <input
+      type="text"
+      value={userDetails.country || ""}
+      onChange={(e) => handleChange(e, "country")}
+      placeholder="Country"
+      className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"
+    />
+  </div>
+) : (
+  <span className="text-primary font-satoshi-bold">
+    {userDetails.city && userDetails.state && userDetails.country
+      ? `${userDetails.city}, ${userDetails.state}, ${userDetails.country}`
+      : "<CircularLoading />"}
+  </span>
+)}
   </div>
 )}
 
