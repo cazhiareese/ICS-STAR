@@ -64,6 +64,7 @@ function AdminRecords() {
 
 
   useEffect(() => {
+    const token = localStorage.getItem("token")
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -81,7 +82,8 @@ function AdminRecords() {
         }
         const queryString = params.toString();
         const url = `${API_BASE_URL}/admin/filter/${userType}?${queryString}`
-        const response = await axios.get(url);
+        const response = await axios.get(url, {headers: {Authorization: `Bearer ${token}`}});
+        console.log(response.data)
         setUsers(response.data);
 
       } catch (error) {
