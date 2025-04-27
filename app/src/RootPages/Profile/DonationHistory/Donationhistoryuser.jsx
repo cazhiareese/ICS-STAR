@@ -171,7 +171,7 @@ function DonationHistoryUser({ userDetails }) {
                 Amount {getSortIcon("amount", selectedType)}
               </div>
               <div
-                className="w-1/4 cursor-pointer flex justify-center sm:justify-center items-center gap-1 text-left"
+                className="w-1/4 cursor-pointer flex justify-center sm:justify-start items-center gap-1 text-left"
                 onClick={() => handleSort("is_acknowledged", selectedType)}
               >
                 Status {getSortIcon("is_acknowledged", selectedType)}
@@ -179,7 +179,7 @@ function DonationHistoryUser({ userDetails }) {
             </>
           ) : (
             <div
-              className="w-1/4 cursor-pointer flex justify-center sm:justify-center items-center gap-1 text-left"
+              className="w-1/4 cursor-pointer flex justify-center sm:justify-start items-center gap-1 text-left"
               onClick={() => handleSort("is_acknowledged", selectedType)}
             >
               Status {getSortIcon("is_acknowledged", selectedType)}
@@ -238,7 +238,7 @@ function DonationHistoryUser({ userDetails }) {
                     <div className="w-1/4 px-2 sm:px-3 text-left">
                       {formattedAmount}
                     </div>
-                    <div className="w-1/4 flex justify-center sm:justify-center items-center">
+                    <div className="w-1/4 flex justify-center sm:justify-start items-center">
                       {/* Text for larger screens (hidden at sm and below) */}
                       <span className="hidden sm:inline">
                         {donation.is_acknowledged
@@ -258,7 +258,7 @@ function DonationHistoryUser({ userDetails }) {
                     </div>
                   </>
                 ) : (
-                  <div className="w-1/4 flex justify-center sm:justify-center items-center">
+                  <div className="w-1/4 flex justify-center sm:justify-start items-center">
                     {/* Text for larger screens (hidden at sm and below) */}
                     <span className="hidden sm:inline">
                       {donation.is_acknowledged
@@ -271,8 +271,8 @@ function DonationHistoryUser({ userDetails }) {
                         donation.is_acknowledged === null
                           ? "bg-yellow-500"
                           : donation.is_acknowledged
-                          ? "bg-green-500"
-                          : "bg-red-500"
+                            ? "bg-green-500"
+                            : "bg-red-500"
                         }`}
                       ></div>
                     </div>
