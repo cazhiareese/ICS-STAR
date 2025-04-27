@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import DonationCard from "./donationDonateView";
 import DonationMainView from "./donationMainView";
 import { useParams } from "react-router-dom";
+import NewLoading from "./LoadingComponents/cyruscircular";
 
-function DonationInfo({generalDrive}) {
+function DonationInfo({generalDrive, general }) {
     const idUser = useParams(); // <- destructure directly if param is named 'driveid'
     const driveid = idUser.driveid; 
     const [driveDetails, setDriveDetails] = useState(null);
@@ -28,7 +29,14 @@ function DonationInfo({generalDrive}) {
             });
     }, []);
 
-    if (!driveDetails) return <p>Loading drive...</p>;
+    if (!driveDetails) {
+        return (
+          <NewLoading
+            size={32}
+            text={general ? "Fetching General ICS Donation Drive" : "Fetching Donation Drive Details"}
+          />
+        );
+      }
 
     return (
         <div className="flex md:flex-row flex-col justify-center md:items-start items-center overflow-y-auto md:pt-20 pt-10 md:space-x-20">

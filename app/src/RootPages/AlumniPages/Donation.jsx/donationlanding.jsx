@@ -1,95 +1,96 @@
 import React, { useEffect, useState } from "react";
-import DonationCard from "./Donationcomponent/Donationcard"; // Adjust the import path as necessary
+import DonationCards from "./Donationcomponent/Donationcard"; // Adjust the import path as necessary
 import DonationInfo from "../../../components/donationInfo";
 import NewLoading from "../../../components/LoadingComponents/cyruscircular";
+import DonationMainView from "../../../components/donationMainView";
+import DonationCard from "../../../components/donationDonateView";
 
 function DonationLanding() {
-  const [donationData, setDonationData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [donationData, setDonationData] = useState(null); // Initialize as null
+  const [filteredData, setFilteredData] = useState(null); // Initialize as null
+  const [generalDrive, setGeneralDrive] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [generalDriveLoading, setGeneralDriveLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [generalDrive, setGeneralDrive] = useState(null);
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchGeneralDrive = async () => {
-      setGeneralDriveLoading(true);
-      try {
-        const response = await fetch(`${API_BASE_URL}/gen-donation-drive`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch general donation drive");
-        }
-
-        const data = await response.json();
-        setGeneralDrive(data);
-      } catch (err) {
-        console.error("Error fetching general donation drive:", err);
-      } finally {
-        setGeneralDriveLoading(false);
-      }
-    };
-
-    const fetchDonationDrives = async () => {
+    const fetchData = async () => {
       if (!token) {
         setError("User not authenticated");
         setLoading(false);
         return;
       }
 
+      setLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/donationdrive`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // Fetch both APIs concurrently
+        const [donationResponse, generalResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/donationdrive`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+          fetch(`${API_BASE_URL}/gen-donation-drive`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+        ]);
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            setError("Unauthorized access. Please log in.");
-          } else {
-            throw new Error("Failed to fetch donation drives");
+        // Process donation drives
+        let donationDataResult = [];
+        if (donationResponse.ok) {
+          const data = await donationResponse.json();
+          if (!Array.isArray(data)) {
+            throw new Error("Unexpected response format for donation drives");
           }
+          donationDataResult = data;
+        } else {
+          if (donationResponse.status === 401) {
+            throw new Error("Unauthorized access. Please log in.");
+          }
+          throw new Error("Failed to fetch donation drives");
         }
 
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setDonationData(data);
-          setFilteredData(data);
+        // Process general drive
+        let generalDriveResult = null;
+        if (generalResponse.ok) {
+          generalDriveResult = await generalResponse.json();
         } else {
-          throw new Error("Unexpected response format");
+          console.warn("General donation drive fetch failed, continuing without it.");
         }
+
+        // Update all states at once to prevent partial renders
+        setDonationData(donationDataResult);
+        setFilteredData(donationDataResult);
+        setGeneralDrive(generalDriveResult);
+        console.log("Donation Data:", donationData);
+        console.log("General Drive:", generalDrive);
       } catch (err) {
-        console.error("Error fetching donation drives:", err);
-        setError(err.message || "Failed to fetch donation drives.");
+        console.error("Error fetching data:", err);
+        setError(err.message || "Failed to fetch data.");
+        setDonationData([]);
+        setFilteredData([]);
+        setGeneralDrive(null);
       } finally {
         setLoading(false);
       }
     };
 
-    if (token) {
-      fetchGeneralDrive();
-      fetchDonationDrives();
-    } else {
-      setGeneralDriveLoading(false);
-      setLoading(false);
-    }
+    fetchData();
   }, [token]);
 
   useEffect(() => {
-    const filtered = donationData.filter((drive) =>
-      drive.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredData(filtered);
+    if (donationData) {
+      const filtered = donationData.filter((drive) =>
+        drive.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredData(filtered);
+    }
   }, [searchQuery, donationData]);
 
   if (error) return <div className="p-4 text-red-500">{error}</div>;
@@ -108,20 +109,17 @@ function DonationLanding() {
       </div>
 
       {/* Loading State */}
-      {(loading || generalDriveLoading) && (
+      {loading || donationData === null || generalDrive === null ? (
         <div className="flex justify-center items-center min-h-[200px]">
           <NewLoading size={40} text="Loading Donation Drives..." />
         </div>
-      )}
-
-      {/* Layout: Announcements and Donations */}
-      {!loading && !generalDriveLoading && (
+      ) : (
         <div className="flex flex-col lg:flex-row gap-4 justify-center">
           {/* Left column: Donation cards */}
           <div className="order-2 lg:order-1 flex-1 lg:max-w-[900px] flex flex-wrap gap-4">
             {filteredData.length > 0 ? (
               filteredData.map((drive, index) => (
-                <DonationCard key={index} drive={drive} />
+                <DonationCards key={index} drive={drive} />
               ))
             ) : (
               <p className="w-full text-center text-gray-500">
@@ -134,7 +132,9 @@ function DonationLanding() {
           <div className="order-1 lg:order-2 lg:basis-[900px] px-4 rounded-xl text-center h-fit pb-10">
             {generalDrive ? (
               <div className="-mt-5">
-                <DonationInfo generalDrive={generalDrive} />
+                {/*<DonationInfo generalDrive={generalDrive} general={true} />*/}
+                <DonationMainView driveDetails={generalDrive} driveId = {generalDrive.drive_id}/>
+                <DonationCard driveDetails={generalDrive} driveId = {generalDrive.drive_id}/>
               </div>
             ) : (
               <p className="text-sm text-gray-600">

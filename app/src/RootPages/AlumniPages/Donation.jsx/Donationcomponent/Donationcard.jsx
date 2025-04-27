@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function DonationCard({ drive }) {
+function DonationCards({ drive }) {
 const navigate = useNavigate();
 
 
@@ -64,4 +64,4 @@ console.log(token);
   );
 }
 
-export default DonationCard;
+export default DonationCards;
