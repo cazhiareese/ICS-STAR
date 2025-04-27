@@ -110,7 +110,11 @@ function AdminIndustryInformation() {
     //   console.log(industries[index])
       setIndustryTotalCount(industries[index].count)
     }
+
+    if (selectedIndustry){
       fetchData();
+    }
+      
       
     }, [selectedIndustry])
 

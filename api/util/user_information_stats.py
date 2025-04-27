@@ -10,9 +10,9 @@ from datetime import datetime, timedelta
 
 
 
-def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_general: bool = False):
+def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_general: bool = False, page: int =1):
     one_year_ago = datetime.now() - timedelta(days=365)
-    
+    ITEMS_PER_PAGE = 5
     if alumni_general:
         # Return general alumni statistics (not broken down by batch)
         query = db.query(
@@ -29,7 +29,7 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
                     else_=0
                 )
             ).label("inactive_users")
-        ).where(User.is_verified == True, User.user_type == 'alumni', User.student_number.is_not(None))
+        ).where(User.is_verified == True, User.is_onboarded == True, User.user_type == 'alumni', User.student_number.is_not(None))
         
         result = query.first()
         if not result:
@@ -61,9 +61,13 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
                         else_=0
                     )
                 ).label("inactive_users")
-            ).where(User.is_verified == True, User.student_number.is_not(None))
+            ).where(User.is_verified == True, User.is_onboarded == True, User.student_number.is_not(None))
             .group_by("batch")
         )
+        subq = query.subquery()
+
+        total_batches = db.query(func.count()).select_from(subq).scalar()
+        print(total_batches)
 
         if order:
             order_parts = order.lower().split('_')
@@ -75,7 +79,13 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
             else:
                 query = query.order_by(field)
         
+
+        offset = (page - 1) * ITEMS_PER_PAGE
+        query = query.offset(offset).limit(ITEMS_PER_PAGE)
+
         result = query.all()
+
+        total_pages = max((total_batches + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
         if not result:
             raise HTTPException(status_code=404, detail="No users found for any batch")
 
@@ -94,7 +104,7 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
             })
 
 
-        return results_analyzed
+        return results_analyzed, total_pages
 
 def get_employment_status(db: Session, batch:Optional[str] = None):
 
@@ -108,6 +118,7 @@ def get_employment_status(db: Session, batch:Optional[str] = None):
 
         User.user_type == 'alumni',
         User.employment_status.is_not(None),
+        User.is_onboarded == True
         
     )
     )
@@ -158,7 +169,8 @@ def get_job_util(db: Session, batch:Optional[str] = None, industry: Optional[str
         User.is_verified == True,
 
         User.user_type == 'alumni',
-        User.job_title.is_not(None)
+        User.job_title.is_not(None),
+        User.is_onboarded == True
     )
     ) 
 
@@ -216,6 +228,7 @@ def get_top_country_batch(db: Session, batch: Optional[str] = None, limit: bool=
     .where(
         User.is_verified == True,
         User.country.is_not(None),
+        User.is_onboarded == True
         
     ))
      
@@ -267,7 +280,8 @@ def get_cities_country(db:Session, country:str):
         User.is_verified == True,
         User.user_type == 'alumni',
         User.city.is_not(None),
-        User.country == country
+        User.country == country,
+        User.is_onboarded == True
     )
     .scalar() 
     )
@@ -305,6 +319,7 @@ def employment_class_util(db: Session, industry:Optional[str] = None, batch: Opt
         User.is_verified == True,
         User.user_type == 'alumni',
         User.employer_class.is_not(None),
+        User.is_onboarded == True
         
     )
     )
@@ -355,6 +370,7 @@ def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional
         User.is_verified == True,
         User.user_type == 'alumni',
         User.salary_grade.is_not(None),
+        User.is_onboarded == True
     )
     )
 
@@ -405,6 +421,7 @@ def grouped_by_industry(db: Session, batch: Optional[str] = None, country: Optio
         User.is_verified == True,
         User.user_type == 'alumni',
         User.industry.is_not(None),
+        User.is_onboarded == True
     )
     )
 
@@ -457,6 +474,7 @@ def tenure_status_util(db: Session, industry: Optional[str] = None):
         User.is_verified == True,
         User.user_type == 'alumni',
         User.tenured_status.is_not(None),
+        User.is_onboarded == True
     ))
      
 
@@ -503,6 +521,7 @@ def work_mode_util(db: Session, industry: Optional[str] = None):
         User.is_verified == True,
         User.user_type == 'alumni',
         User.work_mode.is_not(None),
+        User.is_onboarded == True
     ))
     
 
@@ -547,6 +566,7 @@ def unemployment_reason_util(db: Session, batch: Optional[str] = None):
     )
     .filter(
         User.is_verified == True,
+        User.is_onboarded == True,
         User.user_type == 'alumni',
         or_(User.employment_status == UserEmploymentStatus.unemployed, User.employment_status == UserEmploymentStatus.unemployed_no_exp)
         

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Union
 from uuid import UUID
 from datetime import datetime
 
@@ -39,7 +39,7 @@ class MonetaryDonationOut(BaseModel):
     amount: float
     drive_id: UUID
     user_id: UUID
-    is_acknowledged: bool = False
+    is_acknowledged: Optional[bool] = None
     donation_drive_title: Optional[str] = None
     proof: Optional[str] = None
     is_anonymous: bool = False
@@ -54,7 +54,7 @@ class InKindDonationOut(BaseModel):
     description: str
     drive_id: UUID
     user_id: UUID
-    is_acknowledged: bool = False
+    is_acknowledged: Optional[bool] = None
     donation_drive_title: Optional[str] = None
     type: str = "In-Kind"
 
@@ -67,7 +67,7 @@ class DonationHistoryOut(BaseModel):
     details: float | str = None
     drive_id: UUID
     user_id: UUID
-    is_acknowledged: bool = False
+    is_acknowledged: Optional[bool] = None
     donation_drive_title: Optional[str] = None
     type: str = None
       
@@ -158,6 +158,37 @@ class AdminGenericDriveView(BaseModel):
     pending_list: list[dict]
     verified_list: list[dict]
     verified_total: float
+
+    class Config:
+        from_attributes = True
+
+class AdminClosedDonationDriveOut(BaseModel):
+    drive_id: UUID
+    title: str
+    date_closed: str
+    date_created: str
+    percent_funded: float
+    amount_raised: float
+    target_cost: float
+
+    class Config:
+        from_attributes = True
+
+class RecentDonationResponse(BaseModel):
+    drive_title: str
+    donor_name: str
+    donation_details: str
+
+    class Config:
+        from_attributes = True
+
+class TopFundedDriveResponse(BaseModel):
+    drive_id: UUID
+    title: str
+    total_donations: float
+    target_cost: float
+    acknowledged_donations: int
+    percentage_funded: float
 
     class Config:
         from_attributes = True

@@ -1,5 +1,5 @@
 from fastapi import HTTPException, UploadFile, File
-from config.config import supabase_client, STORAGE_STRING
+from config.config import SUPABASE_BUCKET, supabase_client, STORAGE_STRING
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func, distinct
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
@@ -156,7 +156,7 @@ async def upload_proof(
         proof_ext = proof.filename.split(".")[-1]
         proof_name = f"proof_of_payment/{uuid.uuid4()}.{proof_ext}"
         try:
-            supabase_client.storage.from_("128storage").upload(proof_name, file_content)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(proof_name, file_content)
         except Exception as e:
             print("Upload Error:", e)
         proof_url = f"{STORAGE_STRING}{proof_name}"

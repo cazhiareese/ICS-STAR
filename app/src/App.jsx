@@ -19,7 +19,7 @@ import AdminRoot from "./RootPages/AdminPages/Layouts/adminroot";
 import AdminDashboard from "./RootPages/AdminPages/Dashboard/admindashboard";
 import AdminRecords from "./RootPages/AdminPages/Records/adminrecords";
 import AdminEvents from "./RootPages/AdminPages/Events/AdminEvents";
-import AdminNewsletter from "./RootPages/AdminPages/adminnewsletter";
+import AdminNewsletterLayout from "./RootPages/AdminPages/Layouts/adminnewsletter";
 import AdminCareer from "./RootPages/AdminPages/Careers/AdminCareer";
 import AdminDonations from "./RootPages/AdminPages/Donations/admindonations";
 import OnBoarding from "./AuthPages/OnBoarding/mainpanelonboarding";
@@ -59,13 +59,26 @@ import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincount
 import AdminEventsLayout from "./RootPages/AdminPages/Layouts/AdminEventsLayout";
 import AdminCreateEvent from "./RootPages/AdminPages/Events/AdminCreateEvent";
 import AdminEventDetails from "./RootPages/AdminPages/Events/AdminEventDetails";
+
+import NewsletterLanding from "./RootPages/AlumniPages/Newsletter/newsletterlanding";
+import Newsletter from "./RootPages/AlumniPages/Newsletter/newsletter";
+
+import AdminNewsLetter from "./RootPages/AdminPages/NewsLetter/AdminNewsLetter";
+import AdminCreateNewsletter from "./RootPages/AdminPages/NewsLetter/AdminCreateNewsLetter";
+import AdminNewsletterDetails from "./RootPages/AdminPages/NewsLetter/AdminNewsletterDetails";
+
+
 const isSignedIn = !!localStorage.getItem("token");
+//const isSignedIn = true;
+
 console.log("isSignedIn:", isSignedIn);
 
 
 
 import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
+import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
+import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
 import AdminUserReports from "./RootPages/AdminPages/Layouts/adminuserreports";
 import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 
@@ -73,15 +86,15 @@ import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 //const isSignedIn = !!localStorage.getItem("token");
 
 
-
-
 function App() {
   function checkType() {
     const User = localStorage.getItem("token");
+    //const User = true;
     let tokenType = null;
     if (User) {
       const decoded = jwtDecode(User);
       console.log("Decoded token:", decoded);
+      //tokenType = "admin";
       //tokenType = "alumni";
       const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
@@ -110,7 +123,7 @@ function App() {
 
           <Route
             path="setup"
-            element={
+            element={ 
               <OnboardingProvider>
                 <OnBoarding />
               </OnboardingProvider>
@@ -140,6 +153,8 @@ function App() {
 
             
             <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+            <Route path="alumni/newsletter" element={<NewsletterLanding />} />
+            <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
             <Route path="*" element={<Unauthorized />} />
 
@@ -190,10 +205,17 @@ function App() {
             </Route>
             <Route path="events" element={<AdminEventsLayout />}>
               <Route index element={<AdminEvents/>}/>
-              <Route path="create-event" element={<AdminCreateEvent/>}/>
+              <Route path="create-event" element={<AdminCreateEvent purpose="create"/>}/>
+              <Route path="edit-event/:eventid" element={<AdminCreateEvent purpose="edit"/>}/>
               <Route path="event-details/:eventid" element={<AdminEventDetails/>}/>
+              <Route path="event-demographics/:eventid" element={<AdminEventDemographics/>}/>
             </Route>
-            <Route path="newsletter" element={<AdminNewsletter />} />
+            <Route path="newsletter" element={<AdminNewsletterLayout />} >
+              <Route index element={<AdminNewsLetter/>}/>
+              <Route path="create-newsletter" element={<AdminCreateNewsletter/>}/>
+              <Route path="newsletter-details" element={<AdminNewsletterDetails/>}/>
+              <Route path="newsletter-details/edit-newsletter" element={<AdminEditNewsletter/>}/>  
+            </Route>
             <Route path="career" element={<AdminCareerLayout />}>
               <Route index element ={<AdminCareer/>}/>
             </Route>
