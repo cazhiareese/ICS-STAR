@@ -47,7 +47,12 @@ function AdminDonationsInsights() {
           {/* Top performing drives */}
           <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl'>
             <h2 className='font-satoshi-medium text-2xl'>Top Performing Drives</h2>
-            {topPerformingDrives.map((drive) => (
+            {topPerformingDrives.length === 0 ? (
+              <div className='flex justify-center items-center h-full'>
+                <p> No top performing drives :( </p>
+              </div>
+            ) : (
+            topPerformingDrives.map((drive) => (
               <div key={drive.drive_id} className="flex flex-row justify-between h-full items-center">
                 <div className='flex flex-row flex-1 gap-2'>
                   <h2 className='font-satoshi-bold text-primary'>#{drive.rank} </h2>
@@ -58,23 +63,30 @@ function AdminDonationsInsights() {
                   <p className='font-satoshi-light text-xs text-black'>increase during time period</p>
                 </div>
               </div>
-            ))}
+            ))
+          )}
           </div>
           {/* Drives with goals reached */}
           <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl'>
             <h2 className='font-satoshi-medium text-2xl'>Drives with Goals Reached</h2>
-            {drivesWithGoalsReached.map((drive) => (
-              <div key={drive.drive_id} className="flex flex-row justify-between h-full items-center">
-                <div className='flex flex-row flex-1 gap-2'>
+            {drivesWithGoalsReached.length === 0 ? (
+              <div className='flex justify-center items-center h-full'>
+                <p> No drives with goals reached :( </p>
+              </div>
+            ) : (
+              drivesWithGoalsReached.map((drive) => (
+                <div key={drive.drive_id} className="flex flex-row justify-between h-full items-center">
+                  <div className='flex flex-row flex-1 gap-2'>
                   <h2 className='font-satoshi-bold text-primary'>#{drive.rank} </h2>
                   <h2 className='font-satoshi-bold text-left '> {drive.title} </h2>
-                </div>
-                <div className='flex flex-col items-end'>
+                  </div>
+                  <div className='flex flex-col items-end'>
                   <h2 className='text-primary font-satoshi-bold text-lg'>{drive.percent_funded}%</h2>
                   <p className='font-satoshi-light text-xs text-black'>of goal reached</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
