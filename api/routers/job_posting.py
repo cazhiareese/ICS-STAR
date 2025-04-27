@@ -1,13 +1,14 @@
 import json
+import math
 from uuid import UUID
-from fastapi import Depends, HTTPException, APIRouter, Form, UploadFile, File
+from fastapi import Depends, HTTPException, APIRouter, Form, Query, UploadFile, File
 from typing import Optional, List
 from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
-from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut, EmploymentTypeEnum, JobModeEnum
-from schemas.report_schema import ReportedJobPostingOut, PostReportDetailOut
+from schemas.job_posting_schema import JobPostingOut, JobPostingForAdminOut, EmploymentTypeEnum, JobModeEnum, PaginationMeta, PaginatedJobPostingResponse
+from schemas.report_schema import ReportedJobPostingOut, PostReportDetailOut, PaginationMeta, PaginatedReportedResponse
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
 from util.job_posting_util import create_job_posting, edit_job_posting
@@ -248,10 +249,25 @@ def get_job_posting(
     return response
 
 # Get job postings that are open
-@router.get("/admin/job-postings/open", response_model=List[JobPostingForAdminOut])
+@router.get("/admin/job-postings/open", response_model=PaginatedJobPostingResponse)
 def get_open_job_postings(
+    page: int = Query(1, ge=1, description="Page number"),
     db: Session = Depends(get_db)
 ):
+    
+    per_page = 10  # Number of items per page
+
+    # Get total count for pagination
+    total_count = db.query(func.count(JobPosting.post_id))\
+        .filter(
+            JobPosting.is_closed == False,
+            JobPosting.is_deleted == False
+        ).scalar()
+    
+    # Calculate offset
+    offset = (page - 1) * per_page
+    
+    # Main query with pagination
     query_result = db.query(
         JobPosting.post_id,
         JobPosting.title,
@@ -271,9 +287,13 @@ def get_open_job_postings(
         JobPosting.is_closed == False,
         JobPosting.is_deleted == False
     ).group_by(
-        JobPosting.post_id, JobPosting.title, JobPosting.date_posted, 'user_name' 
-    ).all()
+        JobPosting.post_id, JobPosting.title, JobPosting.date_posted, JobPosting.company,
+        JobPosting.description, JobPosting.employment_type, JobPosting.mode, JobPosting.salary, 'user_name'
+    ).order_by(
+        JobPosting.date_posted.desc()  # Order by most recent first
+    ).offset(offset).limit(per_page).all()
     
+    # Format results
     result = []
     for row in query_result:
         result.append({
@@ -289,7 +309,18 @@ def get_open_job_postings(
             "interested_count": row.interested_count
         })
     
-    return result
+    # Calculate total pages
+    total_pages = math.ceil(total_count / per_page) if total_count > 0 else 1
+    
+    return {
+        "items": result,
+        "meta": {
+            "page": page,
+            "per_page": per_page,
+            "total_items": total_count,
+            "total_pages": total_pages
+        }
+    }
 
 # Get count job postings that are open
 @router.get("/admin/job-postings/open/count")
