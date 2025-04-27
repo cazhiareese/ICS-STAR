@@ -16,7 +16,6 @@ from models.log import Log
 
 from schemas.events_schema import UpcomingEventResponse
 from schemas.donation_schema import RecentDonationResponse, TopFundedDriveResponse
-from schemas.log import VisitResponse
 
 router = APIRouter(
     prefix="/admin_dashboard",
@@ -261,10 +260,8 @@ async def get_top_funded_drives(
     
     return response
 
-@router.get("/visits", response_model=List[VisitResponse])
-def get_visits(
-    db: Session = Depends(get_db)
-    ):
+@router.get("/visits", response_model=dict)
+def get_visits(db: Session = Depends(get_db)):
     today = datetime.utcnow()
     start_date = today - timedelta(days=30)
     
@@ -285,14 +282,20 @@ def get_visits(
     
     # Create the complete result with all days
     result = []
+    total_visits = 0
     for i in range(30):
         date = (today - timedelta(days=30 - i - 1)).strftime("%b %d")
+        visits = date_dict.get(date, 0)
+        total_visits += visits
         result.append({
             "date": date,
-            "visits": date_dict.get(date, 0)
+            "visits": visits
         })
     
-    return result
+    return {
+        "total_visits": total_visits,
+        "data": result
+    }
 
 @router.get("/user_statistics")
 def get_alumni_statistics(db: Session = Depends(get_db)):
