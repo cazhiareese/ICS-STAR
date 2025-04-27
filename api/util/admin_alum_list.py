@@ -67,9 +67,10 @@ def get_all_alumni(db: Session):
     return {"list": alum_list, "count": count_alumni}
 
 
-def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: Optional[str] = None, country: Optional[str] = None, order_by:list[str] = None):
+def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None, industry: Optional[str] = None, country: Optional[str] = None, order_by:list[str] = None):
 
     one_year_ago = datetime.now() - timedelta(days=365)
+    ITEMS_PER_PAGE = 10
     query = db.query(
         User.user_id,
         User.first_name, 
@@ -103,6 +104,10 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         query = query.filter(
         User.country == country
     )
+    
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
 
     if order_by:
         for order in order_by:
@@ -142,6 +147,8 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         # Default ordering if none specified
         query = query.order_by(asc(User.last_name), asc(User.first_name))
     
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
     alumni = query.all()
 
     if not alumni:
@@ -169,7 +176,7 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         }
         alum_list.append(al)
 
-    return alum_list
+    return alum_list, total_pages
 
 
 def get_alumni_filter(
@@ -184,9 +191,10 @@ def get_alumni_filter(
     affiliation: Optional[str] = None,
     order_by: Optional[List[str]] = None,
     needs_verified: Optional[bool] = False,
+    page: int = 1
 ) -> List[Dict]:
     one_year_ago = datetime.now() - timedelta(days=365)
-    
+    ITEMS_PER_PAGE = 10
     # Base query
     query = db.query(
         User.user_id,
@@ -219,12 +227,7 @@ def get_alumni_filter(
         User.is_verified == True,
         User.user_type == 'alumni'
         )
-
-        # Append appropriate filters to the initial query
     if name:
-        # We have to also catch if full name was inputted (e.g. "John Doe" or "John Michael Doe")
-        #
-        # Split the name by space and filter for each part
         name_parts = name.split()
         if len(name_parts) == 1:
             query = query.filter(or_(User.first_name.ilike(f"%{name_parts[0]}%"), User.last_name.ilike(f"%{name_parts[0]}%")))
@@ -277,6 +280,10 @@ def get_alumni_filter(
 
             query = query.filter(User.user_id.in_(db.query(affiliation_subquery.c.user_id)))
 
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
+
     if order_by:
         for order in order_by:
             order_parts = order.lower().split('_')
@@ -310,6 +317,9 @@ def get_alumni_filter(
         # Default ordering if none specified
             query = query.order_by(asc(User.last_name), asc(User.first_name))
 
+
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
 
     alumni = query.all()
 
@@ -349,7 +359,7 @@ def get_alumni_filter(
             }
         alum_list.append(al)
 
-    return alum_list
+    return alum_list, total_pages
 
 
 def get_student_filter(
@@ -360,9 +370,10 @@ def get_student_filter(
     affiliation: Optional[str] = None,
     order_by: Optional[List[str]] = None,
     needs_verified: Optional[bool] = False,
+    page: int=1
 ) -> List[Dict]:
     one_year_ago = datetime.now() - timedelta(days=365)
-    
+    ITEMS_PER_PAGE = 10
     # Base query
     query = db.query(
         User.user_id,
@@ -413,7 +424,9 @@ def get_student_filter(
         if affiliation_list:
             affiliation_subquery = db.query(UserAffiliation.user_id).filter(or_(*[UserAffiliation.affiliation.ilike(f"%{a}%") for a in affiliation_list])).distinct().subquery()
             query = query.filter(User.user_id.in_(db.query(affiliation_subquery.c.user_id)))
-
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
     if order_by:
         for order in order_by:
             order_parts = order.lower().split('_')
@@ -445,7 +458,8 @@ def get_student_filter(
         # Default ordering if none specified
             query = query.order_by(asc(User.last_name), asc(User.first_name))
 
-
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
     students = query.all()
 
     if not students:
@@ -479,5 +493,5 @@ def get_student_filter(
             }
         student_list.append(student_data)
 
-    return student_list
+    return student_list, total_pages
 

@@ -90,6 +90,7 @@ class User(Base):
    facebook = Column(String(255))
    linkedin = Column(String(255))
    github = Column(String(255))
+   is_onboarded = Column(Boolean, default=False)
    created_at = Column(DateTime(timezone=True), server_default=func.now())
    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

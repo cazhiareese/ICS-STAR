@@ -2,7 +2,7 @@ from typing import List, Optional
 from models.job_posting_model import JobPosting, JobPostingTag
 from models.report_model import Report, ReportAttachment
 from models.report_model import ReportStatusEnum
-from config.config import STORAGE_STRING, supabase_client
+from config.config import STORAGE_STRING, SUPABASE_BUCKET, supabase_client
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi import HTTPException
@@ -38,7 +38,7 @@ async def create_job_posting(
         file_name = f"job_posting/{job_title.replace(' ', '_')}.{file_extension}"
 
         try:
-            supabase_client.storage.from_("128storage").upload(file_name, file)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload image. Error: {str(e)}")
         
@@ -47,7 +47,6 @@ async def create_job_posting(
     else:
         image_url = None
 
-    job_title = job_title.replace(" ", "_")
     job_posting = JobPosting(
         title=job_title,
         company=company,
@@ -108,7 +107,7 @@ async def edit_job_posting(
         file_name = f"job_posting/{job_title.replace(' ', '_')}.{file_extension}"
 
         try:
-            supabase_client.storage.from_("128storage").upload(file_name, file)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload image. Error: {str(e)}")
         
@@ -198,7 +197,7 @@ async def handle_attachment_upload(
     
     try:
         # Upload file to storage
-        supabase_client.storage.from_("128storage").upload(file_name, file)
+        supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
         
         # Get public URL
         file_url = f"{STORAGE_STRING}{file_name}"

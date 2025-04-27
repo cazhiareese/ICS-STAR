@@ -51,7 +51,7 @@ async def login_for_access_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) 
 
     
     # Once verified, add new login log
@@ -60,7 +60,7 @@ async def login_for_access_token(
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user.user_id), "role": user.user_type.value}, expires_delta=access_token_expires
+        data={"sub": str(user.user_id), "role": user.user_type.value, "is_onboarded": user.is_onboarded}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 

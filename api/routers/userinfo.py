@@ -6,6 +6,7 @@ from typing import List, Optional
 from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
+from models.job_posting_model import JobPosting
 
 from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum, UserStandingEnum
 
@@ -37,60 +38,70 @@ async def upload_profile_picture(
 
 @router.post("/add-scholarships")
 async def add_scholarships(
-    scholarships: List[str] = Query(...),
+    scholarships: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    new_scholarships = [
-        UserScholarship(user_id=user.user_id, scholarship=scholarship)
-        for scholarship in scholarships
-    ]
+    if scholarships:
+        new_scholarships = [
+            UserScholarship(user_id=user.user_id, scholarship=scholarship)
+            for scholarship in scholarships
+        ]
+        
+        db.add_all(new_scholarships)
+        db.commit()
     
-    db.add_all(new_scholarships)
-    db.commit()
-    
-    return {"message": "scholarships added successfully"}
+        return {"message": "scholarships added successfully"}
+    else:
+        return {"success": True}
 
 @router.post("/add-affiliations")
 async def add_affiliations(
-    affiliations: List[str] = Query(...),
-    roles: List[str] = Query(...),
+    affiliations: Optional[List[str]] = Query(None),
+    roles: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
-    
-    if len(affiliations) != len(roles):
-        raise HTTPException(status_code=400, detail="Invalid input")
+    if affiliations and roles:
+        if len(affiliations) != len(roles):
+            raise HTTPException(status_code=400, detail="Invalid input")
 
-    new_affiliations = [
-        UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role) for affiliation, role in zip(affiliations, roles)
-    ]
+        new_affiliations = [
+            UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role) for affiliation, role in zip(affiliations, roles)
+        ]
+        
+        db.add_all(new_affiliations)
+        db.commit()
     
-    db.add_all(new_affiliations)
-    db.commit()
-    
-    return {"message": "affiliations added successfully"}
+        return {"message": "affiliations added successfully"}
+    else:
+        return {"success": True}
+
 
 @router.post("/add-skills")
 async def add_skills(
-    skills: List[str] = Query(...),
+    skills: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
-    
-    db.add_all(new_skills)
-    db.commit()
-    print(new_skills)
-    return {"message": "skills added successfully"}
+    if skills:
+        new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
+        db.add_all(new_skills)
+        db.commit()
+        
+        return {"message": "skills added successfully"}
+    else:
+        return {"success": True}
+
+
 
 @router.post("/onboarding-info-student")
 async def onboarding_student(
@@ -546,3 +557,18 @@ async def update_links(
     db.commit()
     
     return {"message": "Links updated successfully"}
+
+# Fetch the user's job posts
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of job posts made by the user
+@router.get("/profile/job-posts")
+async def get_job_posts(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    job_posts = db.query(JobPosting).filter(JobPosting.user_id == user.user_id).all()
+
+    return {"message": "success", "data": job_posts}

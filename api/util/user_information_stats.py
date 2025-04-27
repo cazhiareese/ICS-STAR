@@ -10,9 +10,9 @@ from datetime import datetime, timedelta
 
 
 
-def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_general: bool = False):
+def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_general: bool = False, page: int =1):
     one_year_ago = datetime.now() - timedelta(days=365)
-    
+    ITEMS_PER_PAGE = 5
     if alumni_general:
         # Return general alumni statistics (not broken down by batch)
         query = db.query(
@@ -64,6 +64,10 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
             ).where(User.is_verified == True, User.student_number.is_not(None))
             .group_by("batch")
         )
+        subq = query.subquery()
+
+        total_batches = db.query(func.count()).select_from(subq).scalar()
+        print(total_batches)
 
         if order:
             order_parts = order.lower().split('_')
@@ -75,7 +79,13 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
             else:
                 query = query.order_by(field)
         
+
+        offset = (page - 1) * ITEMS_PER_PAGE
+        query = query.offset(offset).limit(ITEMS_PER_PAGE)
+
         result = query.all()
+
+        total_pages = max((total_batches + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
         if not result:
             raise HTTPException(status_code=404, detail="No users found for any batch")
 
@@ -94,7 +104,7 @@ def get_active_alumni_stats(db: Session, order: Optional[str] = None, alumni_gen
             })
 
 
-        return results_analyzed
+        return results_analyzed, total_pages
 
 def get_employment_status(db: Session, batch:Optional[str] = None):
 
