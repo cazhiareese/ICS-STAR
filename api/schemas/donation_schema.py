@@ -83,6 +83,12 @@ class AdminDonationDriveOut(BaseModel):
     class Config:
         from_attributes = True
 
+class PaginatedDonationDrivesResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[AdminDonationDriveOut]
+
 class AdminOneDonationDriveOut(BaseModel):
     drive_id: UUID
     title: str
@@ -173,6 +179,12 @@ class AdminClosedDonationDriveOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PaginatedClosedDonationDrivesResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[AdminClosedDonationDriveOut]
 
 class RecentDonationResponse(BaseModel):
     drive_title: str
