@@ -404,7 +404,7 @@ def open_drives_by_amount_raised_ascending(
         data=paginated_results
     )
 
-@router.get("/admin/donations/open-drives-by-percent-funded-descending", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/open-drives-by-percent-funded-descending", response_model=PaginatedDonationDrivesResponse)
 def open_drives_by_percent_funded_descending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
@@ -425,7 +425,7 @@ def open_drives_by_percent_funded_descending(
         data=paginated_results
     )
 
-@router.get("/admin/donations/open-drives-by-percent-funded-ascending", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/open-drives-by-percent-funded-ascending", response_model=PaginatedDonationDrivesResponse)
 def open_drives_by_percent_funded_ascending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
@@ -446,7 +446,7 @@ def open_drives_by_percent_funded_ascending(
         data=paginated_results
     )
 
-@router.get("/admin/donations/open-drives-by-donation-count-descending", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/open-drives-by-donation-count-descending", response_model=PaginatedDonationDrivesResponse)
 def open_drives_by_donation_count_descending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
@@ -467,7 +467,7 @@ def open_drives_by_donation_count_descending(
         data=paginated_results
     )
 
-@router.get("/admin/donations/open-drives-by-donation-count-ascending", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/open-drives-by-donation-count-ascending", response_model=PaginatedDonationDrivesResponse)
 def open_drives_by_donation_count_ascending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
@@ -488,7 +488,7 @@ def open_drives_by_donation_count_ascending(
         data=paginated_results
     )
 
-@router.get("/admin/donations/open-drives-by-date-created-newest", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/open-drives-by-date-created-newest", response_model=PaginatedDonationDrivesResponse)
 def open_drives_by_date_created_newest(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
@@ -509,7 +509,7 @@ def open_drives_by_date_created_newest(
         data=paginated_results
     )
 
-@router.get("/admin/donations/open-drives-by-date-created-oldest", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/open-drives-by-date-created-oldest", response_model=PaginatedDonationDrivesResponse)
 def open_drives_by_date_created_oldest(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
