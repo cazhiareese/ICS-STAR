@@ -691,7 +691,7 @@ def pending_monetary(
         raise HTTPException(status_code=404, detail="No pending monetary donations found")
 
     page_size = 10
-    total_pages, paginated_results = paginate_results(results, page, page_size)
+    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
 
     return PaginatedMonetaryDonationsResponse(
         message="success",
@@ -712,7 +712,7 @@ def verified_inkind(
         raise HTTPException(status_code=404, detail="No verified in-kind donations found")
 
     page_size = 10
-    total_pages, paginated_results = paginate_results(results, page, page_size)
+    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
 
     return PaginatedInKindDonationsResponse(
         message="success",
@@ -733,7 +733,7 @@ def verified_monetary(
         raise HTTPException(status_code=404, detail="No verified monetary donations found")
 
     page_size = 10
-    total_pages, paginated_results = paginate_results(results, page, page_size)
+    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
 
     return PaginatedMonetaryDonationsResponse(
         message="success",
