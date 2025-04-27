@@ -424,11 +424,25 @@ def get_closed_job_postings_count(
     
     return {"closed_job_postings_count": count}
 
-@router.get("/admin/job-postings/reported", response_model=List[ReportedJobPostingOut])
+@router.get("/admin/job-postings/reported", response_model=PaginatedReportedResponse)
 def get_reported_job_postings(
+    page: int = Query(1, ge=1, description="Page number"),
     db: Session = Depends(get_db),
 ):
     
+    per_page = 10  # Number of items per page
+
+    # Get total count for pagination
+    total_count = db.query(func.count(JobPosting.post_id))\
+        .join(Report, Report.reported_post_id == JobPosting.post_id)\
+        .filter(JobPosting.is_deleted == False)\
+        .group_by(JobPosting.post_id)\
+        .count()
+    
+    # Calculate offset
+    offset = (page - 1) * per_page
+    
+    # Main query with pagination
     query_result = db.query(
         JobPosting.post_id,
         JobPosting.title,
@@ -446,7 +460,9 @@ def get_reported_job_postings(
         JobPosting.is_deleted == False
     ).group_by(
         JobPosting.post_id, JobPosting.title, JobPosting.date_posted, 'user_name' 
-    ).all()
+    ).order_by(
+        func.count(func.distinct(Report.report_id)).desc()  # Order by most reported
+    ).offset(offset).limit(per_page).all()
     
     result = []
     for row in query_result:
@@ -459,7 +475,18 @@ def get_reported_job_postings(
             "report_count": row.report_count
         })
     
-    return result
+    # Calculate total pages
+    total_pages = math.ceil(total_count / per_page) if total_count > 0 else 1
+    
+    return {
+        "items": result,
+        "meta": {
+            "page": page,
+            "per_page": per_page,
+            "total_items": total_count,
+            "total_pages": total_pages
+        }
+    }
 
 # Get count job postings that are reported
 @router.get("/admin/job-postings/reported/count")
