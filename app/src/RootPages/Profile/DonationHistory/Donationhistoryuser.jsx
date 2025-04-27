@@ -53,15 +53,16 @@ function DonationHistoryUser({ userDetails }) {
         const monetary = monetaryRes.data.data.map((d) => ({
           ...d,
           type: "Monetary",
+          is_acknowledged: d.is_acknowledged ?? false, // Fallback if status is missing
         }));
-        console.log(monetary);  
+        console.log(monetary);
 
         const inKind = inKindRes.data.data.map((d) => ({
           ...d,
           type: "In-Kind",
           amount: 0,
         }));
-        console.log(inKind );  
+        console.log(inKind);
 
         const sortedMonetary = [...monetary].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
         const sortedInKind = [...inKind].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
@@ -103,11 +104,12 @@ function DonationHistoryUser({ userDetails }) {
       if (key === "date_donated") {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
-      }
-
-      if (key === "amount") {
+      } else if (key === "amount") {
         aValue = parseFloat(aValue);
         bValue = parseFloat(bValue);
+      } else if (key === "is_acknowledged") {
+        aValue = aValue ? 1 : 0; // Convert boolean to 1/0 for sorting
+        bValue = bValue ? 1 : 0;
       }
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1;
@@ -146,7 +148,6 @@ function DonationHistoryUser({ userDetails }) {
         selectedType={selectedType}
       />
 
-
       {loading && <p className="mt-4">Loading...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
@@ -177,11 +178,26 @@ function DonationHistoryUser({ userDetails }) {
                 onClick={() => openModal(donation)}
                 className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
               >
-                <div className="w-1/3">{formattedDate}</div>
-                <div className="w-1/3">{donation.donation_drive_title}</div>
-                <div className="w-1/3 text-left">
-  {selectedType === "Monetary" ? formattedAmount : donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
-</div>
+                <div className={selectedType === "Monetary" ? "w-1/4" : "w-1/3"}>
+                  {formattedDate}
+                </div>
+                <div className={selectedType === "Monetary" ? "w-1/4" : "w-1/3"}>
+                  {donation.donation_drive_title}
+                </div>
+                {selectedType === "Monetary" ? (
+                  <>
+                    <div className="w-1/4 text-left">
+                      {formattedAmount}
+                    </div>
+                    <div className="w-1/4 text-left">
+                      {donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-1/3 text-left">
+                    {donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
+                  </div>
+                )}
               </div>
             );
           })}
