@@ -226,16 +226,13 @@ const EventsLanding = () => {
             ]);    
         }
     }
-
-
-
-    if (user === null) {
-        return (
-            <div className="flex flex-col items-center justify-center h-screen">
-                <h1 className="text-2xl font-bold">Loading...</h1>
-            </div>
-        );
-    }
+    // if (user === null) {
+    //     return (
+    //         <div className="flex flex-col items-center justify-center h-screen">
+    //             <h1 className="text-2xl font-bold">Loading...</h1>
+    //         </div>
+    //     );
+    // }
     return (
         <>
             <div className="flex flex-col sm:items-center ">
@@ -304,7 +301,8 @@ const EventsLanding = () => {
                                         <EventCards event={reservation} />
                                         
                                         <button
-                                            className="z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer bg-green-500 text-whitey"
+                                            className="z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer bg-green-500 text-whitey
+                                            hover:scale-110 transform transition-transform duration-200"
                                             onClick={() => handleRSVPClick(reservation.event_id, reservation)}
                                         >
                                             <Star className="fill-white" />
@@ -339,7 +337,8 @@ const EventsLanding = () => {
                         </label>
                         <div className="flex flex-row  space-x-3 md:ml-auto md:pt-0 pt-5">
                         <button
-                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Today" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
+                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Today" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} 
+                            hover:scale-105 transform transition-transform duration-200`}
                             onClick={() => {
                                 
                                 // console.log("Today: ", filteredEvents)
@@ -363,7 +362,8 @@ const EventsLanding = () => {
                             Today
                         </button>
                         <button
-                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Tomorrow" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
+                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Tomorrow" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} 
+                            hover:scale-105 transform transition-transform duration-200`}
                             onClick={() => {
                                 
 
@@ -386,7 +386,7 @@ const EventsLanding = () => {
                             Tomorrow
                         </button>
                         <button
-                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "This Weekend" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
+                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "This Weekend" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} hover:scale-105 transform transition-transform duration-200`}
                             onClick={() => {
                                 
                                 
@@ -414,9 +414,9 @@ const EventsLanding = () => {
                         <button
                         className={`px-2 lg:px-4 py-2 rounded-full border ${
                             filterPress === "Choose Date"
-                            ? "border-gray-300 text-white bg-primary"
+                            ? "border-gray-300 text-primary bg-primary"
                             : "border-gray-300 text-gray-700 hover:bg-gray-100 bg-white"
-                        }`}
+                        }hover:scale-105 transform transition-transform duration-200`}
                         onClick={() => {
                             if (filterPress === "Choose Date") {
                             // toggle off
@@ -435,7 +435,8 @@ const EventsLanding = () => {
 
                         {/* Calendar pop‑up */}
                         {showCalendar && (
-                            <div className="absolute m-auto mt-20 ml-30 z-50 w-70 h-full">
+                            <div className="absolute m-auto mt-20 ml-30 z-50 w-70 h-full
+                            hover:scale-105 transform transition-transform duration-200`">
                                 <DatePicker
                             selected={pickedDate}
                             onChange={(date) => {
@@ -466,19 +467,22 @@ const EventsLanding = () => {
                             
                         // <div className="absolute top-full mt-5 bg-white w-full max-w-[600px] border-gray-400 border-2 z-20 rounded-2xl">
                             suggestions.map((event, index) => {
+
+                            
                             const isGoing = reservations && reservations.some(reservation => reservation.event_id === event.event_id);
                             return !isGoing && (
+                                
                                 <div key={index} className="flex relative">
                                 <EventCards event={event} />
                                 {userType === "alumni" && (
                                     <button
                                     className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                                    }`}
+                                        !event.is_closed ? (isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white') :'text-white bg-red-800'
+                                    } hover:scale-105 transform transition-transform duration-200`}
                                     onClick={() => handleRSVPClick(event.event_id, event)}
                                 >
-                                    <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                                    <label>{isGoing ? 'Going' : 'RSVP'}</label>
+                                    <label>{!event.is_closed ? isGoing ? <Star className='fill-white'/> : <Star/> : <></>}</label>
+                                    <label>{!event.is_closed ? (isGoing ? 'Going' : 'RSVP'): 'Closed'}</label>
                                     </button>
                                     )
                                 }
@@ -496,7 +500,7 @@ const EventsLanding = () => {
                                     <button
                                     className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                                         isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                                    }`}
+                                    } hover:scale-105 transform transition-transform duration-200`}
                                     onClick={() => handleRSVPClick(event.event_id, event)}
                                 >
                                     <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>

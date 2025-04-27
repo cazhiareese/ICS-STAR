@@ -45,7 +45,9 @@ const EventCards = ({event}) => {
 
     const truncatedDescription = truncateDescription(event.description, 2);
     return (
-        <div className="w-90 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1"
+        <div className={`w-90 h-110 rounded-2xl overflow-clip shadow-xl bg-white relative border-gray-200 border-1
+        
+        hover:scale-95 transform transition-transform duration-200 hover:cursor-pointer`}
         onClick={() => {openEventDetails(event.event_id)}} 
         >
             <div className="h-40 bg-gray-300">
