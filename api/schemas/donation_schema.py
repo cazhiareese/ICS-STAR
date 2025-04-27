@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Union
 from uuid import UUID
 from datetime import datetime
 
@@ -170,6 +170,14 @@ class AdminClosedDonationDriveOut(BaseModel):
     percent_funded: float
     amount_raised: float
     target_cost: float
+
+    class Config:
+        from_attributes = True
+
+class RecentDonationResponse(BaseModel):
+    drive_title: str
+    donor_name: str
+    donation_details: str
 
     class Config:
         from_attributes = True
