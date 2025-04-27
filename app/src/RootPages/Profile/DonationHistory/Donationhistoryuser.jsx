@@ -3,6 +3,8 @@ import SectionHeader from "../components/sectionheader";
 import axios from "axios";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import DonationDetailsModal from "./component/donationmodal";
+import ReactLoading from "react-loading";
+import CircularLoading from "../../../components/LoadingComponents/circularloading";
 
 function DonationHistoryUser({ userDetails }) {
   const [monetaryDonations, setMonetaryDonations] = useState([]);
@@ -188,7 +190,11 @@ function DonationHistoryUser({ userDetails }) {
         </div>
       </div>
 
-      {loading && <p className="mt-4">Loading...</p>}
+      {loading && (
+        <div className="flex justify-center items-center "><CircularLoading/></div>
+
+
+      )}
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
       {!loading && !error && currentSortedData.length === 0 && (
