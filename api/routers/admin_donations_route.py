@@ -329,16 +329,26 @@ def closed_drives_by_date_created_oldest(
         data=paginated_results
     )
 
-@router.get("/admin/donations/closed-drives-by-donation-count-descending", response_model=List[AdminClosedDonationDriveOut])
+@router.get("/admin/donations/closed-drives-by-donation-count-descending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_donation_count_descending(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1, description="Page number")
 ):
     results = get_all_closed_drives_by_donation_count_descending(db)
 
+    page_size = 10
+
     if not results:
         raise HTTPException(status_code=404, detail="No closed drives found")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
 
-    return results
+    return PaginatedClosedDonationDrivesResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
 
 @router.get("/admin/donations/closed-drives-by-donation-count-ascending", response_model=List[AdminClosedDonationDriveOut])
 def closed_drives_by_donation_count_ascending(
