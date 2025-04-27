@@ -50,9 +50,12 @@ function AdminEngagementReports() {
   // TODO: Add loading
 
   const [mostInterested, setMostInterested] = useState([]);
+  const [mostInterestedLoading, setMostInterestedLoading] = useState(false);
 
   const [donationHighlights, setDonationHighlights] = useState({});
   const [donorHighlights, setDonorHighlights] = useState({});
+  const [donationtLoading, setDonationLoading] = useState(false);
+  const [donorLoadinhg, setDonorLoading] = useState(false);
 
   const [recentNewsLetters, setRecentLetters] = useState([]);
 
@@ -106,11 +109,13 @@ function AdminEngagementReports() {
   useEffect(() => {
     const fetchMostInterested = async () => {
       // setFullEngagementReportLoading(true);
+      setMostInterestedLoading(true);
       try {
         const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`);
         console.log(response.data);
         setMostInterested(response.data);
         // setFullEngagementReportLoading(false);
+        setMostInterestedLoading(true);
       } catch (err) {
         console.log(err.message || 'Something went wrong');
       }
@@ -123,11 +128,13 @@ function AdminEngagementReports() {
   useEffect(() => {
     const fetchDonationHightlights = async () => {
       // setFullEngagementReportLoading(true);
+      setDonationLoading(true);
       try {
         const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`);
         console.log(response.data);
         setDonationHighlights(response.data);
         // setFullEngagementReportLoading(false);
+        setDonationLoading(false);
       } catch (err) {
         console.log(err.message || 'Something went wrong');
       }
@@ -140,11 +147,13 @@ function AdminEngagementReports() {
   useEffect(() => {
     const fetchDonorHightlights = async () => {
       // setFullEngagementReportLoading(true);
+      setDonorLoading(true);
       try {
         const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`);
         console.log(response.data);
         setDonorHighlights(response.data);
         // setFullEngagementReportLoading(false);
+        setDonorLoading(false);
       } catch (err) {
         console.log(err.message || 'Something went wrong');
       }
@@ -286,28 +295,31 @@ function AdminEngagementReports() {
 
               {/* List of Job offers */}
               <div className="flex flex-col gap-6">
-              {mostInterested.map((item, idx) => (
-                  <div key={item.id} className="flex gap-4 items-center">
-                  <p className="text-primary font-satoshi-medium text-lg">#{idx+1}</p>
-                  <img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />
-                  <div className="flex flex-col">
-                      <h1 className="text-black font-satoshi-bold text-lg">{item.title}</h1>
-                      <h1 className="text-black font-satoshi-regular text-md">{item.company}</h1>
-                      <div className='flex flex-row gap-5'>
-                          <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
-                              <CalendarDays size={20} />
-                              <span>{item.date_posted}</span>
-                          </div>
+                {mostInterested ? (
+                  <CircularLoading />
+                ) : (
+                mostInterested.map((item, idx) => (
+                    <div key={item.id} className="flex gap-4 items-center">
+                    <p className="text-primary font-satoshi-medium text-lg">#{idx+1}</p>
+                    <img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />
+                    <div className="flex flex-col">
+                        <h1 className="text-black font-satoshi-bold text-lg">{item.title}</h1>
+                        <h1 className="text-black font-satoshi-regular text-md">{item.company}</h1>
+                        <div className='flex flex-row gap-5'>
+                            <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
+                                <CalendarDays size={20} />
+                                <span>{item.date_posted}</span>
+                            </div>
 
-                          <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
-                              <Users size={20} />
-                              <span>{item.interested_count}</span>
-                              <span>person</span>
-                          </div>
-                      </div>
-                  </div>
-                  </div>
-              ))}
+                            <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
+                                <Users size={20} />
+                                <span>{item.interested_count}</span>
+                                <span>person</span>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                )))}
               </div>
 
               {/* Footer Link */}
@@ -336,7 +348,11 @@ function AdminEngagementReports() {
     {/* Two Donation Cards */}
     <div className="flex flex-col md:flex-row gap-6 mt-8">
       {/* Highest Amount Donated */}
+      
       <div className="flex flex-col items-center justify-center  rounded-2xl p-6 w-full md:w-1/2">
+        {donationtLoading ? (
+          <CircularLoading />
+        ) : (
         <div className='flex flex-row gap-5'>
           <div className="relative w-40 h-40 mb-4">
             <svg className="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
@@ -378,11 +394,14 @@ function AdminEngagementReports() {
               </div>
             <p className="text-primary font-satoshi-bold mt-2">₱ {donationHighlights.amount_gathered} / ₱ {donationHighlights.target_cost} raised</p>
           </div>
-        </div>
-      </div>
+        </div>)}
+      </div> 
 
       {/* Highest Amount of Donators */}
       <div className="flex flex-col items-center justify-center rounded-2xl p-6 w-full md:w-1/2">
+        {donorLoadinhg ? (
+          <CircularLoading />
+        ) : (
         <div className='flex flex-row gap-5'>
           <div className="relative w-40 h-40 mb-4">
           <svg className="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
@@ -425,7 +444,7 @@ function AdminEngagementReports() {
               </div>
             <p className="text-primary font-satoshi-bold mt-2">₱{donorHighlights.amount_gathered} / ₱{donorHighlights.target_cost} raised</p>
           </div>
-        </div>
+        </div>)}
       </div>
     </div>
   </div>

@@ -2,15 +2,17 @@ import { MoveLeft, ArrowLeft, ArrowRight } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
 
 
 function MostEngagedJobs() {
     const [daysFilter, setDaysFilter] = useState("30days");
     const [mostInterested, setMostInterested] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [skip, setSkip] = useState(0);
     const navigate = useNavigate();
-
     
+
 
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -19,12 +21,14 @@ function MostEngagedJobs() {
     useEffect(() => {
         const fetchMostInterested = async () => {
           // setFullEngagementReportLoading(true);
+          setLoading(true);
           try {
             const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-interested?time_range=${daysFilter}&skip=${skip}&limit=10`);
             console.log(response.data);
             setMostInterested(response.data);
             const totalPages = Math.ceil(response.data.length / rowsPerPage);
             // setFullEngagementReportLoading(false);
+            setLoading(false);
           } catch (err) {
             console.log(err.message || 'Something went wrong');
           }
@@ -86,7 +90,10 @@ function MostEngagedJobs() {
                             </tr>
                         </thead>
                         <tbody className="font-satoshi-medium">
-                            {mostInterested.map((job, index) => (
+                            {mostInterested ? (
+                                <CircularLoading/>
+                            ) : (
+                            mostInterested.map((job, index) => (
                                 <tr key={index} className="border-b border-gray-300 hover:bg-gray-50 h-20">
                                     <td className="py-4 px-6 text-gray-500">{job.date_posted}</td>
                                     <td className="py-4 px-6 text-black">{job.title}</td>
@@ -96,7 +103,7 @@ function MostEngagedJobs() {
                                     </td>
                                     <td className="py-4 px-6">{job.interested_count}</td>
                                 </tr>
-                            ))}
+                            )))}
                         </tbody>
                     </table>
                 </div>
