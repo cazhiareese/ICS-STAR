@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse
+from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse, generate_interested_users_csv
 from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut
 from typing import Optional, List, Dict
 from config.database import get_db
@@ -155,3 +155,10 @@ def view_new_interested(
         raise HTTPException(status_code=404, detail="No new interested users found.")
     
     return results
+
+@router.get("/job/generate-interested-csv/{post_id}/")
+def admin_get_interested_users(
+    post_id: UUID,
+    db: Session = Depends(get_db),
+):
+    return generate_interested_users_csv(db, post_id)

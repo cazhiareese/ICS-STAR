@@ -7,6 +7,11 @@ from models.job_posting_model import JobPosting, JobPostingTag, JobPostingIntere
 from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut
 import datetime
 from uuid import UUID
+import csv
+from io import StringIO
+from fastapi import Response, HTTPException, Depends
+from typing import Optional
+
 
 def admin_search_job(
         db: Session,
@@ -541,3 +546,43 @@ def get_all_user_interested_by_date_of_interest_oldest(
         interested_out_list.append(user_out)
 
     return interested_out_list
+
+def generate_interested_users_csv(
+    db: Session,
+    post_id: UUID
+) -> Response:
+   
+    users = view_interested_in(db, post_id)
+    
+    # Get job information for the CSV filename
+    job_info = job_overview(db, post_id)
+    job_title = job_info.title if job_info else "job-posting"
+    safe_job_title = "".join(c if c.isalnum() else "-" for c in job_title)
+    
+    # Create a CSV in memory
+    output = StringIO()
+    writer = csv.writer(output)
+    
+    # Write header row
+    writer.writerow(["Name", "Batch", "Location", "Industry", "Date of Interest"])
+    
+    # Write data rows
+    for user in users:
+        writer.writerow([
+            user.name,
+            user.batch,
+            user.location,
+            user.industry,
+            user.date_of_interest
+        ])
+    
+    # Create response with CSV content
+    response = Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename={safe_job_title}-interested-users.csv"
+        }
+    )
+    
+    return response

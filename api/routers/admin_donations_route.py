@@ -60,9 +60,11 @@ from util.admin_donations_logic import (search_donation_drives,
                                         update_generic_drive_stats_last_seven_days,
                                         update_generic_drive_stats_this_month,
                                         update_generic_drive_stats_this_week,
-                                        update_generic_drive_stats_this_year
+                                        update_generic_drive_stats_this_year,
+                                        get_top_drives_with_goals_reached,
+                                        get_top_performing_drives
                                         )
-import datetime
+from datetime import datetime
 from uuid import UUID
 
 router = APIRouter(tags=["Admin Donations View"])
@@ -621,5 +623,41 @@ def weekly_monetary_donations(
 
     if not results:
         raise HTTPException(status_code=404, detail="No weekly amounts found")
+    
+    return results
+
+# Get the top drives with goals reached
+@router.get("/admin/donations/top-drives-with-goals-reached", tags=["Donations"])
+def top_drives_with_goals_reached(
+    start_date: str = None,
+    end_date: str = None,
+    db: Session = Depends(get_db)
+):
+    
+    start_dt = datetime.strptime(start_date, "%m/%d/%Y") if start_date else None
+    end_dt = datetime.strptime(end_date, "%m/%d/%Y") if end_date else None
+
+    results = get_top_drives_with_goals_reached(db, start_dt, end_dt)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No drives found with goals reached")
+    
+    return results
+
+# Get the top performing drives
+@router.get("/admin/donations/top-performing-drives", tags=["Donations"])
+def top_performing_drives(
+    start_date: str = None,
+    end_date: str = None,
+    db: Session = Depends(get_db)
+):
+    
+    start_dt = datetime.strptime(start_date, "%m/%d/%Y") if start_date else None
+    end_dt = datetime.strptime(end_date, "%m/%d/%Y") if end_date else None
+
+    results = get_top_performing_drives(db, start_dt, end_dt)
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No drives found")
     
     return results
