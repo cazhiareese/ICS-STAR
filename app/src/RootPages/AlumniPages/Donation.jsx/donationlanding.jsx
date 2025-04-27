@@ -7,6 +7,7 @@ import DonationCard from "../../../components/donationDonateView";
 import DonationCardSkeleton from "./Donationcomponent/DonationCardSkeleton";
 import DonationMainViewSkeleton from "./Donationcomponent/donationmainviewskeleton";
 import DonationCSkeleton from "./Donationcomponent/Donationcskeleton";
+import { Filter, Search } from "lucide-react";
 
 function DonationLanding() {
   const [donationData, setDonationData] = useState(null); // Initialize as null
@@ -114,17 +115,27 @@ function DonationLanding() {
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (
-    <div className="flex flex-col p-4 space-y-5">
+    <div className="flex flex-col  p-4 space-y-5">
       {/* Search bar */}
-      <div className="flex justify-center p-5">
-        <input
-          type="text"
-          placeholder="Search donation drives..."
-          className="w-full lg:w-1/2 max-w-[600px] px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+      <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-whitey">
+  <div className="flex flex-row gap-5 w-[543px] h-[57.7px] items-center justify-center mt-4">
+    {/* The Search Bar */}
+    <input
+      type="text"
+      placeholder="Search donation drives..."
+      className="bg-gray-100 font-satoshi-medium text-lg w-full h-full px-4 py-2 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+    />
+                    <button  className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
+                    <Search size={20} />
+                </button>
+
+    {/* Filter Button */}
+  </div>
+</div>
+
+
   
       {/* Static Donation Drives Header */}
       <div className="hidden sm:flex justify-start items-start pl-[180px] font-satoshi-bold text-[32px] text-primary">
