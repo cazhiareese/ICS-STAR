@@ -2,6 +2,7 @@ import React from "react";
 import { XCircle } from "lucide-react";
 
 const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
+  console.log(donation);
   if (!isOpen || !donation) return null;
 
   const formattedDate = new Date(donation.date_donated).toLocaleDateString("en-US", {
@@ -11,7 +12,12 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
   });
 
   const isInKind = donation.type === "In-Kind";
-  const statusText = donation.is_acknowledged ? "Acknowledged" : "Pending Acknowledgement";
+  const statusText = donation.is_acknowledged === null 
+  ? { text: "Pending Acknowledgement", color: "text-primary" }
+  : donation.is_acknowledged === false
+  ? { text: "Disapproved", color: "text-red-500" }
+  : { text: "Acknowledged", color: "text-primary" };
+
 
   const displayAmount = isInKind
     ? donation.description // Show description for In-Kind donations
@@ -44,7 +50,8 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
             { label: "Donation Drive", value: donation.donation_drive_title },
             { label: "Date", value: formattedDate },
             { label: "Type", value: donation.type },
-            { label: "Status", value: <span className="text-primary font-semibold">{statusText}</span> },
+            { label: "Status", value: <span className={`${statusText.color} font-semibold`}>{statusText.text}</span> },
+
             {
               label: isInKind ? "Description" : "Amount", // Show 'Description' for In-Kind donations
               value: displayAmount,
