@@ -40,6 +40,7 @@ function AdminEvents() {
     setOrderBy(newParam);
   };
 
+
   async function fetchEvents(type, token) {
     setLoading(true)
     try {
@@ -78,7 +79,9 @@ function AdminEvents() {
   useEffect(() => {
     const token = localStorage.getItem("token")
     fetchEvents(eventType, token)
+
   }, [eventType, query, sortBy, sortDirection])
+
 
 
   return (
