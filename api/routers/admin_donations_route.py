@@ -1,3 +1,4 @@
+import math
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
@@ -322,9 +323,13 @@ def closed_drives_by_date_created_oldest(
 
 @router.get("/admin/donations/open-drives", response_model=List[AdminDonationDriveOut])
 def open_drives(
+    page: int = Query(1, ge=1, description="Page number"),
     db: Session = Depends(get_db)
 ):
-    results = get_all_open_drives(db)
+    # Fixed page size of 10
+    page_size = 10
+    
+    results = get_all_open_drives(db, page=page, page_size=page_size)
 
     if not results:
         raise HTTPException(status_code=404, detail="No open drives found")
