@@ -125,25 +125,17 @@ def get_visible_events_for_user(
     
     now = datetime.now(timezone.utc).date()
     
-    visible_event_ids = (
-        db.query(EventVisibleTo.event_id)
+    visible_event_ids = set(
+        event_id for (event_id,) in db.query(EventVisibleTo.event_id)
         .filter(EventVisibleTo.user_id == user_id)
-        .subquery()
+        .all()
     )
 
     events = (
         db.query(Event)
         .filter(Event.is_deleted == False)
-        .filter(
-            or_(
-                Event.is_all == True,
-                Event.event_id.in_(visible_event_ids.select())
-            )
-        )
         .all()
     )
-    
-    print
 
     event_list = []
 
@@ -151,6 +143,9 @@ def get_visible_events_for_user(
         future_dates = sorted([dt.date for dt in event.dates if dt.date.date() >= now])
 
         if not future_dates:
+            if not event.is_concluded:
+                event.is_concluded = True
+                db.add(event)
             continue
         
         filtered_dates = []
@@ -170,18 +165,28 @@ def get_visible_events_for_user(
             continue
 
         tags = [tag.tag for tag in event.tags]
+        
+        if event.is_all:
+            rsvp_closed = False
+        else:
+            rsvp_closed = event.event_id not in visible_event_ids
 
+        going_count = len(event.confirmed_by)
+        
         event_list.append({
             "event_id": event.event_id,
             "title": event.title,
             "image": event.image,
             "description": event.description,
             "location": event.location,
-            "is_closed": event.is_closed,
             "dates": filtered_dates,
-            "tags": tags
+            "tags": tags,
+            "rsvp_closed": rsvp_closed,
+            "going_count": going_count
         })
 
+    db.commit()
+    db.refresh(event)
     sorted_events = sorted(event_list, key=lambda e: e["dates"][0])
 
     return [EventOut(**e) for e in sorted_events]
