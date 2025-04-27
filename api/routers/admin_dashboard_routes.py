@@ -41,7 +41,7 @@ async def get_not_yet_acknowledged_donations_count(
         raise HTTPException(status_code=500, detail=str(e))
     
 # Fetch number of reported posts
-@router.get("/reported-posts/count", response_model=Dict[str, int])
+@router.get("/pending-reported-posts/count", response_model=Dict[str, int])
 async def get_reported_posts_count(
     db: Session = Depends(get_db)
     ):
@@ -55,7 +55,7 @@ async def get_reported_posts_count(
     return {"pending_reported_posts_count": count}
 
 # Fetch number of reported users
-@router.get("/reported-users/count", response_model=Dict[str, int])
+@router.get("/pending-reported-users/count", response_model=Dict[str, int])
 async def get_reported_users_count(
     db: Session = Depends(get_db)
     ):
