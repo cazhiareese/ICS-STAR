@@ -54,19 +54,21 @@ function AdminUserDetails() {
     // "scholarships": [],
     // "affiliations": []
   })
+  const [token, setToken] = useState(null)
 
   useEffect(() => {
-      console.log(userid);
+      // console.log(userid);
+      setToken(localStorage.getItem("token"))
       const fetchData = async () => {
         setLoading(true)
         try {
           // get the user details
-          const user = await axios.get(`${API_BASE_URL}/profile/${userid}`)
+          const user = await axios.get(`${API_BASE_URL}/profile/${userid}`, {headers: {Authorization: `Bearer ${token}`}})
           console.log(user.data.data)
           setUser(user.data.data)
 
           // get the reports
-          const reports = await axios.get(`${API_BASE_URL}/admin/report-logs/${userid}`)
+          const reports = await axios.get(`${API_BASE_URL}/admin/report-logs/${userid}`, {headers: {Authorization: `Bearer ${token}`}})
           console.log(reports.data)
           setReports(reports.data)
         } catch (error) {
@@ -84,7 +86,7 @@ function AdminUserDetails() {
   async function makeAlumni() {
     setMakeAlumniLoading(true)
     try {
-      const response = await axios.put(`${API_BASE_URL}/admin/transition/${userid}`)
+      const response = await axios.put(`${API_BASE_URL}/admin/transition/${userid}`, {headers: {Authorization: `Bearer ${token}`}})
       console.log(response)
       setTimeout(() => {
       }, 500)
@@ -100,7 +102,7 @@ function AdminUserDetails() {
     // alert("Limited account access")
     setLimitAccessLoading(true)
     try {
-      const response = await axios.put(`${API_BASE_URL}/admin/ban/${userid}`)
+      const response = await axios.put(`${API_BASE_URL}/admin/ban/${userid}`, {headers: {Authorization: `Bearer ${token}`}})
       console.log(response)
     } catch (error) {
       console.log(error)
