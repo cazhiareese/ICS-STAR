@@ -124,29 +124,47 @@ function DonationLanding() {
       </div>
 
       {/* Loading State */}
+
+
+      <div className="hidden sm:flex justify-start items-start pl-[180px] font-satoshi-bold text-[32px] text-primary">
+  Donation Drives
+</div>
       {loading || donationData === null || generalDrive === null ? (
         <div className="flex justify-center items-center min-h-[200px]">
           <NewLoading size={40} text="Loading Donation Drives..." />
         </div>
       ) : (
+
         <div className="flex flex-col lg:flex-row gap-4 justify-center">
           {/* Left column: Donation cards */}
-          <div
-            className="order-2 lg:order-1 flex-1 lg:max-w-[600px] overflow-y-auto scrollbar-blue"
-            style={{ maxHeight: "calc(100vh - 200px)", direction: "rtl" }}
-          >
-            <div className="flex flex-wrap gap-4  justify-center items-center" style={{ direction: "ltr" }}>
-              {filteredData.length > 0 ? (
-                filteredData.map((drive, index) => (
-                  <DonationCards key={index} drive={drive} />
-                ))
-              ) : (
-                <p className="w-full text-center text-gray-500">
-                  No donation drives available at the moment.
-                </p>
-              )}
-            </div>
-          </div>
+          
+          <div className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-col">
+  {/* Small device header (not inside scroll) */}
+  <div className="flex justify-center items-center sm:hidden font-satoshi-bold text-[28px] text-primary mb-4">
+    Donation Drives
+  </div>
+  
+
+  {/* Scrollable Cards */}
+  <div
+    className="overflow-y-auto scrollbar-blue"
+    style={{ maxHeight: "calc(100vh - 200px)", direction: "rtl" }}
+  >
+    <div className="flex flex-wrap gap-4 justify-center items-center" style={{ direction: "ltr" }}>
+      {filteredData.length > 0 ? (
+        filteredData.map((drive, index) => (
+          <DonationCards key={index} drive={drive} />
+        ))
+      ) : (
+        <p className="w-full text-center text-gray-500">
+          No donation drives available at the moment.
+        </p>
+      )}
+    </div>
+  </div>
+</div>
+
+
 
 {/* Right column: Announcements */}
 <div className=" order-1 lg:order-2  lg:basis-[950px] px-4 rounded-xl text-center h-fit ">
