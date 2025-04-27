@@ -230,7 +230,7 @@ async def register_user(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded}, expires_delta=access_token_expires
+        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified}, expires_delta=access_token_expires
     )
 
     return {"message": "Account created successfully", "access_token": access_token}
@@ -298,7 +298,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         user_id: int = payload.get("sub")
         role: str = payload.get("role")
         is_onboarded: bool = payload.get("is_onboarded")
-        if user_id is None or role is None or is_onboarded is None:
+        is_verified: bool = payload.get("is_verified")
+        if user_id is None or role is None or is_onboarded is None or is_verified is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
@@ -433,7 +434,7 @@ async def register_with_google(
     # Create and return access token
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded}, 
+        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified}, 
         expires_delta=access_token_expires
     )
 
