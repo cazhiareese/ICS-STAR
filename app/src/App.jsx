@@ -59,13 +59,18 @@ import AdminCountryInformation from "./RootPages/AdminPages/Dashboard/admincount
 import AdminEventsLayout from "./RootPages/AdminPages/Layouts/AdminEventsLayout";
 import AdminCreateEvent from "./RootPages/AdminPages/Events/AdminCreateEvent";
 import AdminEventDetails from "./RootPages/AdminPages/Events/AdminEventDetails";
+
+import NewsletterLanding from "./RootPages/AlumniPages/Newsletter/newsletterlanding";
+import Newsletter from "./RootPages/AlumniPages/Newsletter/newsletter";
+
 import AdminNewsLetter from "./RootPages/AdminPages/NewsLetter/AdminNewsLetter";
 import AdminCreateNewsletter from "./RootPages/AdminPages/NewsLetter/AdminCreateNewsLetter";
 import AdminNewsletterDetails from "./RootPages/AdminPages/NewsLetter/AdminNewsletterDetails";
 
 
-//const isSignedIn = !!localStorage.getItem("token");
-const isSignedIn = true;
+const isSignedIn = !!localStorage.getItem("token");
+//const isSignedIn = true;
+
 console.log("isSignedIn:", isSignedIn);
 
 
@@ -79,19 +84,17 @@ import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewl
 //const isSignedIn = !!localStorage.getItem("token");
 
 
-
-
 function App() {
   function checkType() {
-    //const User = localStorage.getItem("token");
-    const User = true;
+    const User = localStorage.getItem("token");
+    //const User = true;
     let tokenType = null;
     if (User) {
-      //const decoded = jwtDecode(User);
-      //console.log("Decoded token:", decoded);
-      tokenType = "admin";
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      //tokenType = "admin";
       //tokenType = "alumni";
-      //const tokenType = decoded.role; // Adjust this based on your token structure
+      const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
     } else {
@@ -148,6 +151,8 @@ function App() {
 
             
             <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+            <Route path="alumni/newsletter" element={<NewsletterLanding />} />
+            <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
             <Route path="*" element={<Unauthorized />} />
 
