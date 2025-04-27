@@ -79,6 +79,7 @@ import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
 import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
 import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
+import AdminDonationsInsights from "./RootPages/AdminPages/Donations/AdminDonationsInsights";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
@@ -217,6 +218,7 @@ function App() {
             </Route>
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
+              <Route path="insights" element={<AdminDonationsInsights/>}/>
               <Route path=":driveid" element={<AdminDonationInformation/>}/>
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
               <Route path="help-ics/" element={<AdminHelpIcs/>}/>
