@@ -123,7 +123,7 @@ function DonationLanding() {
     <input
       type="text"
       placeholder="Search donation drives..."
-      className="bg-gray-100 font-satoshi-medium text-lg w-full h-full px-4 py-2 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
+      className="bg-gray-100 font-satoshi-medium text-lg w-full h-full px-4 py-2 sm:mb-3 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
     />
