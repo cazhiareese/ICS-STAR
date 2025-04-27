@@ -1,7 +1,7 @@
 import math
 from typing import Dict, List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import String, cast, desc, func, and_, literal, select, union_all
+from sqlalchemy import String, case, cast, desc, func, and_, literal, select, union_all
 from sqlalchemy.orm import Session
 from config.database import get_db
 from models.usermodel import User
@@ -11,7 +11,7 @@ from models.event_model import Event, EventDate
 from models.donationmodel import DonationDrive
 from datetime import datetime, timezone
 from schemas.events_schema import UpcomingEventResponse
-from schemas.donation_schema import RecentDonationResponse
+from schemas.donation_schema import RecentDonationResponse, TopFundedDriveResponse
 
 router = APIRouter(
     prefix="/admin_dashboard",
@@ -191,5 +191,67 @@ async def get_recent_donations(
             "donor_name": donor_name,
             "donation_details": details
         })
+    
+    return response
+
+@router.get("/top-funded-drives", response_model=List[TopFundedDriveResponse])
+async def get_top_funded_drives(
+    db: Session = Depends(get_db)
+    ):
+    # Query to get donation drive metrics - only count acknowledged donations
+    results = db.execute(
+        select(
+            DonationDrive.drive_id,
+            DonationDrive.title,
+            DonationDrive.target_cost,
+            func.sum(
+                case(
+                    (MonetaryDonation.is_acknowledged == True, MonetaryDonation.amount),
+                    else_=0
+                )
+            ).label("total_donations"),
+            func.count(
+                case(
+                    (MonetaryDonation.is_acknowledged == True, MonetaryDonation.donation_id),
+                    else_=None
+                )
+            ).label("acknowledged_count")
+        )
+        .select_from(DonationDrive)
+        .join(
+            MonetaryDonation,
+            DonationDrive.drive_id == MonetaryDonation.drive_id
+        )
+        .where(
+            DonationDrive.is_deleted == False,
+            DonationDrive.is_closed == False
+        )
+        .group_by(DonationDrive.drive_id, DonationDrive.title, DonationDrive.target_cost)
+        .order_by(desc("total_donations"))
+        .limit(3)
+    ).all()
+
+    # Format response
+    response = []
+    for result in results:
+        # Calculate percentage funded (handle division by zero)
+        target = float(result.target_cost) if result.target_cost else 0
+        total = float(result.total_donations) if result.total_donations else 0
+        
+        percentage = 0
+        if target > 0 and total > 0:
+            percentage = (total / target) * 100
+            percentage = round(percentage, 2)  # Round to 2 decimal places
+        
+        response.append({
+            "drive_id": result.drive_id,
+            "title": result.title,
+            "total_donations": total,
+            "target_cost": target,
+            "acknowledged_donations": result.acknowledged_count or 0,
+            "percentage_funded": percentage
+        })
+
+    response.sort(key=lambda x: x["percentage_funded"], reverse=True)
     
     return response
