@@ -1725,8 +1725,8 @@ def get_weekly_donation_amounts(db: Session, drive_id: UUID):
         return []
 
     # Align start date to Monday
-    start_week = min_date - datetime.timedelta(days=min_date.weekday())
-    end_week = max_date - datetime.timedelta(days=max_date.weekday())
+    start_week = min_date - timedelta(days=min_date.weekday())
+    end_week = max_date - timedelta(days=max_date.weekday())
 
     # Fetch donation totals grouped by week
     week_start = func.date_trunc('week', MonetaryDonation.date_donated).label("week_start")
@@ -1751,6 +1751,6 @@ def get_weekly_donation_amounts(db: Session, drive_id: UUID):
             "week": current.strftime("%m/%d"),
             "amount_in_thousands": round(amount / 1000, 2) if amount else 0
         })
-        current += datetime.timedelta(weeks=1)
+        current += timedelta(weeks=1)
 
     return result
