@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from models.event_model import Event, EventConfirmedBy, EventDate, EventVisibleTo
 from uuid import UUID
 from datetime import datetime, timezone, date, timedelta
-from schemas.events_schema import OneEventOut, EventOut, EventConfirmedOut
+from schemas.events_schema import OneEventOut, EventOut
 from util.admin_events_util import add_user_clicks
 
 
@@ -79,6 +79,18 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
         tags = [tag.tag for tag in event.tags]
         
         going_count = len(event.confirmed_by)
+        
+        if user_id:
+            visible_event_ids = (
+                db.query(EventVisibleTo.event_id)
+                .filter(EventVisibleTo.user_id == user_id)
+                .all()
+            )
+            visible_event_ids = {event_id for event_id, in visible_event_ids}
+
+            rsvp_closed = event.event_id not in visible_event_ids and not event.is_all
+        else:
+            rsvp_closed = not event.is_all
 
         event_list.append({
             "event_id": event.event_id,
@@ -86,18 +98,18 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
             "image": event.image,
             "description": event.description,
             "location": event.location,
-            "is_closed": event.is_closed,
             "dates": [d.isoformat() for d in future_dates],
             "tags": tags,
+            "rsvp_closed":rsvp_closed,
             "going_count": going_count
         })
     db.commit()
     db.refresh(event)
     sorted_events = sorted(event_list, key=lambda e: e["dates"][0])
 
-    return [EventConfirmedOut(**e) for e in sorted_events]
+    return [EventOut(**e) for e in sorted_events]
 
-def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
+def get_event_by_id(event_id: UUID, db: Session, user_id: Optional[UUID] = None) -> OneEventOut:
     event = (
         db.query(Event)
         .filter(Event.event_id == event_id)
@@ -110,7 +122,20 @@ def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
 
     dates = event.dates
     
-    # add_user_clicks(event.event_id, db)
+    add_user_clicks(event.event_id, db)
+    going_count = len(event.confirmed_by)
+    
+    if user_id:
+        visible_event_ids = (
+            db.query(EventVisibleTo.event_id)
+            .filter(EventVisibleTo.user_id == user_id)
+            .all()
+        )
+        visible_event_ids = {event_id for event_id, in visible_event_ids}
+
+        rsvp_closed = event.event_id not in visible_event_ids and not event.is_all
+    else:
+        rsvp_closed = not event.is_all
 
     return OneEventOut(
         event_id=event.event_id,
@@ -118,10 +143,11 @@ def get_event_by_id(event_id: UUID, db: Session) -> OneEventOut:
         description=event.description,
         image=event.image,
         location=event.location,
-        is_closed=event.is_closed,
         datetimes=[d.date for d in dates],
         links=[link.link for link in event.links],
         tags=[tag.tag for tag in event.tags],
+        going_count = going_count,
+        rsvp_closed=rsvp_closed
     )
 
 def get_visible_events_for_user(
