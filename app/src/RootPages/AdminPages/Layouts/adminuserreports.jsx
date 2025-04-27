@@ -54,6 +54,7 @@ function AdminEngagementReports() {
   const [donationHighlights, setDonationHighlights] = useState({});
   const [donorHighlights, setDonorHighlights] = useState({});
 
+  const [recentNewsLetters, setRecentLetters] = useState([]);
 
   // BASE URL ENV
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -245,7 +246,7 @@ function AdminEngagementReports() {
           <div className="bg-white rounded-2xl shadow p-6 md:w-1/2">
               <div className="flex flex-col justify-between  mb-6">
               <div>
-                  <h1 className="text-3xl font-satoshi-bold text-black">Donation Highlights</h1>
+                  <h1 className="text-3xl font-satoshi-bold text-black">Most Recent Newsletters</h1>
                   <p className="text-gray-500 text-sm font-satoshi-light pb-3">Last {daysFilter} Days</p>
               </div>
                   
@@ -253,18 +254,17 @@ function AdminEngagementReports() {
 
               {/* List of Newsletters */}
               <div className="flex flex-col gap-6">
-              {mostDonations.map((item, idx) => (
+              {recentNewsLetters.map((item, idx) => (
                   <div key={item.id} className="flex gap-4 items-center">
                   <p className="text-primary font-satoshi-medium text-lg">#{idx+1}</p>
                   <img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />
                   <div className="flex flex-col">
                       <h1 className="text-black font-satoshi-bold text-lg">{item.title}</h1>
-                      <h1 className="text-black font-satoshi-regular text-md">₱{item.amount_gathered}/₱{item.target_cost} raised</h1>
-                      
                       <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
-                          <Users size={20} />
-                          <span>{item.donor_count}</span>
-                          <span>donors</span>
+                            <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
+                                <CalendarDays size={20} />
+                                <span>{item.date}</span>
+                            </div>
                       </div>
                       
                   </div>
@@ -272,10 +272,7 @@ function AdminEngagementReports() {
               ))}
               </div>
 
-              {/* Footer Link */}
-              <div className="text-right mt-6">
-              <button className="text-primary font-satoshi-medium cursor-pointer">See Full Report →</button>
-              </div>
+             
           </div>
 
           {/* Most Job offers */}
