@@ -1,17 +1,22 @@
 import math
 from typing import Dict, List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import String, case, cast, desc, func, and_, literal, select, union_all
-from sqlalchemy.orm import Session
 from config.database import get_db
+from datetime import datetime, timedelta, timezone
+
+from sqlalchemy import Date, String, case, cast, desc, func, and_, literal, select, union_all
+from sqlalchemy.orm import Session
+
 from models.usermodel import User
 from models.donationmodel import MonetaryDonation, InKindDonation
 from models.report_model import Report, ReportStatusEnum
 from models.event_model import Event, EventDate
 from models.donationmodel import DonationDrive
-from datetime import datetime, timezone
+from models.log import Log
+
 from schemas.events_schema import UpcomingEventResponse
 from schemas.donation_schema import RecentDonationResponse, TopFundedDriveResponse
+from schemas.log import VisitResponse
 
 router = APIRouter(
     prefix="/admin_dashboard",
@@ -255,3 +260,36 @@ async def get_top_funded_drives(
     response.sort(key=lambda x: x["percentage_funded"], reverse=True)
     
     return response
+
+@router.get("/visits", response_model=List[VisitResponse])
+def get_visits(
+    db: Session = Depends(get_db)
+    ):
+    today = datetime.utcnow()
+    start_date = today - timedelta(days=30)
+    
+    # Query logs from the last 30 days
+    query_result = (
+        db.query(
+            cast(Log.date_time, Date).label('day'),
+            func.count(Log.log_id).label('visits')
+        )
+        .filter(Log.date_time >= start_date)
+        .group_by(cast(Log.date_time, Date))
+        .order_by(cast(Log.date_time, Date))
+        .all()
+    )
+    
+    # Create a dictionary of existing dates and their visit counts
+    date_dict = {day.strftime("%b %d"): visits for day, visits in query_result}
+    
+    # Create the complete result with all days
+    result = []
+    for i in range(30):
+        date = (today - timedelta(days=30 - i - 1)).strftime("%b %d")
+        result.append({
+            "date": date,
+            "visits": date_dict.get(date, 0)
+        })
+    
+    return result
