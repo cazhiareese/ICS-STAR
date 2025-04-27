@@ -6,6 +6,7 @@ import SortModal from '../../../components/AdminComponents/sortmodal'
 import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 import InsightsDonationsTable from '../../../components/AdminComponents/InsightsDonationsTable'
+import DatePicker from 'react-multi-date-picker'
 
 function AdminDonationsInsights() {
   const [token, setToken] = useState(null)
@@ -18,30 +19,61 @@ function AdminDonationsInsights() {
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const filters = ["This_Year", "This_Month", "This_Week", "Last_7_Days", "Custom"];
+  const filters = ["last_30_days", "last_7_days", "Custom"];
   const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(null)
+  const [selectedYear, setSelectedYear] = useState(null)
+  const [customStartDate, setCustomStartDate] = useState(null)
+  const [customEndDate, setCustomEndDate] = useState(null)
   const formatFilter = (filter) => filter.replaceAll("_", " ");
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   async function fetchInitialData() {
-    // Fetch top performing drives
-    setLoading(true)
+    setLoading(true);
     try {
-      const topDrivesResponse = await axios.get(`${API_BASE_URL}/admin/donations/top-performing-drives?time_filter=last_7_days`, {headers: {Authorization: `Bearer ${token}`}})
-      console.log(topDrivesResponse.data)
-      setTopPerformingDrives(topDrivesResponse.data)
+      // Build query params
+      let queryParams = `time_filter=${timeFilter}`;
+      if (timeFilter === "monthly" && selectedMonth !== null && selectedYear !== null) {
+        queryParams += `&month=${selectedMonth}&year=${selectedYear}`;
+      }
 
-      const driveGoalsReachedResponse = await axios.get(`${API_BASE_URL}/admin/donations/top-drives-with-goals-reached?time_filter=last_7_days`, {headers: {Authorization: `Bearer ${token}`}})
-      console.log(driveGoalsReachedResponse.data)
-      setDrivesWithGoalsReached(driveGoalsReachedResponse.data)
+      console.log(queryParams)
+  
+    // Fetch top performing drives
+    const topDrivesResponse = await axios.get(
+      `${API_BASE_URL}/admin/donations/top-performing-drives?${queryParams}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log(topDrivesResponse.data);
+
+    // Check if it's an array or an error message
+    if (Array.isArray(topDrivesResponse.data)) {
+      setTopPerformingDrives(topDrivesResponse.data);
+    } else {
+      setTopPerformingDrives([]); // Empty array if no data
+    }
+
+    // Fetch drives with goals reached
+    const driveGoalsReachedResponse = await axios.get(
+      `${API_BASE_URL}/admin/donations/top-drives-with-goals-reached?${queryParams}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log(driveGoalsReachedResponse);
+
+    if (Array.isArray(driveGoalsReachedResponse.data)) {
+      setDrivesWithGoalsReached(driveGoalsReachedResponse.data);
+    } else {
+      setDrivesWithGoalsReached([]);
+    }
 
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
+  
 
   useEffect(() => {
     setToken(localStorage.getItem("token"))
@@ -50,7 +82,9 @@ function AdminDonationsInsights() {
 
   return (
     loading ? (
-      <CircularLoading/>
+      <div className='flex flex-row items-center justify-center h-full w-full'>
+        <CircularLoading/>
+      </div>
     ) : (
       <div className='flex flex-col p-6 h-screen w-full overflow-auto'>
           {/* header */}
@@ -67,7 +101,7 @@ function AdminDonationsInsights() {
 
           {filterOpen && (
             <div className="absolute top-10 w-64 bg-white border border-gray-300 rounded-md shadow-lg p-4 z-10">
-              <p className="font-semibold mb-2">Filter:</p>
+              <p className="font-satoshi-medium mb-2">Filter:</p>
               <div className="flex flex-col gap-2">
                 {filters.map((filter) => (
                   <label key={filter} className="flex items-center gap-2">
@@ -77,23 +111,61 @@ function AdminDonationsInsights() {
                       value={filter}
                       checked={timeFilter === filter}
                       onChange={() => {
-                        setTimeFilter(filter);
-                        setFilterOpen(false);
+                        if (filter === "Custom") {
+                          setTimeFilter(filter); // Set "Custom" but don't fetch yet
+                        } else {
+                          setTimeFilter(filter);
+                          setFilterOpen(false);
+                          fetchInitialData(); // Fetch immediately for non-custom filters
+                        }
                       }}
                     />
                     <span>{formatFilter(filter)}</span>
                   </label>
                 ))}
+
+                {/* Show date pickers if Custom is selected */}
                 {timeFilter === "Custom" && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <input type="date" className="border px-2 py-1 rounded-md" />
-                    <span>to</span>
-                    <input type="date" className="border px-2 py-1 rounded-md" />
+                  <div className="flex flex-col gap-2 mt-4">
+                    <div className="flex flex-col">
+                      <label className="text-xs text-gray-500 mb-1">Start Date:</label>
+                      <DatePicker
+                        value={customStartDate}
+                        onChange={setCustomStartDate}
+                        className="border rounded-md"
+                        containerClassName="w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-xs text-gray-500 mb-1">End Date:</label>
+                      <DatePicker
+                        value={customEndDate}
+                        onChange={setCustomEndDate}
+                        className="border rounded-md"
+                        containerClassName="w-full"
+                      />
+                    </div>
+
+                    {/* Submit button */}
+                    <button
+                      className="mt-2 bg-primary text-white py-1 px-2 rounded-md hover:bg-hover cursor-primary font-satoshi-regular"
+                      onClick={() => {
+                        if (!customStartDate || !customEndDate) {
+                          alert("Please select both start and end dates.");
+                          return;
+                        }
+                        setFilterOpen(false);
+                        fetchInitialData(); // Now fetch after both dates are selected
+                      }}
+                    >
+                      Apply Filter
+                    </button>
                   </div>
                 )}
               </div>
             </div>
           )}
+
         </div>
         {/* Top performing drives and drives with goals reached */}
         <div className='flex flex-row gap-4 h-1/3 mt-2'>
@@ -127,10 +199,10 @@ function AdminDonationsInsights() {
                 <p> No drives with goals reached :( </p>
               </div>
             ) : (
-              drivesWithGoalsReached.map((drive) => (
+              drivesWithGoalsReached.map((drive, index) => (
                 <div key={drive.drive_id} className="flex flex-row justify-between h-full items-center">
                   <div className='flex flex-row flex-1 gap-2'>
-                  <h2 className='font-satoshi-bold text-primary'>#{drive.rank} </h2>
+                  <h2 className='font-satoshi-bold text-primary'>#{index+1} </h2>
                   <h2 className='font-satoshi-bold text-left '> {drive.title} </h2>
                   </div>
                   <div className='flex flex-col items-end'>
