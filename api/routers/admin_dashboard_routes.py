@@ -53,3 +53,18 @@ async def get_reported_posts_count(
         .scalar()
     
     return {"pending_reported_posts_count": count}
+
+# Fetch number of reported users
+@router.get("/reported-users/count", response_model=Dict[str, int])
+async def get_reported_users_count(
+    db: Session = Depends(get_db)
+    ):
+    count = db.query(func.count(Report.report_id))\
+        .filter(
+            Report.reported_user_id.isnot(None),
+            Report.reported_post_id.is_(None),
+            Report.status == ReportStatusEnum.pending
+        )\
+        .scalar()
+    
+    return {"pending_reported_users_count": count}
