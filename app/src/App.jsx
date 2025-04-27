@@ -85,14 +85,16 @@ import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewl
 
 function App() {
   function checkType() {
+
+    //const User = true;
     const User = localStorage.getItem("token");
     // const User = true;
     let tokenType = null;
     if (User) {
-       const decoded = jwtDecode(User);
-       console.log("Decoded token:", decoded);
-      // //tokenType = "admin";
-      tokenType = "alumni";
+      const decoded = jwtDecode(User);
+      // console.log("Decoded token:", decoded);
+      // tokenType = "admin";
+      // tokenType = "student";
       const tokenType = decoded.role; // Adjust this based on your token structure
       console.log("Decoded token type:", tokenType);
       return tokenType;
@@ -292,7 +294,7 @@ function App() {
       )}
 
       {/* Redirect unknown routes */}
-      {/* <Route path="*" element={<LoginPage />} /> */}
+      <Route path="*" element={<LoginPage />} />
     </Routes>
   );
 }
