@@ -135,7 +135,9 @@ function JobTable({ data, jobType }) {
 
                 {/* Right Column: Job Preview Card */}
                 <div className="md:w-2/5 bg-white rounded-2xl shadow overflow-hidden">
-                    <div className="h-1/3 w-full bg-primary font-satoshi-regular rounded-t-2xl"></div>
+                    <div className="h-1/3 w-full bg-primary font-satoshi-regular rounded-t-2xl">
+                      <img src={selectedJob.image} alt="" />
+                    </div>
                     <div className="p-6">
                         <h2 className="text-4xl font-satoshi-bold mb-2">{selectedJob.title}</h2>
                         <p className="text-2xl font-satoshi-regular">
