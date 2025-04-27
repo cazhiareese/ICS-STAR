@@ -141,93 +141,108 @@ function DonationHistoryUser({ userDetails }) {
           setSelectedType(type);
         }}
       />
-
+  
       <DonationTableHeader
         onSort={handleSort}
         getSortIcon={getSortIcon}
         selectedType={selectedType}
       />
-
+  
       {loading && <p className="mt-4">Loading...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
-
+  
       {!loading && !error && currentSortedData.length === 0 && (
         <p className="mt-4 text-gray-500">No donation history found.</p>
       )}
-
+  
       {!loading && !error && currentSortedData.length > 0 && (
         <div className="font-satoshi-medium text-[16px] text-black max-h-[525px] overflow-y-auto sm:max-h-[400px] scrollbar-blue">
           {currentSortedData.map((donation) => {
-            const formattedDate = new Date(
-              donation.date_donated
-            ).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            });
-
+            const formattedDate = new Date(donation.date_donated).toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            );
+  
             const formattedAmount = new Intl.NumberFormat("en-PH", {
               style: "currency",
               currency: "PHP",
               minimumFractionDigits: 2,
             }).format(donation.amount);
-
+  
             return (
               <div
                 key={donation.donation_id}
                 onClick={() => openModal(donation)}
                 className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
               >
-                <div className={selectedType === "Monetary" ? "w-1/4" : "w-1/3"}>
+                <div
+                  className={selectedType === "Monetary" ? "w-1/4" : "w-1/3"}
+                >
                   {formattedDate}
                 </div>
-                <div className={selectedType === "Monetary" ? "w-1/4 " : "w-1/3"}>
+                <div
+                  className={
+                    selectedType === "Monetary"
+                      ? "w-1/3 px-2 sm:px-6"
+                      : "w-2/3 px-2 sm:px-6"
+                  }
+                >
                   {donation.donation_drive_title}
                 </div>
                 {selectedType === "Monetary" ? (
-  <>
-    <div className="w-1/4 text-left">{formattedAmount}</div>
-    <div className="w-1/4 text-left">
-      {/* Text display for larger screens */}
-      <span className="sm:inline hidden">
-        {donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
-      </span>
-      {/* Circle display for small screens */}
-      <div
-        className={`sm:hidden inline-block w-4 h-4 rounded-full ${
-          donation.is_acknowledged === null
-            ? "bg-yellow-500"
-            : donation.is_acknowledged
-            ? "bg-green-500"
-            : "bg-red-500"
-        }`}
-      ></div>
-    </div>
-  </>
-) : (
-  <div className="w-1/3 text-left">
-    {/* Text display for larger screens */}
-    <span className="sm:inline hidden">
-      {donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
-    </span>
-    {/* Circle display for small screens */}
-    <div
-      className={`sm:hidden inline-block w-4 h-4 rounded-full ${
-        donation.is_acknowledged === null
-          ? "bg-yellow-500"
-          : donation.is_acknowledged
-          ? "bg-green-500"
-          : "bg-red-500"
-      }`}
-    ></div>
-  </div>
-)}
+                  <>
+                    <div className="w-1/4 px-2 sm:px-3 text-left">
+                      {formattedAmount}
+                    </div>
+                    <div className="w-1/4 flex justify-center sm:justify-center items-center ">
+                      {/* Text for larger screens (hidden at sm and below) */}
+                      <span className="hidden sm:inline">
+                        {donation.is_acknowledged
+                          ? "Acknowledged"
+                          : "Not Acknowledged"}
+                      </span>
+                      {/* Circle for small screens (visible at sm and below) */}
+                      <div
+                        className={`inline-block sm:hidden w-4 h-4 rounded-full ${
+                          donation.is_acknowledged === null
+                            ? "bg-yellow-500"
+                            : donation.is_acknowledged
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
+                      ></div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-1/3 flex justify-center sm:justify-center items-center">
+                    {/* Text for larger screens (hidden at sm and below) */}
+                    <span className="hidden sm:inline">
+                      {donation.is_acknowledged
+                        ? "Acknowledged"
+                        : "Not Acknowledged"}
+                    </span>
+                    {/* Circle for small screens (visible at sm and below) */}
+                    <div
+                      className={`inline-block sm:hidden w-4 h-4 rounded-full ${
+                        donation.is_acknowledged === null
+                          ? "bg-yellow-500"
+                          : donation.is_acknowledged
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                        }`}
+                      ></div>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       )}
-
+  
       <DonationDetailsModal
         isOpen={isModalOpen}
         onClose={closeModal}
