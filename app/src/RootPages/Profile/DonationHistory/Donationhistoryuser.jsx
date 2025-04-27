@@ -80,7 +80,7 @@ function DonationHistoryUser({ userDetails }) {
     };
 
     fetchDonationHistory();
-  }, [token]);
+  }, []);
 
   const handleSort = (key, type) => {
     const currentSortConfig = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
@@ -106,8 +106,8 @@ function DonationHistoryUser({ userDetails }) {
         aValue = parseFloat(aValue);
         bValue = parseFloat(bValue);
       } else if (key === "is_acknowledged") {
-        aValue = aValue ? 1 : 0;
-        bValue = bValue ? 1 : 0;
+        aValue = aValue === null ? 0 : aValue ? 1 : -1; // Handle null, true, false
+        bValue = bValue === null ? 0 : bValue ? 1 : -1;
       }
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1;
@@ -241,9 +241,11 @@ function DonationHistoryUser({ userDetails }) {
                     <div className="w-1/4 flex justify-center sm:justify-start items-center">
                       {/* Text for larger screens (hidden at sm and below) */}
                       <span className="hidden sm:inline">
-                        {donation.is_acknowledged
+                        {donation.is_acknowledged === null
+                          ? "Pending Acknowledgement"
+                          : donation.is_acknowledged
                           ? "Acknowledged"
-                          : "Not Acknowledged"}
+                          : "Disapproved"}
                       </span>
                       {/* Circle for small screens (visible at sm and below) */}
                       <div
@@ -261,9 +263,11 @@ function DonationHistoryUser({ userDetails }) {
                   <div className="w-1/4 flex justify-center sm:justify-start items-center">
                     {/* Text for larger screens (hidden at sm and below) */}
                     <span className="hidden sm:inline">
-                      {donation.is_acknowledged
+                      {donation.is_acknowledged === null
+                        ? "Pending Acknowledgement"
+                        : donation.is_acknowledged
                         ? "Acknowledged"
-                        : "Not Acknowledged"}
+                        : "Disapproved"}
                     </span>
                     {/* Circle for small screens (visible at sm and below) */}
                     <div
@@ -271,8 +275,8 @@ function DonationHistoryUser({ userDetails }) {
                         donation.is_acknowledged === null
                           ? "bg-yellow-500"
                           : donation.is_acknowledged
-                            ? "bg-green-500"
-                            : "bg-red-500"
+                          ? "bg-green-500"
+                          : "bg-red-500"
                         }`}
                       ></div>
                     </div>
