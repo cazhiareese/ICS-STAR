@@ -16,7 +16,9 @@ from schemas.donation_schema import (
     AdminClosedDonationDriveOut,
     AdminDonationDriveOut,
     PaginatedDonationDrivesResponse,
-    PaginatedClosedDonationDrivesResponse
+    PaginatedClosedDonationDrivesResponse,
+    PaginatedInKindDonationsResponse,
+    PaginatedMonetaryDonationsResponse,
     )
 from models.donationmodel import DonationDrive
 from config.database import get_db
@@ -86,6 +88,14 @@ def paginate_results(results: list, page: int, page_size: int):
     paginated_results = results[start_idx:end_idx]
 
     return total_pages, paginated_results
+
+def paginate_results_donation(results: list, page: int, page_size: int):
+    total = len(results)
+    total_pages = (total + page_size - 1) // page_size  # ceiling division
+    start = (page - 1) * page_size
+    end = start + page_size
+    paginated = results[start:end]
+    return total_pages, paginated
 
 @router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
 def search_drives(
@@ -670,17 +680,26 @@ def open_drives_by_date_created_oldest(
         data=paginated_results
     )
 
-@router.get("/admin/donations/pending-inkind", response_model=List[ShortenedInKindDonationsOut])
+@router.get("/admin/donations/pending-inkind", response_model=PaginatedInKindDonationsResponse)
 def pending_inkind(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1)
 ):
     results = get_all_pending_inkind_donations(db, drive_id)
 
     if not results:
         raise HTTPException(status_code=404, detail="No pending in-kind donations found")
 
-    return results
+    page_size = 10
+    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
+
+    return PaginatedInKindDonationsResponse(
+        message="success",
+        page=page,
+        total_pages=total_pages,
+        data=paginated_results
+    )
 
 @router.get("/admin/donations/pending-monetary", response_model=List[ShortenedMonetaryDonationsOut])
 def pending_monetary(
