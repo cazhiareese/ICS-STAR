@@ -40,3 +40,16 @@ async def get_not_yet_acknowledged_donations_count(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+# Fetch number of reported posts
+@router.get("/reported-posts/count", response_model=Dict[str, int])
+async def get_reported_posts_count(
+    db: Session = Depends(get_db)
+    ):
+    count = db.query(func.count(Report.report_id))\
+        .filter(
+            Report.reported_post_id.isnot(None),
+            Report.status == ReportStatusEnum.pending
+        )\
+        .scalar()
+    
+    return {"pending_reported_posts_count": count}
