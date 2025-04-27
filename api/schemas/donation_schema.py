@@ -181,3 +181,14 @@ class RecentDonationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class TopFundedDriveResponse(BaseModel):
+    drive_id: UUID
+    title: str
+    total_donations: float
+    target_cost: float
+    acknowledged_donations: int
+    percentage_funded: float
+
+    class Config:
+        from_attributes = True
