@@ -181,23 +181,47 @@ function DonationHistoryUser({ userDetails }) {
                 <div className={selectedType === "Monetary" ? "w-1/4" : "w-1/3"}>
                   {formattedDate}
                 </div>
-                <div className={selectedType === "Monetary" ? "w-1/4" : "w-1/3"}>
+                <div className={selectedType === "Monetary" ? "w-1/4 " : "w-1/3"}>
                   {donation.donation_drive_title}
                 </div>
                 {selectedType === "Monetary" ? (
-                  <>
-                    <div className="w-1/4 text-left">
-                      {formattedAmount}
-                    </div>
-                    <div className="w-1/4 text-left">
-                      {donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
-                    </div>
-                  </>
-                ) : (
-                  <div className="w-1/3 text-left">
-                    {donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
-                  </div>
-                )}
+  <>
+    <div className="w-1/4 text-left">{formattedAmount}</div>
+    <div className="w-1/4 text-left">
+      {/* Text display for larger screens */}
+      <span className="sm:inline hidden">
+        {donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
+      </span>
+      {/* Circle display for small screens */}
+      <div
+        className={`sm:hidden inline-block w-4 h-4 rounded-full ${
+          donation.is_acknowledged === null
+            ? "bg-yellow-500"
+            : donation.is_acknowledged
+            ? "bg-green-500"
+            : "bg-red-500"
+        }`}
+      ></div>
+    </div>
+  </>
+) : (
+  <div className="w-1/3 text-left">
+    {/* Text display for larger screens */}
+    <span className="sm:inline hidden">
+      {donation.is_acknowledged ? "Acknowledged" : "Not Acknowledged"}
+    </span>
+    {/* Circle display for small screens */}
+    <div
+      className={`sm:hidden inline-block w-4 h-4 rounded-full ${
+        donation.is_acknowledged === null
+          ? "bg-yellow-500"
+          : donation.is_acknowledged
+          ? "bg-green-500"
+          : "bg-red-500"
+      }`}
+    ></div>
+  </div>
+)}
               </div>
             );
           })}
