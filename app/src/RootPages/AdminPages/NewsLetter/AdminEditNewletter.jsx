@@ -198,7 +198,7 @@ function AdminEditNewsletter() {
     setErrorMessage(''); // Clear error message when closing modal
     if (modalSuccess) {
       setModalSuccess(false);
-      navigate('/admin/newsletters'); // Redirect after successful edit
+      navigate('/admin/newsletter'); // Redirect after successful edit
     }
   };
 
