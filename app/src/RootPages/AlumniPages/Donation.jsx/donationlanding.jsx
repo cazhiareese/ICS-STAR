@@ -4,6 +4,7 @@ import DonationInfo from "../../../components/donationInfo";
 import NewLoading from "../../../components/LoadingComponents/cyruscircular";
 import DonationMainView from "../../../components/donationMainView";
 import DonationCard from "../../../components/donationDonateView";
+import DonationCardSkeleton from "./Donationcomponent/DonationCardSkeleton";
 
 function DonationLanding() {
   const [donationData, setDonationData] = useState(null); // Initialize as null
@@ -38,51 +39,51 @@ function DonationLanding() {
             created_at: "2025-04-08T13:51:01.554485Z"
           
         }
-        // Fetch both APIs concurrently
-        // const [donationResponse, generalResponse] = await Promise.all([
-        //   fetch(`${API_BASE_URL}/donationdrive`, {
-        //     method: "GET",
-        //     headers: {
-        //       Authorization: `Bearer ${token}`,
-        //     },
-        //   }),
-        //   fetch(`${API_BASE_URL}/gen-donation-drive`, {
-        //     headers: {
-        //       Authorization: `Bearer ${token}`,
-        //     },
-        //   }),
-        // ]);
+        //Fetch both APIs concurrently
+        const [donationResponse, generalResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/donationdrive`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+          fetch(`${API_BASE_URL}/gen-donation-drive`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+        ]);
 
-        // // Process donation drives
-        // let donationDataResult = [];
-        // if (donationResponse.ok) {
-        //   const data = await donationResponse.json();
-        //   if (!Array.isArray(data)) {
-        //     throw new Error("Unexpected response format for donation drives");
-        //   }
-        //   donationDataResult = data;
-        // } else {
-        //   if (donationResponse.status === 401) {
-        //     throw new Error("Unauthorized access. Please log in.");
-        //   }
-        //   throw new Error("Failed to fetch donation drives");
-        // }
+        // Process donation drives
+        let donationDataResult = [];
+        if (donationResponse.ok) {
+          const data = await donationResponse.json();
+          if (!Array.isArray(data)) {
+            throw new Error("Unexpected response format for donation drives");
+          }
+          donationDataResult = data;
+        } else {
+          if (donationResponse.status === 401) {
+            throw new Error("Unauthorized access. Please log in.");
+          }
+          throw new Error("Failed to fetch donation drives");
+        }
 
-        // // Process general drive
-        // let generalDriveResult = null;
-        // if (generalResponse.ok) {
-        //   generalDriveResult = await generalResponse.json();
-        // } else {
-        //   console.warn("General donation drive fetch failed, continuing without it.");
-        // }
+        // Process general drive
+        let generalDriveResult = null;
+        if (generalResponse.ok) {
+          generalDriveResult = await generalResponse.json();
+        } else {
+          console.warn("General donation drive fetch failed, continuing without it.");
+        }
 
         // Update all states at once to prevent partial renders
-        setDonationData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
-        setFilteredData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
-        //setDonationData(donationDataResult);
-        //setFilteredData(donationDataResult);
-        //setGeneralDrive(generalDriveResult);
-        setGeneralDrive(dummy);
+        //setDonationData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
+        //setFilteredData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
+        setDonationData(donationDataResult);
+        setFilteredData(donationDataResult);
+        setGeneralDrive(generalDriveResult);
+        //setGeneralDrive(dummy);
         console.log("Donation Data:", donationData);
         console.log("General Drive:", generalDrive);
       } catch (err) {
@@ -111,7 +112,7 @@ function DonationLanding() {
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (
-    <div className="flex flex-col p-4 space-y-5 h-[100px] ">
+    <div className="flex flex-col p-4 space-y-5">
       {/* Search bar */}
       <div className="flex justify-center p-5">
         <input
@@ -122,75 +123,87 @@ function DonationLanding() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
-
-      {/* Loading State */}
-
-
+  
+      {/* Static Donation Drives Header */}
       <div className="hidden sm:flex justify-start items-start pl-[180px] font-satoshi-bold text-[32px] text-primary">
-  Donation Drives
-</div>
+        Donation Drives
+      </div>
+  
+      {/* Wrap everything else inside loading */}
       {loading || donationData === null || generalDrive === null ? (
-        <div className="flex justify-center items-center min-h-[200px]">
-          <NewLoading size={40} text="Loading Donation Drives..." />
+        <div className="flex flex-col lg:flex-row gap-4 justify-center">
+          {/* Left column placeholder */}
+          <div className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-col">
+            {/* Small device header (only shown on small screens) */}
+            <div className="flex justify-center items-center sm:hidden font-satoshi-bold text-[28px] text-primary mb-4">
+              Donation Drives
+            </div>
+  
+            <div className="flex justify-center items-center min-h-[200px]">
+            <DonationCardSkeleton/>
+            <DonationCardSkeleton/>
+            <DonationCardSkeleton/>
+            <DonationCardSkeleton/>
+            </div>
+          </div>
+  
+          {/* Right column placeholder */}
+          <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit flex justify-center items-center">
+            <NewLoading size={40} text="Loading Donation Details..." />
+          </div>
         </div>
       ) : (
-
         <div className="flex flex-col lg:flex-row gap-4 justify-center">
           {/* Left column: Donation cards */}
-          
           <div className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-col">
-  {/* Small device header (not inside scroll) */}
-  <div className="flex justify-center items-center sm:hidden font-satoshi-bold text-[28px] text-primary mb-4">
-    Donation Drives
-  </div>
+            {/* Small device header */}
+            <div className="flex justify-center items-center sm:hidden font-satoshi-bold text-[28px] text-primary mb-4">
+              Donation Drives
+            </div>
   
-
-  {/* Scrollable Cards */}
-  <div
-    className="overflow-y-auto scrollbar-blue"
-    style={{ maxHeight: "calc(100vh - 200px)", direction: "rtl" }}
-  >
-    <div className="flex flex-wrap gap-4 justify-center items-center" style={{ direction: "ltr" }}>
-      {filteredData.length > 0 ? (
-        filteredData.map((drive, index) => (
-          <DonationCards key={index} drive={drive} />
-        ))
-      ) : (
-        <p className="w-full text-center text-gray-500">
-          No donation drives available at the moment.
-        </p>
-      )}
-    </div>
-  </div>
-</div>
-
-
-
-{/* Right column: Announcements */}
-<div className=" order-1 lg:order-2  lg:basis-[950px] px-4 rounded-xl text-center h-fit ">
-  {generalDrive ? (
-    <div className="-mt-5 flex flex-col sm:flex-row gap-4 justify-center sm:justify-center">
-      {/* Container for DonationMainView */}
-      <div className="bg-whitey border border-disabled rounded-xl p-4">
-        <DonationMainView driveDetails={generalDrive} driveId={generalDrive.drive_id} />
-      </div>
-      {/* DonationCard */}
-<div className="items-center justify-center sm:justify-start sm:items-start flex flex-col sm:flex-row gap-4">
-<DonationCard driveDetails={generalDrive} driveId={generalDrive.drive_id} />
-</div>
-
-
-    </div>
-  ) : (
-    <p className="text-sm text-gray-600">
-      No general donation drive is currently available.
-    </p>
-  )}
-</div>
+            {/* Scrollable Cards */}
+            <div
+              className="overflow-y-auto scrollbar-blue"
+              style={{ maxHeight: "calc(100vh - 200px)", direction: "rtl" }}
+            >
+              <div className="flex flex-wrap gap-4 justify-center items-center" style={{ direction: "ltr" }}>
+                {filteredData.length > 0 ? (
+                  filteredData.map((drive, index) => (
+                    <DonationCards key={index} drive={drive} loading={true} />
+                  ))
+                ) : (
+                  <p className="w-full text-center text-gray-500">
+                    No donation drives available at the moment.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+  
+          {/* Right column: Announcements */}
+          <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit">
+            {generalDrive ? (
+              <div className="-mt-5 flex flex-col sm:flex-row gap-4 justify-center sm:justify-center">
+                {/* Container for DonationMainView */}
+                <div className="bg-whitey border border-disabled rounded-xl p-4">
+                  <DonationMainView driveDetails={generalDrive} driveId={generalDrive.drive_id} />
+                </div>
+                {/* DonationCard */}
+                <div className="items-center justify-center sm:justify-start sm:items-start flex flex-col sm:flex-row gap-4">
+                  <DonationCard driveDetails={generalDrive} driveId={generalDrive.drive_id} />
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">
+                No general donation drive is currently available.
+              </p>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
+  
 }
 
 export default DonationLanding;

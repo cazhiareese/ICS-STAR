@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function DonationCards({ drive }) {
+function DonationCards({ drive, loading }) {
 const navigate = useNavigate();
 
 
