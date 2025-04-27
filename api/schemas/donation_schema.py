@@ -184,7 +184,8 @@ class PaginatedClosedDonationDrivesResponse(BaseModel):
     message: str
     page: int
     total_pages: int
-    data: List[AdminDonationDriveOut]
+    data: List[AdminClosedDonationDriveOut]
+
 class RecentDonationResponse(BaseModel):
     drive_title: str
     donor_name: str
