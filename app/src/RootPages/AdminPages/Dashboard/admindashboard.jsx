@@ -7,6 +7,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios'
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
+import formatEvents from "../../../components/formatEvents";
 
 
 function AdminDashboard() {
@@ -23,6 +24,7 @@ function AdminDashboard() {
   const [daysFilter, setDaysFilter] = useState("30days");
   const [batchFilter, setBatchFilter] = useState("2022");
   const [error, setError] = useState(null);
+  const [events, setevents] = useState([]);
   const COLORS = ["#0B2B6F", "#2858D6", "#8CA6DB", "#CBD7F1", "#E8F0FF"];
   
   
@@ -71,6 +73,12 @@ function AdminDashboard() {
         const eventsupcoming = await axios.get(`${API_BASE_URL}/admin_dashboard/upcoming-events`);
         console.log(eventsupcoming.data);
 
+        //tinanggal ko last index since, nag overflow
+        const trimmedEvents = eventsupcoming.data.slice(0, eventsupcoming.data.length - 1);
+        setevents(formatEvents(trimmedEvents));
+
+        //setevents(formatEvents(eventsupcoming.data));
+
 
         let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
         setFullEngagementReport(response.data);
@@ -102,20 +110,20 @@ function AdminDashboard() {
   }
 
 
-  const events = [
-    {
-      dateLabel: "Tomorrow",
-      items: [{ title: "Lorem Ipsum Dolor sit Amet", time: "10 am, ICSMH" }]
-    },
-    {
-      dateLabel: "In 4 days",
-      items: [
-        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
-        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
-        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" }
-      ]
-    }
-  ];
+  // const events = [
+  //   {
+  //     dateLabel: "Tomorrow",
+  //     items: [{ title: "Lorem Ipsum Dolor sit Amet", time: "10 am, ICSMH" }]
+  //   },
+  //   {
+  //     dateLabel: "In 4 days",
+  //     items: [
+  //       { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
+  //       { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
+  //       { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" }
+  //     ]
+  //   }
+  // ];
 
   const donations = [
     { name: "Lorem Ipsum Dolor", raised: 12000, goal: 15000, donors: 6 },

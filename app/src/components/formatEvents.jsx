@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'; // (make sure you have installed dayjs)
 
-const formatEvents = (eventList) => {
+export default function  formatEvents  (eventList) {
   // group by days_left if multiple events
   const grouped = {};
 
