@@ -231,10 +231,19 @@ async def delete_event(event_id: UUID, db: Session=Depends(get_db)):
     return {"message": "success deleting event", "id": event.event_id}
 
 @event_router.get("/getRSVPs/{event_id}")
-async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db)):
+async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=1):
 
+    ITEMS_PER_PAGE = 10
 
-    confirmed = db.query(EventConfirmedBy.user_id).filter(EventConfirmedBy.event_id==event_id).all()
+    query = db.query(EventConfirmedBy.user_id).filter(EventConfirmedBy.event_id==event_id)
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
+
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
+    confirmed = query.all()
+
     confirm_list = [str(conf[0]) for conf in confirmed]
     if not confirmed:
         raise HTTPException(status_code=404, detail="No attendees found for this event")
@@ -251,10 +260,11 @@ async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db)):
             "batch": user.batch
         })
     
-    return {"message":"success", "data": user_details}
+    return {"message":"success", "page": page, "total_pages": total_pages, "data": user_details}
 
 @event_router.get("/all-open-events")
-async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db)):
+async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db), page:int=1):
+    ITEMS_PER_PAGE = 10
 
     try:
         query = db.query(
@@ -270,6 +280,10 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
         .outerjoin(EventConfirmedBy, Event.event_id == EventConfirmedBy.event_id)\
         .outerjoin(EventDate, Event.event_id == EventDate.event_id)\
         .group_by(Event.event_id, Event.title, Event.image, Event.location)
+
+        subq = query.subquery()
+        total_items = db.query(func.count()).select_from(subq).scalar()
+        total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
 
         if order_by:
             order_parts = order_by.lower().split('_')
@@ -287,7 +301,10 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
             else:
                 query = query.order_by(asc(order_column))
         else:
-            query = query.order_by(desc("latest_date"))
+            query = query.order_by(asc("latest_date"))
+
+        offset = (page - 1) * ITEMS_PER_PAGE
+        query = query.offset(offset).limit(ITEMS_PER_PAGE)
         result = query.all()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {e}")
@@ -310,11 +327,11 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
             "attendees": event.attendee_count
         })
     
-    return {"message": "success", "data": processed_events}
+    return {"message": "success", "total_pages": total_pages, "page": page, "data": processed_events}
 
 @event_router.get("/all-concluded-events")
-async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db)):
-
+async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db), page: int=1):
+    ITEMS_PER_PAGE = 10
     try:
         query = db.query(
             Event.event_id,
@@ -330,6 +347,11 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
         .outerjoin(EventTag, Event.event_id == EventTag.event_id)\
         .group_by(Event.event_id, Event.title, Event.image, Event.location)\
         
+        subq = query.subquery()
+        total_items = db.query(func.count()).select_from(subq).scalar()
+        total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
+
+
         if order_by:
             order_parts = order_by.lower().split('_')
             order_field = order_parts[0]
@@ -346,6 +368,8 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
         else:
             query = query.order_by(desc(Event.updated_at))
         
+        offset = (page - 1) * ITEMS_PER_PAGE
+        query = query.offset(offset).limit(ITEMS_PER_PAGE)
         result = query.all()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {e}")
@@ -367,7 +391,7 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
             "tags": [ev for ev in event.event_tags if ev is not None]
         })
     
-    return {"message": "success", "data": processed_events}
+    return {"message": "success", "total_pages":total_pages, "page":page, "data": processed_events}
 
 
 @event_router.get("/rsvp-clicks-count/{event_id}")
