@@ -77,7 +77,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               <span className="text-primary font-satoshi-bold">
                 {userDetails.city && userDetails.state && userDetails.country
                   ? `${userDetails.city}, ${userDetails.state}, ${userDetails.country}`
-                  : <CircularLoading />}
+                  : ""}
               </span>
             )}
           </div>
