@@ -12,11 +12,12 @@ import uuid
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
-def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[str]:
-    results = (
-        db.query(distinct(DonationDrive.title))
+def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[DonationDriveOut]:
+    drives = (
+        db.query(DonationDrive)
         .filter(
             DonationDrive.is_deleted.is_(False),
+            DonationDrive.is_closed.is_(False),
             or_(
                 DonationDrive.title.ilike(f"%{query_text}%"),
                 DonationDrive.description.ilike(f"%{query_text}%")
@@ -28,7 +29,7 @@ def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> Lis
         .all()
     )
 
-    return [result[0] for result in results]
+    return [get_donation_drive_data(db, drive) for drive in drives]
 
 def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveOut:
     monetary_data = db.query(
