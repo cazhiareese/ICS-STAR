@@ -8,6 +8,7 @@ from models.log import Log
 from models.usermodel import User
 from models.job_posting_model import JobPosting, JobPostingInterestedIn
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation
+from models.newsletter_model import Newsletter
 from schemas.log import VisitResponse, TimeRange, TopJobResponse, TopDriveResponse, TopDonationDriveResponse, JobsResponse
 
 router = APIRouter(
@@ -521,4 +522,45 @@ def get_top_interested_jobs(
             "interested_count": job.interested_count
         })
     
+    return result
+
+# Fetch the top 3 most recent newsletter posts
+@router.get("/newsletters/top-3")
+def get_top_newsletters(
+    time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for newsletter data"),
+    db: Session = Depends(get_db)
+):
+    today = datetime.utcnow()
+
+    # Determine the start date based on the time range
+    if time_range == TimeRange.WEEK:
+        start_date = today - timedelta(days=7)
+    elif time_range == TimeRange.MONTH:
+        start_date = today - timedelta(days=30)
+    else:
+        start_date = datetime(today.year - 1, today.month, today.day)
+
+    # Query to get the top 3 most recent newsletters
+    newsletters = (
+        db.query(Newsletter)
+        .filter(
+            and_(
+                Newsletter.date_posted >= start_date,
+                Newsletter.is_deleted == False
+            )
+        )
+        .order_by(desc(Newsletter.date_posted))
+        .limit(3)
+        .all()
+    )
+
+
+    result = []
+    for newsletter in newsletters:
+        result.append({
+            "title": newsletter.title,
+            "image": newsletter.image,
+            "date": newsletter.date_posted.strftime("%Y-%m-%d")
+        })
+
     return result

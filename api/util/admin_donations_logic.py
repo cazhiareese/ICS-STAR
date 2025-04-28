@@ -1,6 +1,6 @@
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import String, func, or_, union_all
+from sqlalchemy import String, func, or_, union_all, desc
 from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
@@ -69,33 +69,48 @@ def search_donation_drives(
 
     return drive_out_list
 
-def get_all_open_drives(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives(db: Session, page: int = 1, page_size: int = 10) -> list[AdminDonationDriveOut]:
+    # Base query for open drives
+    base_query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
     
-    drives = query.all()
+    # Apply pagination
+    offset = (page - 1) * page_size
+    drives = base_query.offset(offset).limit(page_size).all()
 
     if not drives:
         return []
     
     drive_out_list = []
     for drive in drives:
+
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
         # Calculate monetary donation count
-        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(
+            MonetaryDonation.drive_id == drive.drive_id, 
+            MonetaryDonation.is_acknowledged == True
+        ).scalar() or 0
         
-        # Calculate in-kind donation count separately without referencing the 'amount' column
-        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
+        # Calculate in-kind donation count
+        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(
+            InKindDonation.drive_id == drive.drive_id
+        ).scalar() or 0
         
         total_count = monetary_count + inkind_count
         
-        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
-        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+        # Calculate amount raised
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(
+            MonetaryDonation.drive_id == drive.drive_id, 
+            MonetaryDonation.is_acknowledged == True
+        ).scalar() or 0
 
         # Calculate percent funded and remaining percentage
         percent_info = get_percent_funded(db, drive.drive_id)
         total_percentage = percent_info.percent_funded
         remaining_percentage = percent_info.remaining_percent
 
-        # Format created_at date to Month DD, YYYY
+        # Format created_at date
         date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
 
         drive_out = AdminDonationDriveOut(
@@ -473,6 +488,10 @@ def get_all_closed_drives(db: Session) -> list[AdminClosedDonationDriveOut]:
     
     drive_out_list = []
     for drive in drives:
+        
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
         # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
         total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
 
@@ -1754,3 +1773,158 @@ def get_weekly_donation_amounts(db: Session, drive_id: UUID):
         current += timedelta(weeks=1)
 
     return result
+
+def get_top_drives_with_goals_reached(
+    db: Session,
+    time_filter: str,
+    month: int = None,
+    year: int = None,
+):
+    # Calculate date range based on the time filter
+    current_date = datetime.now()
+    
+    if time_filter == "last_7_days":
+        start_date = current_date - timedelta(days=7)
+        end_date = current_date
+    elif time_filter == "last_30_days":
+        start_date = current_date - timedelta(days=30)
+        end_date = current_date
+    elif time_filter == "monthly":
+        if not month or not year:
+            raise ValueError("Month and year must be provided when using monthly filter")
+        start_date = datetime(year, month, 1)
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1) - timedelta(days=1)
+        else:
+            end_date = datetime(year, month + 1, 1) - timedelta(days=1)
+        # Set to end of day
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+    else:
+        raise ValueError("Invalid time filter. Must be 'last_7_days', 'last_30_days', or 'monthly'")
+
+    # Get top 3 drives that have >= 100% of their percent funded
+    drives = db.query(
+        DonationDrive.drive_id,
+        DonationDrive.title,
+        DonationDrive.target_cost,
+        func.sum(MonetaryDonation.amount).label("total_amount"),
+        (func.sum(MonetaryDonation.amount) * 100.0 / DonationDrive.target_cost).label("percent_funded")
+    ).join(
+        MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id
+    ).filter(
+        DonationDrive.is_closed == False,
+        DonationDrive.created_at >= start_date,
+        DonationDrive.created_at <= end_date,
+        DonationDrive.target_cost > 0
+    ).group_by(
+        DonationDrive.drive_id
+    ).having(
+        (func.sum(MonetaryDonation.amount) * 100.0 / DonationDrive.target_cost) >= 100.0
+    ).order_by(
+        func.sum(MonetaryDonation.amount).desc()
+    ).limit(3).all()
+
+    # Format the results
+    top_drives = []
+
+    for drive in drives:
+        drive_out = {
+            "drive_id": drive.drive_id,
+            "title": drive.title,
+            "target_cost": drive.target_cost,
+            "total_amount": drive.total_amount,
+            "percent_funded": drive.percent_funded
+        }
+        top_drives.append(drive_out)
+
+    return top_drives
+
+def get_top_performing_drives(
+    db: Session,
+    time_filter: str,
+    month: int = None,
+    year: int = None
+):
+    # Calculate date range based on the time filter
+    current_date = datetime.now()
+    
+    if time_filter == "last_7_days":
+        end_date = current_date
+        start_date = current_date - timedelta(days=7)
+    elif time_filter == "last_30_days":
+        end_date = current_date
+        start_date = current_date - timedelta(days=30)
+    elif time_filter == "monthly":
+        if not month or not year:
+            raise ValueError("Month and year must be provided when using monthly filter")
+        start_date = datetime(year, month, 1)
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1) - timedelta(days=1)
+        else:
+            end_date = datetime(year, month + 1, 1) - timedelta(days=1)
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+    else:
+        raise ValueError("Invalid time filter. Must be 'last_7_days', 'last_30_days', or 'monthly'")
+
+    # Calculate funding at the start of the period
+    subquery_start = db.query(
+        DonationDrive.drive_id,
+        (func.sum(MonetaryDonation.amount) * 100.0 / DonationDrive.target_cost).label("percent_funded_start")
+    ).join(
+        MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id
+    ).filter(
+        MonetaryDonation.created_at < start_date,
+        DonationDrive.target_cost > 0  # Prevent division by zero
+    ).group_by(
+        DonationDrive.drive_id
+    ).subquery()
+    
+    # Calculate funding at the end of the period
+    subquery_end = db.query(
+        DonationDrive.drive_id,
+        (func.sum(MonetaryDonation.amount) * 100.0 / DonationDrive.target_cost).label("percent_funded_end")
+    ).join(
+        MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id
+    ).filter(
+        MonetaryDonation.created_at <= end_date,
+        DonationDrive.target_cost > 0
+    ).group_by(
+        DonationDrive.drive_id
+    ).subquery()
+    
+    # Get drives with highest percentage increase
+    query = db.query(
+        DonationDrive.drive_id,
+        DonationDrive.title,
+        DonationDrive.target_cost,
+        subquery_start.c.percent_funded_start,
+        subquery_end.c.percent_funded_end,
+        (subquery_end.c.percent_funded_end - func.coalesce(subquery_start.c.percent_funded_start, 0)).label("percent_increase")
+    ).join(
+        subquery_end, DonationDrive.drive_id == subquery_end.c.drive_id
+    ).outerjoin(
+        subquery_start, DonationDrive.drive_id == subquery_start.c.drive_id
+    ).filter(
+        DonationDrive.is_closed == False,
+        DonationDrive.created_at <= end_date,
+        DonationDrive.target_cost > 0
+    ).order_by(
+        desc("percent_increase")  # Order by the increase in percentage
+    ).limit(3)
+
+    drives = query.all()
+
+    top_drives = []
+
+    for i, drive in enumerate(drives, 1):
+        percent_increase = round(drive.percent_increase) if drive.percent_increase else 0
+        
+        drive_out = {
+            "rank": i,
+            "drive_id": drive.drive_id,
+            "title": drive.title,
+            "percent_increase": percent_increase
+        }
+        top_drives.append(drive_out)
+
+    return top_drives

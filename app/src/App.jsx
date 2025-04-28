@@ -79,6 +79,8 @@ import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
 import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
 import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
+import AdminUserReports from "./RootPages/AdminPages/Layouts/adminuserreports";
+import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
@@ -192,6 +194,8 @@ function App() {
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
               <Route path="industry-reports" element={<AdminIndustryInformation/>}/>
               <Route path="country-reports" element={<AdminCountryInformation/>}/>
+              <Route path="user-engagement-reports" element={<AdminUserReports/>}/>
+              <Route path="user-engagement-reports/most-engaged-job-offers" element={<MostEngagedJobs/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
