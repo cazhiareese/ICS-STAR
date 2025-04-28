@@ -104,7 +104,7 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
             "going_count": going_count
         })
     db.commit()
-    db.refresh(event)
+    db.refresh(events)
     sorted_events = sorted(event_list, key=lambda e: e["dates"][0])
 
     return [EventOut(**e) for e in sorted_events]
@@ -219,7 +219,7 @@ def get_visible_events_for_user(
         })
 
     db.commit()
-    db.refresh(event)
+    db.refresh(events)
     sorted_events = sorted(event_list, key=lambda e: e["dates"][0])
 
     return [EventOut(**e) for e in sorted_events]
