@@ -42,51 +42,51 @@ function DonationLanding() {
             created_at: "2025-04-08T13:51:01.554485Z"
           
         }
-        //Fetch both APIs concurrently
-        const [donationResponse, generalResponse] = await Promise.all([
-          fetch(`${API_BASE_URL}/donationdrive`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch(`${API_BASE_URL}/gen-donation-drive`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-        ]);
+        // //Fetch both APIs concurrently
+        // const [donationResponse, generalResponse] = await Promise.all([
+        //   fetch(`${API_BASE_URL}/donationdrive`, {
+        //     method: "GET",
+        //     headers: {
+        //       Authorization: `Bearer ${token}`,
+        //     },
+        //   }),
+        //   fetch(`${API_BASE_URL}/gen-donation-drive`, {
+        //     headers: {
+        //       Authorization: `Bearer ${token}`,
+        //     },
+        //   }),
+        // ]);
 
-        // Process donation drives
-        let donationDataResult = [];
-        if (donationResponse.ok) {
-          const data = await donationResponse.json();
-          if (!Array.isArray(data)) {
-            throw new Error("Unexpected response format for donation drives");
-          }
-          donationDataResult = data;
-        } else {
-          if (donationResponse.status === 401) {
-            throw new Error("Unauthorized access. Please log in.");
-          }
-          throw new Error("Failed to fetch donation drives");
-        }
+        // // Process donation drives
+        // let donationDataResult = [];
+        // if (donationResponse.ok) {
+        //   const data = await donationResponse.json();
+        //   if (!Array.isArray(data)) {
+        //     throw new Error("Unexpected response format for donation drives");
+        //   }
+        //   donationDataResult = data;
+        // } else {
+        //   if (donationResponse.status === 401) {
+        //     throw new Error("Unauthorized access. Please log in.");
+        //   }
+        //   throw new Error("Failed to fetch donation drives");
+        // }
 
-        // Process general drive
-        let generalDriveResult = null;
-        if (generalResponse.ok) {
-          generalDriveResult = await generalResponse.json();
-        } else {
-          console.warn("General donation drive fetch failed, continuing without it.");
-        }
+        // // Process general drive
+        // let generalDriveResult = null;
+        // if (generalResponse.ok) {
+        //   generalDriveResult = await generalResponse.json();
+        // } else {
+        //   console.warn("General donation drive fetch failed, continuing without it.");
+        // }
 
         // Update all states at once to prevent partial renders
-        //setDonationData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
-        //setFilteredData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
-        setDonationData(donationDataResult);
-        setFilteredData(donationDataResult);
-        setGeneralDrive(generalDriveResult);
-        //setGeneralDrive(dummy);
+        setDonationData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
+        setFilteredData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
+        //setDonationData(donationDataResult);
+        //setFilteredData(donationDataResult);
+        //setGeneralDrive(generalDriveResult);
+        setGeneralDrive(dummy);
         console.log("Donation Data:", donationData);
         console.log("General Drive:", generalDrive);
       } catch (err) {
@@ -118,21 +118,22 @@ function DonationLanding() {
     <div className="flex flex-col   space-y-5 h-[100px]">
       {/* Search bar */}
       <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white">
-  <div className="relative flex flex-row gap-5 w-full max-w-[350px] sm:max-w-[600px] items-center justify-center mt-6">
-    {/* The Search Bar */}
-    <input
-      type="text"
-      placeholder="Search donation drives..."
-      className="bg-gray-100 font-satoshi-medium text-lg w-full h-full px-4 py-2 sm:mb-3 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-    />
-    
-    {/* Search Button */}
-    <button className="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
-      <Search size={20} />
-    </button>
-  </div>
+      <div className="relative flex flex-col w-full max-w-[350px] sm:max-w-[600px] mt-6">
+  {/* The Search Bar */}
+  <input
+    type="text"
+    placeholder="Search donation drives..."
+    className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+  />
+  
+  {/* Search Button */}
+  <button className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+    <Search size={20} />
+  </button>
+</div>
+
 </div>
 
 
@@ -181,7 +182,7 @@ function DonationLanding() {
 </div>
 
       ) : (
-        <div className="flex flex-col lg:flex-row gap-4 justify-center">
+        <div className="flex flex-col lg:flex-row gap-4 justify-center h-[2100px] sm:h-[680px] mt-6 sm:mt-1">
           {/* Left column: Donation cards */}
           <div className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-col">
             {/* Small device header */}
