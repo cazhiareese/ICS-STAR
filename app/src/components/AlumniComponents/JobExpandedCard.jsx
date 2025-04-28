@@ -9,10 +9,11 @@ function JobExpandedCard({job, currentUserID}) {
 
     const jobId = job.post_id; // Assuming job.post_id is the ID of the job post
     const navigate = useNavigate();
+
     const navToEditJobPost = () => {
         console.log("Edit Job Posting clicked");
         console.log(jobId);
-        navigate(`/alumni/jobPosting/edit/${jobId}`);
+        navigate(`/alumni/editjobPosting/${jobId}`);
     };
 
     // Close modal on outside click
@@ -66,7 +67,7 @@ function JobExpandedCard({job, currentUserID}) {
     <div className="ml-auto">
         <button 
             className="flex items-center gap-2 bg-error hover:bg-red-600 text-white text-xs font-satoshi-medium px-2 py-2 rounded-full"
-            onClick={() => navigate(`/alumni/jobPosting/report`)}
+            onClick={() => navigate(`/alumni/jobPosting/report/${jobId}`)}
         >
             <Flag size={16} />
             Report

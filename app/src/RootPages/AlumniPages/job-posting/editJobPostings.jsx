@@ -8,7 +8,7 @@ import CircularLoading from '../../../components/LoadingComponents/circularloadi
 import JobPostSummary from '../../../components/AlumniComponents/jobPostSummary';
 // import { useParams } from 'next/navigation';
 
-function CreateJobPostAlum() {
+function EditJobPostAlum() {
     const token = localStorage.getItem("token");
     const decoded = jwtDecode(token);
     console.log(typeof decoded.sub);
@@ -648,4 +648,4 @@ function CreateJobPostAlum() {
     )
 }
 
-export default CreateJobPostAlum
+export default EditJobPostAlum

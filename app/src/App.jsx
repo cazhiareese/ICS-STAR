@@ -146,13 +146,12 @@ function App() {
             <Route path="alumni/donations/:driveid" element={<Donation />} />
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
-            <Route path="alumni/jobPosting/report" element={<ReportJobPosting />} />
-            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
+            <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
             <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
             <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
 
             
-            <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+            <Route path="alumni/jobPosting/editjobPosting/:jobId" element={<EditJobPostAlum />} />
             <Route path="alumni/newsletter" element={<NewsletterLanding />} />
             <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
