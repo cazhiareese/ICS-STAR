@@ -25,74 +25,58 @@ function AdminDashboard() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+
+  //cyrus was here again
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const pendingVerificationCount = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
-        console.log(pendingVerificationCount.data.count);
-        setPendingVerifications(pendingVerificationCount.data.count);
-      } catch (error) {
-        console.log(error);
-        // setUsers([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    //cyrus was here
-    const fetchRecentDonors = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin_dashboard/recent-donors`);
-        //auth ditro
-        const donorsformat = response.data.slice(0, response.data.length - 1).map(item => ({
+        // 1. Fetch Pending Verifications
+        const pendingVerificationResponse = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
+        console.log(pendingVerificationResponse.data.count);
+        setPendingVerifications(pendingVerificationResponse.data.count);
+  
+        // 2. Fetch Recent Donors
+        const donorsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/recent-donors`);
+        const donorsformat = donorsResponse.data.slice(0, donorsResponse.data.length - 1).map(item => ({
           donation: item.drive_title,
           name: item.donor_name,
           amount: item.donation_details
         }));
-        
         setDonors(donorsformat);
         console.log(donorsformat);
-      } catch (err) {
-        console.error('Error fetching recent donors:', err);
-        setError('Failed to load recent donors.');
-      } finally {
-        setLoading(false);
-      }
-
-    };
-
-    //cyrus was here
-    const fetchStats = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`);
-        setStats(response.data);
-        setRegisteredAlumni(response.data.verified_alumni_count);
-        const formattedData = response.data.top_alumni_industries.map((item, index) => ({
+  
+        // 3. Fetch User Statistics
+        const statsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`);
+        setStats(statsResponse.data);
+        setRegisteredAlumni(statsResponse.data.verified_alumni_count);
+  
+        const formattedIndustries = statsResponse.data.top_alumni_industries.map((item, index) => ({
           name: item.industry,
           value: item.percentage,
-          color: COLORS[index % COLORS.length] // rotate colors if more items
+          color: COLORS[index % COLORS.length]
         }));
-
-        setAlumniIndustries(formattedData);
-
-        const formattedData_1 = response.data.top_alumni_countries.map(item => ({
+        setAlumniIndustries(formattedIndustries);
+  
+        const formattedLocations = statsResponse.data.top_alumni_countries.map(item => ({
           country: item.country,
           percentage: `${item.percentage}%`
         }));
-        console.log("loc",response.data.top_alumni_countries);
-      setAlumniLocations(formattedData_1);
-      console.log(formattedData_1);
-
+        setAlumniLocations(formattedLocations);
+        console.log("loc", statsResponse.data.top_alumni_countries);
+        console.log(formattedLocations);
+  
       } catch (error) {
-        console.error('Error fetching user statistics:', error);
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data.');
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchStats();
-    fetchRecentDonors();
+  
     fetchData();
-  },[])
+  }, []);
+  
 
   const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
 
