@@ -658,7 +658,7 @@ def open_drives_by_date_created_oldest(
         data=paginated_results
     )
 
-@router.get("/admin/donations/pending-inkind", response_model=PaginatedInKindDonationsResponse)
+@router.get("/admin/donations/pending-inkind", response_model=tuple[PaginatedInKindDonationsResponse, dict])
 def pending_inkind(
     drive_id: UUID,
     db: Session = Depends(get_db),
@@ -670,16 +670,16 @@ def pending_inkind(
         raise HTTPException(status_code=404, detail="No pending in-kind donations found")
 
     page_size = 10
-    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
+    total_pages, paginated_results = paginate_results_donation(results[0], page, page_size)
 
     return PaginatedInKindDonationsResponse(
         message="success",
         page=page,
         total_pages=total_pages,
         data=paginated_results
-    )
+    ), results[1]
 
-@router.get("/admin/donations/pending-monetary", response_model=PaginatedMonetaryDonationsResponse)
+@router.get("/admin/donations/pending-monetary", response_model=tuple[PaginatedMonetaryDonationsResponse, dict])
 def pending_monetary(
     drive_id: UUID,
     db: Session = Depends(get_db),
@@ -691,14 +691,14 @@ def pending_monetary(
         raise HTTPException(status_code=404, detail="No pending monetary donations found")
 
     page_size = 10
-    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
+    total_pages, paginated_results = paginate_results_donation(results[0], page, page_size)
 
     return PaginatedMonetaryDonationsResponse(
         message="success",
         page=page,
         total_pages=total_pages,
         data=paginated_results
-    )
+    ), results[1]
 
 @router.get("/admin/donations/verified-inkind", response_model=PaginatedInKindDonationsResponse)
 def verified_inkind(
