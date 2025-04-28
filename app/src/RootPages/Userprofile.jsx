@@ -8,6 +8,7 @@ import ScholarshipsSection from "./Profile/About/scholarshipsection";
 import WorkSection from "./Profile/Work/worksection";
 import DonationHistoryUser from "./Profile/DonationHistory/Donationhistoryuser";
 import { Info } from "lucide-react";
+import JobPosted from "./Profile/JobPosting/userjobposting";
 
 
 import {
@@ -228,6 +229,9 @@ function UserProfile() {
       )}
       {activeTab === "Donation History" && (
         <DonationHistoryUser userDetails={userDetails} />
+      )}
+      {activeTab === "Job Posted" && (
+        <JobPosted />
       )}
     </div>
   );
