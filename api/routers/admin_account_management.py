@@ -275,7 +275,7 @@ async def read_verified_students(db: Session = Depends(get_db)):
 async def read_verification_file(db: Session = Depends(get_db), user_id: UUID = None):
     file = db.query(User.verification_file).filter(User.user_id == user_id).scalar()
     if file is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=200, detail="Fiie not found")
     return {"verification_file": file}
 
 # Get user's report logs
