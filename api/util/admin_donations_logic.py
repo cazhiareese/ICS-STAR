@@ -1001,11 +1001,11 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     pending_verifications = []
     
     # Add pending monetary donations to the list
-    for donation in pending_monetary_donations:
+    for donation in pending_monetary_donations[0]:
         pending_verifications.append(donation.dict())
     
     # Add pending in-kind donations to the list
-    for donation in pending_inkind_donations:
+    for donation in pending_inkind_donations[0]:
         pending_verifications.append(donation.dict())
 
     # Format the verified donations list
@@ -1062,11 +1062,11 @@ def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     pending_verifications = []
     
     # Add pending monetary donations to the list
-    for donation in pending_monetary_donations:
+    for donation in pending_monetary_donations[0]:
         pending_verifications.append(donation.dict())
     
     # Add pending in-kind donations to the list
-    for donation in pending_inkind_donations:
+    for donation in pending_inkind_donations[0]:
         pending_verifications.append(donation.dict())
 
     # Format the verified donations list
@@ -1333,7 +1333,7 @@ def update_generic_drive_stats_custom_range(db: Session, drive_id: UUID, start_d
         # Handle date parsing errors
         raise ValueError(f"Invalid date format. Dates must be in MM/DD/YYYY format. Error: {str(e)}")
 
-def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[ShortenedMonetaryDonationsOut]:
+def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> tuple[list[ShortenedMonetaryDonationsOut], dict]:
     pending_monetary_donations = db.query(
         MonetaryDonation.donation_id,
         User.first_name,
@@ -1348,12 +1348,15 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[Shor
         MonetaryDonation.is_acknowledged.is_(None)
     ).all()
 
+    amount_total = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive_id, MonetaryDonation.is_acknowledged.is_(None)).scalar() or 0
+    
     pending_donations_list = []
 
     for donation in pending_monetary_donations:
         # Separate date and time
         donation_date = donation[4].strftime("%m/%d/%Y") if donation[4] else None
         donation_time = donation[4].strftime("%I:%M %p") if donation[4] else None
+
         pending_out = ShortenedMonetaryDonationsOut(
             donation_id=donation[0],
             donation_date=donation_date,
@@ -1365,9 +1368,13 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> list[Shor
         )
         pending_donations_list.append(pending_out)
 
-    return pending_donations_list
+    # Count after creating the list
+    count = len(pending_donations_list)
+    
+    # Return a tuple with the list and a dict containing totals
+    return pending_donations_list, {"total_amount": amount_total, "total_count": count}
 
-def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> list[ShortenedInKindDonationsOut]:
+def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> tuple[list[ShortenedInKindDonationsOut], dict]:
     pending_inkind_donations = db.query(
         InKindDonation.donation_id,
         User.first_name,
@@ -1396,7 +1403,9 @@ def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> list[Shorte
         )
         pending_donations_list.append(pending_out)
 
-    return pending_donations_list
+    count = len(pending_donations_list)
+
+    return pending_donations_list, {"total_count": count}
 
 def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[ShortenedMonetaryDonationsOut]:
     verified_monetary_donations = db.query(
