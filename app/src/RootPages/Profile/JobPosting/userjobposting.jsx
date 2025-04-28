@@ -35,26 +35,26 @@ export default function JobPosted() {
 
 
 
-    // useEffect(() => {
-    //     // Job Dummy Data
-    //     const job = {
-    //         title: "Data Scientist",
-    //         company: "Google Alphabet",
-    //         description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
-    //         salary: 20000,
-    //         tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
-    //         employment_type: "Full-time",
-    //         mode: "On-site",
-    //         link: "LinkedIn.com",
-    //         image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
-    //         user_name: "Roche Quejada", //Tentative
-    //         interested_count: 5,
-    //         user_id: "2543d5a7-f7f3-4a90-92f7-d0a8595db26b"
-    //     }
+    useEffect(() => {
+        // Job Dummy Data
+        const job = {
+            title: "Data Scientist",
+            company: "Google Alphabet",
+            description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
+            salary: 20000,
+            tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
+            employment_type: "Full-time",
+            mode: "On-site",
+            link: "LinkedIn.com",
+            image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
+            user_name: "Roche Quejada", //Tentative
+            interested_count: 5,
+            user_id: "2543d5a7-f7f3-4a90-92f7-d0a8595db26b"
+        }
 
-    //     setSelectedJob(job);
+        setSelectedJob(job);
         
-    // }, []);
+    }, []);
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
@@ -85,13 +85,18 @@ export default function JobPosted() {
                 {/* Job Preview */} 
                 
                 {!selectedJob || !selectedJob.tags ? (
-                    <div className="flex flex-col items-center justify-center w-lg outline-0">
-                        <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200}/></h1>
-                        <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
-                    </div>
-                ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} />
-                )}
+  <div className="flex flex-col items-center justify-center w-full max-w-[500px] mx-auto px-4 py-8 sm:py-12 rounded-xl ">
+    <div className="text-primary opacity-50">
+      <BriefcaseBusiness size={120} className="sm:size-[200px]" />
+    </div>
+    <h1 className="text-primary opacity-50 text-2xl sm:text-3xl font-satoshi-bold text-center mt-4">
+      Select Job Posting
+    </h1>
+  </div>
+) : (
+  <JobExpandedCard job={selectedJob} currentUserID={userId} />
+)}
+
                 
             </div>
     </div>
