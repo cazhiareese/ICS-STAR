@@ -15,6 +15,9 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [pendingVerifications, setPendingVerifications] = useState()
   const [donors, setDonors] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [registeredAlumni, setRegisteredAlumni] = useState(null);
+  
   
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -38,6 +41,7 @@ function AdminDashboard() {
     const fetchRecentDonors = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/admin_dashboard/recent-donors`);
+        //auth ditro
         const donorsformat = response.data.slice(0, response.data.length - 1).map(item => ({
           donation: item.drive_title,
           name: item.donor_name,
@@ -55,6 +59,19 @@ function AdminDashboard() {
 
     };
 
+    //cyrus was here
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`);
+        setStats(response.data);
+        setRegisteredAlumni(response.data.verified_alumni_count);
+        console.log("nyiw",response.data);
+      } catch (error) {
+        console.error('Error fetching user statistics:', error);
+      }
+    };
+
+    fetchStats();
     fetchRecentDonors();
     fetchData();
   },[])
@@ -307,7 +324,7 @@ function AdminDashboard() {
                 </div>
                 <div className="flex flex-col">
                   <p className="font-satoshi-light -mb-1">Registered Alumni</p>
-                  <p className="font-satoshi-medium text-4xl">{response.registeredAlumni}</p>
+                  <p className="font-satoshi-medium text-4xl">{registeredAlumni}</p>
                 </div>
               </div>
               {/* View Alumni Statistics */}
