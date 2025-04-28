@@ -67,9 +67,12 @@ function AdminDashboard() {
         }));
         setAlumniLocations(formattedLocations);
 
+         
+        const eventsupcoming = await axios.get(`${API_BASE_URL}/admin_dashboard/upcoming-events`);
+        console.log(eventsupcoming.data);
+
 
         let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
-        console.log(response.data);
         setFullEngagementReport(response.data);
   
       } catch (error) {
@@ -79,6 +82,8 @@ function AdminDashboard() {
         setLoading(false);
       }
     };
+
+    
   
     fetchData();
   }, []);
