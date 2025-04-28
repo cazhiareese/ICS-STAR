@@ -17,6 +17,8 @@ function AdminDashboard() {
   const [donors, setDonors] = useState([]);
   const [stats, setStats] = useState(null);
   const [registeredAlumni, setRegisteredAlumni] = useState(null);
+  const [alumniIndustries, setAlumniIndustries] = useState([]);
+  const COLORS = ["#0B2B6F", "#2858D6", "#8CA6DB", "#CBD7F1", "#E8F0FF"];
   
   
 
@@ -65,6 +67,15 @@ function AdminDashboard() {
         const response = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`);
         setStats(response.data);
         setRegisteredAlumni(response.data.verified_alumni_count);
+        const formattedData = response.data.top_alumni_industries.map((item, index) => ({
+          name: item.industry,
+          value: item.percentage,
+          color: COLORS[index % COLORS.length] // rotate colors if more items
+        }));
+
+        setAlumniIndustries(formattedData);
+        console.log("nyiw",response.data.top_alumni_industries);
+
         console.log("nyiw",response.data);
       } catch (error) {
         console.error('Error fetching user statistics:', error);
@@ -125,13 +136,13 @@ function AdminDashboard() {
     { "country": "United Kingdom", "percentage": "9%" }
   ]
 
-  const alumniIndustries = [
-    { name: "Services", value: 40, color: "#0B2B6F" },
-    { name: "Finance", value: 25, color: "#2858D6" },
-    { name: "Manufacturing", value: 15, color: "#8CA6DB" },
-    { name: "Retail Trade", value: 10, color: "#CBD7F1" },
-    { name: "Others", value: 10, color: "#E8F0FF" }
-  ];
+  // const alumniIndustries = [
+  //   { name: "Services", value: 40, color: "#0B2B6F" },
+  //   { name: "Finance", value: 25, color: "#2858D6" },
+  //   { name: "Manufacturing", value: 15, color: "#8CA6DB" },
+  //   { name: "Retail Trade", value: 10, color: "#CBD7F1" },
+  //   { name: "Others", value: 10, color: "#E8F0FF" }
+  // ];
 
   const systemEngagementReport = [
     { date: "1 Oct", visits: 100 },
