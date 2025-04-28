@@ -145,9 +145,9 @@ function AdminDonationInformation() {
                 </div>
               </div>
               <div className='flex flex-row justify-end mr-4'>
-                  <button className={`rounded-tl-2xl border-x border-t border-r-transparent border-gray-300 px-3 py-1 w-24 cursor-pointer ${selectedTab === 'donations' ? 'bg-primary text-white font-satoshi-medium' : 'font-satoshi-light '}`} onClick={() => {setSelectedTab('donations')}}>Donations</button>
+                  <button className={`rounded-tl-2xl border-x border-t border-r-transparent border-gray-300 px-3 py-1 w-24 cursor-pointer ${selectedTab === 'donations' ? 'bg-primary text-white font-satoshi-medium' : 'font-satoshi-light hover:text-hover transition-colors'}`} onClick={() => {setSelectedTab('donations')}}>Donations</button>
                   <div className='border-r border-gray-300'></div>
-                  <button className={`rounded-tr-2xl border-x border-t border-l-transparent border-gray-300 px-3 py-1 w-24 cursor-pointer ${selectedTab === 'details' ? 'bg-primary text-white font-satoshi-medium' : 'font-satoshi-light '}`} onClick={() => {setSelectedTab('details')}}>Details</button>
+                  <button className={`rounded-tr-2xl border-x border-t border-l-transparent border-gray-300 px-3 py-1 w-24 cursor-pointer ${selectedTab === 'details' ? 'bg-primary text-white font-satoshi-medium' : 'font-satoshi-light hover:text-hover transition-colors'}`} onClick={() => {setSelectedTab('details')}}>Details</button>
                 </div>
               {/* Goal progress and recent transactions */}
               <div className='flex flex-row gap-2 h-1/3 mb-9'>
