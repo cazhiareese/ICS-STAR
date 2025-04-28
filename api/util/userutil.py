@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
 from typing import List, Optional
+from schemas.user import CurrentUser
 
 from config.config import SECRET_KEY, ALGORITHM, SUPABASE_BUCKET, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES, GOOGLE_CLIENT_ID
 from config.database import get_db
@@ -44,17 +45,17 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 async def get_email(email: str, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.email == email).first():
+    if db.query(User.email).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
     return True
 
 async def get_studno(student_number: str, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.student_number == student_number).first():
+    if db.query(User.student_number).filter(User.student_number == student_number).first():
         raise HTTPException(status_code=400, detail="Student number already exists")
     return True
 
 def process_student_onboarding(
-    user: User,
+    user: CurrentUser,
     db: Session,
     standing: Optional[UserStandingEnum],
     scholarships: Optional[List[str]],
@@ -92,21 +93,25 @@ def process_student_onboarding(
         if skills:
             new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
             db.add_all(new_skills)
-
-        if standing:
-            user.standing = standing
             
-        user.is_onboarded = True
 
+        if standing is not None:
+            db.query(User).filter(User.user_id == user.user_id).update({
+                User.standing: standing
+            })
+            
+        db.query(User).filter(User.user_id == user.user_id).update({
+            User.is_onboarded: True
+        })
+    
         db.commit()
-        db.refresh(user)
         
     except Exception as e:
-            raise HTTPException(status_code=500, detail="Error updating info {e}")
+            raise HTTPException(status_code=500, detail=f'Error updating info {e}')
         
 
 def process_alumni_onboarding(
-    user: User,
+    user: CurrentUser,
     db: Session,
     scholarships: Optional[List[str]] = None,
     affiliations: Optional[List[str]] = None,
@@ -133,6 +138,7 @@ def process_alumni_onboarding(
     
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
+    
     try:
         if scholarships:
             new_scholarships = [
@@ -159,20 +165,21 @@ def process_alumni_onboarding(
             new_reasons = [UnemploymentReason(user_id=user.user_id, reason=reason) for reason in reasons]
             db.add_all(new_reasons)
 
+        db.query(User).filter(User.user_id==user.user_id).update({User.industry: industry,
+                        User.employment_status: employment_status if employment_status else None,
+                        User.company_name: company_name,
+                        User.job_title: job_title,
+                        User.work_location: f"{city}, {country}" if city and country else None,
+                        User.work_mode: work_mode,
+                        User.employer_class: employer_class,
+                        User.tenured_status: tenured_status,
+                        User.salary_grade: salary_grade,
+                    })
         
-        user.industry = industry
-        user.employment_status = employment_status if employment_status else None
-        user.company_name = company_name
-        user.job_title = job_title
-        user.work_location = f"{city}, {country}" if city and country else None
-        user.work_mode = work_mode
-        user.employer_class = employer_class
-        user.tenured_status = tenured_status
-        user.salary_grade = salary_grade
-        user.is_onboarded = True
-
+        db.query(User).filter(User.user_id == user.user_id).update({
+            User.is_onboarded: True
+        })
         db.commit()
-        db.refresh(user)
         
     except Exception as e:
             raise HTTPException(status_code=500, detail=f'"Error updating info {e}"')
@@ -230,7 +237,7 @@ async def register_user(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified}, expires_delta=access_token_expires
+        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified, "is_banned": new_user.is_banned}, expires_delta=access_token_expires
     )
 
     return {"message": "Account created successfully", "access_token": access_token}
@@ -257,16 +264,14 @@ async def upload_profile(profile_picture, user, db):
         raise HTTPException(status_code=500, detail=f"Upload Error: {str(e)}")
 
     profile_picture_url = f"{STORAGE_STRING}{profile_picture_name}"
-    user.image = profile_picture_url
-
+    db.query(User).filter(User.user_id==user.user_id).update({User.image: profile_picture_url})
     db.commit()
-    db.refresh(user)
 
     return profile_picture_url
 
 def get_user(db, email: str):
     db = SessionLocal()
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(User.user_id, User.user_type, User.is_verified, User.is_onboarded, User.password).filter(User.email == email).first()
     return user
 
 
@@ -299,33 +304,33 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         role: str = payload.get("role")
         is_onboarded: bool = payload.get("is_onboarded")
         is_verified: bool = payload.get("is_verified")
-        if user_id is None or role is None or is_onboarded is None or is_verified is None:
+        is_banned: bool = payload.get("is_banned")
+        if user_id is None or role is None or is_onboarded is None or is_verified is None or is_banned is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    user = db.query(User).filter(User.user_id == user_id).first()
+    user = db.query(User.user_id, User.is_verified, User.user_type, User.is_onboarded, User.is_banned).filter(User.user_id == user_id).first()
     if user is None:
         raise credentials_exception
-
     return user
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
+async def get_current_active_user(current_user: CurrentUser = Depends(get_current_user)):
     if current_user.is_banned:
         raise HTTPException(status_code=400, detail="User is banned")
     return current_user
 
-async def require_student(user: User = Depends(get_current_active_user)):
+async def require_student(user: CurrentUser = Depends(get_current_active_user)):
     if user.user_type.value != "student":
         raise HTTPException(status_code=403, detail="Forbidden: Students only")
     return user
 
-async def require_alum(user: User = Depends(get_current_active_user)):
+async def require_alum(user: CurrentUser = Depends(get_current_active_user)):
     if user.user_type.value != "alumni":
         raise HTTPException(status_code=403, detail="Forbidden: Alumni only")
     return user
 
-async def require_admin(user: User = Depends(get_current_active_user)):
+async def require_admin(user: CurrentUser = Depends(get_current_active_user)):
     if user.user_type.value != "admin":
         raise HTTPException(status_code=403, detail="Forbidden: Admin only")
     return user
@@ -434,7 +439,7 @@ async def register_with_google(
     # Create and return access token
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified}, 
+        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified, "is_banned": new_user.is_banned}, 
         expires_delta=access_token_expires
     )
 
