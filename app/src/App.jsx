@@ -151,7 +151,7 @@ function App() {
             <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
 
             
-            <Route path="alumni/jobPosting/editjobPosting/:jobId" element={<EditJobPostAlum />} />
+            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPostAlum />} />
             <Route path="alumni/newsletter" element={<NewsletterLanding />} />
             <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 

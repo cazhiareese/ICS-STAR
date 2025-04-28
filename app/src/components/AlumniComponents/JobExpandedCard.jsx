@@ -10,11 +10,11 @@ function JobExpandedCard({job, currentUserID}) {
     const jobId = job.post_id; // Assuming job.post_id is the ID of the job post
     const navigate = useNavigate();
 
-    const navToEditJobPost = () => {
-        console.log("Edit Job Posting clicked");
-        console.log(jobId);
-        navigate(`/alumni/editjobPosting/${jobId}`);
-    };
+    // const navToEditJobPost = () => {
+    //     console.log("Edit Job Posting clicked");
+    //     console.log(jobId);
+    //     navigate(`/alumni/editjobPosting/${jobId}`);
+    // };
 
     // Close modal on outside click
     useEffect(() => {
@@ -55,7 +55,7 @@ function JobExpandedCard({job, currentUserID}) {
                 </button>
                 <button
                     className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
-                    onClick={() => navToEditJobPost()}
+                    onClick={() => navigate(`/alumni/jobPosting/edit/${jobId}`)}
                 >
                     <Pencil size={16} />
                     Edit Post

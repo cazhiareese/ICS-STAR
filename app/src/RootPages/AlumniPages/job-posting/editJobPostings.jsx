@@ -1,5 +1,5 @@
 import { ArrowLeft, ChevronDown, CloudUpload, X } from 'lucide-react'
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, use } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from "framer-motion";
 import axios from 'axios';
@@ -13,7 +13,12 @@ function EditJobPostAlum() {
     const decoded = jwtDecode(token);
     console.log(typeof decoded.sub);
     
-    const { jobId } = useParams(); // Get the job ID from the URL parameters
+
+    //cyrus was here: incorrect access of params, fixed
+    const id = useParams(); 
+    const  jobId  = id.jobid; 
+    console.log(jobId); // For checking only
+    
     
 
     const [tagInput, setTagInput] = useState('');
@@ -73,6 +78,7 @@ function EditJobPostAlum() {
     const [employmentMode, setEmploymentMode] = useState("");
     const [description, setDescription] = useState("");
 
+
     const fileInputRef = useRef(null);
     const [fileName, setFileName] = useState('');
     const [file, setFile] = useState(null);
@@ -82,6 +88,7 @@ function EditJobPostAlum() {
 
     const [submitting, setSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+
 
     // dummy tags
     const tags = [
@@ -148,7 +155,7 @@ function EditJobPostAlum() {
     // Navigate back
     const navigate = useNavigate();
     const navToJobPostLanding= () => {
-        navigate('..', { relative: 'path' });
+        navigate(-1);
     }
 
     
@@ -297,6 +304,10 @@ function EditJobPostAlum() {
               setCompanyInput(data.company);
                 setLinkInput(data.link);
                 setTagss(data.tags);
+                setDescription(data.description);
+                setSalaryInput(data.salary);
+                setEmploymentMode(data.mode)
+                setEmploymentType(data.employment_type)
                 
             } catch (err) {
               console.error('Failed to load job:', err);
@@ -510,6 +521,7 @@ function EditJobPostAlum() {
                         type="text"
                         className="bg-white font-satoshi-medium text-md w-full md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0"
                         onChange={handleLinkInput}
+                        value={linkInput}
                     />
                 </div>
             </div>
@@ -526,6 +538,7 @@ function EditJobPostAlum() {
                         type="text"
                         className="bg-white font-satoshi-medium text-md w-full md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0 h-40"
                         onChange={handleJobDescriptionChange}
+                        value={description}
                         placeholder='Describe job posting'
                     />
                 </div>
