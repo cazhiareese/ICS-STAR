@@ -20,18 +20,19 @@ def paginate_results(results: List, page: int, page_size: int):
 
 @router.get("/admin/job/search", response_model=List[JobSearchOut])
 def job_search(
+    title: Optional[str] = "",
     creator_name : Optional[str] = "",
     tag: Optional[str] = "",
     company: Optional[str] = "",
     employment_type: Optional[str] = "",
-    sort_by: Optional[str] = "date_desc",
+    sort_by: Optional[str] = "",
     db: Session = Depends(get_db)
 ):
     
-    results = admin_search_job(db, creator_name=creator_name, employment_type=employment_type, company=company, tag=tag, sort_by=sort_by)
+    results = admin_search_job(db, title=title, creator_name=creator_name, employment_type=employment_type, company=company, tag=tag, sort_by=sort_by)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No job postings found matching the search criteria.")
+        raise HTTPException(status_code=200, detail="No job postings found matching the search criteria.")
     
     return results
 
@@ -60,7 +61,7 @@ def interested_in(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -82,7 +83,7 @@ def interested_in_batch_ascending(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -104,7 +105,7 @@ def interested_in_batch_descending(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -126,7 +127,7 @@ def interested_in_date_of_interest_newest(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -148,7 +149,7 @@ def interested_in_date_of_interest_oldest(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -170,7 +171,7 @@ def interested_in_name_alphabetical(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -192,7 +193,7 @@ def interested_in_name_reverse(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -214,7 +215,7 @@ def job_overview_route(
     results = job_overview(db, post_id=post_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="Job posting not found.")
+        raise HTTPException(status_code=200, detail="Job posting not found.")
     
     return results
 
@@ -226,7 +227,7 @@ def view_new_interested(
     results = get_current_interested(db, post_id=post_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No new interested users found.")
+        raise HTTPException(status_code=200, detail="No new interested users found.")
     
     return results
 

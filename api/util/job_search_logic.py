@@ -15,6 +15,7 @@ from typing import Optional
 
 def admin_search_job(
         db: Session,
+        title: str = "",
         creator_name: str = "",
         tag: str = "",
         company: str = "",
@@ -28,6 +29,9 @@ def admin_search_job(
         .filter(JobPosting.is_deleted == False)
 
     # Apply optional filters
+    if title:
+        post_query = post_query.filter(JobPosting.title.ilike(f"%{title}%"))
+
     if creator_name:
         post_query = post_query.filter(func.concat(User.first_name, ' ', User.last_name).ilike(f"%{creator_name}%"))
 
