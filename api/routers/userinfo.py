@@ -500,12 +500,14 @@ async def get_in_kind_donations(
 @router.get("/donation-history/monetary-donations/acknowledged")
 async def get_acknowledged_monetary_donations(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    isIncreasing: Optional[bool] = Query(None, description="Sort order for monetary donations"),
+    isNewest: Optional[bool] = Query(None, description="Sort order for monetary donations")
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    acknowledged_monetary_donations = get_user_monetary_donations_acknowledged(db, user.user_id)
+    acknowledged_monetary_donations = get_user_monetary_donations_acknowledged(db, user.user_id, isIncreasing, isNewest)
 
     return {"message": "success", "data": acknowledged_monetary_donations}
 
@@ -515,12 +517,13 @@ async def get_acknowledged_monetary_donations(
 @router.get("/donation-history/in-kind-donations/acknowledged")
 async def get_acknowledged_in_kind_donations(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    isNewest: Optional[bool] = Query(None, description="Sort order for in-kind donations")
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    acknowledged_in_kind_donations = get_user_in_kind_donations_acknowledged(db, user.user_id)
+    acknowledged_in_kind_donations = get_user_in_kind_donations_acknowledged(db, user.user_id, isNewest)
 
     return {"message": "success", "data": acknowledged_in_kind_donations}
 
