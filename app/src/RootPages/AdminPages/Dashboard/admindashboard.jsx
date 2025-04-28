@@ -14,6 +14,8 @@ function AdminDashboard() {
 
   const [loading, setLoading] = useState(true)
   const [pendingVerifications, setPendingVerifications] = useState()
+  const [donors, setDonors] = useState([]);
+  
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -31,6 +33,29 @@ function AdminDashboard() {
         setLoading(false);
       }
     };
+
+    //cyrus was here
+    const fetchRecentDonors = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/admin_dashboard/recent-donors`);
+        const donorsformat = response.data.slice(0, response.data.length - 1).map(item => ({
+          donation: item.drive_title,
+          name: item.donor_name,
+          amount: item.donation_details
+        }));
+        
+        setDonors(donorsformat);
+        console.log(donorsformat);
+      } catch (err) {
+        console.error('Error fetching recent donors:', err);
+        setError('Failed to load recent donors.');
+      } finally {
+        setLoading(false);
+      }
+
+    };
+
+    fetchRecentDonors();
     fetchData();
   },[])
 
@@ -68,12 +93,12 @@ function AdminDashboard() {
     { name: "Lorem Ipsum", raised: 13500, goal: 20000, donors: 21 },
   ];
 
-  const donors = [
-    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
-    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
-    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
-    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
-  ];
+  // const donors = [
+  //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  // ];
 
   const alumniLocations = [
     { "country": "Philippines", "percentage": "78%" },
