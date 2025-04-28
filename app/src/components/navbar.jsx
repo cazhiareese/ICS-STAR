@@ -27,16 +27,20 @@ function Navbar({ tokentype }) {
   }
 
   function handleDonation() {
-    window.location.href = `/alumni/donations`;
+    window.location.href = `/${tokentype}/donations`;
   }
 
   function handleCareer() {
-    window.location.href = `/alumni/jobPosting`;
+    window.location.href = `/${tokentype}/jobPosting`;
   }
 
   function handleEvents() {
-    window.location.href = `/alumni/events`;
+    window.location.href = `/${tokentype}/events`;
   }
+
+  function handleNewsletter() {
+    window.location.href = `/${tokentype}/newsletter`;
+  };
 
   console.log("Token type in navbar:", tokentype);
 
@@ -54,7 +58,7 @@ function Navbar({ tokentype }) {
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleEvents}>
         Events
       </button>
-      <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
+      <button className="hover:text-primary transition font-satoshi-bold"onClick={handleNewsletter}>Newsletters</button>
       <button className="hover:text-primary transition font-satoshi-bold "onClick={handleCareer}>Career</button>
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>
         Alumni Search
@@ -81,7 +85,7 @@ function Navbar({ tokentype }) {
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleEvents}>
         Events
       </button>
-      <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
+      <button className="hover:text-primary transition font-satoshi-bold"onClick={handleNewsletter}>Newsletters</button>
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleCareer}>Career</button>
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>
         Alumni Search
