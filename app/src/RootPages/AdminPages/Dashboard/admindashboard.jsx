@@ -19,6 +19,10 @@ function AdminDashboard() {
   const [registeredAlumni, setRegisteredAlumni] = useState(null);
   const [alumniIndustries, setAlumniIndustries] = useState([]);
   const [alumniLocations, setAlumniLocations] = useState([]);
+  const [fullEngagementReport, setFullEngagementReport] = useState([]);
+  const [daysFilter, setDaysFilter] = useState("30days");
+  const [batchFilter, setBatchFilter] = useState("2022");
+  const [error, setError] = useState(null);
   const COLORS = ["#0B2B6F", "#2858D6", "#8CA6DB", "#CBD7F1", "#E8F0FF"];
   
   
@@ -33,7 +37,6 @@ function AdminDashboard() {
       try {
         // 1. Fetch Pending Verifications
         const pendingVerificationResponse = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
-        console.log(pendingVerificationResponse.data.count);
         setPendingVerifications(pendingVerificationResponse.data.count);
   
         // 2. Fetch Recent Donors
@@ -44,7 +47,7 @@ function AdminDashboard() {
           amount: item.donation_details
         }));
         setDonors(donorsformat);
-        console.log(donorsformat);
+
   
         // 3. Fetch User Statistics
         const statsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`);
@@ -63,8 +66,11 @@ function AdminDashboard() {
           percentage: `${item.percentage}%`
         }));
         setAlumniLocations(formattedLocations);
-        console.log("loc", statsResponse.data.top_alumni_countries);
-        console.log(formattedLocations);
+
+
+        let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
+        console.log(response.data);
+        setFullEngagementReport(response.data);
   
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -135,17 +141,17 @@ function AdminDashboard() {
   //   { name: "Others", value: 10, color: "#E8F0FF" }
   // ];
 
-  const systemEngagementReport = [
-    { date: "1 Oct", visits: 100 },
-    { date: "3 Oct", visits: 250 },
-    { date: "7 Oct", visits: 300 },
-    { date: "10 Oct", visits: 180 },
-    { date: "14 Oct", visits: 450 },
-    { date: "20 Oct", visits: 700 },
-    { date: "23 Oct", visits: 457 },
-    { date: "27 Oct", visits: 600 },
-    { date: "30 Oct", visits: 320 },
-  ];
+  // const systemEngagementReport = [
+  //   { date: "1 Oct", visits: 100 },
+  //   { date: "3 Oct", visits: 250 },
+  //   { date: "7 Oct", visits: 300 },
+  //   { date: "10 Oct", visits: 180 },
+  //   { date: "14 Oct", visits: 450 },
+  //   { date: "20 Oct", visits: 700 },
+  //   { date: "23 Oct", visits: 457 },
+  //   { date: "27 Oct", visits: 600 },
+  //   { date: "30 Oct", visits: 320 },
+  // ];
 
   const goToInfoReports = () =>{
     navigate('user-engagement-reports', { relative: 'path' });
@@ -408,7 +414,7 @@ function AdminDashboard() {
             </div>
             <div className="flex items-center mt-2">
               <ResponsiveContainer width="90%" height={200}>
-                <LineChart data={systemEngagementReport}>
+                <LineChart data={fullEngagementReport}>
                   <CartesianGrid vertical={false} />
                   <XAxis 
                     dataKey="date" 
