@@ -66,7 +66,7 @@ function JobExpandedCard({job, currentUserID}) {
     <div className="ml-auto">
         <button 
             className="flex items-center gap-2 bg-error hover:bg-red-600 text-white text-xs font-satoshi-medium px-2 py-2 rounded-full"
-            onClick={() => console.log('Report clicked')}
+            onClick={() => navigate(`/alumni/jobPosting/report`)}
         >
             <Flag size={16} />
             Report
