@@ -26,7 +26,7 @@ function MostEngagedJobs() {
             const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-interested?time_range=${daysFilter}&skip=${skip}&limit=10`);
             console.log(response.data);
             setMostInterested(response.data);
-            const totalPages = Math.ceil(response.data.length / rowsPerPage);
+            // const totalPages = Math.ceil(response.data.length / rowsPerPage);
             // setFullEngagementReportLoading(false);
             setLoading(false);
           } catch (err) {
@@ -90,7 +90,7 @@ function MostEngagedJobs() {
                             </tr>
                         </thead>
                         <tbody className="font-satoshi-medium">
-                            {mostInterested ? (
+                            {loading ? (
                                 <CircularLoading/>
                             ) : (
                             mostInterested.map((job, index) => (

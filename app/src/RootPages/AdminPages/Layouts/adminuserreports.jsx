@@ -58,109 +58,72 @@ function AdminEngagementReports() {
   const [donorLoadinhg, setDonorLoading] = useState(false);
 
   const [recentNewsLetters, setRecentLetters] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(false);
 
   // BASE URL ENV
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  // Getting engagement statistics
   useEffect(() => {
-    const fetchEngagement = async () => {
+    const fetchData = async () => {
       setFullEngagementReportLoading(true);
+  
       try {
-        let response;
-  
-        if (batchFilter !== 0) {
-          response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}&batch=${batchFilter}`);
-        } else {
-          response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}`);
-        }
-  
+        // First request: Engagement Statistics
+        let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
         console.log(response.data);
         setFullEngagementReport(response.data);
-        setFullEngagementReportLoading(false);
-      } catch (err) {
-        console.log(err.message || 'Something went wrong');
-        setFullEngagementReportLoading(false);
-      }
-    };
   
-    fetchEngagement();
-  }, [daysFilter, batchFilter]);
-  
-
-  // Getting top 3 most donations
-  useEffect(() => {
-    const fetchMostDonations = async () => {
-      // setFullEngagementReportLoading(true);
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
+        // Second request: Most Donations
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
         console.log(response.data);
         setMostDonations(response.data);
-        // setFullEngagementReportLoading(false);
-      } catch (err) {
-        console.log(err.message || 'Something went wrong');
-      }
-    };
   
-    fetchMostDonations();
-  }, [daysFilter]);
-
-  // Getting top 3 most donations
-  useEffect(() => {
-    const fetchMostInterested = async () => {
-      // setFullEngagementReportLoading(true);
-      setMostInterestedLoading(true);
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`);
+        // Third request: Most Interested (Jobs)
+        setMostInterestedLoading(true);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`);
         console.log(response.data);
         setMostInterested(response.data);
-        // setFullEngagementReportLoading(false);
-        setMostInterestedLoading(true);
-      } catch (err) {
-        console.log(err.message || 'Something went wrong');
-      }
-    };
+        setMostInterestedLoading(false);
   
-    fetchMostInterested();
-  }, [daysFilter]);
-
-  // Getting donation highlights
-  useEffect(() => {
-    const fetchDonationHightlights = async () => {
-      // setFullEngagementReportLoading(true);
-      setDonationLoading(true);
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`);
+        // Fourth request: Recent Newsletters
+        setNewsLoading(true);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/newsletters/top-3?time_range=${daysFilter}`);
         console.log(response.data);
-        setDonationHighlights(response.data);
-        // setFullEngagementReportLoading(false);
+        setRecentLetters(response.data);
+        setNewsLoading(false);
+  
+        // Fifth request: Donation Highlights
+        setDonationLoading(true);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`);
+        if (response.status !== 404) {
+          console.log("donation", response.data);
+          setDonationHighlights(response.data);
+        }
         setDonationLoading(false);
-      } catch (err) {
-        console.log(err.message || 'Something went wrong');
-      }
-    };
   
-    fetchDonationHightlights();
-  }, [daysFilter]);
-  
-  // Getting donors highlights
-  useEffect(() => {
-    const fetchDonorHightlights = async () => {
-      // setFullEngagementReportLoading(true);
-      setDonorLoading(true);
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`);
-        console.log(response.data);
-        setDonorHighlights(response.data);
-        // setFullEngagementReportLoading(false);
+        // Sixth request: Donor Highlights
+        setDonorLoading(true);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`);
+        if (response.status !== 404) {
+          console.log(response.data);
+          setDonorHighlights(response.data);
+        }
         setDonorLoading(false);
+  
+        setFullEngagementReportLoading(false);
       } catch (err) {
         console.log(err.message || 'Something went wrong');
+        setFullEngagementReportLoading(false);
+        setMostInterestedLoading(false);
+        setNewsLoading(false);
+        setDonationLoading(false);
+        setDonorLoading(false);
       }
     };
   
-    fetchDonorHightlights();
-  }, [daysFilter]);
+    fetchData();
+  }, [daysFilter, batchFilter]);
+  
 
   // Filtered chart data
   // const filteredData = fullEngagementReport.slice(-daysFilter);
@@ -199,9 +162,9 @@ function AdminEngagementReports() {
         <div className='flex flex-row'>
           <div className='flex flex-col pb-5'>
             <h1 className="text-3xl font-satoshi-bold text-black">Site Visits</h1>
-            <p className="text-gray-500 text-sm font-satoshi-light">
-              User visit for the last {daysFilter} days
-            </p>
+              <p className="text-gray-500 text-sm font-satoshi-light">
+                User visit for the last {daysFilter === "7days" ? "7 days" : daysFilter === "year" ? "365 days" : daysFilter === "30days" ? "30 days" : daysFilter}
+              </p>
           </div>
 
           {/* Batch filter */}
@@ -256,29 +219,32 @@ function AdminEngagementReports() {
               <div className="flex flex-col justify-between  mb-6">
               <div>
                   <h1 className="text-3xl font-satoshi-bold text-black">Most Recent Newsletters</h1>
-                  <p className="text-gray-500 text-sm font-satoshi-light pb-3">Last {daysFilter} Days</p>
+                  <p className="text-gray-500 text-sm font-satoshi-light pb-3"> Last {daysFilter === "7days" ? "7 days" : daysFilter === "year" ? "365 days" : daysFilter === "30days" ? "30 days" : daysFilter}</p>
               </div>
                   
               </div>
 
               {/* List of Newsletters */}
               <div className="flex flex-col gap-6">
-              {recentNewsLetters.map((item, idx) => (
-                  <div key={item.id} className="flex gap-4 items-center">
-                  <p className="text-primary font-satoshi-medium text-lg">#{idx+1}</p>
-                  <img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />
-                  <div className="flex flex-col">
-                      <h1 className="text-black font-satoshi-bold text-lg">{item.title}</h1>
-                      <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
-                            <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
-                                <CalendarDays size={20} />
-                                <span>{item.date}</span>
-                            </div>
+                {newsLoading ? (
+                  <CircularLoading />
+                ) : (
+                recentNewsLetters.map((item, idx) => (
+                    <div key={item.id} className="flex gap-4 items-center">
+                      <p className="text-primary font-satoshi-medium text-lg">#{idx+1}</p>
+                      <img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />
+                      <div className="flex flex-col">
+                          <h1 className="text-black font-satoshi-bold text-lg">{item.title}</h1>
+                          <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
+                                <div className="flex gap-2 items-center text-black text-sm mt-1 font-satoshi-medium">
+                                    <CalendarDays size={20} />
+                                    <span>{item.date}</span>
+                                </div>
+                          </div>
+                          
                       </div>
-                      
-                  </div>
-                  </div>
-              ))}
+                    </div>
+                )))}
               </div>
 
              
@@ -289,13 +255,13 @@ function AdminEngagementReports() {
               <div className="flex flex-col justify-between  mb-6">
                 <div>
                     <h1 className="text-3xl font-satoshi-bold text-black">Job Offers Highlight</h1>
-                    <p className="text-gray-500 text-sm font-satoshi-light pb-3">Last {daysFilter} Days</p>
+                    <p className="text-gray-500 text-sm font-satoshi-light pb-3">Last {daysFilter === "7days" ? "7 days" : daysFilter === "year" ? "365 days" : daysFilter === "30days" ? "30 days" : daysFilter}</p>
                 </div>
               </div>
 
               {/* List of Job offers */}
               <div className="flex flex-col gap-6">
-                {mostInterested ? (
+                {mostInterestedLoading ? (
                   <CircularLoading />
                 ) : (
                 mostInterested.map((item, idx) => (
@@ -335,7 +301,7 @@ function AdminEngagementReports() {
       <div className="flex flex-col">
         <h1 className="text-3xl font-satoshi-bold text-black">Donations Highlights</h1>
         <p className="text-gray-500 text-sm font-satoshi-light">
-          User visit for the last {daysFilter} days
+          User donations for the last {daysFilter === "7days" ? "7 days" : daysFilter === "year" ? "365 days" : daysFilter === "30days" ? "30 days" : daysFilter}
         </p>
       </div>
       <div className="mt-4 md:mt-0">
@@ -407,24 +373,23 @@ function AdminEngagementReports() {
           <svg className="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
             {/* Gray unfilled circle */}
             <path
-              className="text-gray-200 stroke-current"
-              strokeWidth="8"  
-              fill="none"
-              d="M18 5
-                a 13 13 0 0 1 0 26
-                a 13 13 0 0 1 0 -26"
-            />
-            {/* Primary filled circle based on percentage progress */}
-            <path
-              className="text-primary stroke-current"
-              strokeWidth="8"  
-              fill="none"
-              strokeDasharray={`${donorHighlights.percentage_progress}, 100`}
-              strokeDashoffset="25"  // Optional adjustment if needed for stroke offset
-              d="M18 5
-                a 13 13 0 0 1 0 26
-                a 13 13 0 0 1 0 -26"
-            />
+                className="text-gray-200 stroke-current"
+                strokeWidth="8"  
+                fill="none"
+                d="M18 5
+                  a 13 13 0 0 1 0 26
+                  a 13 13 0 0 1 0 -26"
+              />
+              <path
+                className="text-primary stroke-current"
+                strokeWidth="8"  
+                fill="none"
+                strokeDasharray={`${donorHighlights.percentage_progress}, 100`}
+                d="M18 5
+                  a 13 13 0 0 1 0 26
+                  a 13 13 0 0 1 0 -26"
+
+              />
           </svg>
 
 
