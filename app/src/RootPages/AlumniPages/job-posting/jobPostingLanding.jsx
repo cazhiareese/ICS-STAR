@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/AlumniComponents/searchbar'
 import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
-import { BriefcaseBusiness, Plus, PlusCircle } from 'lucide-react';
+import { BriefcaseBusiness, PlusCircle, Filter } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
 import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
+
 
 function JobPostingLanding() {
     const [searchInput, setSearchInput] = useState("");
@@ -15,6 +16,58 @@ function JobPostingLanding() {
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    const [showFilterModal, setShowFilterModal] = useState(false);
+
+    const [showWorkTypeDropdown, setShowWorkTypeDropdown] = useState(false);
+    const [selectedWorkTypes, setSelectedWorkTypes] = useState([]);
+
+    const [showRemoteOptionDropdown, setShowRemoteDropdown] = useState(false);
+    const [selectedRemoteOption, setSelectedRemoteOption] = useState([]); 
+
+    const [showSalaryRangeDropdown, setShowSalaryRangeDropdown] = useState(false);
+    const [salaryRange, setSalaryRange] = useState({ min: 0, max: 500000 });
+
+    const toggleWorkType = (workType) => {
+        setSelectedWorkTypes((prev) =>
+            prev.includes(workType)
+            ? prev.filter((type) => type !== workType)
+            : [...prev, workType]
+        );
+    };
+
+    const toggleRemoteType = (remoteType) => {
+        setSelectedRemoteOption((prev) =>
+            prev.includes(remoteType)
+            ? prev.filter((type) => type !== remoteType)
+            : [...prev, remoteType]
+        );
+    };
+
+    const handleSalaryChange = (e) => {
+        const { name, value } = e.target;
+        setSalaryRange((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+    
+
+    const workTypeOptions = [
+        "Full time",
+        "Part time",
+        "Contractual",
+        "Freelance",
+        "Internship",
+        "Apprenticeship",
+    ];
+
+    const remoteOptions = [
+        "Onsite",
+        "Remote",
+        "Hybrid"
+    ];
+
     useEffect(() => {
         const token = localStorage.getItem('token'); 
         if (token) {
@@ -29,59 +82,7 @@ function JobPostingLanding() {
         }
     }, []);
 
-    // For Dummy testing only
-    // useEffect(() => {
-    //     // Job Dummy Data
-    //     // const job = {
-    //     //     title: "Data Scientist",
-    //     //     company: "Google Alphabet",
-    //     //     description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
-    //     //     salary: 20000,
-    //     //     tags: ["Software Engineering", "UI/UX"],
-    //     //     employment_type: "Full-time",
-    //     //     link: "LinkedIn.com",
-    //     //     image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
-    //     //     alumni: "Roche Quejada" //Tentative
-    //     // }
-
-    //     const job = {
-    //         title: "Data Scientist",
-    //         company: "Google Alphabet",
-    //         description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
-    //         user_name: "Roche Quejada",
-    //         tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
-    //         interested_count: 5
-    //     }
-        
-    //     const jobs = [job,job,job, job, job, job, job];
-    //     setJobList(jobs);
-        
-    // }, []);
-
-
-
-
-    // useEffect(() => {
-    //     // Job Dummy Data
-    //     const job = {
-    //         title: "Data Scientist",
-    //         company: "Google Alphabet",
-    //         description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
-    //         salary: 20000,
-    //         tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
-    //         employment_type: "Full-time",
-    //         mode: "On-site",
-    //         link: "LinkedIn.com",
-    //         image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
-    //         user_name: "Roche Quejada", //Tentative
-    //         interested_count: 5,
-    //         user_id: "2543d5a7-f7f3-4a90-92f7-d0a8595db26b"
-    //     }
-
-    //     setSelectedJob(job);
-        
-    // }, []);
-
+    
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     // Get all jobs
@@ -161,8 +162,117 @@ function JobPostingLanding() {
     return (
         <div className='flex flex-col mb-16'>
             <div className="flex flex-row w-full mt-8 shadow-md pb-8  rounded-full px-8">
+                {/* Filter Button aligned to the left */}
+                <button  
+                    onClick={() => setShowFilterModal(!showFilterModal)}
+                    className="flex items-center gap-2 w-32 h-14 ml-6  text-primary border-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                >
+                    <Filter />
+                    Filters
+                    
+
+                </button>
+
+                {/* Filters */}
+                {showFilterModal && (
+                    <div className="absolute mt-20 ml-6 flex flex-row gap-4 bg-white shadow-md rounded-3xl py-4 px-6 x-50">
+                        {/* Dropdown 1 */}
+                        <button 
+                        onClick={() => setShowWorkTypeDropdown((prev) => !prev)}
+                        className="border border-gray-300 rounded-2xl px-4 py-2 min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                            All Work Types
+                            {/* dropDown for work type */}
+                            {showWorkTypeDropdown && (
+                            <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-60">
+                                {workTypeOptions.map((type) => (
+                                    <label
+                                    key={type}
+                                    className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
+                                    >
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedWorkTypes.includes(type)}
+                                        onChange={() => toggleWorkType(type)}
+                                        className="w-5 h-5 text-blue-600 accent-blue-600"
+                                    />
+                                    <span className="text-gray-700 font-satoshi-medium">
+                                        {type}
+                                    </span>
+                                    </label>
+                                ))}
+                            </div>
+                            )}
+                        </button>
+
+                        {/* Dropdown 2 */}
+                        <button 
+                        onClick={() => setShowRemoteDropdown((prev) => !prev)}
+                        className="border border-gray-300 rounded-2xl px-4 py-2 min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                            All Remote Options
+                            {showRemoteOptionDropdown && (
+                            <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-60">
+                                {remoteOptions.map((type) => (
+                                    <label
+                                    key={type}
+                                    className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
+                                    >
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedRemoteOption.includes(type)}
+                                        onChange={() => toggleRemoteType(type)}
+                                        className="w-5 h-5 text-blue-600 accent-blue-600"
+                                    />
+                                    <span className="text-gray-700 font-satoshi-medium">
+                                        {type}
+                                    </span>
+                                    </label>
+                                ))}
+                            </div>
+                            )}
+                        </button>
+
+                        {/* Dropdown 3 */}
+                        <button 
+                        onClick={() => setShowSalaryRangeDropdown((prev) => !prev)}
+                        className="border border-gray-300 rounded-2xl px-4 py-2 min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                            PHP 0 - PHP 500K
+                            {showSalaryRangeDropdown && (
+                                <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-72 flex flex-row gap-4">
+                                    <div className="flex flex-col">
+                                        <label className="text-left font-satoshi-medium text-gray-600 text-sm mb-1">Minimum Salary</label>
+                                        <input
+                                            type="number"
+                                            name="min"
+                                            value={salaryRange.min}
+                                            onChange={handleSalaryChange}
+                                            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                                            min="0"
+                                        />
+                                    </div>
+                                    
+                                    <div className="flex flex-col">
+                                        <label className="text-left font-satoshi-medium text-gray-600 text-sm mb-1">Maximum Salary</label>
+                                        <input
+                                            type="number"
+                                            name="max"
+                                            value={salaryRange.max}
+                                            onChange={handleSalaryChange}
+                                            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                                            min={salaryRange.min}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </button>
+
+                        
+
+                    
+                        
+                    </div>
+                )}
                 {/* Centered Search Bar */}
-                <div className="flex-1 flex justify-center ml-50">
+                <div className="flex-1 flex justify-center ml-30">
                     <JobSearchBar 
                     searchInput={searchInput}
                     setSearchInput={setSearchInput}
