@@ -18,6 +18,7 @@ function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [registeredAlumni, setRegisteredAlumni] = useState(null);
   const [alumniIndustries, setAlumniIndustries] = useState([]);
+  const [alumniLocations, setAlumniLocations] = useState([]);
   const COLORS = ["#0B2B6F", "#2858D6", "#8CA6DB", "#CBD7F1", "#E8F0FF"];
   
   
@@ -74,9 +75,15 @@ function AdminDashboard() {
         }));
 
         setAlumniIndustries(formattedData);
-        console.log("nyiw",response.data.top_alumni_industries);
 
-        console.log("nyiw",response.data);
+        const formattedData_1 = response.data.top_alumni_countries.map(item => ({
+          country: item.country,
+          percentage: `${item.percentage}%`
+        }));
+        console.log("loc",response.data.top_alumni_countries);
+      setAlumniLocations(formattedData_1);
+      console.log(formattedData_1);
+
       } catch (error) {
         console.error('Error fetching user statistics:', error);
       }
@@ -128,13 +135,13 @@ function AdminDashboard() {
   //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
   // ];
 
-  const alumniLocations = [
-    { "country": "Philippines", "percentage": "78%" },
-    { "country": "United States", "percentage": "22%" },
-    { "country": "Canada", "percentage": "18%" },
-    { "country": "Australia", "percentage": "12%" },
-    { "country": "United Kingdom", "percentage": "9%" }
-  ]
+  // const alumniLocations = [
+  //   { "country": "Philippines", "percentage": "78%" },
+  //   { "country": "United States", "percentage": "22%" },
+  //   { "country": "Canada", "percentage": "18%" },
+  //   { "country": "Australia", "percentage": "12%" },
+  //   { "country": "United Kingdom", "percentage": "9%" }
+  // ]
 
   // const alumniIndustries = [
   //   { name: "Services", value: 40, color: "#0B2B6F" },
