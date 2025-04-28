@@ -12,7 +12,7 @@ function JobExpandedCard({job, currentUserID}) {
     const navToEditJobPost = () => {
         console.log("Edit Job Posting clicked");
         console.log(jobId);
-        navigate(`editJobPosting/${jobId}`, { relative: 'path' });
+        navigate(`/alumni/jobPosting/edit/${jobId}`);
     };
 
     // Close modal on outside click
