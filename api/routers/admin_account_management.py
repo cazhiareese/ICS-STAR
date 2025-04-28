@@ -273,10 +273,10 @@ async def read_verified_students(db: Session = Depends(get_db)):
 # Returns: the verification file of the user
 @router.get("/admin/verification-file/{user_id}", dependencies=None)
 async def read_verification_file(db: Session = Depends(get_db), user_id: UUID = None):
-    user = db.query(User).filter(User.user_id == user_id).first()
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"verification_file": user.verification_file}
+    file = db.query(User.verification_file).filter(User.user_id == user_id).scalar()
+    if file is None:
+        raise HTTPException(status_code=200, detail="Fiie not found")
+    return {"verification_file": file}
 
 # Get user's report logs
 # Arguments: db - SQLAlchemy session, user_id - the user ID
