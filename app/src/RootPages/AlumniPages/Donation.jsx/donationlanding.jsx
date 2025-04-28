@@ -42,51 +42,51 @@ function DonationLanding() {
             created_at: "2025-04-08T13:51:01.554485Z"
           
         }
-        // //Fetch both APIs concurrently
-        // const [donationResponse, generalResponse] = await Promise.all([
-        //   fetch(`${API_BASE_URL}/donationdrive`, {
-        //     method: "GET",
-        //     headers: {
-        //       Authorization: `Bearer ${token}`,
-        //     },
-        //   }),
-        //   fetch(`${API_BASE_URL}/gen-donation-drive`, {
-        //     headers: {
-        //       Authorization: `Bearer ${token}`,
-        //     },
-        //   }),
-        // ]);
+        //Fetch both APIs concurrently
+        const [donationResponse, generalResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/donationdrive`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+          fetch(`${API_BASE_URL}/gen-donation-drive`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+        ]);
 
-        // // Process donation drives
-        // let donationDataResult = [];
-        // if (donationResponse.ok) {
-        //   const data = await donationResponse.json();
-        //   if (!Array.isArray(data)) {
-        //     throw new Error("Unexpected response format for donation drives");
-        //   }
-        //   donationDataResult = data;
-        // } else {
-        //   if (donationResponse.status === 401) {
-        //     throw new Error("Unauthorized access. Please log in.");
-        //   }
-        //   throw new Error("Failed to fetch donation drives");
-        // }
+        // Process donation drives
+        let donationDataResult = [];
+        if (donationResponse.ok) {
+          const data = await donationResponse.json();
+          if (!Array.isArray(data)) {
+            throw new Error("Unexpected response format for donation drives");
+          }
+          donationDataResult = data;
+        } else {
+          if (donationResponse.status === 401) {
+            throw new Error("Unauthorized access. Please log in.");
+          }
+          throw new Error("Failed to fetch donation drives");
+        }
 
-        // // Process general drive
-        // let generalDriveResult = null;
-        // if (generalResponse.ok) {
-        //   generalDriveResult = await generalResponse.json();
-        // } else {
-        //   console.warn("General donation drive fetch failed, continuing without it.");
-        // }
+        // Process general drive
+        let generalDriveResult = null;
+        if (generalResponse.ok) {
+          generalDriveResult = await generalResponse.json();
+        } else {
+          console.warn("General donation drive fetch failed, continuing without it.");
+        }
 
         // Update all states at once to prevent partial renders
-        setDonationData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
-        setFilteredData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
-        //setDonationData(donationDataResult);
-        //setFilteredData(donationDataResult);
-        //setGeneralDrive(generalDriveResult);
-        setGeneralDrive(dummy);
+        //setDonationData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
+        //setFilteredData([dummy,dummy,dummy,dummy,dummy,dummy, dummy, dummy,dummy,dummy, dummy, dummy]); // Use the dummy data for now
+        setDonationData(donationDataResult);
+        setFilteredData(donationDataResult);
+        setGeneralDrive(generalDriveResult);
+        //setGeneralDrive(dummy);
         console.log("Donation Data:", donationData);
         console.log("General Drive:", generalDrive);
       } catch (err) {
