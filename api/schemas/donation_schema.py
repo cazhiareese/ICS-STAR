@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Union
 from uuid import UUID
 from datetime import datetime
 
@@ -83,6 +83,12 @@ class AdminDonationDriveOut(BaseModel):
     class Config:
         from_attributes = True
 
+class PaginatedDonationDrivesResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[AdminDonationDriveOut]
+
 class AdminOneDonationDriveOut(BaseModel):
     drive_id: UUID
     title: str
@@ -140,6 +146,18 @@ class ShortenedInKindDonationsOut(BaseModel):
     class Config:
         from_attributes = True
 
+class PaginatedMonetaryDonationsResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[ShortenedMonetaryDonationsOut]
+
+class PaginatedInKindDonationsResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[ShortenedInKindDonationsOut]
+
 class AdminOverviewDonationDrive(BaseModel):
     drive_id: UUID
     title: str
@@ -170,6 +188,32 @@ class AdminClosedDonationDriveOut(BaseModel):
     percent_funded: float
     amount_raised: float
     target_cost: float
+    donation_count: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+class PaginatedClosedDonationDrivesResponse(BaseModel):
+    message: str
+    page: int
+    total_pages: int
+    data: List[AdminClosedDonationDriveOut]
+
+class RecentDonationResponse(BaseModel):
+    drive_title: str
+    donor_name: str
+    donation_details: str
+
+    class Config:
+        from_attributes = True
+
+class TopFundedDriveResponse(BaseModel):
+    drive_id: UUID
+    title: str
+    total_donations: float
+    target_cost: float
+    acknowledged_donations: int
+    percentage_funded: float
 
     class Config:
         from_attributes = True

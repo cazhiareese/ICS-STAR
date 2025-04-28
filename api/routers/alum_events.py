@@ -67,7 +67,4 @@ def get_visible_events(
     )
 ):
     
-    if user.user_type != user.user_type.alumni:
-        raise HTTPException(status_code=400, detail="For alumni only")
-    
     return get_visible_events_for_user(user.user_id, db, date_filter)

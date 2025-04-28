@@ -181,11 +181,11 @@ function JobPostingLanding() {
                 </button>
             </div>
 
-            <div className='flex flex-row mt-16 mx-30 gap-5 justify-center'>
+            <div className='flex flex-row mt-16 gap-2 justify-center'>
                 {/* Scrollable wrapper */}
-                <div className='h-[1000px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
+                <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
                     {!loading ? (
-                        <div className='flex flex-col gap-5 mx-10'>
+                        <div className='flex flex-col gap-5 '>
                         {jobList.map((job, index) => (
                             <JobCard
                             key={index}
@@ -208,7 +208,7 @@ function JobPostingLanding() {
                 {/* Job Preview */} 
                 
                 {!selectedJob || !selectedJob.tags ? (
-                    <div className="flex flex-col items-center justify-center w-lg mr-10 outline-0">
+                    <div className="flex flex-col items-center justify-center w-lg outline-0">
                         <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200}/></h1>
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>

@@ -103,6 +103,10 @@ function AdminDashboard() {
     { date: "30 Oct", visits: 320 },
   ];
 
+  const goToInfoReports = () =>{
+    navigate('user-engagement-reports', { relative: 'path' });
+  }
+
   return <>
   <div className="">
     {/* Dashboard area */}
@@ -354,7 +358,7 @@ function AdminDashboard() {
                 <h2 className="font-satoshi-medium text-2xl"> System Engagement</h2>  
                 <p className="font-satoshi-light text-xs">User visit for the last 30 days</p>
               </div>
-              <button className="flex flex-row gap-4 cursor-pointer mt-2"> 
+              <button onClick={goToInfoReports} className="flex flex-row gap-4 cursor-pointer mt-2"> 
                 <p className="font-satoshi-light text-sm">View User Information Reports</p> <MoveRight/>
               </button>      
             </div>

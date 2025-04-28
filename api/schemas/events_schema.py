@@ -7,11 +7,12 @@ class EventOut(BaseModel):
     event_id: UUID
     title: str
     image: Optional[str]
-    description: str
+    description: Optional[str]
     location: str
-    is_closed: bool
     dates: List[datetime]
     tags: Optional[List[str]]
+    rsvp_closed: bool
+    going_count: int
 
     class Config:
         from_attributes = True
@@ -19,13 +20,14 @@ class EventOut(BaseModel):
 class OneEventOut(BaseModel):
     event_id: UUID
     title: str
-    description: str
+    description: Optional[str]
     image: Optional[str]
     location: str
-    is_closed: bool
     datetimes: List[datetime]
     links: Optional[List[str]]
     tags: Optional[List[str]]
+    going_count: int
+    rsvp_closed: bool
 
     class Config:
         from_attributes = True
@@ -33,3 +35,13 @@ class OneEventOut(BaseModel):
 class DemographicsOut(BaseModel):
     batch: str
     rsvp_count: int
+
+class UpcomingEventResponse(BaseModel):
+    event_id: str
+    title: str
+    date: datetime
+    location: str
+    days_left: int
+
+    class Config:
+        from_attributes = True
