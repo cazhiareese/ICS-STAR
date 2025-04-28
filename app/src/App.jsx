@@ -110,16 +110,24 @@ function App() {
     if (User) {
       
       const decoded = jwtDecode(User);
-      console.log("OSDNFJKDSFJKDSHJFJKDSF ONBOARDED HERE")
+      console.log("SDFSDDSF")
+      console.log(decoded)
       
       const tokenType = decoded.is_onboarded; 
       console.log("is onboarded:", tokenType)
       console.log(decoded)
-      return false;
+
+      if (decoded.is_onboarded && decoded.is_verified){
+        return true;
+      } else {
+        return false;
+      }
     } else {
       console.warn("⚠️ No token found in sessionStorage");
     }
   } 
+
+  
 
   console.log(isSignedIn);
   console.log(checkType())
@@ -153,7 +161,7 @@ function App() {
       {isSignedIn && checkType() === "alumni" && (
         <>
           <Route path="/" element={<Root />}>
-            {checkOnboardedStatus() === true ?
+            {checkOnboardedStatus() === true?
 
               <>
                 <Route path="alumni/dashboard" element={<AlumniLanding />} />

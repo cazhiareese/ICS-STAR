@@ -39,11 +39,14 @@ const EventCards = ({event}) => {
         navigate(`/alumni/events/${eventId}`);
     }
     const truncateDescription = (description, maxLines = 2) => {
+        if (description ==null){
+            return description
+        } 
         const lines = description.split('\n');
         return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '');
     };
 
-    const truncatedDescription = truncateDescription(event.description, 2);
+    // const truncatedDescription = truncateDescription(event.description, 2);
     return (
         <div className={`w-90 h-110 rounded-2xl overflow-clip shadow-xl bg-white relative border-gray-200 border-1
         
@@ -63,7 +66,7 @@ const EventCards = ({event}) => {
             
             <div className="p-4">
                 <h1 className="text-xl font-bold text-blue-900 pt-10">{event.title}</h1>
-                <p className="text-gray-600 pt-2 h-15 flex items-center">{truncatedDescription}</p>
+                <p className="text-gray-600 pt-2 h-15 flex items-center">{truncateDescription(event.description, 2)}</p>
                 
                 
                 <div className="flex items-center mt-4 text-gray-600 space-x-3">
@@ -72,7 +75,7 @@ const EventCards = ({event}) => {
                 </div>
                 <div className="flex items-center mt-2 text-gray-600 space-x-3">
                     <Calendar />
-                    <div className="flex flex-col w-1/2 overflow-y-scroll max-h-32">
+                    <div className="flex flex-row w-full space-x-4 overflow-y-scroll max-h-32">
                             {event.dates.map((datetime, index) => (
                                 <label key={index}>{parseTime(datetime)}</label>
                             ))}
