@@ -50,3 +50,12 @@ class JobPostingForAdminOut(BaseModel):
     
     class Config:
         from_attributes = True
+class PaginationMeta(BaseModel):
+    page: int
+    per_page: int
+    total_items: int
+    total_pages: int
+
+class PaginatedJobPostingResponse(BaseModel):
+    items: List[JobPostingForAdminOut]
+    meta: PaginationMeta
