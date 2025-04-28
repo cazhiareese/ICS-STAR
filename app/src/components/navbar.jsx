@@ -30,6 +30,10 @@ function Navbar({ tokentype }) {
     window.location.href = `/alumni/donations`;
   }
 
+  function handleCareer() {
+    window.location.href = `/alumni/jobPosting`;
+  }
+
   function handleEvents() {
     window.location.href = `/alumni/events`;
   }
@@ -51,7 +55,7 @@ function Navbar({ tokentype }) {
         Events
       </button>
       <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
-      <button className="hover:text-primary transition font-satoshi-bold">Career</button>
+      <button className="hover:text-primary transition font-satoshi-bold "onClick={handleCareer}>Career</button>
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>
         Alumni Search
       </button>
@@ -78,7 +82,7 @@ function Navbar({ tokentype }) {
         Events
       </button>
       <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
-      <button className="hover:text-primary transition font-satoshi-bold">Career</button>
+      <button className="hover:text-primary transition font-satoshi-bold" onClick={handleCareer}>Career</button>
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>
         Alumni Search
       </button>
