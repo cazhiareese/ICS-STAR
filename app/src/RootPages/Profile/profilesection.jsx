@@ -308,6 +308,7 @@ function ProfileSection({
         onConfirm={handleSave}
         onCancel={() => setShowModal(false)}
         emailChanged={userDetails.email !== originalEmail}
+        text={"save"}
       />
 
       <ImageUploadModal
