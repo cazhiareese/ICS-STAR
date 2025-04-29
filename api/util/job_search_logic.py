@@ -20,6 +20,9 @@ def admin_search_job(
         tag: str = "",
         company: str = "",
         employment_type: str = "",
+        mode_options: str = "",
+        min_salary: int = 0,
+        max_salary: int = 0,
         sort_by: str = "date_desc"
 ) -> list[JobSearchOut]:
     
@@ -40,6 +43,15 @@ def admin_search_job(
         
     if employment_type:
         post_query = post_query.filter(JobPosting.employment_type == employment_type)
+
+    if mode_options:
+        post_query = post_query.filter(JobPosting.mode == mode_options)
+
+    if min_salary:
+        post_query = post_query.filter(JobPosting.salary >= min_salary)
+
+    if max_salary:
+        post_query = post_query.filter(JobPosting.salary <= max_salary)
 
     if tag:
         tags_list = [t.strip() for t in tag.split(',') if t.strip()]

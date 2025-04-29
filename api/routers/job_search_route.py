@@ -25,11 +25,14 @@ def job_search(
     tag: Optional[str] = "",
     company: Optional[str] = "",
     employment_type: Optional[str] = "",
+    mode_options: Optional[str] = "",
+    min_salary: Optional[int] = 0,
+    max_salary: Optional[int] = 0,
     sort_by: Optional[str] = "",
     db: Session = Depends(get_db)
 ):
     
-    results = admin_search_job(db, title=title, creator_name=creator_name, employment_type=employment_type, company=company, tag=tag, sort_by=sort_by)
+    results = admin_search_job(db, title=title, creator_name=creator_name, employment_type=employment_type, company=company, tag=tag, mode_options=mode_options, min_salary=min_salary, max_salary=max_salary, sort_by=sort_by)
 
     if not results:
         raise HTTPException(status_code=200, detail="No job postings found matching the search criteria.")
