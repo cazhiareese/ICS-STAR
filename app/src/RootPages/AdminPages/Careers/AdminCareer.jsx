@@ -6,6 +6,9 @@ import AdminModal from '../../../components/AdminComponents/AdminModal';
 import axios from 'axios'
 import CircularLoading from "../../../components/LoadingComponents/circularloading"
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading"
+import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
+import SortModal from "../../../components/AdminComponents/sortmodal"
+import OrderToggle from "../../../components/AdminComponents/ordertoggle"
 
 function AdminCareer() {
 
@@ -14,14 +17,20 @@ function AdminCareer() {
   const [index, setIndex] = useState(0);
   const [viewStyle, setViewStyle] = useState('List')
   const [jobType, setJobType] = useState('open')
-  const [page, setPage] = useState()
-  const [totalPages, setTotalPages] = useState()
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [topJobs, setTopJobs] = useState([])
   const [topLoading, setTopLoading] = useState(false)
   const [loading, setLoading] = useState(false)
-
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const sorters = [
+    { label: 'Job title', value: 'name' },
+    { label: 'Date posted', value: 'batch' },
+    { label: 'Interested', value: 'interested' },
+  ];
+  const [sortBy, setSortBy] = useState(sorters[0].value);
+  const [sortDirection, setSortDirection] = useState('asc')
   const [openCount, setOpenCount] = useState(0)
   const [closedCount, setClosedCount] = useState(0)
   const [reportedCount, setReportedCount] = useState(0)
@@ -33,17 +42,18 @@ function AdminCareer() {
   async function fetchJobs(type) {
     let endpoint = '';
     if (type === 'open') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/open`;
+      endpoint = `${API_BASE_URL}/admin/job-postings/open?page=${page}`;
     } else if (type === 'closed') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/closed`;
+      endpoint = `${API_BASE_URL}/admin/job-postings/closed?page=${page}`;
     } else if (type === 'reported') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/reported`;
+      endpoint = `${API_BASE_URL}/admin/job-postings/reported?page=${page}`;
     }
   
     try {
       const response = await axios.get(endpoint);
       console.log(response)
-      setJobs(response.data);
+      setTotalPages(response.data.meta.total_pages)
+      setJobs(response.data.items);
     } catch (error) {
       console.error('Failed to fetch jobs:', error);
     }
@@ -94,7 +104,7 @@ function AdminCareer() {
     };
   
     fetchAllJobs();
-  }, [jobType]);
+  }, [jobType, page]);
   
 
   return (
@@ -162,10 +172,17 @@ function AdminCareer() {
         </div>
         {/* Sort by */}
         <div className='flex gap-2'>
-          <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
-            <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
-            <p className='font-satoshi-medium text-primary block'>Name</p>
-          </button>
+          {/* TODO: Add function to change sort */}
+          <SortModal
+            filters={sorters}
+            selectedFilter={sortBy}
+            onSelect={() => {}}
+          />
+          {/* Order toggle */}
+          <OrderToggle
+            direction={sortDirection}
+            onToggle={() => {}}
+          />
           {/* Filter */}
           <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
             <Filter className='text-primary'/>
@@ -184,18 +201,11 @@ function AdminCareer() {
             </button>
           </div>
           {/* Page */}
-          {/* <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-            <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-              <p> Page </p>
-            <input
-              type="text"
-              value={page}
-              onChange={() => {}}
-              className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-            />
-            <p>of {totalPages}</p>
-            <MoveRight className='cursor-pointer' onClick={() => {}}/>
-          </div> */}
+          <PaginationComponent
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
       {/* Table for desktop*/}
