@@ -189,6 +189,10 @@ def get_all_open_drives_by_amount_raised_descending(db: Session) -> list[AdminDo
     
     drive_out_list = []
     for drive in drives:
+
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -233,6 +237,8 @@ def get_all_open_drives_by_amount_raised_ascending(db: Session) -> list[AdminDon
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -277,6 +283,8 @@ def get_all_open_drives_by_percent_funded_descending(db: Session) -> list[AdminD
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -321,6 +329,8 @@ def get_all_open_drives_by_percent_funded_ascending(db: Session) -> list[AdminDo
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -365,6 +375,8 @@ def get_all_open_drives_by_donation_count_descending(db: Session) -> list[AdminD
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -409,6 +421,8 @@ def get_all_open_drives_by_donation_count_ascending(db: Session) -> list[AdminDo
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -453,6 +467,8 @@ def get_all_open_drives_by_date_created_newest(db: Session) -> list[AdminDonatio
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -497,6 +513,8 @@ def get_all_open_drives_by_date_created_oldest(db: Session) -> list[AdminDonatio
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
