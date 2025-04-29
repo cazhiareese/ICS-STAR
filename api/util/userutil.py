@@ -477,3 +477,17 @@ def get_user_skills(
 ):
     skills = db.query(UserSkill.skill).filter(UserSkill.user_id==user_id).all()
     return [skill[0] for skill in skills]
+
+def get_user_affiliations(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    affiliations = db.query(UserAffiliation.affiliation, UserAffiliation.role).filter(UserAffiliation.user_id==user_id).all()
+    return [{"affiliation": affiliation[0], "role": affiliation[1]} for affiliation in affiliations]
+
+def get_user_scholarships(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    scholarships = db.query(UserScholarship.scholarship).filter(UserScholarship.user_id==user_id).all()
+    return [scholarship[0] for scholarship in scholarships]

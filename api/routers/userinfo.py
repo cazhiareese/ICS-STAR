@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 from models.job_posting_model import JobPosting
@@ -257,6 +257,26 @@ async def get_skills(
     skills = get_user_skills(user.user_id, db)
 
     return {"message": "success", "data": skills}
+
+@router.get("/profile/me/affiliations")
+async def get_affiliations(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    affiliations = get_user_affiliations(user.user_id, db)
+
+    return {"message": "success", "data": affiliations}
+
+@router.get("/profile/me/scholarships")
+async def get_scholarships(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    scholarships = get_user_scholarships(user.user_id, db)
+
+    return {"message": "success", "data": scholarships}
 
 # Get user profile details by user ID
 # Arguments: db - SQLAlchemy session, user_id - the user ID
