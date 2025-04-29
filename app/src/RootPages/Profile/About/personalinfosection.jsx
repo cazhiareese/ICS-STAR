@@ -112,41 +112,19 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
           </div>
         )}
 
-        {/* Student Number */}
-        <div className="flex flex-col items-start text-left">
-          <div className="flex items-center gap-2">
-            <IdCard size={20} className="text-black" />
-            <span>Student Number</span>
-          </div>
-          {editMode ? (
-            <div className="flex flex-row flex-wrap gap-2 w-full">
-              <select
-                value={userDetails.student_number_year || ""}
-                onChange={(e) => handleStudentNumberChange(e, "student_number_year")}
-                className="text-primary text-sm font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-[80px] h-[32px]"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={userDetails.student_number_suffix || ""}
-                onChange={(e) => handleStudentNumberChange(e, "student_number_suffix")}
-                placeholder="0000-9999"
-                maxLength={4}
-                pattern="[0-9]{5}"
-                className="text-primary text-sm font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-[80px] h-[32px]"
-              />
-            </div>
-          ) : (
-            <span className="text-primary font-satoshi-bold">
-              {userDetails.student_number || <div className="text-primary text-sm font-satoshi-bold bg-disabled border animate-pulse border-disabled rounded-[12px] px-2 py-1 w-[140px] h-[30px]"></div>}
-            </span>
-          )}
-        </div>
+{/* Student Number */}
+<div className="flex flex-col items-start text-left">
+  <div className="flex items-center gap-2">
+    <IdCard size={20} className="text-black" />
+    <span>Student Number</span>
+  </div>
+  <span className="text-primary font-satoshi-bold">
+    {userDetails.student_number || (
+      <div className="text-primary text-sm font-satoshi-bold bg-disabled border animate-pulse border-disabled rounded-[12px] px-2 py-1 w-[140px] h-[30px]"></div>
+    )}
+  </span>
+</div>
+
 
         {/* Graduating Class */}
         {userDetails.user_type === "alumni" && (

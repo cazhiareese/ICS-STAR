@@ -79,14 +79,14 @@ function AdminNewsletterDetails() {
             onClick={() => navigate("edit-newsletter")}
           >
             <Pencil />
-            <p className="font-satoshi-regular text-lg">Edit Newsletter</p>
+            <p className="font-satoshi-regular text-lg">Edit</p>
           </button>
           <button
             className="bg-red-700 rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer"
             onClick={() => setIsModalOpen(true)}
           >
             <Trash2 />
-            <p className="font-satoshi-regular text-lg">Delete Newsletter</p>
+            <p className="font-satoshi-regular text-lg">Delete</p>
           </button>
         </div>
       </div>

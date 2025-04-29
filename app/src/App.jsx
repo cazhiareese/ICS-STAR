@@ -50,7 +50,6 @@ import OtherUserProfile from "./RootPages/OtherUserprofile";
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
-import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
 import EditJobPostAlum from "./RootPages/AlumniPages/job-posting/editJobPostings";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
@@ -109,9 +108,12 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<Navigate to={isSignedIn ? "/login" : "login"} />} />
+
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="login" element={<LoginPage />} />
           <Route
             path="signup"
@@ -175,9 +177,14 @@ function App() {
           <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
             <Route path="student/events" element={<EventsLanding />} />
-            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
+            <Route path="students/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
-            <Route path="alumni/donations" element={<DonationLanding />} />
+            <Route path="students/donations" element={<DonationLanding />} />
+            <Route path="student/newsletter" element={<NewsletterLanding />} />
+            <Route path="student/newsletter/:newsletterid" element={<Newsletter />} />
+            <Route path="student/jobPosting/interested/:jobid" element={<InterestedUsers />} />
+            <Route path="student/jobPosting/report/:jobid" element={<ReportJobPosting />} />
+            <Route path="student/jobPosting" element={<JobPostingLanding />} />
             <Route path="*" element={<UserProfile />} />
           </Route>
         </>

@@ -224,7 +224,7 @@ function DonationHistoryUser({ userDetails }) {
               <div
                 key={donation.donation_id}
                 onClick={() => openModal(donation)}
-                className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
+                className="border-b border-disabled py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
               >
                 <div
                   className={selectedType === "Monetary" ? "w-1/4" : "w-1/4"}

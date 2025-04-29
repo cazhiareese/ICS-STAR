@@ -215,7 +215,7 @@ function DonationLanding() {
               <div className="-mt-5 flex flex-col sm:flex-row gap-4 justify-center sm:justify-center">
                 {/* Container for DonationMainView */}
                 <div className="bg-whitey border border-disabled rounded-xl p-4">
-                  <DonationMainView driveDetails={generalDrive} driveId={generalDrive.drive_id} />
+                  <DonationMainView driveDetails={generalDrive} driveId={generalDrive.drive_id} landing={true} />
                 </div>
                 {/* DonationCard */}
                 <div className="items-center justify-center sm:justify-start sm:items-start flex flex-col sm:flex-row gap-4">
