@@ -444,3 +444,50 @@ async def register_with_google(
     )
 
     return {"message": "Account created successfully with Google", "access_token": access_token}
+
+def get_personal_info(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    
+    profile_info = db.query(
+        User.user_id,
+        User.first_name,
+        User.last_name,
+        User.email,
+        User.image,
+        User.linkedin,
+        User.github,
+        User.facebook,
+        User.city,
+        User.state,
+        User.country,
+        User.mobile_number,
+        User.student_number,
+        User.graduation_semester,
+        User.graduation_year,
+        User.marital_status
+        ).filter(User.user_id==user_id).first()
+    
+    return profile_info
+
+def get_user_skills(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    skills = db.query(UserSkill.skill).filter(UserSkill.user_id==user_id).all()
+    return [skill[0] for skill in skills]
+
+def get_user_affiliations(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    affiliations = db.query(UserAffiliation.affiliation, UserAffiliation.role).filter(UserAffiliation.user_id==user_id).all()
+    return [{"affiliation": affiliation[0], "role": affiliation[1]} for affiliation in affiliations]
+
+def get_user_scholarships(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    scholarships = db.query(UserScholarship.scholarship).filter(UserScholarship.user_id==user_id).all()
+    return [scholarship[0] for scholarship in scholarships]
