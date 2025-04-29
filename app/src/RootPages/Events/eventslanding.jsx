@@ -59,34 +59,7 @@ const EventsLanding = () => {
     }, []);
 
     //cyrus was here
-    useEffect(() => {
-        // if (!token) throw new Error("User not authenticated");
-
-        // const fetchUserId = async () => {
-        //     try {
-        //         const response = await fetch(`${API_BASE_URL}/profile`, {
-        //             method: 'GET',
-        //             headers: {
-        //                 Authorization: `Bearer ${token}`,
-        //                 'Content-Type': 'application/json'
-        //             }
-        //         });
-        
-        //         if (!response.ok) {
-        //             if (response.status === 401) throw new Error("Unauthorized access");
-        //             throw new Error("Failed to fetch profile");
-        //         }
-        
-        //         const result = await response.json();
-        //         console.log(result.data.user_id);
-        //         setUserId(result.data.user_id);
-        //         setUser(result.data);
-        //         setUserType(result.data.user_type);
-        //     } catch (error) {
-        //         console.error("Error fetching profile:", error.message);
-        //     }
-        // };
-        //fetchUserId();   
+    useEffect(() => { 
         setUserId(userid);
         setUser(userid);
         setUserType(tokentype);     

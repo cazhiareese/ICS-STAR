@@ -3,20 +3,20 @@ import Step2 from "../../assets/SignupAssets/step2.png";
 import { CloudUpload, File, X } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
+import { ChevronDown } from 'lucide-react';
 import FilePicker from "react-file-picker";
 
 function StudentInformation(){
 
     const [image, setImage] = useState(null);
-    const [fileName, setFileName] = useState("No file selected");
-    const [fileSize, setFileSize] = useState(0);
-    const [file, setFile] = useState(null);
 
     const {setUserData, userData, updateUserData} = useAppContext();
 
     const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
     const { setCurrentSection} = useAppContext();
 
+
+    const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
     
     const [error, setError]= useState(false)
     const [studentNumberError, setStudentNumberError] = useState(false)
@@ -98,16 +98,31 @@ function StudentInformation(){
                     Student Number <label className="text-red-700">*</label>
                 </div>
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
-                    <select 
-                        value={userData.selectedYear} 
-                        onChange={(e) => updateUserData("selectedYear", e.target.value)}
-                        className={`border rounded-lg h-10 w-[45%] text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
-                    >
-                        <option value="" disabled>Select a year</option>
-                        {years.map((year) => (
-                            <option key={year} value={year}>{year}</option>
-                        ))}
-                    </select>
+                    <div className="relative w-[45%]">
+                        <button
+                            onClick={() => setYearDropdownOpen(!yearDropdownOpen)}
+                            className={`flex items-center justify-between border rounded-lg h-10 w-full px-4 text-left ${userData.selectedYear ? 'text-black' : 'text-gray-400'} ${studentNumberError == false ? 'border-black' : 'border-red-600'}`}
+                        >
+                            <span className="mx-auto">{userData.selectedYear || "Select a year"}</span>
+                            <ChevronDown className="w-4 h-4 text-gray-600" />
+                        </button>
+                            {yearDropdownOpen && (
+                                <ul className="absolute z-10 w-full mt-1 max-h-60 text-center overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
+                                    {years.map((year) => (
+                                        <li
+                                            key={year}
+                                            onClick={() => {
+                                                updateUserData("selectedYear", year);
+                                                setYearDropdownOpen(false);
+                                            }}
+                                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                        >
+                                            {year}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                    </div>
                     <label>-</label>
                     <input type="number" 
                            value={userData.value} 

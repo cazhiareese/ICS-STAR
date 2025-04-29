@@ -87,8 +87,8 @@ function LoginPage() {
       }
     };
 
-    const loginClick = async (e) => {
-        e.preventDefault();
+    const loginClick = async () => {
+        // e.preventDefault();
         await login(email, password);
     };
 
