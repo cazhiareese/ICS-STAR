@@ -56,7 +56,7 @@ def get_skill_suggestions(db: Session, query_text: str, limit: int = 5) -> List[
 # Returns: a list of full name suggestions
 def get_name_suggestions(db: Session, query_text: str, limit: int = 8) -> List[str]:
     # Query for users with matching first or last name
-    users = db.query(User)\
+    users = db.query(User.first_name, User.last_name)\
               .filter(User.user_type == UserTypeEnum.alumni)\
               .filter(
                 or_(
