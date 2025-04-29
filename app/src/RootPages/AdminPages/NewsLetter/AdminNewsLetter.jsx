@@ -73,7 +73,14 @@ function AdminNewsletter() {
           <Plus /> New Newsletter
         </button>
       </div>
-      <div className='relative flex items-center justify-end flex-1'>
+
+  
+      {/* Page controls */}
+      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
+        <div className='w-full lg:w-auto min-w-xs'>
+          
+        </div>
+        <div className='relative flex items-center justify-end flex-1 pr-3'>
             <input
               type="text"
               placeholder="Search"
@@ -85,10 +92,6 @@ function AdminNewsletter() {
             />
             <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
           </div>
-  
-      {/* Page controls */}
-      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
-        <div className='w-full lg:w-auto min-w-xs'></div>
         <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
           <MoveLeft
             className='cursor-pointer'
