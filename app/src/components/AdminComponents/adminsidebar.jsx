@@ -40,13 +40,15 @@ function Sidebar({ sidebarItems }) {
 
         {/* Sidebar Items */}
         {sidebarItems.map((item) => (
-          <Link to={item.path} key={item.id} onClick={() => setIsOpen(false)}>
-            <SidebarItem
-              title={item.title}
-              icon={item.icon}
-              isSelected={location.pathname.startsWith(`/admin/${item.path}`)}
-              />
-          </Link>
+          <SidebarItem
+            key={item.id}
+            title={item.title}
+            icon={item.icon}
+            path={item.path}
+            isSelected={location.pathname.startsWith(`/admin/${item.path}`)}
+            childrenItems={item.children}
+            onClick={() => setIsOpen(false)}
+          />
         ))}
 
         {/* Log Out */}
