@@ -6,6 +6,7 @@ import AdminModal from '../../../components/AdminComponents/AdminModal';
 import axios from 'axios'
 import CircularLoading from "../../../components/LoadingComponents/circularloading"
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading"
+import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
 
 function AdminCareer() {
 
@@ -14,13 +15,13 @@ function AdminCareer() {
   const [index, setIndex] = useState(0);
   const [viewStyle, setViewStyle] = useState('List')
   const [jobType, setJobType] = useState('open')
-  const [page, setPage] = useState()
-  const [totalPages, setTotalPages] = useState()
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [topJobs, setTopJobs] = useState([])
   const [topLoading, setTopLoading] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   const [openCount, setOpenCount] = useState(0)
   const [closedCount, setClosedCount] = useState(0)
@@ -33,17 +34,18 @@ function AdminCareer() {
   async function fetchJobs(type) {
     let endpoint = '';
     if (type === 'open') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/open`;
+      endpoint = `${API_BASE_URL}/admin/job-postings/open?page=${page}`;
     } else if (type === 'closed') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/closed`;
+      endpoint = `${API_BASE_URL}/admin/job-postings/closed?page=${page}`;
     } else if (type === 'reported') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/reported`;
+      endpoint = `${API_BASE_URL}/admin/job-postings/reported?page=${page}`;
     }
   
     try {
       const response = await axios.get(endpoint);
       console.log(response)
-      setJobs(response.data);
+      setTotalPages(response.data.meta.total_pages)
+      setJobs(response.data.items);
     } catch (error) {
       console.error('Failed to fetch jobs:', error);
     }
@@ -94,7 +96,7 @@ function AdminCareer() {
     };
   
     fetchAllJobs();
-  }, [jobType]);
+  }, [jobType, page]);
   
 
   return (
@@ -184,18 +186,11 @@ function AdminCareer() {
             </button>
           </div>
           {/* Page */}
-          {/* <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-            <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-              <p> Page </p>
-            <input
-              type="text"
-              value={page}
-              onChange={() => {}}
-              className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-            />
-            <p>of {totalPages}</p>
-            <MoveRight className='cursor-pointer' onClick={() => {}}/>
-          </div> */}
+          <PaginationComponent
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
       {/* Table for desktop*/}
