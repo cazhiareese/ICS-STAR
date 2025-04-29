@@ -79,6 +79,9 @@ import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
 import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
 import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
+import AdminDonationsInsights from "./RootPages/AdminPages/Donations/AdminDonationsInsights";
+import AdminUserReports from "./RootPages/AdminPages/Layouts/adminuserreports";
+import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 
 
 //const isSignedIn = !!localStorage.getItem("token");
@@ -145,12 +148,11 @@ function App() {
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
             <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
-            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
             <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
             <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
 
             
-            <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPostAlum />} />
             <Route path="alumni/newsletter" element={<NewsletterLanding />} />
             <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
@@ -192,6 +194,8 @@ function App() {
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
               <Route path="industry-reports" element={<AdminIndustryInformation/>}/>
               <Route path="country-reports" element={<AdminCountryInformation/>}/>
+              <Route path="user-engagement-reports" element={<AdminUserReports/>}/>
+              <Route path="user-engagement-reports/most-engaged-job-offers" element={<MostEngagedJobs/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
@@ -217,6 +221,7 @@ function App() {
             </Route>
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
+              <Route path="insights" element={<AdminDonationsInsights/>}/>
               <Route path=":driveid" element={<AdminDonationInformation/>}/>
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
               <Route path="help-ics/" element={<AdminHelpIcs/>}/>

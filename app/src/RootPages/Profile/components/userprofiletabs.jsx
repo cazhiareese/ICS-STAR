@@ -20,7 +20,7 @@ function UserProfileTabs({ userDetails, editMode, activeTab, setActiveTab }) {
         editMode || !userDetails.is_verified
           ? "pointer-events-none text-gray-400 opacity-50"
           : activeTab === tab
-          ? "text-primary font-bold after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-primary"
+          ? "text-primary font-bold "
           : "text-gray-700 hover:text-primary"
       }`}
   >
