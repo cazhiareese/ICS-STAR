@@ -97,13 +97,14 @@ def paginate_results_donation(results: list, page: int, page_size: int):
     paginated = results[start:end]
     return total_pages, paginated
 
-@router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
+@router.get("/admin/donations/search", response_model=List)
 def search_drives(
     title: str = "",
+    sort_by: str = "",
     db: Session = Depends(get_db)
 ):
     
-    results = search_donation_drives(db, title)
+    results = search_donation_drives(db, title, sort_by)
 
     return results
 
