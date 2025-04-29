@@ -50,7 +50,6 @@ import OtherUserProfile from "./RootPages/OtherUserprofile";
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
-import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
 import EditJobPostAlum from "./RootPages/AlumniPages/job-posting/editJobPostings";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
