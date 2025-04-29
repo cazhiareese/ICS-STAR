@@ -140,10 +140,19 @@ async def read_unverified_students_count(db: Session = Depends(get_db)):
 # Returns: a message confirming the user registration
 @router.put("/admin/confirm/{user_id}", dependencies=None)
 async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
-    user = db.query(User).filter(User.user_id == user_id).first()
-    if user is None:
+    result = db.execute(
+        update(User)
+        .where(User.user_id == user_id)
+        .values(is_verified=True)
+        .returning(User.user_id)
+    )
+    
+    # Check if any row was affected
+    affected_user = result.scalar_one_or_none()
+    
+    if affected_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    user.is_verified = True
+        
     db.commit()
     return {"message": "User registration confirmed"}
 
