@@ -31,7 +31,7 @@
 
         const baseURL = import.meta.env.VITE_BACKEND_URL;
 
-        const register = async (e) => {
+        const register = async () => {
             try {
                 const formData = new FormData();
                 formData.append("first_name", userData.firstName);
@@ -41,7 +41,6 @@
                 formData.append("student_number", `${userData.selectedYear}-${userData.value}`);
                 formData.append("user_type", userType);
         
-                // Only append the file if it exists
                 if (userData.file) {
                     formData.append("verification_file", userData.file);
                 }
@@ -53,17 +52,40 @@
         
                 const response = await fetch(`${baseURL}/register`, {
                     method: "POST",
-                    body: formData, // Send formData directly
+                    body: formData,
                 });
         
                 const data = await response.json();
-                
+        
                 if (response.ok) {
-                    alert("Registration Successful!");
-                    if (userType=="alumni"){
-                        navigate("/alumni");
+                    const loginResponse = await fetch(`${baseURL}/token`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: new URLSearchParams({
+                            username: userData.email,
+                            password: userData.password,
+                        }),
+                    });
+        
+                    const loginData = await loginResponse.json();
+        
+                    if (loginResponse.ok) {
+                        // You can store the token if needed:
+                        localStorage.setItem("token", loginData.access_token);
+        
+                        alert("Registration Successful!");
+        
+                        // Redirect based on userType
+                        if (userType === "alumni") {
+                            navigate("/alumni/dashboard");
+                        } else {
+                            navigate("/student/student");
+                        }
                     } else {
-                        navigate("/student");
+                        alert("Login failed after registration.");
+                        console.error("Login Error:", loginData);
                     }
                 } else {
                     alert(data.detail || "Registration failed!");
@@ -76,6 +98,7 @@
                 alert("Something went wrong!");
             }
         };
+        
 
         return(
             <div className="flex flex-col w-full items-center pt-40 sm:pt-0 sm:mt-0 mt-10">
