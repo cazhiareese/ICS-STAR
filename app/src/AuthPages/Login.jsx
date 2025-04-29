@@ -9,11 +9,16 @@ import ICSSTARHEAD from "../assets/ics-starhead.png";
 import Star from "../assets/Star 52.png"
 import { Eye, EyeClosed, CircleX } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-import CircularLoading from "../components/LoadingComponents/circularloading";
+import CircularLoading from "../components/LoadingComponents/starloading";
+import star from "../assets/star.png";
+import google from "../assets/google.png"
+import GuestModal from "./guestModal"
+
 function LoginPage() {
 
     const baseURL = import.meta.env.VITE_BACKEND_URL;
 
+    const [openModal, setOpenModal] = useState(false);
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -30,6 +35,21 @@ function LoginPage() {
     const emailRef = useRef(null);
 
     const passwordRef = useRef(null);
+
+    const handleModal = () => {
+        setOpenModal(true)
+    }
+
+    const navigate = useNavigate();
+    const stars = [
+        { id: 1, top: "16%", left: "15%", size: "w-7" },
+        { id: 2, top: "50%", left: "10%", size: "w-10" },
+        { id: 3, top: "30%", left: "25%", size: "w-10" },
+        { id: 4, top: "5%", left: "40%", size: "w-9" },
+        { id: 5, top: "15%", left: "67%", size: "w-8" },
+        { id: 6, top: "45%", left: "80%", size: "w-6" },
+        { id: 7, top: "8%", left: "88%", size: "w-4" },
+      ];
 
     const login = async (e) => {
       // setIsLoading(true);
@@ -127,14 +147,34 @@ function LoginPage() {
     }, [codeError]);
 
 
-  return (
-    <div className="flex items-center justify-center w-screen h-screen">
-        {/* Background */}
+    const [position, setPosition] = useState(0);
+  const maxPosition = 700; 
+//   const [maxPosition, setMaxPosition]= useState(0);
 
-        <div className="absolute inset-0 object-fill bg-center scale-100 opacity-50 md:opacity-50 h-screen w-screen     bg-fixed"
-            style={{ backgroundImage: `url(${loginBg})` }}>
-            <div className="sticky inset-0"></div>
-        </div>
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPosition(prev => {
+        if (prev < maxPosition) {
+          return prev + 50; // Move 5px every tick
+        } else {
+          clearInterval(interval); // Stop when reaching the end
+          return prev;
+        }
+      });
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+  return (
+    <div className="flex items-center w-screen min-h-screen overflow-y-auto ">
+        {/* Background
+
+        // <div className="absolute inset-0 object-fill bg-center scale-100 opacity-50 md:opacity-50 h-screen w-screen     bg-fixed"
+        //     style={{ backgroundImage: `url(${loginBg})` }}>
+        //     <div className="sticky inset-0"></div>
+        // </div> */}
 
         {/* Lower COnstellation */}
         <div className="absolute opacity-0 sm:opacity-100 bottom-0 left-0 sm:min-w-2xl w-3/5 ">
@@ -146,7 +186,7 @@ function LoginPage() {
         </div>
 
         {/* Upper COnstellation */}
-        <div className=" absolute opacity-0 sm:opacity-100 top-0 right-0 w-3/5 sm:min-w-2xl ">
+        <div className="absolute opacity-0 sm:opacity-100 top-0 right-0 w-3/5 sm:min-w-2xl ">
             <img 
                 src={ConstellationsUp}
                 alt="Login Background" 
@@ -155,10 +195,10 @@ function LoginPage() {
         </div>
 
         {/* Lower Portion */}
-        <div className="flex flex-col overflow-clip [@media(max-height:800px)]:justify-normal items-center md:justify-center w-screen h-screen sm:p-30 p-10 z-10">
+        <div className="flex flex-col overflow-y-auto overflow-x-clip [@media(max-height:800px)]:justify-normal items-center lg:justify-center w-screen lg:h-screen lg:p-30 p-10 z-10 sm:h-[700px] sm:overflow-y-clip lg:overflow-y-auto" >
             
             {/* Mobile COnstellation */}
-            <div className="sm:hidden block w-screen -mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 overflow-clip">
+            <div className="sm:hidden block w-screen -mt-10 h-[220px] [@media(max-height:800px)]:opacity-40 overflow-visible opacity-40">
                 <img 
                     src={ConstellationsMobile}
                     alt="Login Background" 
@@ -166,186 +206,334 @@ function LoginPage() {
                 />
             </div>
 
+
+            {/* <div className="lg:hidden md:block sm:block hidden w-screen opacity-0 sm:-mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 overflow-clip">
+                <img 
+                    src={ConstellationsMobile}
+                    alt="Login Background" 
+                    className="w-[100%] object-cover"
+                />
+            </div> */}
+
             {/* ICS-STAR */}
 
-            <div className="flex justify-center sm:pt-30 md:pt-0 sm:absolute sm:top-10 sm:left-0 sm:min-w-3xl ">
+            <div className="flex flex-row justify-center lg:pt-30 xl:pt-0 lg:absolute lg:top-10 lg:left-0 lg:min-w-3xl ">
                 <img 
                     src={ICSSTARHEAD}
                     alt="Login Background" 
-                    className="sm:absolute sm:left-15 sm:top-0 sm:w-[25%] w-50"
+                    className="lg:absolute lg:left-15 lg:top-0 lg:w-[30%] md:w-50 md:h-10 w-50"
                 />
+                <div className=" hidden md:flex flex-row ">
+                <div className="w-1 h-11 bg-black ml-11">`</div>
+                <div className="flex flex-col -mt-1 text-xl font-satoshi-bold ml-3 leading-6">
+                    <label><label className="text-primary">S</label>ystem for <label className="text-primary">T</label>racking</label>
+                    <label><label className="text-primary">A</label>lumni <label className="text-primary">R</label>elations</label>
+                </div>
+                </div>
+                
+            
             </div>
             
 
-            <div className="sm:hidden flex flex-col w-full mt-5 ">
-                        <h1 className="text-3xl sm:text-5xl font-satoshi-light text-center">Bridging Alumni</h1>
-                        <h1 className="text-3xl sm:text-5xl font-satoshi-bold font-bold text-primary text-center">Across the Cosmos</h1>
+            <div className="lg:hidden flex flex-col w-full mt-5 s">
+                        <h1 className="text-4xl md:text-4xl font-satoshi-light text-center">Bridging Alumni</h1>
+                        <h1 className="text-4xl md:text-4xl font-satoshi-bold text-primary text-center">Across the Cosmos</h1>
             </div>
 
-            {/* Login Signup */}
-            <div onClick={() => setCodeError(false)} className=" flex flex-col items-center justify-center h-screen sm:mt-0 w-[30%]  min-h-110 max-h-150 sm:min-h-140 min-w-sm sm:min-w-md sm:bg-[#F5F5F5] sm:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] sm:rounded-4xl">
-                    <h1 className="hidden sm:block text-8xl font-satoshi-light mb-0 text-[#102E46]">Login</h1> 
-                    
-                    
-                    {/* Email Input */}
-                    
-                    <div className="flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 cursor-pointer w-[60%] sm:w-[70%]">
-
+            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-170 lg:min-h-170 my-15">
+                
+                {/* Login Signup */}
+                <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl lg:min-w-lg md:min-w-lg lg:bg-[#F5F5F5] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] lg:rounded-4xl">
+                        <h1 className="hidden lg:block text-8xl font-satoshi-regular mb-0 text-[#102E46]">Login</h1> 
                         
-                        <label className= "block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
-                                setActiveEmail(true);
-                                setTimeout(() => {
-                                    emailRef.current?.focus();
-                                }, 0);
-                               
-                            }
-                            }>
-                            {!activeEmail ? (
-                                email ? `Email: ${email}` : <span className="text-gray-600">Email</span>
-                            ) : (
-                                "Email"
-                            )}
-                        </label>
                         
-                            
-                        <div className="relative overflow-x-clip">
-
+                        {/* Email Input */}
                         
-                            {/* Diamond swing */}
-                            <span
-                                className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activeEmail ? 'translate-x-full right-0 pt-7 mr-3 ' : 'translate-x-0  '}`}
-                                onClick={() => setActiveEmail(!activeEmail)}
-                            >◆</span>
+                        <div className=" flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 -mt-3 cursor-pointer w-[60%] sm:w-[70%]">
 
-                                {!activeEmail ? 
+                       
+                            <label className= "block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
+                                    setActiveEmail(true);
+                                    setTimeout(() => {
+                                        emailRef.current?.focus();
+                                    }, 0);
                                 
-                                <div className="inputLine w-full border-b-2 border-gray-400 focus-within:border-blue-500 outline-none py-2" 
-                                onClick={() => setActiveEmail(!activeEmail)}></div>
+                                }
+                                }>
+                                {!activeEmail ? (
+                                    email ? `Email: ${email}` : <span className="text-gray-600">Email</span>
+                                ) : (
+                                    "Email"
+                                )}
+                            </label>
+                            
                                 
-                                : <input 
-                                type="email"
-                                ref={emailRef}
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="inputLine w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-variable"
-                                placeholder="Enter Email Here"
-                                /> }
+                            <div className="relative overflow-x-clip">
+
                             
-                        </div>
-                    </div>
+                                {/* Diamond swing */}
+                                <span
+                                    className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activeEmail ? 'translate-x-full right-0 pt-7 mr-3 ' : 'translate-x-0  '}`}
+                                    onClick={() => setActiveEmail(!activeEmail)}
+                                >◆</span>
 
-                    {/* Password */}
-                    <div className="flex flex-col justify-end  h-[15%] -passwordButton mb-18 cursor-pointer w-[60%] sm:w-[70%]">
-
-                        
-                        <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
-                            setActivePassword(true); // only set to true, don't toggle
-                            setTimeout(() => {
-                                passwordRef.current?.focus();
-                            }, 0);
-                            
-                            }}>
-                            {!activePassword ? (
-                                password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="text-gray-600">Password</span>
-                            ) : (
-                                "Password"
-                            )}
-                        </label>
-                        
-                            
-                        <div className="relative overflow-x-clip">
-
-                        
-                            {/* Diamond swing */}
-                            <span
-                                className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-3 pt-6.5' : 'translate-x-0'} z-10`}
-                                onClick={() => setActivePassword(!activePassword)}
-                            >◆</span>
-
-                                {!activePassword ? 
-                                    <>
+                                    {!activeEmail ? 
+                                    
                                     <div className="inputLine w-full border-b-2 border-gray-400 focus-within:border-blue-500 outline-none py-2" 
-                                    onClick={() => {
-                                        setActivePassword(!activePassword);
+                                    onClick={() => setActiveEmail(!activeEmail)}></div>
+                                    
+                                    : <input 
+                                    type="email"
+                                    ref={emailRef}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="inputLine w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-variable"
+                                    placeholder="Enter Email Here"
+                                    /> }
+                                
+                            </div>
+                        </div>
+
+                        {/* Password */}
+                        <div className="flex flex-col justify-end  h-[15%] -passwordButton mb-15 cursor-pointer w-[60%] sm:w-[70%]">
+
+                            
+                            <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
+                                setActivePassword(true); // only set to true, don't toggle
+                                setTimeout(() => {
+                                    passwordRef.current?.focus();
+                                }, 0);
+                                
+                                }}>
+                                {!activePassword ? (
+                                    password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="text-gray-600">Password</span>
+                                ) : (
+                                    "Password"
+                                )}
+                            </label>
+                            
+                                
+                            <div className="relative overflow-x-clip">
+
+                            
+                                {/* Diamond swing */}
+                                <span
+                                    className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-3 pt-6.5' : 'translate-x-0'} z-10`}
+                                    onClick={() => setActivePassword(!activePassword)}
+                                >◆</span>
+
+                                    {!activePassword ? 
+                                        <>
+                                        <div className="inputLine w-full border-b-2 border-gray-400 focus-within:border-blue-500 outline-none py-2" 
+                                        onClick={() => {
+                                            setActivePassword(!activePassword);
+                                            
+                                        }
+                                            
+                                            }>
+                                        </div>
+                                        <span className="absolute right-2 -top-6 text-gray-500 cursor-pointer "onClick={() => setShowPassword(!showPassword)}>
+                                            
+                                            {
+                                                showPassword ? (
+                                                    <Eye/>
+                                                ) : (
+                                                    <EyeClosed/>
+                                                )
+                                            }
+                                        </span></>
                                         
-                                    }
-                                        
-                                        }>
-                                    </div>
-                                    <span className="absolute right-2 -top-6 text-gray-500 cursor-pointer "onClick={() => setShowPassword(!showPassword)}>
-                                        
-                                        {
+                                        : <>
+                                        <input 
+                                            type={showPassword ? "text" : "password"}
+                                            value={password}
+                                            ref={passwordRef}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className="inputLine  w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
+                                            placeholder="Enter Password Here"
+                                        /> 
+
+                                        <span 
+                                            className="absolute right-2 top-3 text-gray-500 cursor-pointer" 
+                                            onClick={() => setShowPassword(!showPassword)}
+                                        >{
                                             showPassword ? (
                                                 <Eye/>
                                             ) : (
                                                 <EyeClosed/>
                                             )
-                                        }
-                                    </span></>
-                                    
-                                    : <>
-                                    <input 
-                                        type={showPassword ? "text" : "password"}
-                                        value={password}
-                                        ref={passwordRef}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="inputLine  w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
-                                        placeholder="Enter Password Here"
-                                    /> 
-
-                                    <span 
-                                        className="absolute right-2 top-3 text-gray-500 cursor-pointer" 
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >{
-                                        showPassword ? (
-                                            <Eye/>
-                                        ) : (
-                                            <EyeClosed/>
-                                        )
-                                    }</span>
-                                    
-                                    </>
-                                }
+                                        }</span>
+                                        
+                                        </>
+                                    }
+                                
+                            </div>
                             
                         </div>
+                        
+                        <p className={`flex flex-row text-center items-center text-red-400 mb-6 -mt-12 ${codeError ? 'block' : 'hidden'}`}>
+                            <CircleX size={18}/> &nbsp;Invalid Email/Password. Please enter again.
+                        </p>
+                        {/* Login Button */}
+                        {/* <button className="bg-primary cursor-pointer text-white py-3 rounded-lg text-lg w-[50%] font-bold hover:bg-blue-700 transition mt-0">
+                        Login
+                        </button> */}
+
+                        {isLoading ? (
+                            // Rotating image
+                            <div className="-mt-10 -mb-5">
+                                <CircularLoading/>
+                            </div>
+                            
+                        ) : (
+                            <>
+                            <button
+                            className="bg-primary text-white py-3 rounded-3xl text-lg w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 transition mt-0"
+                            onClick={()=>(loginClick())}
+                            >
+                            Login
+                            </button>
+                            <button
+                                className=" relative bg-white border-2   py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 hover:text-white transition mt-3"
+                                // onClick={loginClick}
+                                >
+                                <label className="hover:text-white">Sign In with Google</label>
+                                
+                                    <img 
+                                        src={google} 
+                                        alt="Google Logo" 
+                                        className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6"
+                                    />
+                                
+                            </button>
+                            </>
+                        )}
+
+
+                        
+
+                        {/* Signup Link */}
+                        <p className="text-center text-gray-600 mt-7">
+                            Don't have an account? 
+                        </p>
+                        <p className="mb-3 space-x-1    ">
+                        <a href="/signup" className="text-primary font-satoshi-regular underline">Signup here</a> <label>or</label> <a className="text-primary font-satoshi-regular underline" onClick={handleModal}>Continue as guest</a>
+                        </p>
+                        
+                </div>
+
+                {/* Description */}
+                <div className="my-auto lg:flex hidden  2xl:w-180 xl:w-150 lg:w-100 md:w-100 w-80 xl:h-50  bg-secondary ml-auto relative items-center rounded-l-2xl shadow-lg group">
+                    
+                    <div
+                        className={`absolute -top-5 h-[2px] bg-primary z-20 lg:block hidden left-0`}
+                        style={{
+                        right: `${0}px`,
+                        width: `${position + 15}px`, // Width grows as star moves
+                        transition: "width 50ms linear", // smooth width expansion
+                        }}
+                    />
+                    
+                    <div
+                        className="absolute -top-9 right-1 animate-spin z-20 lg:block hidden -left-5"
+                        style={{
+                        right: `${position}px`,
+                        width: "30px",
+                        height: "30px",
+                        fontSize: "24px",
+                        transformOrigin: "center",
+                        animation: `rotateStar 10s linear infinite`,
+                        }}
+                    >
+                        <img
+                        src={star}
+                        alt="Rotating Star"
+                        className="w-full h-full object-contain lg:block hidden"
+                        />
+                    </div>
+                    {/* The trail */}
+                    <div
+                        className={`absolute -bottom-5 h-[2px] bg-primary z-20 lg:block hidden left-0`}
+                        style={{
+                        right: `${0}px`,
+                        width: `${position + 15}px`, // Width grows as star moves
+                        transition: "width 50ms linear", // smooth width expansion
+                        }}
+                    />
+                    
+                    <div
+                        className="absolute -bottom-8 right-1 animate-spin z-20 lg:block hidden -left-5"
+                        style={{
+                        right: `${position}px`,
+                        width: "30px",
+                        height: "30px",
+                        fontSize: "24px",
+                        transformOrigin: "center",
+                        animation: `rotateStar 10s linear infinite`,
+                        }}
+                    >
+                        <img
+                        src={star}
+                        alt="Rotating Star"
+                        className="w-full h-full object-contain lg:block hidden"
+                        />
                     </div>
                     
-                    <p className={`flex flex-row text-center items-center text-red-400 mb-6 -mt-12 ${codeError ? 'block' : 'hidden'}`}>
-                        <CircleX size={18}/> &nbsp;Invalid Email/Password. Please enter again.
-                    </p>
-                    {/* Login Button */}
-                    {/* <button className="bg-primary cursor-pointer text-white py-3 rounded-lg text-lg w-[50%] font-bold hover:bg-blue-700 transition mt-0">
-                    Login
-                    </button> */}
+                    <label className="2xl:text-2xl xl:text-xl sm:text-md font-satoshi-regular 2xl:mx-20 xl:mx-10 md:mx-2 mx-10 my-5 space-y-5 leading-11 text-justify">
+                        Built to connect alumni, students, and the institute.
+                        <label className="font-satoshi-black text-primary">
+                        &nbsp;ICS-STAR
+                        </label> makes it easy to track alumni, share updates, and bring everyone together.
+                    </label>
 
-                    {isLoading ? (
-                        // Rotating image
-                        <CircularLoading/>
-                    ) : (
-                        // Normal button
-                        <button
-                        className="bg-primary text-white py-3 rounded-lg text-lg w-[50%] font-bold hover:bg-blue-700 transition mt-0"
-                        onClick={loginClick}
-                        >
-                        Login
-                        </button>
-                    )}
+                </div>
 
-                    {/* Signup Link */}
-                    <p className="text-center text-gray-600 mt-4">
-                        Don’t have an account? <a href="/signup" className="text-blue-600 font-semibold">Signup here</a>
-                    </p>
             </div>
             
+            
             {/* Caption below */}
-            <div className="absolute hidden sm:flex flex-col w-full pt-10 bottom-10 -left-10">
+            <div className="absolute hidden lg:flex flex-col w-full pt-10 bottom-10 -left-10 ">
                 <h1 className="text-5xl font-satoshi-light text-right ">Bridging Alumni</h1>
-                <h1 className="text-5xl font-satoshi-bold font-bold text-primary text-right">Across the Cosmos</h1>
+                <h1 className="text-5xl font-satoshi-bold  text-primary text-right">Across the Cosmos</h1>
             </div>
         </div>
+        {openModal &&
+            <div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">
+            <div className="bg-white rounded-3xl shadow-lg p-6 w-[25rem]">
+                <h2 className="text-xl font-satoshi-bold mb-4 text-center">Continue as guest?</h2>
+                <p className="text-black font-satoshi-regular text-center mb-6">
+                    You may only access the newsletters and events page. To access more features, log in or sign up with your account.
+                </p>
+                <div className="flex flex-row items-center space-x-5 justify-center">
+                    <button
+                        className="px-4 py-2 border border-primary text-primary font-satoshi-regular rounded-3xl hover:bg-primary/10"
+                        onClick={() => setOpenModal(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="px-4 py-2 bg-green-500 text-white font-satoshi-regular rounded-3xl hover:bg-green-600"
+                        onClick={() => {
+                            setOpenModal(false);
+                            navigate("/login");
+                        }}
+                    >
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        }
+        
     </div>
     
   );
 }
+
+
+
+
+
 
 export default LoginPage;

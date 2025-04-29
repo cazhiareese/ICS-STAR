@@ -475,6 +475,7 @@ const EventsLanding = () => {
                     
 
                     <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto">
+                        
                         {suggestions!= "none" ? (
                             
                         // <div className="absolute top-full mt-5 bg-white w-full max-w-[600px] border-gray-400 border-2 z-20 rounded-2xl">

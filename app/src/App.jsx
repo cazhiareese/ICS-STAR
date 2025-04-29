@@ -78,6 +78,7 @@ import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
 import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
 import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
+import AdminDonationsInsights from "./RootPages/AdminPages/Donations/AdminDonationsInsights";
 import AdminUserReports from "./RootPages/AdminPages/Layouts/adminuserreports";
 import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 
@@ -211,14 +212,15 @@ function App() {
             <Route path="newsletter" element={<AdminNewsletterLayout />} >
               <Route index element={<AdminNewsLetter/>}/>
               <Route path="create-newsletter" element={<AdminCreateNewsletter/>}/>
-              <Route path="newsletter-details" element={<AdminNewsletterDetails/>}/>
-              <Route path="newsletter-details/edit-newsletter" element={<AdminEditNewsletter/>}/>  
+              <Route path="newsletter-details/:id" element={<AdminNewsletterDetails/>}/>
+              <Route path="newsletter-details/:newsletter_id/edit-newsletter" element={<AdminEditNewsletter/>}/>  
             </Route>
             <Route path="career" element={<AdminCareerLayout />}>
               <Route index element ={<AdminCareer/>}/>
             </Route>
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
+              <Route path="insights" element={<AdminDonationsInsights/>}/>
               <Route path=":driveid" element={<AdminDonationInformation/>}/>
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
               <Route path="help-ics/" element={<AdminHelpIcs/>}/>
