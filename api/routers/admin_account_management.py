@@ -6,7 +6,7 @@ from util.userutil import require_admin
 from models.usermodel import User
 from models.report_model import Report
 from uuid import UUID
-from sqlalchemy import func
+from sqlalchemy import func, update
 
 router = APIRouter()
 
@@ -340,10 +340,19 @@ async def read_report_logs(db: Session = Depends(get_db), user_id: UUID = None):
 # Returns: a message confirming the ban
 @router.put("/admin/ban/{user_id}", dependencies=None)
 async def ban_user(db: Session = Depends(get_db), user_id: UUID = None):
-    user = db.query(User).filter(User.user_id == user_id).first()
-    if user is None:
+    result = db.execute(
+        update(User)
+        .where(User.user_id == user_id)
+        .values(is_banned=True)
+        .returning(User.user_id)
+    )
+    
+    # Check if any row was affected
+    affected_user = result.scalar_one_or_none()
+    
+    if affected_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    user.is_banned = True
+        
     db.commit()
     return {"message": "User banned"}
 
