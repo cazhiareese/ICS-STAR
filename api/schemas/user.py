@@ -42,40 +42,40 @@ class UnemploymentReasonEnum(str, Enum):
 
 class UserOut(BaseModel):
     user_id: UUID
-    # first_name: str
-    # last_name: str
-    # email: str
-    # mobile_number: Optional[str] = None
-    # age: Optional[int] = None
-    # gender: Optional[GenderEnum] = None
-    # city: Optional[str] = None
-    # state: Optional[str] = None
-    # country: Optional[str] = None
-    # marital_status: Optional[str] = None
-    # image: Optional[str] = None
-    # verification_file: Optional[str] = None
-    # is_verified: bool
+    first_name: str
+    last_name: str
+    email: str
+    mobile_number: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[GenderEnum] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+    marital_status: Optional[str] = None
+    image: Optional[str] = None
+    verification_file: Optional[str] = None
+    is_verified: bool
     is_banned: Optional[bool] = None
     user_type: UserTypeEnum
-    # position: Optional[str] = None
-    # student_number: Optional[str] = None
-    # standing: Optional[UserStandingEnum] = None
-    # graduation_year: Optional[int] = None
-    # graduation_semester: Optional[str] = None
-    # industry: Optional[str] = None
-    # employment_status: Optional[str] = None
-    # industry: Optional[str] = None
-    # job_title: Optional[str] = None
-    # work_location: Optional[str] = None
-    # work_mode: Optional[str] = None
-    # employer_class: Optional[str] = None
-    # tenured_status: Optional[str] = None
-    # salary_grade: Optional[str] = None
-    # facebook: Optional[str] = None
-    # linkedin: Optional[str] = None
-    # github: Optional[str] = None
-    # created_at: datetime
-    # updated_at: datetime
+    position: Optional[str] = None
+    student_number: Optional[str] = None
+    standing: Optional[UserStandingEnum] = None
+    graduation_year: Optional[int] = None
+    graduation_semester: Optional[str] = None
+    industry: Optional[str] = None
+    employment_status: Optional[str] = None
+    industry: Optional[str] = None
+    job_title: Optional[str] = None
+    work_location: Optional[str] = None
+    work_mode: Optional[str] = None
+    employer_class: Optional[str] = None
+    tenured_status: Optional[str] = None
+    salary_grade: Optional[str] = None
+    facebook: Optional[str] = None
+    linkedin: Optional[str] = None
+    github: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
     
 
     class Config:
