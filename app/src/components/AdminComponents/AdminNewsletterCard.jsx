@@ -48,7 +48,7 @@ const AdminNewsletterCard = ({ title, image, date_posted, context, tags = [], id
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="bg-blue-100 text-blue-600 text-xs font-medium px-2 py-1 rounded-full"
+              className="bg-blue-100 text-primary text-xs font-medium px-2 py-1 rounded-full"
             >
               {tag}
             </span>

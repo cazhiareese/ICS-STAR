@@ -59,13 +59,19 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
   };
 
   const handleSave = () => {
+    const isValidAffiliation = suggestions.includes(affiliationInput.trim());
+  
     const newErrors = {
-      affiliation: affiliationInput.trim() ? "" : "This field is required.",
+      affiliation: !affiliationInput.trim()
+        ? "This field is required."
+        : !isValidAffiliation
+        ? "Organization not found."
+        : "",
       position: positionInput.trim() ? "" : "This field is required.",
     };
-
+  
     setErrors(newErrors);
-
+  
     if (!newErrors.affiliation && !newErrors.position) {
       onSave({ affiliation: affiliationInput, role: positionInput });
       setAffiliationInput("");
@@ -73,6 +79,7 @@ const AddAffiliationsModal = ({ isOpen, onClose, onSave }) => {
       onClose();
     }
   };
+  
 
   if (!isOpen) return null;
 

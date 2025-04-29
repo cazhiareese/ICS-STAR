@@ -1,14 +1,22 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Paperclip } from 'lucide-react';
 
-function DonationMainView({ driveDetails, driveId, type }) {
+function DonationMainView({ driveDetails, driveId, type, landing }) {
     // const [image, setImage] = useState("null")
     
     if (!driveDetails) return <p>Loading drive...</p>;
 
     return (
+
+    //cyrus conditional rendering for landing page and specific, dont adjust the props and the condition
         
-        <div className="flex flex-col w-full rounded-2xl items-center overflow-y-auto h-full justify-center">
+<div
+  className={`flex flex-col w-full rounded-2xl items-center overflow-y-auto h-full justify-center ${
+    landing === true ? "sm:w-110" : landing === false ? "sm:w-160" : "sm:w-85"
+  }`}
+>
+
+
             <div className="w-[90%] h-50 max-h-85 border mx-auto rounded-4xl bg-primary ">
                 {<img src={driveDetails.image_url} alt="" className="w-full h-full object-cover rounded-4xl" />}
             </div>
