@@ -69,6 +69,25 @@ function UserProfile() {
         throw error;
       }
     };
+
+    const fetchskills = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/profile/me/skills`, {
+          headers: {
+            'Authorization': `Bearer ${token}`  // replace with actual token logic
+          }
+        });
+    
+        const data = response.data.data;
+        setSkills(data|| []);
+
+
+      } catch (error) {
+        console.error('Error fetching personal information:', error);
+        throw error;
+      }
+    };
+
     // const fetchProfile = async () => {
     //   try {
     //     const data = await apiFetchProfile(); // Correctly access 'data.data'
@@ -120,6 +139,7 @@ function UserProfile() {
     // };
 
     fetchPersonalInformation();
+    fetchskills();
   }, []);
 
   const addSkills = async (newSkills) => {
