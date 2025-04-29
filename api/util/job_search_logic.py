@@ -15,10 +15,14 @@ from typing import Optional
 
 def admin_search_job(
         db: Session,
+        title: str = "",
         creator_name: str = "",
         tag: str = "",
         company: str = "",
         employment_type: str = "",
+        mode_options: str = "",
+        min_salary: int = 0,
+        max_salary: int = 0,
         sort_by: str = "date_desc"
 ) -> list[JobSearchOut]:
     
@@ -28,6 +32,9 @@ def admin_search_job(
         .filter(JobPosting.is_deleted == False)
 
     # Apply optional filters
+    if title:
+        post_query = post_query.filter(JobPosting.title.ilike(f"%{title}%"))
+
     if creator_name:
         post_query = post_query.filter(func.concat(User.first_name, ' ', User.last_name).ilike(f"%{creator_name}%"))
 
@@ -36,6 +43,15 @@ def admin_search_job(
         
     if employment_type:
         post_query = post_query.filter(JobPosting.employment_type == employment_type)
+
+    if mode_options:
+        post_query = post_query.filter(JobPosting.mode == mode_options)
+
+    if min_salary:
+        post_query = post_query.filter(JobPosting.salary >= min_salary)
+
+    if max_salary:
+        post_query = post_query.filter(JobPosting.salary <= max_salary)
 
     if tag:
         tags_list = [t.strip() for t in tag.split(',') if t.strip()]
