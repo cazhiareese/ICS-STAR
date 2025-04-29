@@ -20,20 +20,73 @@ from uuid import UUID
 # Returns: a list of AdminDonationDriveOut objects
 def search_donation_drives(
     db: Session, 
-    search_string: str = "", 
+    search_string: str = "",
+    sort_by: str = "",
+    is_closed: bool = False, 
 ) -> list[AdminDonationDriveOut]:
     
-    query = db.query(DonationDrive)
+    if is_closed:
+        query = db.query(DonationDrive.drive_id, DonationDrive.title, DonationDrive.created_at).filter(DonationDrive.is_closed == True)
+
+        if sort_by == "date_created_newest":
+            query = query.order_by(DonationDrive.created_at.desc())
+        elif sort_by == "date_created_oldest":
+            query = query.order_by(DonationDrive.created_at.asc())
+        elif sort_by == "amount_raised_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "amount_raised_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "percent_funded_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "percent_funded_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "donation_count_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "donation_count_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "date_closed_newest":
+            query = query.order_by(DonationDrive.updated_at.desc())
+        elif sort_by == "date_closed_oldest":
+            query = query.order_by(DonationDrive.updated_at.asc())
+        else: # default sort is newest created
+            query = query.order_by(DonationDrive.created_at.desc())
+
+    else:
+        query = db.query(DonationDrive.drive_id, DonationDrive.title, DonationDrive.created_at).filter(DonationDrive.is_closed == False)
+
+        if sort_by == "date_created_newest":
+            query = query.order_by(DonationDrive.created_at.desc())
+        elif sort_by == "date_created_oldest":
+            query = query.order_by(DonationDrive.created_at.asc())
+        elif sort_by == "amount_raised_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "amount_raised_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "percent_funded_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "percent_funded_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "donation_count_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "donation_count_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "date_closed_newest":
+            query = query.order_by(DonationDrive.updated_at.desc())
+        elif sort_by == "date_closed_oldest":
+            query = query.order_by(DonationDrive.updated_at.asc())
+        else:
+            query = query.order_by(DonationDrive.created_at.desc())
+
     
     # Apply search filter if provided
     if search_string:
         query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
-    
+
     drives = query.all()
-    
+
     drive_out_list = []
+
     for drive in drives:
-        # If generic drive, skip it
         if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
             continue
 
@@ -53,7 +106,6 @@ def search_donation_drives(
         total_percentage = percent_info.percent_funded
         remaining_percentage = percent_info.remaining_percent
 
-        # Format created_at date to Month DD, YYYY
         date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
 
         drive_out = AdminDonationDriveOut(
@@ -65,6 +117,7 @@ def search_donation_drives(
             amount_raised = total_amount,
             remaining_percent = remaining_percentage,
         )
+
         drive_out_list.append(drive_out)
 
     return drive_out_list
