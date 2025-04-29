@@ -19,7 +19,8 @@ from routers import (log_route,
                      alumni_newsletter, 
                      newsletter_search, 
                      admin_engagement_statistics, 
-                     admin_dashboard_routes
+                     admin_dashboard_routes,
+                     maya
                      )
 
 
@@ -45,6 +46,7 @@ app.include_router(alumni_newsletter.router)
 app.include_router(newsletter_search.router)
 app.include_router(admin_engagement_statistics.router)
 app.include_router(admin_dashboard_routes.router)
+app.include_router(maya.router)
 
 @app.get("/")
 def read_root():
