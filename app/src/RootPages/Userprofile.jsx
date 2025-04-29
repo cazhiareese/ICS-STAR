@@ -62,6 +62,7 @@ function UserProfile() {
         setUserDetails({
           city: data.city,country: data.country,email: data.email,facebook: data.facebook, linkedin: data.linkedin, github: data.github,
           first_name: data.first_name,last_name: data.last_name,state: data.state,marital_status: data.marital_status,mobile_number: data.mobile_number,
+          is_banned: decoded.is_banned,is_verified: decoded.is_verified
 
         });
       } catch (error) {
@@ -94,6 +95,22 @@ function UserProfile() {
         });
         const data = response.data.data;
         setAffiliations(data|| []);
+        console.log(affiliations)
+      } catch (error) {
+        console.error('Error fetching personal information:', error);
+        throw error;
+      }
+    };
+
+    const fetchscholarships = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/profile/me/scholarships`, {
+          headers: {
+            'Authorization': `Bearer ${token}`  // replace with actual token logic
+          }
+        });
+        const data = response.data.data;
+        setScholarships(data|| []);
         console.log(affiliations)
       } catch (error) {
         console.error('Error fetching personal information:', error);
@@ -154,6 +171,8 @@ function UserProfile() {
     fetchPersonalInformation();
     fetchskills();
     fetchaffiliations();
+    fetchscholarships();
+    setIsLoading(false);
   }, []);
 
   const addSkills = async (newSkills) => {
