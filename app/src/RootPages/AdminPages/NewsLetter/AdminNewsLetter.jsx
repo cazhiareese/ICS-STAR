@@ -56,13 +56,6 @@ function AdminNewsletter() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-        <CircularLoading />
-      </div>
-    );
-  }
 
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
@@ -78,7 +71,7 @@ function AdminNewsletter() {
           <Plus /> New Newsletter
         </button>
       </div>
-
+  
       {/* Page controls */}
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
         <div className='w-full lg:w-auto min-w-xs'></div>
@@ -104,21 +97,27 @@ function AdminNewsletter() {
           />
         </div>
       </div>
-
+  
       {/* Card display section */}
       <div className="flex flex-col items-center w-full mt-4">
         <div className="flex flex-col w-full max-w-full px-5">
-          {newsletters.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center py-10">
+              <CircularLoading />
+            </div>
+          ) : error ? (
+            <p className="text-red-500 text-center">{error}</p>
+          ) : newsletters.length === 0 ? (
             <p className="text-center">No newsletters found</p>
           ) : (
             newsletters.map((item) => (
               <AdminNewsletterCard
                 key={item.newsletter_id}
-                id={item.newsletter_id} // Pass newsletter_id as id prop
+                id={item.newsletter_id}
                 title={item.title}
                 image={item.image}
                 date_posted={item.date_posted}
-                context={item.content || 'No content available'} // Fallback for missing content
+                context={item.content || 'No content available'}
                 tags={item.tags}
               />
             ))
@@ -127,6 +126,7 @@ function AdminNewsletter() {
       </div>
     </div>
   );
+  
 }
 
 export default AdminNewsletter;
