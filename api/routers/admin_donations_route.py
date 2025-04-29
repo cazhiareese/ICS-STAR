@@ -101,10 +101,11 @@ def paginate_results_donation(results: list, page: int, page_size: int):
 def search_drives(
     title: str = "",
     sort_by: str = "",
+    is_closed: bool = False,
     db: Session = Depends(get_db)
 ):
     
-    results = search_donation_drives(db, title, sort_by)
+    results = search_donation_drives(db, title, sort_by, is_closed)
 
     return results
 
