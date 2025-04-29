@@ -7,15 +7,16 @@ import CircularLoading from "../../../components/LoadingComponents/circularloadi
 import { Navigate, useNavigate } from 'react-router-dom'
 import SortModal from '../../../components/AdminComponents/sortmodal'
 import OrderToggle from '../../../components/AdminComponents/ordertoggle'
+import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 function AdminEvents() {
   const navigate = useNavigate()
   const [eventType, setEventType] = useState('active')
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(48)
+  const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(false)
   const [events, setEvents] = useState([])
-   const [query, setQuery] = useState('')
-    const [focused, setFocused] = useState(false)
+  const [query, setQuery] = useState('')
+  const [focused, setFocused] = useState(false)
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
 
@@ -58,17 +59,25 @@ function AdminEvents() {
 
       const queryString = params.toString();
       let endpoint = "";
-      if (type === 'active') {
+      if (type === "active") {
         endpoint = `/api/admin/events/all-open-events/?${queryString}`;
-      } else if (type === 'finished') {
+      } else if (type === "finished") {
         endpoint = `/api/admin/events/all-concluded-events/?${queryString}`;
       }
+      
+      endpoint = queryString
+        ? `${endpoint}&page=${page}`
+        : `${endpoint}page=${page}`;
+
+      console.log(endpoint)
+
   
       const response = await axios.get(`${API_BASE_URL}${endpoint}`,
         {headers: {
           Authorization: `Bearer ${token}`,
       }});
       setEvents(response.data.data);
+      setTotalPages(response.data.total_pages)
     } catch (error) {
       console.error("Error fetching events:", error);
     } finally {
@@ -80,7 +89,7 @@ function AdminEvents() {
     const token = localStorage.getItem("token")
     fetchEvents(eventType, token)
 
-  }, [eventType, query, sortBy, sortDirection])
+  }, [eventType, query, sortBy, sortDirection, page])
 
 
 
@@ -128,18 +137,11 @@ function AdminEvents() {
 
         
         {/* Page */}
-        <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-          <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-            <p> Page </p>
-            <input
-              type="text"
-              value={page}
-              onChange={() => {}}
-              className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-            />
-            <p>of {totalPages}</p>
-            <MoveRight className='cursor-pointer' onClick={() => {}}/>
-          </div>
+        <PaginationComponent
+          page={page}
+          setPage={setPage}
+          totalPages={totalPages}
+        />
         </div>
         {
           loading ? (
