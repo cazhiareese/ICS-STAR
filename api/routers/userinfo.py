@@ -278,6 +278,64 @@ async def get_scholarships(
 
     return {"message": "success", "data": scholarships}
 
+@router.get("/profile/{user_id}/personal-information")
+async def get_profile(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    
+    personal_info = get_personal_info(user_id, db)
+
+    if not personal_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "user_id": personal_info.user_id,
+        "first_name": personal_info.first_name,
+        "last_name": personal_info.last_name,
+        "email": personal_info.email,
+        "mobile_number": personal_info.mobile_number,
+        "city": personal_info.city,
+        "state": personal_info.state,
+        "country": personal_info.country,
+        "marital_status": personal_info.marital_status,
+        "facebook": personal_info.facebook,
+        "linkedin": personal_info.linkedin,
+        "github": personal_info.github
+    }
+
+    return {"message": "success", "data": result}
+
+@router.get("/profile/{user_id}/skills")
+async def get_skills(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    skills = get_user_skills(user_id, db)
+
+    return {"message": "success", "data": skills}
+
+@router.get("/profile/{user_id}/affiliations")
+async def get_affiliations(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    affiliations = get_user_affiliations(user_id, db)
+
+    return {"message": "success", "data": affiliations}
+
+@router.get("/profile/{user_id}/scholarships")
+async def get_scholarships(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    scholarships = get_user_scholarships(user_id, db)
+
+    return {"message": "success", "data": scholarships}
+
 # Get user profile details by user ID
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: user profile details
