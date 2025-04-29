@@ -64,9 +64,12 @@ function Navbar({ tokentype, verified, banned }) {
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>
         Alumni Search
       </button>
-      <button className="hover:text-primary transition font-satoshi-bold" onClick={handleDonation}>
-        Donations
-      </button>
+      {tokentype !== "student" && (
+  <button className="hover:text-primary transition font-satoshi-bold" onClick={handleDonation}>
+    Donations
+  </button>
+)}
+
     </div>
 
     {/* Icons and Mobile Menu Button */}
@@ -91,9 +94,12 @@ function Navbar({ tokentype, verified, banned }) {
       <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>
         Alumni Search
       </button>
-      <button className="hover:text-primary transition font-satoshi-bold" onClick={handleDonation}>
-        Donations
-      </button>
+      {tokentype !== "student" && (
+  <button className="hover:text-primary transition font-satoshi-bold" onClick={handleDonation}>
+    Donations
+  </button>
+)}
+
     </div>
   )}
 </>
