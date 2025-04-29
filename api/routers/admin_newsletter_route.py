@@ -127,7 +127,7 @@ async def get_news(
         )
         
         # Get total count separately
-        total_count = db.query(Newsletter).count()
+        total_count = db.query(Newsletter).filter(Newsletter.is_deleted == False).count()
         
         return {
             "message": "success",
