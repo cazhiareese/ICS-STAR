@@ -150,10 +150,40 @@ async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
 # Get all graduating students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all graduating students
-@router.get("/admin/graduating", dependencies=None, response_model=list[UserOut])
+@router.get("/admin/graduating", dependencies=None)
 async def read_graduating_students(db: Session = Depends(get_db)):
-    students = db.query(User).filter(User.user_type == UserTypeEnum.student, User.standing == UserStandingEnum.graduating).all()
-    return [UserOut.model_validate(student) for student in students]
+    graduating_students = db.query(
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        User.email,
+        User.student_number,
+        func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+        User.graduation_year,
+        User.graduation_semester,
+        User.image,
+        User.standing
+    ).filter(
+        User.user_type == UserTypeEnum.student,
+        User.is_verified == True,
+        User.standing == UserStandingEnum.graduating
+    ).all()
+
+    # Convert the result to a list of dictionaries
+    graduating_students_list = [
+        {
+            "user_id": student.user_id,
+            "name": f"{student.first_name} {student.last_name}",
+            "email": student.email,
+            "student_number": student.student_number,
+            "grad_class": f"{student.graduation_year} - {student.graduation_semester}",
+            "date_of_reg": student.date_of_reg,
+            "image": student.image,
+            "standing": student.standing.value
+        } for student in graduating_students
+    ]
+
+    return graduating_students_list
 
 # Transition graduating students to alumni
 # Arguments: db - SQLAlchemy session, user_id - the user ID
