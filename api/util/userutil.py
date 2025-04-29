@@ -444,3 +444,29 @@ async def register_with_google(
     )
 
     return {"message": "Account created successfully with Google", "access_token": access_token}
+
+def get_personal_info(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    
+    profile_info = db.query(
+        User.user_id,
+        User.first_name,
+        User.last_name,
+        User.email,
+        User.image,
+        User.linkedin,
+        User.github,
+        User.facebook,
+        User.city,
+        User.state,
+        User.country,
+        User.mobile_number,
+        User.student_number,
+        User.graduation_semester,
+        User.graduation_year,
+        User.marital_status
+        ).filter(User.user_id==user_id).first()
+    
+    return profile_info
