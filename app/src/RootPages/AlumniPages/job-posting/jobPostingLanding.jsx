@@ -15,6 +15,7 @@ function JobPostingLanding() {
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [usertype, setUserType] = useState(null);
     useEffect(() => {
         const token = localStorage.getItem('token'); 
         if (token) {
@@ -22,6 +23,7 @@ function JobPostingLanding() {
             const decoded = jwtDecode(token);
             console.log("Decoded JWT:", decoded);
             setUserId(decoded.sub); 
+            setUserType(decoded.role); //cyrus was here
             // console.log(decoded.sub)
             } catch (error) {
             console.error("Invalid token", error);
@@ -172,13 +174,16 @@ function JobPostingLanding() {
                 </div>
 
                 {/* Button aligned to the right */}
-                <button  
-                    onClick={navToCreateJobPost}
-                    className="flex items-center gap-2 w-56 h-14 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
-                >
-                    <PlusCircle />
-                    Create Job Posting
-                </button>
+                {usertype !== "student" && (
+  <button  
+    onClick={navToCreateJobPost}
+    className="flex items-center gap-2 w-56 h-14 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+  >
+    <PlusCircle />
+    Create Job Posting
+  </button>
+)}
+
             </div>
 
             <div className='flex flex-row mt-16 gap-2 justify-center'>
