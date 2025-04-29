@@ -199,10 +199,19 @@ async def read_graduating_students(db: Session = Depends(get_db)):
 # Returns: a message confirming the transition
 @router.put("/admin/transition/{user_id}", dependencies=None)
 async def transition_student(db: Session = Depends(get_db), user_id: UUID = None):
-    student = db.query(User).filter(User.user_id == user_id).first()
-    if student is None:
+    result = db.execute(
+        update(User)
+        .where(User.user_id == user_id)
+        .values(user_type="alumni")
+        .returning(User.user_id)
+    )
+    
+    # Check if any row was affected
+    affected_user = result.scalar_one_or_none()
+    
+    if affected_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    student.user_type = "alumni"
+        
     db.commit()
     return {"message": "Student transitioned to alumni"}
 
