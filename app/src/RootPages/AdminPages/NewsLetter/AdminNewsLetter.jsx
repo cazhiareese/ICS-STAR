@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, MoveLeft, MoveRight } from 'lucide-react';
+import { Plus, MoveLeft, MoveRight, Search } from 'lucide-react';
 import AdminNewsletterCard from '../../../components/AdminComponents/AdminNewsletterCard';
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
@@ -13,6 +13,8 @@ function AdminNewsletter() {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [focused, setFocused] = useState(false)
+  const [query, setQuery] = useState('')
 
   const limit = 5; // Number of newsletters per page, matching updated code
 
@@ -71,6 +73,18 @@ function AdminNewsletter() {
           <Plus /> New Newsletter
         </button>
       </div>
+      <div className='relative flex items-center justify-end flex-1'>
+            <input
+              type="text"
+              placeholder="Search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => (setFocused(false))}
+              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+            />
+            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
+          </div>
   
       {/* Page controls */}
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
