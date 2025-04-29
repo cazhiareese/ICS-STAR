@@ -26,11 +26,7 @@ import {
 
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-const token = localStorage.getItem("token");
-const decoded = jwtDecode(token);
-const tokentype = decoded.role;
-console.log(decoded);
-console.log("Decoded token typee:", tokentype);
+
 
 
 
@@ -46,6 +42,11 @@ function UserProfile() {
 
   //fetch user details from backend
   useEffect(() => {
+    const token = localStorage.getItem("token");
+const decoded = jwtDecode(token);
+const tokentype = decoded.role;
+console.log(decoded);
+console.log("Decoded token typee:", tokentype);
 
 
 
@@ -200,10 +201,12 @@ function UserProfile() {
     try {
       await apiRemoveAffiliation(affiliationToRemove); // Call the API function to remove affiliation
       console.log("Affiliation removed successfully");
+      console.log(affiliations);
       setAffiliations(
         affiliations.filter(
-          (affiliation) => affiliation.affiliation !== affiliationName
+          (affiliation) => affiliation !== affiliationToRemove
         )
+        
       );
     } catch (err) {
       setError("Failed to remove affiliation");
@@ -247,7 +250,6 @@ function UserProfile() {
   const handleChange = (e, field) => {
     setUserDetails({ ...userDetails, [field]: e.target.value });
   };
-  console.log(localStorage.getItem("token"));
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       
