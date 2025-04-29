@@ -470,3 +470,10 @@ def get_personal_info(
         ).filter(User.user_id==user_id).first()
     
     return profile_info
+
+def get_user_skills(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    skills = db.query(UserSkill.skill).filter(UserSkill.user_id==user_id).all()
+    return [skill[0] for skill in skills]

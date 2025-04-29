@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 from models.job_posting_model import JobPosting
@@ -220,7 +220,7 @@ async def update_employment(
 
 # Get user profile details
 # Arguments: db - SQLAlchemy session, user - current user
-@router.get("/personal-information")
+@router.get("/profile/me/personal-information")
 async def get_profile(
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(get_current_user)
@@ -247,6 +247,16 @@ async def get_profile(
     }
 
     return {"message": "success", "data": result}
+
+@router.get("/profile/me/skills")
+async def get_skills(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    skills = get_user_skills(user.user_id, db)
+
+    return {"message": "success", "data": skills}
 
 # Get user profile details by user ID
 # Arguments: db - SQLAlchemy session, user_id - the user ID
