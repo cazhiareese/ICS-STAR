@@ -79,6 +79,20 @@ async def get_reported_users_count(
     
     return {"pending_reported_users_count": count}
 
+# Fetch the number of donation drives that are still open
+@router.get("/open-drives/count", response_model=Dict[str, int])
+async def get_open_drives_count(
+    db: Session = Depends(get_db)
+    ):
+    count = db.query(func.count(DonationDrive.drive_id))\
+        .filter(
+            DonationDrive.is_closed == False,
+            DonationDrive.is_deleted == False
+        )\
+        .scalar()
+    
+    return {"open_drives_count": count}
+
 @router.get("/upcoming-events", response_model=List[UpcomingEventResponse])
 async def get_upcoming_events(
     db: Session = Depends(get_db)
@@ -247,13 +261,39 @@ async def get_top_funded_drives(
             percentage = (total / target) * 100
             percentage = round(percentage, 2)  # Round to 2 decimal places
         
+        monetary_donors = set(
+            row[0] for row in db.execute(
+                select(MonetaryDonation.user_id)
+                .where(
+                    MonetaryDonation.drive_id == result.drive_id,
+                    MonetaryDonation.is_acknowledged == True,
+                    MonetaryDonation.user_id.isnot(None)
+                )
+            ).all()
+        )
+        
+        inkind_donors = set(
+            row[0] for row in db.execute(
+                select(InKindDonation.user_id)
+                .where(
+                    InKindDonation.drive_id == result.drive_id,
+                    InKindDonation.is_acknowledged == True,
+                    InKindDonation.user_id.isnot(None)
+                )
+            ).all()
+        )
+        
+        # Combine both sets to get unique donors
+        unique_donors_count = len(monetary_donors.union(inkind_donors))
+        
         response.append({
             "drive_id": result.drive_id,
             "title": result.title,
             "total_donations": total,
             "target_cost": target,
             "acknowledged_donations": result.acknowledged_count or 0,
-            "percentage_funded": percentage
+            "percentage_funded": percentage,
+            "unique_donors_count": unique_donors_count
         })
 
     response.sort(key=lambda x: x["percentage_funded"], reverse=True)

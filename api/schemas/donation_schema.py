@@ -214,6 +214,7 @@ class TopFundedDriveResponse(BaseModel):
     target_cost: float
     acknowledged_donations: int
     percentage_funded: float
+    unique_donors_count: int
 
     class Config:
         from_attributes = True
