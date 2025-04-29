@@ -7,7 +7,8 @@ from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from config.database import get_db
 from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation, fetch_drive_suggestions
 from util.userutil import get_current_user
-from models.usermodel import User
+# from models.usermodel import User
+from schemas.user import CurrentUser
 from schemas.user import UserTypeEnum
 from uuid import UUID
 
@@ -22,8 +23,7 @@ def get_drive_suggestions(
     return fetch_drive_suggestions(db, q, limit)
 
 @router.get("/donationdrive", response_model=List[DonationDriveOut])
-def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    
+def get_donation_drives(db: Session = Depends(get_db), user: CurrentUser = Depends(get_current_user)):
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
     
@@ -40,7 +40,7 @@ def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_
     return donation_data
 
 @router.get("/donationdrive-limit", response_model=List[DonationDriveOut])
-def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def get_donation_drives(db: Session = Depends(get_db), user: CurrentUser = Depends(get_current_user)):
     
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -61,7 +61,7 @@ def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_
 def get_one_drive(
     drive_id: UUID,
     db: Session = Depends(get_db), 
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -82,7 +82,7 @@ def get_one_drive(
 @router.get("/gen-donation-drive", response_model=OneDonationDriveOut)
 def get_one_drive(
     db: Session = Depends(get_db), 
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -111,7 +111,7 @@ async def make_donations(
     is_anonymous: Optional[bool] = Form(None),
     is_general: Optional[bool] = Form(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     
     if user.user_type.value == UserTypeEnum.student:
@@ -144,7 +144,7 @@ async def make_donations(
     is_anonymous: Optional[bool] = Form(None),
     is_general: Optional[bool] = Form(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     
     if user.user_type.value == UserTypeEnum.student:
