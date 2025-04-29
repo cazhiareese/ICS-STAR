@@ -168,7 +168,7 @@ function LoginPage() {
 
 
   return (
-    <div className="flex items-center w-screen min-h-screen overflow-y-auto">
+    <div className="flex items-center w-screen min-h-screen overflow-y-auto ">
         {/* Background
 
         // <div className="absolute inset-0 object-fill bg-center scale-100 opacity-50 md:opacity-50 h-screen w-screen     bg-fixed"
@@ -195,10 +195,10 @@ function LoginPage() {
         </div>
 
         {/* Lower Portion */}
-        <div className="flex flex-col overflow-y-auto overflow-x-clip [@media(max-height:800px)]:justify-normal items-center sm:justify-center w-screen h-screen sm:p-30 p-10 z-10">
+        <div className="flex flex-col overflow-y-auto overflow-x-clip [@media(max-height:800px)]:justify-normal items-center lg:justify-center w-screen lg:h-screen lg:p-30 p-10 z-10 sm:h-[700px] sm:overflow-y-clip lg:overflow-y-auto" >
             
             {/* Mobile COnstellation */}
-            <div className="sm:hidden block w-screen -mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 overflow-clip">
+            <div className="sm:hidden block w-screen -mt-10 h-[220px] [@media(max-height:800px)]:opacity-40 overflow-visible opacity-40">
                 <img 
                     src={ConstellationsMobile}
                     alt="Login Background" 
@@ -207,13 +207,13 @@ function LoginPage() {
             </div>
 
 
-            <div className="lg:hidden md:block sm:block hidden w-screen opacity-0 sm:-mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 overflow-clip">
+            {/* <div className="lg:hidden md:block sm:block hidden w-screen opacity-0 sm:-mt-20 h-[40%] [@media(max-height:800px)]:opacity-40 overflow-clip">
                 <img 
                     src={ConstellationsMobile}
                     alt="Login Background" 
                     className="w-[100%] object-cover"
                 />
-            </div>
+            </div> */}
 
             {/* ICS-STAR */}
 
@@ -235,12 +235,12 @@ function LoginPage() {
             </div>
             
 
-            <div className="lg:hidden flex flex-col w-full mt-5 ">
+            <div className="lg:hidden flex flex-col w-full mt-5 s">
                         <h1 className="text-4xl md:text-4xl font-satoshi-light text-center">Bridging Alumni</h1>
                         <h1 className="text-4xl md:text-4xl font-satoshi-bold text-primary text-center">Across the Cosmos</h1>
             </div>
 
-            <div className="sm:flex-row flex w-screen sm:justify-center z-20 lg:h-170 lg:min-h-170 my-15">
+            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-170 lg:min-h-170 my-15">
                 
                 {/* Login Signup */}
                 <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl lg:min-w-lg md:min-w-lg lg:bg-[#F5F5F5] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] lg:rounded-4xl">
@@ -389,15 +389,15 @@ function LoginPage() {
                             <>
                             <button
                             className="bg-primary text-white py-3 rounded-3xl text-lg w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 transition mt-0"
-                            onClick={()=>setIsLoading(true)}
+                            onClick={()=>(loginClick())}
                             >
                             Login
                             </button>
                             <button
-                                className=" relative bg-white border-2 text-black py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 transition mt-3"
+                                className=" relative bg-white border-2   py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 hover:text-white transition mt-3"
                                 // onClick={loginClick}
                                 >
-                                Sign In with Google
+                                <label className="hover:text-white">Sign In with Google</label>
                                 
                                     <img 
                                         src={google} 
@@ -486,7 +486,7 @@ function LoginPage() {
                         </label> makes it easy to track alumni, share updates, and bring everyone together.
                     </label>
 
-                    </div>
+                </div>
 
             </div>
             
