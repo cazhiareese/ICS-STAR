@@ -11,7 +11,7 @@ from schemas.job_posting_schema import JobPostingOut, PaginatedJobPostingRespons
 from schemas.report_schema import PostReportDetailOut, PaginatedReportedResponse
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn
-from util.job_posting_util import create_job_posting, edit_job_posting
+from util.job_posting_util import create_job_posting, edit_job_posting, get_top_4_job_tags
 from config.database import get_db
 
 router = APIRouter()
@@ -589,3 +589,7 @@ async def get_comp_by_id(user_id: UUID, db: Session=Depends(get_db)):
         return {"message": "success", "data": {"id": query.user_id, "comapany": query.company_name}}
     else:
         raise HTTPException(status_code=404, detail="Cant find company name")
+    
+@router.get("/admin/job-postings/top-4-tags")
+def get_top_4_job_tags_endpoint(db: Session = Depends(get_db)):
+    return get_top_4_job_tags(db)

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated, Optional
 from config.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from schemas.user import UserOut
+from schemas.user import CurrentUser, UserOut
 
 from util.userutil import register_user, get_current_active_user, require_student, require_alum, require_admin, authenticate_user, create_access_token, get_email, get_studno, register_with_google
 from util.reports_logic import logic_login_log, logic_logout_log
@@ -81,11 +81,11 @@ async def login_for_access_token(
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user.user_id), "role": user.user_type.value, "is_onboarded": user.is_onboarded, "is_verified": user.is_verified}, expires_delta=access_token_expires
+        data={"sub": str(user.user_id), "role": user.user_type.value, "is_onboarded": user.is_onboarded, "is_verified": user.is_verified, "is_banned": user.is_banned}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/users/me/", response_model=UserOut)
+@router.get("/users/me/", response_model=CurrentUser)
 async def read_users_me(current_user: Annotated[User, Depends(get_current_active_user)]):
-    return UserOut.model_validate(current_user)
+    return CurrentUser.model_validate(current_user)
 
