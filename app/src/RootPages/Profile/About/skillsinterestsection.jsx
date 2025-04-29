@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { XCircle } from "lucide-react";
+import { Minus } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddSkillsModal from "../components/skillmodal";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
@@ -45,7 +45,7 @@ const SkillsInterestsSection = ({
                 {skill}
               </span>
               {editMode && (
-                <XCircle
+                <Minus
                   size={18}
                   className="absolute -top-2 -right-2 text-white cursor-pointer bg-error rounded-full hover:bg-red-800"
                   onClick={() => {
