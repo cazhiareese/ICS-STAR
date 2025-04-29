@@ -4,19 +4,22 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_, func, distinct
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from models.usermodel import User
+from schemas.user import CurrentUser
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from datetime import datetime, timezone
 from typing import Optional, List
 import uuid
+import math
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
-def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[str]:
-    results = (
-        db.query(distinct(DonationDrive.title))
+def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[DonationDriveOut]:
+    drives = (
+        db.query(DonationDrive)
         .filter(
             DonationDrive.is_deleted.is_(False),
+            DonationDrive.is_closed.is_(False),
             or_(
                 DonationDrive.title.ilike(f"%{query_text}%"),
                 DonationDrive.description.ilike(f"%{query_text}%")
@@ -28,7 +31,16 @@ def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> Lis
         .all()
     )
 
-    return [result[0] for result in results]
+    return [get_donation_drive_data(db, drive) for drive in drives]
+
+def safe_float(value):
+    try:
+        value = float(value)
+        if math.isnan(value) or math.isinf(value):
+            return 0.0
+        return value
+    except (TypeError, ValueError):
+        return 0.0
 
 def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveOut:
     monetary_data = db.query(
@@ -52,12 +64,13 @@ def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveO
     )
 
     donation_count = monetary_count + in_kind_count
+    
 
     return DonationDriveOut(
         drive_id=drive.drive_id,
         title=drive.title,
         description=drive.description,
-        target_cost=float(drive.target_cost or 0) if drive.target_cost else None,
+        target_cost=safe_float(drive.target_cost) if drive.target_cost else None,
         image_url=drive.image,
         total_amount_donated=float(total_amount_donated or 0),
         donation_count=donation_count,
@@ -167,7 +180,7 @@ async def upload_proof(
 
 async def make_donation(
     db: Session,
-    user: User,
+    user: CurrentUser,
     drive: DonationDrive,
     monetary_donation: bool = False,
     in_kind_donation: bool = False,
@@ -177,6 +190,9 @@ async def make_donation(
     is_anonymous = Optional[bool],
     is_general = Optional[bool],
 ):
+    
+    name = db.query(User.first_name, User.last_name).filter(User.user_id == user.user_id).first()
+    
     if not monetary_donation and not in_kind_donation:
         raise HTTPException(
             status_code=400,
@@ -216,7 +232,7 @@ async def make_donation(
         return {
             "donation_drive": drive.title,
             "date": monetary.date_donated,
-            "user": f"{user.first_name} {user.last_name}" if not is_anonymous else "Anonymous",
+            "user": f"{name.first_name} {name.last_name}" if not is_anonymous else "Anonymous",
             "status": "Pending Acknowledgement",
             "amount": monetary.amount
         }
@@ -241,7 +257,7 @@ async def make_donation(
         return {
             "donation_drive": drive.title,
             "date": in_kind.date_donated,
-            "user": f"{user.first_name} {user.last_name}",
+            "user": f"{name.first_name} {name.last_name}",
             "status": "Pending Acknowledgement",
             "details": in_kind.description
         }

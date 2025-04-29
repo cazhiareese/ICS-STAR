@@ -117,7 +117,7 @@ def update_generic_drive(
     results = update_generic_drive_stats(db, drive_id)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -133,7 +133,7 @@ def update_generic_drive_custom_range(
     results = update_generic_drive_stats_custom_range(db, drive_id, start_date, end_date)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -147,7 +147,7 @@ def update_generic_drive_last_seven_days(
     results = update_generic_drive_stats_last_seven_days(db, drive_id)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -161,7 +161,7 @@ def update_generic_drive_this_month(
     results = update_generic_drive_stats_this_month(db, drive_id)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -175,7 +175,7 @@ def update_generic_drive_this_week(
     results = update_generic_drive_stats_this_week(db, drive_id)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -189,7 +189,7 @@ def update_generic_drive_this_year(
     results = update_generic_drive_stats_this_year(db, drive_id)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -203,7 +203,7 @@ def closed_drives(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -224,7 +224,7 @@ def closed_drives_by_amount_raised(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -245,7 +245,7 @@ def closed_drives_by_amount_raised_ascending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -265,7 +265,7 @@ def closed_drives_by_date_closed_newest(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -286,7 +286,7 @@ def closed_drives_by_date_closed_oldest(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -307,7 +307,7 @@ def closed_drives_by_date_created_newest(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -328,7 +328,7 @@ def closed_drives_by_date_created_oldest(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -349,7 +349,7 @@ def closed_drives_by_donation_count_descending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -370,7 +370,7 @@ def closed_drives_by_donation_count_ascending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -391,7 +391,7 @@ def closed_drives_by_percent_funded_descending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -412,7 +412,7 @@ def closed_drives_by_percent_funded_ascending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -433,7 +433,7 @@ def closed_drives_by_target_cost_ascending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -454,7 +454,7 @@ def closed_drives_by_target_cost_descending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No closed drives found")
+        raise HTTPException(status_code=200, detail="No closed drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -500,7 +500,7 @@ def open_drives_by_amount_raised(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+        raise HTTPException(status_code=200, detail="No open drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -521,7 +521,7 @@ def open_drives_by_amount_raised_ascending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+        raise HTTPException(status_code=200, detail="No open drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -542,7 +542,7 @@ def open_drives_by_percent_funded_descending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+        raise HTTPException(status_code=200, detail="No open drives found")
 
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -563,7 +563,7 @@ def open_drives_by_percent_funded_ascending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+        raise HTTPException(status_code=200, detail="No open drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -584,7 +584,7 @@ def open_drives_by_donation_count_descending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+        raise HTTPException(status_code=200, detail="No open drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -605,7 +605,7 @@ def open_drives_by_donation_count_ascending(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+        raise HTTPException(status_code=200, detail="No open drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -626,7 +626,7 @@ def open_drives_by_date_created_newest(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+        raise HTTPException(status_code=200, detail="No open drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -647,7 +647,7 @@ def open_drives_by_date_created_oldest(
     page_size = 10
 
     if not results:
-        raise HTTPException(status_code=404, detail="No open drives found")
+        raise HTTPException(status_code=200, detail="No open drives found")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
 
@@ -658,7 +658,7 @@ def open_drives_by_date_created_oldest(
         data=paginated_results
     )
 
-@router.get("/admin/donations/pending-inkind", response_model=PaginatedInKindDonationsResponse)
+@router.get("/admin/donations/pending-inkind", response_model=tuple[PaginatedInKindDonationsResponse, dict])
 def pending_inkind(
     drive_id: UUID,
     db: Session = Depends(get_db),
@@ -667,19 +667,19 @@ def pending_inkind(
     results = get_all_pending_inkind_donations(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No pending in-kind donations found")
+        raise HTTPException(status_code=200, detail="No pending in-kind donations found")
 
     page_size = 10
-    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
+    total_pages, paginated_results = paginate_results_donation(results[0], page, page_size)
 
     return PaginatedInKindDonationsResponse(
         message="success",
         page=page,
         total_pages=total_pages,
         data=paginated_results
-    )
+    ), results[1]
 
-@router.get("/admin/donations/pending-monetary", response_model=PaginatedMonetaryDonationsResponse)
+@router.get("/admin/donations/pending-monetary", response_model=tuple[PaginatedMonetaryDonationsResponse, dict])
 def pending_monetary(
     drive_id: UUID,
     db: Session = Depends(get_db),
@@ -688,17 +688,17 @@ def pending_monetary(
     results = get_all_pending_monetary_donations(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No pending monetary donations found")
+        raise HTTPException(status_code=200, detail="No pending monetary donations found")
 
     page_size = 10
-    total_pages, paginated_results = paginate_results_donation(results, page, page_size)
+    total_pages, paginated_results = paginate_results_donation(results[0], page, page_size)
 
     return PaginatedMonetaryDonationsResponse(
         message="success",
         page=page,
         total_pages=total_pages,
         data=paginated_results
-    )
+    ), results[1]
 
 @router.get("/admin/donations/verified-inkind", response_model=PaginatedInKindDonationsResponse)
 def verified_inkind(
@@ -709,7 +709,7 @@ def verified_inkind(
     results = get_all_verified_inkind_donations(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No verified in-kind donations found")
+        raise HTTPException(status_code=200, detail="No verified in-kind donations found")
 
     page_size = 10
     total_pages, paginated_results = paginate_results_donation(results, page, page_size)
@@ -730,7 +730,7 @@ def verified_monetary(
     results = get_all_verified_monetary_donations(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No verified monetary donations found")
+        raise HTTPException(status_code=200, detail="No verified monetary donations found")
 
     page_size = 10
     total_pages, paginated_results = paginate_results_donation(results, page, page_size)
@@ -751,7 +751,7 @@ def view_generic_donation_drive(
     results = view_generic_drive(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -763,7 +763,7 @@ def view_drive(
     results = view_donation_drive(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -775,7 +775,7 @@ def percent_funded(
     percent = get_percent_funded(db, drive_id)
 
     if not percent:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return percent
 
@@ -787,7 +787,7 @@ def overview(
     results = donation_drive_overview(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No donation drives found")
+        raise HTTPException(status_code=200, detail="No donation drives found")
 
     return results
 
@@ -800,7 +800,7 @@ def verify_inkind(
     results = verify_inkind_donation(db, donation_id, choice)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Donation not found or invalid donation.")
+        raise HTTPException(status_code=200, detail="Donation not found or invalid donation.")
     elif results is False:
         raise HTTPException(status_code=400, detail="Invalid choice. Please choose 'approve' or 'disapprove'.")
 
@@ -815,7 +815,7 @@ def verify_monetary(
     results = verify_monetary_donation(db, donation_id, choice)
 
     if results is None:
-        raise HTTPException(status_code=404, detail="Donation not found or invalid donation.")
+        raise HTTPException(status_code=200, detail="Donation not found or invalid donation.")
     elif results is False:
         raise HTTPException(status_code=400, detail="Invalid choice. Please choose 'approve' or 'disapprove'.")
 
@@ -829,7 +829,7 @@ def close_drive(
     results = close_donation_drive(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="Drive not found")
+        raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
 
@@ -843,7 +843,7 @@ def donor_counts(
     results = get_donor_counts_by_batch_for_drive(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No donor counts found")
+        raise HTTPException(status_code=200, detail="No donor counts found")
     
     return results
 
@@ -857,7 +857,7 @@ def total_donors(
     results = get_total_donors_for_drive(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No donor counts found")
+        raise HTTPException(status_code=200, detail="No donor counts found")
     
     return results
 
@@ -871,7 +871,7 @@ def donor_batch_breakdown_with_amount_only(
     results = get_top_and_other_donor_batches_monetary_amount(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No donor batches found")
+        raise HTTPException(status_code=200, detail="No donor batches found")
 
     return results    
 
@@ -884,7 +884,7 @@ def donation_totals_with_percentages(
     results = get_donation_totals_with_percentages(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No donation totals found")
+        raise HTTPException(status_code=200, detail="No donation totals found")
 
     return results
 
@@ -897,7 +897,7 @@ def weekly_monetary_donations(
     results = get_weekly_donation_amounts(db, drive_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No weekly amounts found")
+        raise HTTPException(status_code=200, detail="No weekly amounts found")
     
     return results
 
@@ -913,7 +913,7 @@ def top_drives_with_goals_reached(
         results = get_top_drives_with_goals_reached(db, time_filter, month, year)
         
         if not results:
-            raise HTTPException(status_code=404, detail="No drives found with goals reached")
+            raise HTTPException(status_code=200, detail="No drives found with goals reached")
         
         return results
     except ValueError as e:
@@ -931,7 +931,7 @@ def top_performing_drives(
         results = get_top_performing_drives(db, time_filter, month, year)
         
         if not results:
-            raise HTTPException(status_code=404, detail="No drives found")
+            raise HTTPException(status_code=200, detail="No drives found")
         
         return results
     except ValueError as e:

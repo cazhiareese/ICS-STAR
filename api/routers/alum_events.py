@@ -4,7 +4,8 @@ from typing import Optional, List, Literal
 from config.database import get_db
 from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, get_confirmed_events_by_user, cancel_event_rsvp, get_event_by_id, get_visible_events_for_user
 from uuid import UUID
-from models.usermodel import User
+#from models.usermodel import User
+from schemas.user import CurrentUser
 from util.userutil import get_current_user
 from schemas.events_schema import EventOut, OneEventOut
 from datetime import date
@@ -21,7 +22,7 @@ def get_event_suggestions(
     return fetch_event_suggestions(db, q, limit)
 
 @router.post("/events/{event_id}/confirm-rsvp", status_code=status.HTTP_201_CREATED)
-def rsvp_to_event(event_id: UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def rsvp_to_event(event_id: UUID, user: CurrentUser = Depends(get_current_user), db: Session = Depends(get_db)):
     
     if user.user_type != user.user_type.alumni:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -33,7 +34,7 @@ def rsvp_to_event(event_id: UUID, user: User = Depends(get_current_user), db: Se
         raise HTTPException(status_code=400, detail=str(e))
     
 @router.delete("/events/{event_id}/cancel-rsvp", status_code=200)
-def cancel_rsvp(event_id: UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def cancel_rsvp(event_id: UUID, user: CurrentUser = Depends(get_current_user), db: Session = Depends(get_db)):
 
     if user.user_type != user.user_type.alumni:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -45,7 +46,7 @@ def cancel_rsvp(event_id: UUID, user: User = Depends(get_current_user), db: Sess
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/events/confirmed", response_model=List[EventOut])
-def get_user_confirmed_events(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_user_confirmed_events(user: CurrentUser = Depends(get_current_user), db: Session = Depends(get_db)):
     
     if user.user_type != user.user_type.alumni:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -59,7 +60,7 @@ def get_event(event_id: UUID, db: Session = Depends(get_db)):
 
 @router.get("/events-visible-to", response_model=List[EventOut])
 def get_visible_events(
-    user: User = Depends(get_current_user),
+    user: CurrentUser = Depends(get_current_user),
     db: Session = Depends(get_db),
     date_filter: Optional[str] = Query(
         default=None,
