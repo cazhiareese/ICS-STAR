@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import time
 import jwt
 from jose import JWTError
 from google.oauth2 import id_token
@@ -289,7 +290,11 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     
     to_encode.update({"exp": expire})
+    start_time = time.time()
+    print("Create token started")
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    jwt_decode_time = time.time() - start_time
+    print("Time to create token: ", jwt_decode_time)
     return encoded_jwt
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
@@ -299,7 +304,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
+        start_time = time.time()
+        print("Decode token started")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        jwt_decode_time = time.time() - start_time
+      
         user_id: int = payload.get("sub")
         role: str = payload.get("role")
         is_onboarded: bool = payload.get("is_onboarded")

@@ -1,4 +1,5 @@
 from datetime import timedelta
+import time
 from fastapi import Depends, APIRouter, HTTPException, status, Form, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -65,8 +66,11 @@ async def google_register(
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
+    start_time = time.time()
     user = authenticate_user(db, form_data.username, form_data.password)
+    jwt_decode_time = time.time() - start_time
 
+    print("Auth time", jwt_decode_time)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -80,6 +84,7 @@ async def login_for_access_token(
 
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    
     access_token = create_access_token(
         data={"sub": str(user.user_id), "role": user.user_type.value, "is_onboarded": user.is_onboarded, "is_verified": user.is_verified, "is_banned": user.is_banned}, expires_delta=access_token_expires
     )
