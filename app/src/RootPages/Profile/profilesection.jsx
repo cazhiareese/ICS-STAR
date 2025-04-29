@@ -7,6 +7,7 @@ import {
   Linkedin,
   Pencil,
   Check,
+  X,
 } from "lucide-react";
 import SaveConfirmationModal from "./components/savemodal";
 
@@ -144,45 +145,43 @@ function ProfileSection({
       }`}
     >
       {/* Edit / Save Profile Button - only visible on "About" tab */}
-      {activeTab === "About" && (
+{/* Edit / Save / Cancel Buttons - only visible on "About" tab */}
+{/* Edit / Save / Cancel Buttons - only visible on "About" tab */}
+{activeTab === "About" && userDetails?.is_verified && (
+  <div className="absolute top-4 right-4 z-10 flex flex-col-reverse sm:flex-row-reverse sm:gap-2 gap-1">
+    {editMode ? (
+      <>
+        {/* Save Button (on right) */}
         <button
-          onClick={() => {
-            if (userDetails?.is_verified) {
-              if (editMode) {
-                setShowModal(true);
-              } else {
-                setEditMode(true);
-              }
-            }
-          }}
-          disabled={!userDetails?.is_verified}
-          className={`absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto
-      ${
-        userDetails?.is_verified
-          ? "bg-primary text-white hover:bg-hover"
-          : "bg-bg-disabled text-neutral-c cursor-not-allowed"
-      }`}
+          onClick={() => setShowModal(true)}
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
         >
-          {editMode ? (
-            <Check
-              size={18}
-              className={`${
-                userDetails?.is_verified ? "text-white" : "text-neutral"
-              } pointer-events-none`}
-            />
-          ) : (
-            <Pencil
-              size={18}
-              className={`${
-                userDetails?.is_verified ? "" : "text-neutral"
-              } pointer-events-none`}
-            />
-          )}
-          <span className="hidden sm:inline pointer-events-none text-neutral">
-            {editMode ? "Save Profile" : "Edit Profile"}
-          </span>
+          <Check size={18} className="text-white" />
+          <span className="hidden sm:inline text-neutral">Save Profile</span>
         </button>
-      )}
+
+        {/* Cancel Button (on left at desktop) */}
+        <button
+          onClick={() => setEditMode(false)}
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-bg-disabled text-black border border-primary hover:bg-disabled transition "
+        >
+          <X size={18} className="text-error " />
+          <span className="hidden sm:inline">Cancel Edit</span>
+        </button>
+      </>
+    ) : (
+      <button
+        onClick={() => setEditMode(true)}
+        className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
+      >
+        <Pencil size={18} />
+        <span className="hidden sm:inline text-neutral">Edit Profile</span>
+      </button>
+    )}
+  </div>
+)}
+
+
 
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
