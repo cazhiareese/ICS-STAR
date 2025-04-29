@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, User, Globe, Menu, X } from "lucide-react";
 import logo from "../assets/Subtract.png";
 
-function Navbar({ tokentype }) {
+function Navbar({ tokentype, verified, banned }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const id = "0ed168b4-344b-4760-bb68-0b7c5c3a9252";
+
 
   function handleLogout() {
     sessionStorage.removeItem("User");
