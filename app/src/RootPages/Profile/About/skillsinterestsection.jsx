@@ -46,7 +46,7 @@ const SkillsInterestsSection = ({
               </span>
               {editMode && (
                 <Minus
-                  size={18}
+                  size={15}
                   className="absolute -top-2 -right-2 text-white cursor-pointer bg-error rounded-full hover:bg-red-800"
                   onClick={() => {
                     console.log(
