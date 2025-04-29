@@ -7,6 +7,8 @@ import axios from 'axios'
 import CircularLoading from "../../../components/LoadingComponents/circularloading"
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading"
 import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
+import SortModal from "../../../components/AdminComponents/sortmodal"
+import OrderToggle from "../../../components/AdminComponents/ordertoggle"
 
 function AdminCareer() {
 
@@ -22,7 +24,13 @@ function AdminCareer() {
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-
+  const sorters = [
+    { label: 'Job title', value: 'name' },
+    { label: 'Date posted', value: 'batch' },
+    { label: 'Interested', value: 'interested' },
+  ];
+  const [sortBy, setSortBy] = useState(sorters[0].value);
+  const [sortDirection, setSortDirection] = useState('asc')
   const [openCount, setOpenCount] = useState(0)
   const [closedCount, setClosedCount] = useState(0)
   const [reportedCount, setReportedCount] = useState(0)
@@ -164,10 +172,17 @@ function AdminCareer() {
         </div>
         {/* Sort by */}
         <div className='flex gap-2'>
-          <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
-            <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
-            <p className='font-satoshi-medium text-primary block'>Name</p>
-          </button>
+          {/* TODO: Add function to change sort */}
+          <SortModal
+            filters={sorters}
+            selectedFilter={sortBy}
+            onSelect={() => {}}
+          />
+          {/* Order toggle */}
+          <OrderToggle
+            direction={sortDirection}
+            onToggle={() => {}}
+          />
           {/* Filter */}
           <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
             <Filter className='text-primary'/>
