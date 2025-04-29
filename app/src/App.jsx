@@ -108,9 +108,12 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<Navigate to={isSignedIn ? "/login" : "login"} />} />
+
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="login" element={<LoginPage />} />
           <Route
             path="signup"
