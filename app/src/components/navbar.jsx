@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut, User, Globe, Menu, X } from "lucide-react";
 import logo from "../assets/Subtract.png";
+import { Link } from "react-router-dom";
 
 function Navbar({ tokentype, verified, banned }) {
   const navigate = useNavigate();
@@ -49,10 +50,10 @@ function Navbar({ tokentype, verified, banned }) {
 <>
   <nav className="bg-white text-black px-6 py-4 shadow-md flex justify-between items-center border-b border-gray-300 h-20 sticky top-0 z-50">
     {/* Logo + Title */}
-    <div className="text-xl font-bold flex items-center">
-      <img src={logo} alt="Logo" className="h-6 mr-2" />
-      <span className="font-sans text-primary tracking-wide">ICS - STAR</span>
-    </div>
+    <Link to={`/${tokentype}/dashboard`} className="text-xl font-bold flex items-center">
+  <img src={logo} alt="Logo" className="h-6 mr-2" />
+  <span className="font-sans text-primary tracking-wide">ICS - STAR</span>
+</Link>
 
     {/* Desktop Navigation */}
     <div className="hidden md:flex gap-6 font-medium">
