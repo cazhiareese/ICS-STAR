@@ -9,6 +9,8 @@ import WorkSection from "./Profile/Work/worksection";
 import DonationHistoryUser from "./Profile/DonationHistory/Donationhistoryuser";
 import { Info } from "lucide-react";
 import JobPosted from "./Profile/JobPosting/userjobposting";
+import axios from "axios";
+import {jwtDecode} from "jwt-decode";
 
 
 import {
@@ -21,7 +23,16 @@ import {
   removeScholarship as apiRemoveScholarship,
 } from "./Profile/UserProfileAPI/userProfileApi"; 
 
+
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const token = localStorage.getItem("token");
+const decoded = jwtDecode(token);
+const tokentype = decoded.role;
+console.log(decoded);
+console.log("Decoded token typee:", tokentype);
+
+
 
 function UserProfile() {
   const [editMode, setEditMode] = useState(false);
@@ -35,57 +46,80 @@ function UserProfile() {
 
   //fetch user details from backend
   useEffect(() => {
-    const fetchProfile = async () => {
+
+
+
+    const fetchPersonalInformation = async () => {
       try {
-        const data = await apiFetchProfile(); // Correctly access 'data.data'
-        console.log(data);
-
-        setUserDetails({
-          first_name: data.first_name,
-          last_name: data.last_name,
-          email: data.email,
-          user_type: data.user_type,
-          location: `${data.city}, ${data.state}`,
-          city: data.city,
-          state: data.state,
-          country: data.country, // Added country
-          mobile_number: data.mobile_number,
-          student_number: data.student_number,
-          age: data.age, // Added age
-          gender: data.gender, // Added gender
-          marital_status: data.marital_status, // Added marital_status
-          image: data.image, // Added image
-          position: data.position, // Added position
-          is_banned: data.is_banned, // Added is_banned
-          is_verified: data.is_verified, // Added is_verified
-          standing: data.standing, // Added standing
-          graduation_year: data.graduation_year,
-          graduation_semester: data.graduation_semester,
-          employment_status: data.employment_status,
-          industry: data.industry,
-          job_title: data.job_title,
-          company_name: data.company_name,
-          work_location: data.work_location,
-          work_mode: data.work_mode,
-          employer_class: data.employer_class,
-          tenured_status: data.tenured_status,
-          salary_grade: data.salary_grade,
-          facebook: data.facebook, // Added facebook
-          linkedin: data.linkedin, // Added linkedin
-          github: data.github, // Added github
+        const response = await axios.get(`${API_BASE_URL}/profile/me/personal-information`, {
+          headers: {
+            'Authorization': `Bearer ${token}`  // replace with actual token logic
+          }
         });
+    
+        const data = response.data.data;
+        console.log(data);
+        setUserDetails({
+          city: data.city,country: data.country,email: data.email,facebook: data.facebook, linkedin: data.linkedin, github: data.github,
+          first_name: data.first_name,last_name: data.last_name,state: data.state,marital_status: data.marital_status,mobile_number: data.mobile_number,
 
-        // Set skills, scholarships, and affiliations
-        setSkills(data.skills || []);
-        setScholarships(data.scholarships || []);
-        setAffiliations(data.affiliations || []);
-        setIsLoading(false);
-      } catch (err) {
-        setError("Failed to load profile");
+        });
+      } catch (error) {
+        console.error('Error fetching personal information:', error);
+        throw error;
       }
     };
+    // const fetchProfile = async () => {
+    //   try {
+    //     const data = await apiFetchProfile(); // Correctly access 'data.data'
+    //     console.log(data);
 
-    fetchProfile();
+    //     setUserDetails({
+    //       first_name: data.first_name,
+    //       last_name: data.last_name,
+    //       email: data.email,
+    //       user_type: data.user_type,
+    //       location: `${data.city}, ${data.state}`,
+    //       city: data.city,
+    //       state: data.state,
+    //       country: data.country, // Added country
+    //       mobile_number: data.mobile_number,
+    //       student_number: data.student_number,
+    //       age: data.age, // Added age
+    //       gender: data.gender, // Added gender
+    //       marital_status: data.marital_status, // Added marital_status
+    //       image: data.image, // Added image
+    //       position: data.position, // Added position
+    //       is_banned: data.is_banned, // Added is_banned
+    //       is_verified: data.is_verified, // Added is_verified
+    //       standing: data.standing, // Added standing
+    //       graduation_year: data.graduation_year,
+    //       graduation_semester: data.graduation_semester,
+    //       employment_status: data.employment_status,
+    //       industry: data.industry,
+    //       job_title: data.job_title,
+    //       company_name: data.company_name,
+    //       work_location: data.work_location,
+    //       work_mode: data.work_mode,
+    //       employer_class: data.employer_class,
+    //       tenured_status: data.tenured_status,
+    //       salary_grade: data.salary_grade,
+    //       facebook: data.facebook, // Added facebook
+    //       linkedin: data.linkedin, // Added linkedin
+    //       github: data.github, // Added github
+    //     });
+
+    //     // Set skills, scholarships, and affiliations
+    //     setSkills(data.skills || []);
+    //     setScholarships(data.scholarships || []);
+    //     setAffiliations(data.affiliations || []);
+    //     setIsLoading(false);
+    //   } catch (err) {
+    //     setError("Failed to load profile");
+    //   }
+    // };
+
+    fetchPersonalInformation();
   }, []);
 
   const addSkills = async (newSkills) => {
