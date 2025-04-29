@@ -30,11 +30,14 @@ function SaveConfirmationModal({ isOpen, onConfirm, onCancel, text }) {
             Cancel
           </button>
           <button
-            onClick={onConfirm}
-            className="px-5 py-2 bg-green-600 text-white rounded-full text-sm font-medium hover:bg-green-700 flex items-center gap-2 transition"
-          >
-            {text === "cancel" ? "Yes, Cancel" : "Save"}
-          </button>
+  onClick={text === "cancel" ? onCancel : onConfirm}
+  className={`px-5 py-2 ${
+    text === "cancel" ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
+  } text-white rounded-full text-sm font-medium flex items-center gap-2 transition`}
+>
+  {text === "cancel" ? "Yes, Cancel" : "Save"}
+</button>
+
         </div>
       </div>
     </div>
