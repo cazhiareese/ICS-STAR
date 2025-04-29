@@ -77,11 +77,24 @@ function UserProfile() {
             'Authorization': `Bearer ${token}`  // replace with actual token logic
           }
         });
-    
         const data = response.data.data;
         setSkills(data|| []);
+      } catch (error) {
+        console.error('Error fetching personal information:', error);
+        throw error;
+      }
+    };
 
-
+    const fetchaffiliations = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/profile/me/affiliations`, {
+          headers: {
+            'Authorization': `Bearer ${token}`  // replace with actual token logic
+          }
+        });
+        const data = response.data.data;
+        setAffiliations(data|| []);
+        console.log(affiliations)
       } catch (error) {
         console.error('Error fetching personal information:', error);
         throw error;
@@ -140,6 +153,7 @@ function UserProfile() {
 
     fetchPersonalInformation();
     fetchskills();
+    fetchaffiliations();
   }, []);
 
   const addSkills = async (newSkills) => {
