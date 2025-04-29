@@ -21,264 +21,75 @@ from uuid import UUID
 def search_donation_drives(
     db: Session, 
     search_string: str = "",
-    sort_by: str = ""
-) -> list:
+    sort_by: str = "", 
+) -> list[AdminDonationDriveOut]:
     
-    results = [] # Separate endpoints for open and closed drives so this list is to merge them both at the end
+    query = db.query(DonationDrive)
     
-    # Get open drives based on sorting criteria
-    if sort_by:
-        # Amount raised sorting
-        if sort_by == "amount_raised_desc":
-            open_drives = get_all_open_drives_by_amount_raised_descending(db)
-        elif sort_by == "amount_raised_asc":
-            open_drives = get_all_open_drives_by_amount_raised_ascending(db)
+    # Apply search filter if provided
+    if search_string:
+        query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
+    
+    drives = query.all()
+    
+    drive_out_list = []
+    for drive in drives:
+        # If generic drive, skip it
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
+        # Calculate monetary donation count
+        monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
-        # Percent funded sorting
-        elif sort_by == "percent_funded_desc":
-            open_drives = get_all_open_drives_by_percent_funded_descending(db)
-        elif sort_by == "percent_funded_asc":
-            open_drives = get_all_open_drives_by_percent_funded_ascending(db)
+        # Calculate in-kind donation count separately without referencing the 'amount' column
+        inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar() or 0
         
-        # Donation count sorting
-        elif sort_by == "donation_count_desc":
-            open_drives = get_all_open_drives_by_donation_count_descending(db)
-        elif sort_by == "donation_count_asc":
-            open_drives = get_all_open_drives_by_donation_count_ascending(db)
+        total_count = monetary_count + inkind_count
         
-        # Date created sorting
-        elif sort_by == "date_created_desc":
-            open_drives = get_all_open_drives_by_date_created_newest(db)
-        elif sort_by == "date_created_asc":
-            open_drives = get_all_open_drives_by_date_created_oldest(db)
-        
-        # if sort_by has an invalid value
-        else:
-            # Use the original query logic for open drives
-            query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
-            
-            # Apply search filter if provided
-            if search_string:
-                query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
-            
-            # Process query results
-            open_drives = []
-            for drive in query.all():
-                # Skip generic drive
-                if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
-                    continue
-                    
-                # Calculate necessary metrics
-                processed_drive = process_open_drive(db, drive)
-                if processed_drive:
-                    open_drives.append(processed_drive)
+        # Calculate amount raised by summing up the amount in monetary_donation table only for acknowledged donations
+        total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
+
+        # Calculate percent funded and remaining percentage
+        percent_info = get_percent_funded(db, drive.drive_id)
+        total_percentage = percent_info.percent_funded
+        remaining_percentage = percent_info.remaining_percent
+
+        # Format created_at date to Month DD, YYYY
+        date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
+
+        drive_out = AdminDonationDriveOut(
+            drive_id = drive.drive_id,
+            title = drive.title,
+            created_at = date_created,
+            donation_count = total_count,
+            percent_funded = total_percentage,
+            amount_raised = total_amount,
+            remaining_percent = remaining_percentage,
+        )
+        drive_out_list.append(drive_out)
+
+    # Sort them based on the sort_by parameter
+    if sort_by == "amount_raised_descending":
+        drive_out_list.sort(key=lambda x: x.amount_raised, reverse=True)
+    elif sort_by == "amount_raised_ascending":
+        drive_out_list.sort(key=lambda x: x.amount_raised)
+    elif sort_by == "percent_funded_descending":
+        drive_out_list.sort(key=lambda x: x.percent_funded, reverse=True)
+    elif sort_by == "percent_funded_ascending":
+        drive_out_list.sort(key=lambda x: x.percent_funded)
+    elif sort_by == "donation_count_descending":
+        drive_out_list.sort(key=lambda x: x.donation_count, reverse=True)
+    elif sort_by == "donation_count_ascending":
+        drive_out_list.sort(key=lambda x: x.donation_count)
+    elif sort_by == "date_created_newest":
+        drive_out_list.sort(key=lambda x: x.created_at, reverse=True)
+    elif sort_by == "date_created_oldest":
+        drive_out_list.sort(key=lambda x: x.created_at)
     else:
-        # No sorting specified, use the original query logic
-        query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
-        
-        # Apply search filter if provided
-        if search_string:
-            query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
-        
-        # Process query results
-        open_drives = []
-        for drive in query.all():
-            # Skip generic drive
-            if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
-                continue
-                
-            # Calculate necessary metrics
-            processed_drive = process_open_drive(db, drive)
-            if processed_drive:
-                open_drives.append(processed_drive)
-    
-    # Apply search filter to sorted results if needed
-    if sort_by and search_string:
-        open_drives = [drive for drive in open_drives if search_string.lower() in drive.title.lower()]
-    
-    # Add open drives to results
-    results.extend(open_drives)
+        # Default order is by newly created
+        drive_out_list.sort(key=lambda x: x.created_at, reverse=True)
 
-    # Get closed drives based on sorting criteria
-    if sort_by:
-        # Amount raised sorting
-        if sort_by == "amount_raised_desc":
-            closed_drives = get_all_closed_drives_by_amount_raised_descending(db)
-        elif sort_by == "amount_raised_asc":
-            closed_drives = get_all_closed_drives_by_amount_raised_ascending(db)
-        
-        # Percent funded sorting
-        elif sort_by == "percent_funded_desc":
-            closed_drives = get_all_closed_drives_by_percent_funded_descending(db)
-        elif sort_by == "percent_funded_asc":
-            closed_drives = get_all_closed_drives_by_percent_funded_ascending(db)
-        
-        # Donation count sorting
-        elif sort_by == "donation_count_desc":
-            closed_drives = get_all_closed_drives_by_donation_count_descending(db)
-        elif sort_by == "donation_count_asc":
-            closed_drives = get_all_closed_drives_by_donation_count_ascending(db)
-        
-        # Date created sorting
-        elif sort_by == "date_created_desc":
-            closed_drives = get_all_closed_drives_by_date_created_newest(db)
-        elif sort_by == "date_created_asc":
-            closed_drives = get_all_closed_drives_by_date_created_oldest(db)
-        
-        # Default case - if sort_by has an invalid value
-        else:
-            # Use the original query logic for closed drives
-            query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
-            
-            # Apply search filter if provided
-            if search_string:
-                query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
-            
-            # Process query results
-            closed_drives = []
-            for drive in query.all():
-                # Skip generic drive
-                if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
-                    continue
-                    
-                # Calculate necessary metrics
-                processed_drive = process_closed_drive(db, drive)
-                if processed_drive:
-                    closed_drives.append(processed_drive)
-    else:
-        # No sorting specified, use the original query logic
-        query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
-        
-        # Apply search filter if provided
-        if search_string:
-            query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
-        
-        # Process query results
-        closed_drives = []
-        for drive in query.all():
-            # Skip generic drive
-            if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
-                continue
-                
-            # Calculate necessary metrics
-            processed_drive = process_closed_drive(db, drive)
-            if processed_drive:
-                closed_drives.append(processed_drive)
-    
-    # Apply search filter to sorted results if needed
-    if sort_by and search_string:
-        closed_drives = [drive for drive in closed_drives if search_string.lower() in drive.title.lower()]
-    
-    # Add closed drives to results
-    results.extend(closed_drives)
-    
-    # Sort combined results if needed based on sort_by
-    if sort_by:
-        if sort_by == "amount_raised_desc":
-            results.sort(key=lambda x: x.amount_raised, reverse=True)
-        elif sort_by == "amount_raised_asc":
-            results.sort(key=lambda x: x.amount_raised)
-        elif sort_by == "percent_funded_desc":
-            results.sort(key=lambda x: x.percent_funded, reverse=True)
-        elif sort_by == "percent_funded_asc":
-            results.sort(key=lambda x: x.percent_funded)
-        elif sort_by == "donation_count_desc" and hasattr(results[0], 'donation_count'):
-            results.sort(key=lambda x: getattr(x, 'donation_count', 0), reverse=True)
-        elif sort_by == "donation_count_asc" and hasattr(results[0], 'donation_count'):
-            results.sort(key=lambda x: getattr(x, 'donation_count', 0))
-        elif sort_by == "date_created_desc":
-            results.sort(key=lambda x: x.date_created if hasattr(x, 'date_created') else x.created_at, reverse=True)
-        elif sort_by == "date_created_asc":
-            results.sort(key=lambda x: x.date_created if hasattr(x, 'date_created') else x.created_at)
-    
-    return results
-
-# helper func
-def process_open_drive(db, drive):
-    # Skip generic drive
-    if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
-        return None
-        
-    # Calculate monetary donation count
-    monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(
-        MonetaryDonation.drive_id == drive.drive_id, 
-        MonetaryDonation.is_acknowledged == True
-    ).scalar() or 0
-    
-    # Calculate in-kind donation count
-    inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(
-        InKindDonation.drive_id == drive.drive_id
-    ).scalar() or 0
-    
-    total_count = monetary_count + inkind_count
-    
-    # Calculate amount raised
-    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(
-        MonetaryDonation.drive_id == drive.drive_id, 
-        MonetaryDonation.is_acknowledged == True
-    ).scalar() or 0
-
-    # Calculate percent funded and remaining percentage
-    percent_info = get_percent_funded(db, drive.drive_id)
-    total_percentage = percent_info.percent_funded
-    remaining_percentage = percent_info.remaining_percent
-
-    # Format created_at date
-    date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
-
-    return AdminDonationDriveOut(
-        drive_id = drive.drive_id,
-        title = drive.title,
-        created_at = date_created,
-        donation_count = total_count,
-        percent_funded = total_percentage,
-        amount_raised = total_amount,
-        remaining_percent = remaining_percentage,
-    )
-
-# helper func
-def process_closed_drive(db, drive):
-    # Skip generic drive
-    if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
-        return None
-        
-    # Calculate monetary donation count
-    monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(
-        MonetaryDonation.drive_id == drive.drive_id, 
-        MonetaryDonation.is_acknowledged == True
-    ).scalar() or 0
-    
-    # Calculate in-kind donation count
-    inkind_count = db.query(func.count(InKindDonation.donation_id)).filter(
-        InKindDonation.drive_id == drive.drive_id
-    ).scalar() or 0
-    
-    total_count = monetary_count + inkind_count
-    
-    # Calculate amount raised
-    total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(
-        MonetaryDonation.drive_id == drive.drive_id, 
-        MonetaryDonation.is_acknowledged == True
-    ).scalar() or 0
-
-    # Calculate percent funded
-    percent_info = get_percent_funded(db, drive.drive_id)
-    total_percentage = percent_info.percent_funded
-
-    # Format dates
-    close_date = drive.updated_at.strftime("%B %d, %Y") if drive.updated_at else None
-    open_date = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
-
-    return AdminClosedDonationDriveOut(
-        drive_id = drive.drive_id,
-        title = drive.title,
-        date_closed = close_date,
-        date_created = open_date,
-        percent_funded = total_percentage,
-        amount_raised = total_amount,
-        target_cost = drive.target_cost,
-        donation_count = total_count
-    )
+    return drive_out_list
 
 def get_all_open_drives(db: Session, page: int = 1, page_size: int = 10) -> list[AdminDonationDriveOut]:
     # Base query for open drives
