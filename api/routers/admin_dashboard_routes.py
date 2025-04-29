@@ -79,6 +79,20 @@ async def get_reported_users_count(
     
     return {"pending_reported_users_count": count}
 
+# Fetch the number of donation drives that are still open
+@router.get("/open-drives/count", response_model=Dict[str, int])
+async def get_open_drives_count(
+    db: Session = Depends(get_db)
+    ):
+    count = db.query(func.count(DonationDrive.drive_id))\
+        .filter(
+            DonationDrive.is_closed == False,
+            DonationDrive.is_deleted == False
+        )\
+        .scalar()
+    
+    return {"open_drives_count": count}
+
 @router.get("/upcoming-events", response_model=List[UpcomingEventResponse])
 async def get_upcoming_events(
     db: Session = Depends(get_db)
