@@ -30,6 +30,12 @@ class UserInterestedOut(BaseModel):
     class Config:
         from_attributes = True
 
+class PaginatedUserInterestedResponse(BaseModel):
+    total_pages: int
+    current_page: int
+    page_size: int
+    results: List[UserInterestedOut]
+
 class JobPostingOverviewOut(BaseModel):
     title: str
     company: str

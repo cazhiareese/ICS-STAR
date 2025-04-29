@@ -206,42 +206,49 @@ function ProfileSection({
 
         {/* Name, Email, and Social Icons */}
         <div className="flex flex-col items-start gap-1 text-left">
-          {editMode ? (
-            <>
-              <input
-                type="text"
-                value={userDetails.first_name}
-                onChange={(e) => handleChange(e, "first_name")}
-                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
-              />
-              <input
-                type="text"
-                value={userDetails.last_name}
-                onChange={(e) => handleChange(e, "last_name")}
-                className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
-              />
-              <input
-                type="email"
-                value={userDetails.email}
-                onChange={(e) => handleChange(e, "email")}
-                className="w-full text-[16px] sm:text-[20px] text-black bg-white border border-disabled rounded-[12px] px-2 py-1"
-              />
-            </>
-          ) : (
-            <>
-              {userDetails.first_name && userDetails.last_name ? (
-                <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
-                  {userDetails.first_name} {userDetails.last_name}
-                </h2>
-              ) : (
-                <CircularLoading />
-              )}
-
-              <p className="text-[16px] sm:text-[20px] text-black">
-                {userDetails.email}
-              </p>
-            </>
-          )}
+        {editMode ? (
+  <>
+    <input
+      type="text"
+      value={userDetails.first_name || ""}
+      onChange={(e) => handleChange(e, "first_name")}
+      className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
+    />
+    <input
+      type="text"
+      value={userDetails.last_name || ""}
+      onChange={(e) => handleChange(e, "last_name")}
+      className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
+    />
+    <input
+      type="email"
+      value={userDetails.email || ""}
+      onChange={(e) => handleChange(e, "email")}
+      className="w-full text-[16px] sm:text-[20px] text-black bg-white border border-disabled rounded-[12px] px-2 py-1"
+    />
+  </>
+) : (
+  <>
+    {userDetails.first_name && userDetails.last_name ? (
+      <h2 className="font-bold text-[24px] sm:text-[32px] text-primary leading-tight">
+        {userDetails.first_name} {userDetails.last_name}
+      </h2>
+    ) : (
+      <div
+        className="w-[200px] h-[32px] sm:w-[300px] sm:h-[40px] bg-disabled animate-pulse rounded-[12px]"
+      />
+    )}
+    {userDetails.email ? (
+      <p className="text-[16px] sm:text-[20px] text-black">
+        {userDetails.email}
+      </p>
+    ) : (
+      <div
+        className="w-[150px] h-[20px] sm:w-[200px] sm:h-[24px] bg-disabled animate-pulse rounded-[12px]"
+      />
+    )}
+  </>
+)}
 
           {userDetails?.is_verified && (
             <div

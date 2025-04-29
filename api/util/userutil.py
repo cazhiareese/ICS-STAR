@@ -1,15 +1,17 @@
 from datetime import datetime, timedelta, timezone
 import jwt
 from jose import JWTError
+from google.oauth2 import id_token
+from google.auth.transport import requests
 import uuid
-from fastapi import Depends, HTTPException, status, UploadFile, File
+from fastapi import Depends, HTTPException, status, UploadFile, File, APIRouter, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct, or_
 from passlib.context import CryptContext
 from typing import List, Optional
 
-from config.config import SECRET_KEY, ALGORITHM, SUPABASE_BUCKET, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES
+from config.config import SECRET_KEY, ALGORITHM, SUPABASE_BUCKET, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES, GOOGLE_CLIENT_ID
 from config.database import get_db
 from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum, UnemploymentReasonEnum, UserEmploymentStatus, UnemploymentReason
 
@@ -63,6 +65,9 @@ def process_student_onboarding(
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
+    if user.is_onboarded:
+        raise HTTPException(status_code=400, detail="User already onboarded")
+    
     if user.user_type.value == UserTypeEnum.alumni:
         raise HTTPException(status_code=400, detail="For student only")
     
@@ -90,12 +95,14 @@ def process_student_onboarding(
 
         if standing:
             user.standing = standing
+            
+        user.is_onboarded = True
 
         db.commit()
         db.refresh(user)
         
     except Exception as e:
-            raise HTTPException(status_code=500, detail="Error updating info")
+            raise HTTPException(status_code=500, detail="Error updating info {e}")
         
 
 def process_alumni_onboarding(
@@ -120,6 +127,9 @@ def process_alumni_onboarding(
     
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
+    
+    if user.is_onboarded:
+        raise HTTPException(status_code=400, detail="User already onboarded")
     
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -159,12 +169,13 @@ def process_alumni_onboarding(
         user.employer_class = employer_class
         user.tenured_status = tenured_status
         user.salary_grade = salary_grade
+        user.is_onboarded = True
 
         db.commit()
         db.refresh(user)
         
     except Exception as e:
-            raise HTTPException(status_code=500, detail="Error updating info")
+            raise HTTPException(status_code=500, detail=f'"Error updating info {e}"')
 
 
 async def register_user(
@@ -219,7 +230,7 @@ async def register_user(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded}, expires_delta=access_token_expires
+        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified}, expires_delta=access_token_expires
     )
 
     return {"message": "Account created successfully", "access_token": access_token}
@@ -286,7 +297,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: int = payload.get("sub")
         role: str = payload.get("role")
-        if user_id is None or role is None:
+        is_onboarded: bool = payload.get("is_onboarded")
+        is_verified: bool = payload.get("is_verified")
+        if user_id is None or role is None or is_onboarded is None or is_verified is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
@@ -316,3 +329,113 @@ async def require_admin(user: User = Depends(get_current_active_user)):
     if user.user_type.value != "admin":
         raise HTTPException(status_code=403, detail="Forbidden: Admin only")
     return user
+
+async def verify_google_token(token: str):
+    try:
+        # Verify the token
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        
+        # Check if the token is issued by Google
+        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise HTTPException(status_code=400, detail="Invalid issuer")
+        
+        # Get user info from the token
+        email = idinfo['email']
+        if not idinfo.get('email_verified', False):
+            raise HTTPException(status_code=400, detail="Email not verified by Google")
+        
+        first_name = idinfo.get('given_name', '')
+        last_name = idinfo.get('family_name', '')
+        
+        return {
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name
+        }
+    except ValueError:
+        # Invalid token
+        raise HTTPException(status_code=400, detail="Invalid token")
+    except JWTError:
+        # Token verification failed
+        raise HTTPException(status_code=400, detail="Token verification failed")
+    except Exception as e:
+        # Handle other exceptions
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+    
+async def register_with_google(
+    token: str,
+    student_number: str,
+    user_type: UserTypeEnum,
+    graduation_year: str = None,
+    graduation_semester: UserGradSemEnum = None,
+    verification_file: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    # Verify Google token and get user info
+    google_user = await verify_google_token(token)
+    
+    # Check if email already exists
+    try:
+        await get_email(google_user["email"], db)
+    except HTTPException:
+        # If email exists, we can either return an error or try to log in
+        user = get_user(db, google_user["email"])
+        if user:
+            access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token = create_access_token(
+                data={"sub": str(user.user_id), "role": user.user_type.value, "is_onboarded": user.is_onboarded}, 
+                expires_delta=access_token_expires
+            )
+            return {"message": "Logged in with Google", "access_token": access_token}
+        else:
+            raise HTTPException(status_code=400, detail="Email already registered but account not found")
+    
+    # Check if student number exists
+    await get_studno(student_number, db)
+    
+    # Handle verification file if provided
+    verification_url = None
+    if verification_file:
+        file_content = await verification_file.read()
+        if len(file_content) > MAX_FILE_SIZE or verification_file.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
+            raise HTTPException(status_code=400, detail="Invalid verification file")
+
+        verification_ext = verification_file.filename.split(".")[-1]
+        verification_name = f"verification_files/{uuid.uuid4()}.{verification_ext}"
+        try:
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(verification_name, file_content)
+        except Exception as e:
+            print("Upload Error:", e)
+        verification_url = f"{STORAGE_STRING}{verification_name}"
+    
+    # Google users don't need to remember their passwords since it's SSO
+    random_password = uuid.uuid4().hex
+    hashed_password = hash_password(random_password)
+    
+    graduation_year = int(graduation_year) if graduation_year else None
+    
+    new_user = User(
+        user_id=uuid.uuid4(),
+        first_name=google_user["first_name"],
+        last_name=google_user["last_name"],
+        email=google_user["email"],
+        password=hashed_password,
+        student_number=student_number,
+        graduation_year=graduation_year,
+        graduation_semester=graduation_semester,
+        verification_file=verification_url,
+        user_type=user_type,
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    # Create and return access token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified}, 
+        expires_delta=access_token_expires
+    )
+
+    return {"message": "Account created successfully with Google", "access_token": access_token}

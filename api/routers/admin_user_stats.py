@@ -4,7 +4,7 @@ from fastapi import Depends, APIRouter, HTTPException, Query, status
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum
+from models.usermodel import User, UserTypeEnum, UserEmploymentStatus
 from routers.admin_account_management import isAdmin
 
 from util.user_information_stats import  employment_class_util, get_active_alumni_stats, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, grouped_by_industry, salary_grade_util, tenure_status_util, unemployment_reason_util, work_mode_util
@@ -47,7 +47,7 @@ async def get_active_batch(db: Session= Depends(get_db), batch:Optional[str] = N
                     else_=0
                 )
             ).label("inactive_users")
-        ).where(User.is_verified == True, User.user_type == 'alumni', func.split_part(User.student_number, '-', 1) == batch, User.student_number.is_not(None)).first()
+        ).where(User.is_onboarded == True, User.is_verified == True, User.user_type == 'alumni', func.split_part(User.student_number, '-', 1) == batch, User.student_number.is_not(None)).first()
 
 
     active_batch = {
@@ -63,7 +63,7 @@ async def get_active_batch(db: Session= Depends(get_db), batch:Optional[str] = N
 async def get_all_years(db: Session=Depends(get_db)):
     query = db.query(
         func.split_part(User.student_number, '-', 1).label("batch")
-    ).filter(User.user_type == UserTypeEnum.alumni).distinct().order_by('batch').all()
+    ).filter(User.user_type == UserTypeEnum.alumni, User.is_onboarded == True).distinct().order_by('batch').all()
     print(query)
 
     return {"message": "success", "data": [batch[0] for batch in query if batch[0] is not None]}
@@ -367,7 +367,7 @@ async def get_industries(db: Session= Depends(get_db)):
     query = db.query(
        User.industry,
        func.count().label("count")
-    ).filter().distinct().group_by(User.industry).order_by(User.industry).all()
+    ).filter(User.is_onboarded == True, User.employment_status == UserEmploymentStatus.employed).distinct().group_by(User.industry).order_by(User.industry).all()
 
     return {"message": "success", "data": [{"industry": industry.industry, "count": industry.count} for industry in query if industry[0] is not None or industry[0] != ""]}
 
@@ -376,6 +376,6 @@ async def get_industries(db: Session= Depends(get_db)):
     query = db.query(
        User.country,
        func.count().label("count")
-    ).filter().distinct().group_by(User.country).order_by(User.country).all()
+    ).filter(User.is_onboarded == True).distinct().group_by(User.country).order_by(User.country).all()
 
     return {"message": "success", "data": [{"country": country.country, "count": country.count} for country in query if country[0] is not None or country[0] != ""]}
