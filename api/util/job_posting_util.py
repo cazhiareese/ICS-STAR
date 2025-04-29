@@ -211,3 +211,15 @@ async def handle_attachment_upload(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload attachment. Error: {str(e)}")
+    
+
+def get_top_4_job_tags(db: Session):
+    tags = (
+        db.query(JobPostingTag.tag, func.count(JobPostingTag.tag).label("count"))
+        .group_by(JobPostingTag.tag)
+        .order_by(func.count(JobPostingTag.tag).desc())
+        .limit(4)
+        .all()
+    )
+    
+    return [tag[0] for tag in tags]
