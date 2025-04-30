@@ -171,8 +171,6 @@ class AdminGenericDriveView(BaseModel):
     drive_id: UUID
     title: str
     grand_total: float
-    pending_list: list[dict]
-    verified_list: list[dict]
     verified_total: float
 
     class Config:
