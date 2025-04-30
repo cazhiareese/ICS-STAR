@@ -272,8 +272,8 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
             Event.title,
             Event.image,
             Event.location,
-            func.count(EventConfirmedBy.user_id).label("attendee_count"),
-            func.array_agg(EventDate.date).label("event_dates"),
+            func.count(func.distinct(EventConfirmedBy.user_id)).label("attendee_count"),
+            func.array_agg(func.distinct(EventDate.date)).label("event_dates"),
             func.max(EventDate.date).label("latest_date"),
             Event.is_closed
         )\
@@ -338,7 +338,7 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
         query = db.query(
             Event.event_id,
             Event.title,
-            func.count(EventConfirmedBy.user_id).label("attendee_count"),
+            func.count(func.distinct(EventConfirmedBy.user_id)).label("attendee_count"),
             func.array_agg(EventDate.date).label("event_dates"),
             func.array_agg(EventTag.tag).label("event_tags"),
             Event.updated_at.label("Date Concluded")
