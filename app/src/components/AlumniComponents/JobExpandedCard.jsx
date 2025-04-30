@@ -105,8 +105,8 @@ import {
                 </button>
                 <div className="flex items-center gap-1 pt-2">
                 <button
-      onClick={() => navigate('/dog')}
-      className="text-lg text-primary font-satoshi-bold underline hover:text-blue-700"
+      onClick={() => navigate(`/alumni/jobPosting/interested/${jobId}`)}
+      className="text-lg text-primary font-satoshi-bold underline hover:text-hover cursor-pointer"
     >
       {job.interested_count} are interested
     </button>
