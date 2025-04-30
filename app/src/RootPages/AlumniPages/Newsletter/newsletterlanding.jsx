@@ -5,6 +5,7 @@ import "../../../index.css";
 import { select } from "framer-motion/client";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selectedTags }) => {
     const navigate = useNavigate();
@@ -13,11 +14,30 @@ export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick
     //     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
     //     return new Date(utcDate).toLocaleString('en-US', options);
     // };
+const User = localStorage.getItem("token");
+let tokentype = "guest";
+let userid = true;
+
+
+if (User) {
+  try {
+    const decoded = jwtDecode(User);
+    tokentype = decoded.role;
+    userid = decoded.sub;
+    console.log("Decoded token:", decoded);
+    console.log("User ID:", userid);
+    console.log("Token type:", tokentype);
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+} else {
+  console.log("No token found, defaulting to guest.");
+}
 
     return (
         <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative  border-gray-300 border shadow-md p-5">
             <div className=" "
-            onClick={() => navigate(`/alumni/newsletter/${id}`)}
+            onClick={() => navigate(`/${tokentype}/newsletter/${id}`)}
         >
                 <div className="flex flex-col h-full ">
                     <div className="w-full h-45 bg-primary rounded-lg overflow-hidden">
