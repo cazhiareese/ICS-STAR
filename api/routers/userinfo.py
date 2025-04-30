@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships, get_user_job_post_history, get_user_job_posting
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships, get_user_job_post_history, get_user_job_posting, get_user_work
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 from models.job_posting_model import JobPosting
@@ -301,6 +301,32 @@ async def get_user_post(
 
     return {"message": "success", "data": job_post}
 
+@router.get("/profile/me/work")
+async def get_work(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    work_info = get_user_work(user.user_id, db)
+
+    if not work_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "employment_status": work_info.employment_status,
+        "industry": work_info.industry,
+        "company_name": work_info.company_name,
+        "job_title": work_info.job_title,
+        "work_location": work_info.work_location,
+        "work_mode": work_info.work_mode,
+        "employer_class": work_info.employer_class,
+        "tenured_status": work_info.tenured_status,
+        "salary_grade": work_info.salary_grade
+    }
+
+    return {"message": "success", "data": result}
+
+
 @router.get("/profile/{user_id}/personal-information")
 async def get_profile(
     user_id: UUID,
@@ -381,6 +407,31 @@ async def get_user_post(
     job_post = get_user_job_posting(post_id, db)
 
     return {"message": "success", "data": job_post}
+
+@router.get("/profile/{user_id}/work")
+async def get_work(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    
+    work_info = get_user_work(user_id, db)
+
+    if not work_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "employment_status": work_info.employment_status,
+        "industry": work_info.industry,
+        "company_name": work_info.company_name,
+        "job_title": work_info.job_title,
+        "work_location": work_info.work_location,
+        "work_mode": work_info.work_mode,
+        "employer_class": work_info.employer_class,
+        "tenured_status": work_info.tenured_status,
+        "salary_grade": work_info.salary_grade
+    }
+
+    return {"message": "success", "data": result}
 
 # Get user profile details by user ID
 # Arguments: db - SQLAlchemy session, user_id - the user ID

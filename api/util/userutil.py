@@ -584,3 +584,21 @@ def get_user_job_posting(
     }
     
     return response
+
+def get_user_work(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    work_info = db.query(
+        User.employment_status,
+        User.industry,
+        User.company_name,
+        User.job_title,
+        User.work_location,
+        User.work_mode,
+        User.employer_class,
+        User.tenured_status,
+        User.salary_grade
+    ).filter(User.user_id==user_id).first()
+    
+    return work_info
