@@ -3,6 +3,8 @@ import Step2 from "../../assets/SignupAssets/step2.png";
 import { CloudUpload, File, X } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
+import { ChevronDown } from 'lucide-react';
+import Loading from "../../components/LoadingComponents/starloading.jsx"
 
 function AlumnInfo(){
 
@@ -10,6 +12,7 @@ function AlumnInfo(){
     const [fileName, setFileName] = useState("No file selected");
     const [fileSize, setFileSize] = useState(0);
     const [file, setFile] = useState(null);
+    const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
 
     const {setUserData, userData, updateUserData} = useAppContext();
 
@@ -22,6 +25,12 @@ function AlumnInfo(){
 
 
     const [error, setError]= useState(false)
+
+
+    const [loading, setLoading] = useState(false)
+
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
     // For Year
     const handleInputChange = (e) => {
@@ -88,21 +97,52 @@ function AlumnInfo(){
 
     // Requirements Checker !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    const checkRequirements = () =>{
-        if (userData.value && (userData.academicYear && userData.academicYear!="AY ") &&userData.selectedYear &&userData.selectedTerm){
-             setCurrentSection("3")
-
-            
-           
-            
-        } else{
-            setError(true)
-            if ((userData.academicYear && userData.academicYear!="AY ")  || userData.selectedTerm !="") setTermGraduated(false); else setTermGraduated(true)
-            
-            if (userData.selectedYear && userData.value) setStudentNumberError(false); else setStudentNumberError(true)
+    const checkRequirements = async () => {
+        // Check if all fields are filled first
+        setLoading(true)
+        const hasRequiredFields =
+            userData.value &&
+            (userData.academicYear && userData.academicYear !== "AY ") &&
+            userData.selectedYear &&
+            userData.selectedTerm;
     
+        if (!hasRequiredFields) {
+            setError(true);
+            setTermGraduated(!(userData.academicYear && userData.academicYear !== "AY ") || !userData.selectedTerm);
+            setStudentNumberError(!(userData.selectedYear && userData.value));
+            setLoading(false)
+            return;
         }
-    }
+    
+        // If required fields are filled, now check student number availability
+        const isAvailable = await checkStudentNumberAvailability(
+            `${userData.selectedYear}-${userData.value}`
+        );
+    
+        if (!isAvailable) {
+            alert("Student Number already taken")
+            setError(true);
+        } else {
+            setStudentNumberError(false);
+            setTermGraduated(false);
+            setError(false);
+            setCurrentSection("3");
+        }
+        setLoading(false)
+    };
+    
+    const checkStudentNumberAvailability = async (studentNumber) => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/get-studno?student_number=${studentNumber}`
+            );
+            const isAvailable = await response.json(); // Response is boolean directly
+            return isAvailable;
+        } catch (error) {
+            console.error("Error checking student number:", error);
+            return false; // Assume taken if error
+        }
+    };
     
     
     return(
@@ -123,16 +163,32 @@ function AlumnInfo(){
                     Student Number <label className="text-red-700">*</label>
                 </div>
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
-                    <select 
-                        value={userData.selectedYear} 
-                        onChange={(e) => updateUserData("selectedYear", e.target.value)}
-                        className={`border rounded-lg h-10 w-[45%] text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
+                <div className="relative w-[45%]">
+                    <button
+                        onClick={() => setYearDropdownOpen(!yearDropdownOpen)}
+                        className={`flex items-center justify-between border rounded-lg h-10 w-full px-4 text-left ${userData.selectedYear ? 'text-black' : 'text-gray-400'} ${studentNumberError == false ? 'border-black' : 'border-red-600'}`}
                     >
-                        <option value="" disabled>Select a year</option>
+                        <span className="mx-auto">{userData.selectedYear || "Select a year"}</span>
+                        <ChevronDown className="w-4 h-4 text-gray-600" />
+                    </button>
+
+                    {yearDropdownOpen && (
+                        <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
                         {years.map((year) => (
-                            <option key={year} value={year}>{year}</option>
+                            <li
+                            key={year}
+                            onClick={() => {
+                                updateUserData("selectedYear", year);
+                                setYearDropdownOpen(false);
+                            }}
+                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            >
+                            {year}
+                            </li>
                         ))}
-                    </select>
+                        </ul>
+                    )}
+                    </div>
                     <label>-</label>
                     <input type="number" 
                            value={userData.value} 
@@ -141,28 +197,28 @@ function AlumnInfo(){
                     />
 
                 </div>
-                <div className="col-span-2 font-satoshi-regular">
+                <div className="col-span-2 font-satoshi-regulars">
                     Year and Term Graduated <label className="text-red-700">*</label>
                 </div>
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
                     <select 
                         value={userData.selectedTerm} 
                         onChange={(e) => updateUserData("selectedTerm", e.target.value)}
-                        className={`border rounded-lg h-10 w-[45%] text-center  ${termGraduated==false ? 'border-black':'border-red-600'}`}
+                        className={`border rounded-lg h-10 w-[45%] text-center text-gray-400  ${termGraduated==false ? 'border-black':'border-red-600'}`}
                     >
-                        <option value="" disabled>Select a Term</option>
+                        <option value="" disabled >Select a Term</option>
                         <option value="1st Semester">First Semester</option>
                         <option value="2nd Semester">Second Semester</option>
                         
                     </select>
                     <label>-</label>
-                    <div className={`flex items-center border rounded-lg px-4 py-2 w-[45%] shadow-sm ${termGraduated==false ? 'border-black':'border-red-600'}`}>
+                    <div className={`justify-center flex items-center border rounded-lg px-4 py-2 w-[45%] shadow-sm ${termGraduated==false ? 'border-black':'border-red-600'}`}>
                         <input
                             type="text"
                             value={userData.academicYear} 
                             onChange={handleInputChange}
                             placeholder="AY YYYY - YYYY"
-                            className={`outline-none w-full text-gray-700 placeholder-gray-400`}
+                            className={`outline-none w-full text-gray-700 placeholder-gray-400 mx-auto text-center`}
                         />
                     </div>
                 </div>
@@ -248,14 +304,19 @@ function AlumnInfo(){
 
                         </button>
                     </div>
-                <div class=" text-black flex flex-col items-end">
+                    <div class=" text-black flex flex-col items-end">
+                {loading ? (<Loading/>):
+                    
                         <button
                             className="bg-primary text-white py-3 rounded-2xl text-lg w-4/6 font-bold hover:bg-blue-700 transition mt-0"
                             onClick = {checkRequirements}
                         >
                             Next
                         </button>
-                    </div>
+                   
+                }
+                 </div>
+                
             </div>
         </div>
     );

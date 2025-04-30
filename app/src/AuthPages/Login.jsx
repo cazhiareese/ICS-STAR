@@ -87,6 +87,7 @@ function LoginPage() {
       }
     };
 
+
     const loginClick = async (e) => {
         await login(email, password);
     };

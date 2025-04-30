@@ -39,6 +39,7 @@ const EventCards = ({event}) => {
         navigate(`/alumni/events/${eventId}`);
     }
     const truncateDescription = (description, maxLines = 2) => {
+        if (description===null) return null;
         const lines = description.split('\n');
         return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '');
     };
