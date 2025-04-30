@@ -1044,7 +1044,7 @@ def get_all_closed_drives_by_target_cost_ascending(db: Session) -> list[AdminClo
 # drive_id: UUID - ID of the donation drive to view
 # 
 # Returns: AdminOneDonationDriveOut object containing details of the donation drive
-def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
+def view_donation_drive(db: Session, drive_id: UUID) -> AdminOneDonationDriveOut:
     drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
 
     if not drive:
@@ -1060,35 +1060,7 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     total_percentage = percent_info.percent_funded
     remaining_percentage = percent_info.remaining_percent
 
-    pending_monetary_donations = get_all_pending_monetary_donations(db, drive_id)
-    pending_inkind_donations = get_all_pending_inkind_donations(db, drive_id)
-    
-    verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
-    verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
-
     drive_links = get_all_links_by_drive_id(db, drive_id)
-
-    # Format the pending donations list
-    pending_verifications = []
-    
-    # Add pending monetary donations to the list
-    for donation in pending_monetary_donations[0]:
-        pending_verifications.append(donation.dict())
-    
-    # Add pending in-kind donations to the list
-    for donation in pending_inkind_donations[0]:
-        pending_verifications.append(donation.dict())
-
-    # Format the verified donations list
-    verified_donations = []
-    
-    # Add verified monetary donations to the list
-    for donation in verified_monetary_donations:
-        verified_donations.append(donation.dict())
-    
-    # Add verified in-kind donations to the list
-    for donation in verified_inkind_donations:
-        verified_donations.append(donation.dict())
 
     date_started = drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None
 
@@ -1096,8 +1068,6 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         drive_id = drive.drive_id,
         title = drive.title,
         percent_funded = total_percentage,
-        pending_list = pending_verifications,
-        verified_list = verified_donations,
         current_amount = total_amount,
         target_cost = drive.target_cost,
         is_closed = drive.is_closed,
@@ -1106,6 +1076,49 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         created_at = date_started,
         description = drive.description
     )
+
+def get_all_pending_donations(
+    db: Session,
+    drive_id: UUID,
+) -> dict:
+    
+    # Get all pending monetary donations
+    pending_monetary_donations, monetary_stats = get_all_pending_monetary_donations(db, drive_id)
+    
+    # Get all pending in-kind donations
+    pending_inkind_donations, inkind_stats = get_all_pending_inkind_donations(db, drive_id)
+
+    # Combine pending donations into one list
+    pending_verifications = []
+    for donation in pending_monetary_donations:
+        pending_verifications.append(donation.dict())
+    for donation in pending_inkind_donations:
+        pending_verifications.append(donation.dict())
+
+    return pending_verifications, {
+        "monetary_stats": monetary_stats,
+        "inkind_stats": inkind_stats
+    }
+
+def get_all_verified_donations(
+    db: Session,
+    drive_id: UUID,
+) -> list:
+    
+    # Get all verified monetary donations
+    verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
+    
+    # Get all verified in-kind donations
+    verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
+
+    # Combine verified donations into one list
+    pending_verifications = []
+    for donation in verified_monetary_donations:
+        pending_verifications.append(donation.dict())
+    for donation in verified_inkind_donations:
+        pending_verifications.append(donation.dict())
+
+    return pending_verifications
 
 # this is the same as view_donation_drive, except it is hardcoded to the drive_id of the generic drive and we will return total amount
 # of verified monetary, and unverified monetary donations instead of the percent progress 
