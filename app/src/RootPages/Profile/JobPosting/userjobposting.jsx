@@ -5,6 +5,7 @@ import { BriefcaseBusiness } from 'lucide-react';
 import JobCard from '../../../components/AlumniComponents/JobCard';
 import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import axios from 'axios';
 
 export default function JobPosted() {
         const [selectedJobId, setSelectedJobId] = useState(""); //the job id will be stored here
@@ -12,25 +13,38 @@ export default function JobPosted() {
         const [jobList, setJobList] = useState([]);
         const [userId, setUserId] = useState(null);
         const [loading, setLoading] = useState(false);
+        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
 
         //For Dummy testing only
-    useEffect(() => {
-        //Job Dummy Data
+        useEffect(() => {
+          const fetchJobs = async () => {
+            try {
+              const response = await axios.get(`${API_BASE_URL}/profile/me/job-post-history`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+              
+              console.log("Job List Response:", response.data);
 
-
-        const job = {
-            title: "Data Scientist",
-            company: "Google Alphabet",
-            description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
-            user_name: "Roche Quejada",
-            tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
-            interested_count: 5
-        }
-        
-        const jobs = [job,job,job, job, job, job, job];
-        setJobList(jobs);
-        
-    }, []);
+              const jobs = response.data.data.map((job) => ({
+                title: job.position || "Untitled Role",
+                company: job.company || "Unknown Company",
+                description: job.description || "No description available.",
+                user_name: "",
+                tags: job.tags || [],
+                interested_count: job.interested_count || 0,
+              }));
+      
+              setJobList(jobs);
+            } catch (error) {
+              console.error("Error fetching job data:", error);
+            }
+          };
+      
+          fetchJobs();
+        }, [token]);
 
 
 

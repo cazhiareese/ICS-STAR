@@ -36,11 +36,13 @@ function InterestedUsers() {
         });
       
         const data = response.data;
+        console.log("Interested Users Data:", data.results); // Debugging line
         if (data.detail) {
           setError(data.detail); // Show message like "No users found who are interested in this job posting."
           setInterestedUsers([]); // Clear the list
         } else {
-          setInterestedUsers(data); // Proceed normally
+          setInterestedUsers(data.results); // Proceed normally
+          console.log("ankue");
         }
       } catch (err) {
         if (err.response) {
@@ -83,6 +85,9 @@ function InterestedUsers() {
     fetchInterestedUsers();
   }, [id, token]);
 
+    console.log("Idddnterested Users:", interestedUsers); 
+    console.log(loading);
+    console.log(error);// Debugging line
   return (
     <div className="w-full max-w-[1100px] mx-auto p-4">
       <div className="sm:pl-12">
