@@ -58,7 +58,7 @@ export default function JobPosted() {
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
-<div className="flex flex-col lg:flex-row lg:gap-2 justify-start items-start px-1">
+<div className="flex flex-col lg:flex-row lg:gap-2 justify-center items-center sm:justify-start sm:px-1 ml-7">
   {/* Scrollable Job List */}
   <div className="h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full lg:max-w-[420px] outline-0 flex-shrink-0">
     {!loading ? (
