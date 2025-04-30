@@ -1,5 +1,4 @@
-// ReportJobPosting.jsx
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import BackButton from "../../../components/backbutton";
 import JobSectionHeader from "./jobcomponent/jobsectionheader";
@@ -8,9 +7,12 @@ import { Info } from "lucide-react";
 
 function ReportJobPosting() {
   const [jobOverview, setJobOverview] = useState(null);
-  const ids = useParams();
-  const id = ids.jobid;
-  console.log("naku",id);
+  const [formData, setFormData] = useState({
+    details: "",
+    files: [],
+  });
+
+  const { jobid: id } = useParams();
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
@@ -18,15 +20,11 @@ function ReportJobPosting() {
     const fetchJobOverview = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/job/overview/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!response.ok) throw new Error("Failed to fetch job overview");
-
         const data = await response.json();
-        console.log("Job Overview Data:", data); // Debugging line
         setJobOverview(data);
       } catch (err) {
         console.error("Job Overview Fetch Error:", err);
@@ -35,19 +33,32 @@ function ReportJobPosting() {
 
     fetchJobOverview();
   }, [id, token]);
+
+  // Handle textarea change
+  const handleDetailsChange = (e) => {
+    setFormData({ ...formData, details: e.target.value });
+  };
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    setFormData({ ...formData, files: Array.from(e.target.files) });
+  };
+
   return (
     <div className="w-full max-w-[1100px] mx-auto p-4">
       <div className="sm:pl-12">
         <BackButton label="Back" />
       </div>
       <JobSectionHeader title="Report a Job" />
-      <div className="flex items-start gap-1 w-full max-w-3xl px-4 pb-3 pl-12  text-neutral-c sm:max-w-[1100px]">
+      <div className="flex items-start gap-1 w-full max-w-3xl px-4 pb-3 pl-12 text-neutral-c sm:max-w-[1100px]">
         <Info className="w-4 h-4 flex-shrink-0" />
         <span className="text-[12px] sm:text-[14px] font-satoshi-medium-italic text-center sm:text-left">
-        Thank you for helping keep our career page safe and relevant. Your report will be reviewed by our team and appropriate action will be taken.
-        </span>  
+          Thank you for helping keep our career page safe and relevant. Your report will be reviewed by our team and appropriate action will be taken.
+        </span>
       </div>
+
       {jobOverview && <JobOverviewCard overview={jobOverview} />}
+
       <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] border border-disabled p-6 space-y-6 h-[506px]">
         {/* Report Details */}
         <div>
@@ -55,6 +66,8 @@ function ReportJobPosting() {
             Report Details
           </label>
           <textarea
+            value={formData.details}
+            onChange={handleDetailsChange}
             className="w-full border border-gray-300 rounded-md p-3 min-h-[220px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Please provide information that would help us understand your concern..."
           />
@@ -82,14 +95,21 @@ function ReportJobPosting() {
             </svg>
             <p>
               Drag and drop file here or{" "}
-              <span className="text-blue-600 underline cursor-pointer">
+              <label htmlFor="file-upload" className="text-blue-600 underline cursor-pointer">
                 Choose file
-              </span>
+              </label>
             </p>
-            <input type="file" multiple className="hidden" id="file-upload" />
+            <input
+              id="file-upload"
+              type="file"
+              multiple
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </div>
         </div>
       </div>
+
       {/* Submit Button */}
       <div className="text-right mt-2">
         <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
