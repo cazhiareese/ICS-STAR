@@ -113,8 +113,8 @@ export default function Step4Onboarding() {
   };
 
   return (
-    <div className="flex flex-col items-center p-6 xl:px-15 px-10 xl:w-[50%] m-auto">
-      <h2 className="text-4xl font-semibold mb-3">Skills and Interests</h2>
+    <div className="flex flex-col items-center p-6 xl:px-15 px-10 xl:w-[90%] m-auto">
+      <h2 className="text-4xl font-semibold mb-3 mr-auto">Skills and Interests</h2>
 
       <input
         type="text"
@@ -126,7 +126,7 @@ export default function Step4Onboarding() {
       />
 
       <h3 className="text-xl font-satoshi-bold mb-6 mt-4 mr-auto ">Suggestions</h3>
-      <div className="flex flex-wrap gap-3 md:w-[80%] w-[100%] mr-auto pb-3">
+      <div className="flex flex-wrap gap-3 w-[100%] mr-auto pb-3">
         {userData.suggestions.map((skill) => (
           <button
             key={skill}
@@ -167,7 +167,13 @@ export default function Step4Onboarding() {
       <div className="flex flex-row items-center justify-center md:my-10 my-5 md:space-x-20 w-full">
         <div
           className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl md:text-2xl text-xl "
-          onClick={() => setCurrentSection(3)}
+          onClick={() => {
+            if (userType === "student"){
+              setCurrentSection(2)
+            } else {
+              setCurrentSection(3)
+            }
+          }}
         > 
           <label className="font-satoshi-italic"> &lt; Previous </label>
         </div>
