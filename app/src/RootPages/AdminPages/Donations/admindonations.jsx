@@ -7,6 +7,7 @@ import CircularLoading from '../../../components/LoadingComponents/circularloadi
 import SortModal from '../../../components/AdminComponents/sortmodal'
 import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
+import SearchComponent from "../../../components/AdminComponents/SearchComponent"
 
 function AdminDonations() {
   const navigate = useNavigate()
@@ -86,12 +87,7 @@ function AdminDonations() {
   
     
     return (
-      loading ? (
-        <div className='flex flex-row justify-center items-center h-screen'>
-          <CircularLoading/>
-        </div>
-      ) : (
-      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
+      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100'>
       {/* Header and add donation button */}
       <div className='flex justify-between items-center mb-4'>
         <h1 className='text-primary text-5xl font-satoshi-bold'>Donations</h1>
@@ -101,7 +97,7 @@ function AdminDonations() {
         </button>
       </div>
       {/* HELP ICS */}
-      <div className='border border-gray-300 rounded-xl flex py-4 cursor-pointer hover:border-primary' onClick={() => {navigate("/admin/donations/help-ics")}}>
+      <div className='border border-gray-300 rounded-xl flex py-4 cursor-pointer hover:border-primary bg-white' onClick={() => {navigate("/admin/donations/help-ics")}}>
         {/* Help ICS */}
         <div className='flex flex-row text-2xl items-center justify-center flex-1 gap-2'> 
           <HandCoins/>
@@ -131,13 +127,13 @@ function AdminDonations() {
       </div>
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
           <div className='w-full lg:w-auto  min-w-xs'>
-            {/* Alumni button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'open' ? 'border-primary' : 'border-transparent'}`} onClick={() => setDonationType('open')}>
-              <p className='text-black font-satoshi-medium text-md'> Open </p>
+            {/* Open button */}
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'open' ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('open')}>
+              <p className=''> Open </p>
             </button>
-            {/* Student button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'closed' ? ' border-primary' : 'border-transparent'}`} onClick={() => setDonationType('closed')}>
-              <p className='text-black font-satoshi-medium text-md'> Closed </p>
+            {/* Close button */}
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'closed' ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('closed')}>
+              <p className=''> Closed </p>
             </button>
           </div>
           {/* Sort by */}
@@ -146,18 +142,13 @@ function AdminDonations() {
               <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
                 <p className='font-satoshi-medium text-primary block'>Name</p>
             </button> */}
-          <div className='relative flex items-center justify-end flex-1'>
-            <input
-              type="text"
-              placeholder="Search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+            
+            <SearchComponent
+              query={query}
+              setQuery={setQuery}
+              focused={focused}
+              setFocused={setFocused}
             />
-            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
-          </div>
             <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/>
             {/* Order Toggle */}
             <OrderToggle direction={sortDirection} onToggle={setSortDirection}/>
@@ -174,18 +165,11 @@ function AdminDonations() {
             />
           </div>
         </div>
-        <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
-          {loading ? (
-            <div className='w-full h-full flex items-center justify-center'>
-              <CircularLoading/>
-            </div>
-          ) : (
-            <DonationsTable data={donations}/>
-          )}
+        <div className='border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto bg-white'>
+          <DonationsTable data={donations} loading={loading}/>
         </div>
     </div>
     )
-  )
 }
 
 export default AdminDonations

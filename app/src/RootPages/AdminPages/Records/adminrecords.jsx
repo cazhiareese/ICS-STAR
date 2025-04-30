@@ -8,6 +8,7 @@ import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
 import FilterModal from '../../../components/AdminComponents/UserFilter';
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent';
+import SearchComponent from '../../../components/AdminComponents/SearchComponent'
 
 function AdminRecords() {
   const navigate = useNavigate()
@@ -17,7 +18,6 @@ function AdminRecords() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [viewStyle, setViewStye] = useState('List')
-  const [maxRows, setMaxRows] = useState(12)
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false)
  
@@ -90,7 +90,7 @@ function AdminRecords() {
         setTotalPages(response.data.total_pages)
 
       } catch (error) {
-        console.log('Error getting users');
+        console.log(error);
         setUsers([]);
       } finally {
         setLoading(false);
@@ -98,7 +98,11 @@ function AdminRecords() {
     };
   
     fetchData();
-  }, [userType, sortBy, sortDirection, query, selectedFilters, page]);
+  }, [userType, sortBy, sortDirection, query, selectedFilters, page, orderBy]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, userType, sortBy, sortDirection, selectedFilters]);
   
   // Initial fetch
   useEffect(() => {
@@ -107,7 +111,7 @@ function AdminRecords() {
   }, []);
   
   return ( 
-      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
+      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100'>
         {/* Records, search, view pending */}
         <div className='justify-between mt-2 lg:mb-8 flex relative'>
           {/* Records header */}
@@ -115,20 +119,14 @@ function AdminRecords() {
           {/* Search and view pending */}
           <div className='flex flex-row gap-5 lg:w-auto w-full px-3 lg:px-0'>
             {/* Search */}
-            <div className='relative flex items-center justify-end flex-1'>
-              <input
-                type="text"
-                placeholder="Search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
-                className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
-              />
-              <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
-            </div>
+            <SearchComponent
+              query={query}
+              setQuery={setQuery}
+              focused={focused}
+              setFocused={setFocused}
+            />
             {/* View Pending Verifications */}
-            <button className='bg-primary h-11 w-11 lg:h-auto lg:w-auto rounded-full lg:rounded-3xl lg:px-5 lg:py-1 flex items-center justify-center gap-2 text-sm cursor-pointer' onClick={() => {navigate('/admin/records/pending-verifications')}}> 
+            <button className='bg-primary h-11 w-11 lg:h-auto lg:w-auto rounded-full lg:rounded-3xl lg:px-5 lg:py-1 flex items-center justify-center gap-2 text-sm cursor-pointer hover:bg-hover' onClick={() => {navigate('/admin/records/pending-verifications')}}> 
               <BadgeCheck className='text-white'/>
               <p className='text-white lg:block hidden'>View Pending Verifications </p>
             </button>
@@ -179,17 +177,12 @@ function AdminRecords() {
           </div>
         </div>
         {/* Table for desktop*/}
-        {
-          loading ? (
-            <div className="flex justify-center items-center h-screen">
-              <CircularLoading size={90} />
-            </div>
-          ) : (
-            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto">
-              <UsersTable data={users} />
-            </div>
-          )
-        }
+        <div
+          className="border border-gray-300 rounded-xl p-6 hidden lg:block overflow-auto bg-white"
+          // style={{ height: '29.75rem' }} // Fixed height for 10 rows + header + padding
+        >
+          <UsersTable data={users} loading={loading} />
+        </div>
       {/* Table for mobile */}
       <div className='flex flex-col lg:hidden overflow-auto'>
         {/* User Card */}
