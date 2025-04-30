@@ -26,9 +26,13 @@ function AdminDonationInformation() {
   const [noPendingDonations, setNoPendingDonations] = useState()
   const [donation, setDonation] = useState()
   const [loading, setLoading] = useState(true)
+  const [pendingDonationLoading, setPendingDonationLoading] = useState(true)
   const [selectedTab, setSelectedTab] = useState('donations')
-  const [pendingPages, setPendingPages] = useState(1)
+  const [pendingPage, setPendingPage] = useState(1)
   const [totalPendingPages, setTotalPendingPages] = useState(1)
+  const [verifiedDonationLoading, setVerifiedDonationLoading] = useState(true)
+  const [verifiedPage, setVerifiedPage] = useState(1)
+  const [totalVerifiedPages, setTotalVerifiedPages] = useState(1)
 
   async function handleCloseDrive() {
     setCloseDonationLoading(true)
@@ -51,24 +55,10 @@ function AdminDonationInformation() {
 
     try {
       const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`)
-      console.log(donationResponse.data)   
+      // console.log(donationResponse.data)   
       setDonation(donationResponse.data)
 
-      // Set pending donations first before checking its length
-      const pendingList = donationResponse.data.pending_list
-      setPendingDonations(pendingList)
-      setNoPendingDonations(Object.keys(pendingList).length === 0)
-
-      const verifiedList = donationResponse.data.verified_list
-      // console.log(verifiedList)
-      setVerifiedDonations(verifiedList)
-
       const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
-      console.log(percentResponse.data)
-
-      const driveStatus = donationResponse.data.is_closed
-      setIsClosed(driveStatus)
-
       setProgressData([
         { name: "progress", value: percentResponse.data.percent_funded },
         { name: "remaining", value: percentResponse.data.remaining_percent }
@@ -80,16 +70,76 @@ function AdminDonationInformation() {
       setLoading(false)
     }
   }
+
+  async function fetchNextVerifiedPage() {
+    setVerifiedDonationLoading(true)
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`)
+      console.log(response)
+      setTotalVerifiedPages(response.total_pages)
+      setVerifiedDonations(response.data.data)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setVerifiedDonationLoading(false)
+    }
+  }
+
+  async function fetchNextPendingPage() {
+    setPendingDonationLoading(true)
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page${pendingPage}1&page_size=5`)
+      // console.log(response)
+      setTotalPendingPages(response.total_pages)
+      setPendingDonations(response.data.data)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setPendingDonationLoading(false)
+    }
+  }
+
+  async function fetchProgress() {
+    setLoading(true)
+    try {
+      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
+      // console.log(percentResponse.data)
+
+      setProgressData([
+        { name: "progress", value: percentResponse.data.percent_funded },
+        { name: "remaining", value: percentResponse.data.remaining_percent }
+      ])
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-  
+    fetchNextVerifiedPage()
+  }, [verifiedPage])
+
+  useEffect(() => {
+    fetchNextPendingPage()
+
+  }, [pendingPage])
+
+
+  useEffect(() => {
+    fetchNextPendingPage()
+    fetchNextVerifiedPage()
     fetchData()
   }, [])
   
 
-  const COLORS = ["#0B2B8C", "#F4F4F4"];
+  const COLORS = [
+    '#0B2B8C',
+    '#F4F4F4',
+  ];
 
   return (
-    <div className='flex flex-col lg:p-6 overflow-auto max-w-7xl mx-auto bg-gray-100'>
+    <div className='flex flex-col lg:p-6 overflow-auto max-w-7xl mx-auto min-h-screen bg-gray-100'>
       {loading ? (
         <div className='flex h-screen w-full items-center justify-center'>
           <CircularLoading/>
@@ -106,7 +156,7 @@ function AdminDonationInformation() {
             <div className='flex flex-row gap-2'>
               <h1 className='font-satoshi-bold text-primary text-4xl'>{donation.title}</h1>
               {/* Open or closed button */}
-              {isClosed ? (
+              {donation.is_closed ? (
                 <div className='bg-red-100 px-7 py-1 rounded-3xl flex items-center h-fit place-self-end'> 
                 <p className='text-error font-satoshi-medium text-sm'>Closed</p>
               </div>          ) : (
@@ -148,7 +198,7 @@ function AdminDonationInformation() {
             </div>
           </div>
           {/* Goal progress and recent transactions */}
-          <div className='flex flex-row gap-2 mb-4 h-60'>
+          <div className='flex flex-row gap-2 mb-4 h-80'>
             {/* Goal Progress */}
             <div className='flex flex-col items-center justify-center flex-1/3 pb-10 border border-gray-300 rounded-xl h-full bg-white'>
                 <ResponsiveContainer width="100%" height="100%">
@@ -158,9 +208,9 @@ function AdminDonationInformation() {
                       startAngle={180}
                       endAngle={0}
                       cx="50%"
-                      cy="100%"
-                      innerRadius="120%"
-                      outerRadius="150%"
+                      cy="70%"
+                      innerRadius="100%"
+                      outerRadius="130%"
                       dataKey="value"
                     >
                     {progressData.map((entry, index) => (
@@ -170,7 +220,7 @@ function AdminDonationInformation() {
                   </PieChart>
                 </ResponsiveContainer>
 
-              <div className="text-center -mt-22">
+              <div className="text-center -mt-38">
                 <p className="text-sm text-gray-500 font-satoshi-medium">Goal Progress</p>
                 <p className="text-6xl font-bold text-[#1F2A63] font-satoshi-bold">{donation.percent_funded}%</p>
               </div>
@@ -180,8 +230,8 @@ function AdminDonationInformation() {
                 <div className='flex flex-row justify-between'>
                   <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
                   <PaginationComponent
-                    page={pendingPages}
-                    setPage={setPendingPages}
+                    page={pendingPage}
+                    setPage={setPendingPage}
                     totalPages={totalPendingPages}
                   />
                 </div>
@@ -248,7 +298,7 @@ function AdminDonationInformation() {
           </div>
           {/* Verified Donations Table */}
           <div className='border border-gray-300 rounded-xl p-6 hidden h-fit lg:block bg-white'>
-            <VerifiedDonationsTable data={verifiedDonations}/>
+            <VerifiedDonationsTable data={verifiedDonations} loading={verifiedDonationLoading}/>
           </div>
           {/* View Details Modal */}
           {viewDetailsModal && (
