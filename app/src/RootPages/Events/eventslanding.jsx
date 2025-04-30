@@ -39,13 +39,26 @@ const EventsLanding = () => {
     const [userType, setUserType] = useState(null);
 
     //cyrus was here
-    const User = localStorage.getItem("token");
+
+const User = localStorage.getItem("token");
+let tokentype = "guest";
+let userid = true;
+
+
+if (User) {
+  try {
     const decoded = jwtDecode(User);
-    console.log(decoded);
-    const tokentype = decoded.role;
-    const userid = decoded.sub;
-    console.log("User ID: ", userid);
-    console.log("Decoded token typee:", tokentype);
+    tokentype = decoded.role;
+    userid = decoded.sub;
+    console.log("Decoded token:", decoded);
+    console.log("User ID:", userid);
+    console.log("Token type:", tokentype);
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+} else {
+  console.log("No token found, defaulting to guest.");
+}
 
 
     useEffect(() => {
