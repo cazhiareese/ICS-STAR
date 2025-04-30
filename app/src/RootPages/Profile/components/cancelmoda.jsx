@@ -20,7 +20,7 @@ function CancelEditingModal({ isOpen, onConfirm, onCancel }) {
         <div className="mt-6 flex justify-center gap-4">
           <button
             onClick={onCancel}
-            className="px-5 py-2 bg-red-600 text-white rounded-full text-sm font-medium hover:bg-red-700 flex items-center gap-2 transition"
+            className="px-5 py-2 bg-green-600 text-white rounded-full text-sm font-medium hover:bg-red-700 flex items-center gap-2 transition"
           >
             Cancel
           </button>
