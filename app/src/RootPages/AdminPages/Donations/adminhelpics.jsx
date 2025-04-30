@@ -13,6 +13,7 @@ import SortModal from '../../../components/AdminComponents/sortmodal'
 function AdminHelpIcs() {
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  const [token, setToken] = useState(null)
 
   const [pendingDonations, setPendingDonations] = useState(null);
   const [verifiedDonations, setVerifiedDonations] = useState(null);
@@ -28,7 +29,7 @@ function AdminHelpIcs() {
 
   async function fetchDriveDetails() {
     try {
-      const genDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/generic-drive-view`);
+      const genDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/generic-drive-view`, {headers: {Authorization: `Bearer ${token}`}});
       setDriveData(genDriveRes.data);
       setDriveid(genDriveRes.data.drive_id);
       return genDriveRes.data.drive_id;
@@ -42,9 +43,7 @@ function AdminHelpIcs() {
 
   async function fetchPendingDonations(driveId) {
     try {
-      const pendingDriveRes = await axios.get(
-        `${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveId}`
-      );
+      const pendingDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveId}`, {headers: {Authorization: `Bearer ${token}`}});
       setPendingDonations(pendingDriveRes.data.data);
       setTotalPendingPages(pendingDriveRes.data.total_pages);
       setNoPendingDonations(pendingDriveRes.data.data.length === 0);
@@ -58,11 +57,9 @@ function AdminHelpIcs() {
 
   async function fetchVerifiedDonations(driveId) {
     try {
-      const verifiedDriveRes = await axios.get(
-        `${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveId}`
-      );
+      const verifiedDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveId}`, {headers: {Authorization: `Bearer ${token}`}});
       setVerifiedDonations(verifiedDriveRes.data.data);
-      setTotalVerifiedPages(verifiedDriveRes.data.total_apges)
+      setTotalVerifiedPages(verifiedDriveRes.data.pages)
     } catch (error) {
       console.log('Error fetching verified donations:', error);
       setVerifiedDonations([]);
@@ -70,6 +67,7 @@ function AdminHelpIcs() {
   }
 
   useEffect(() => {
+    setToken(localStorage.getItem('token'))
     async function loadData() {
       setLoading(true);
       try {
