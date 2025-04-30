@@ -95,45 +95,46 @@ function AdminPendingVerifications() {
     };
     
     const fetchUsersCount = async (token) => {
-      // Fetch unverified alumni count
-      await axios.get(`${API_BASE_URL}/admin/unverified/alumni/count`, {headers: {Authorization: `Bearer ${token}`}})
-      .then(response => {
-        console.log(response.data);
-        setAlumniUserCount(response.data.unverified_alumni_count);
-      })
-      .catch(error => {
-        console.log(error)
-      })
-
-      // Fetch unverified students count
-      await axios.get(`${API_BASE_URL}/admin/unverified/students/count`, {headers: {Authorization: `Bearer ${token}`}})
-      .then(response => {
-        console.log(response.data);
-        setStudentUserCount(response.data.unverified_students_count);
-      })
-      .catch(error => {
-        console.log(error)
-      })
+      try {
+        const [alumniResponse, studentsResponse] = await Promise.all([
+          axios.get(`${API_BASE_URL}/admin/unverified/alumni/count`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${API_BASE_URL}/admin/unverified/students/count`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+    
+        console.log('Alumni count response:', alumniResponse.data);
+        setAlumniUserCount(alumniResponse.data.unverified_alumni_count);
+    
+        console.log('Students count response:', studentsResponse.data);
+        setStudentUserCount(studentsResponse.data.unverified_students_count);
+      } catch (error) {
+        console.log('Error fetching user counts:', error);
+        setAlumniUserCount(0);
+        setStudentUserCount(0);
+      }
     };
     
     useEffect(() => {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       const fetchData = async () => {
-        setLoading(true)
+        setLoading(true);
         try {
           await Promise.all([
             fetchUnverifiedUsers(userType, token),
-            fetchUsersCount(token)
-          ])
+            fetchUsersCount(token),
+          ]);
         } catch (error) {
-          console.log(error)
+          console.log('Error in fetchData:', error);
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
-      }
+      };
     
-      fetchData()
-    }, [userType])
+      fetchData();
+    }, [userType]);
 
     useEffect(() => {
       const token = localStorage.getItem("token")
