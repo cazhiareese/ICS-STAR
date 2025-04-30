@@ -17,7 +17,8 @@ const DatePickerModal = ({ setIsDatePickerModalOpen, setDateList }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-[360px]">
+      <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
+      <div className="relative bg-white rounded-2xl shadow-xl p-6 w-[360px]">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="font-bold text-lg">Select Batch Years</h2>
