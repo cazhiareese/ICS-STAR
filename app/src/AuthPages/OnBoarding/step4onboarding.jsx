@@ -61,7 +61,7 @@ export default function Step4Onboarding() {
     submitOnboardingInfo();
   };
 
-  const baseURL = "https://ics-star-api.vercel.app";
+  const baseURL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
   const submitOnboardingInfo = async () => {
@@ -71,33 +71,35 @@ export default function Step4Onboarding() {
           ? `${baseURL}/onboarding-info-student`
           : `${baseURL}/onboarding-info-alum`;
       const payload =
-        userType === "student"
-          ? {
-              standing: userData.standing,
-              ...(userData.scholarshipList.length > 0 && { scholarships: userData.scholarshipList }),
-              ...(userData.affiliationList.length > 0 && { affiliations: userData.affiliationList }),
-              ...(userData.roleList.length > 0 && { roles: userData.roleList }),
-              ...(userData.skillsInterests.length > 0 && { skills: userData.skillsInterests }),
-            }
-          : {
-              ...(userData.scholarshipList.length > 0 && { scholarships: userData.scholarshipList }),
-              ...(userData.affiliationList.length > 0 && { affiliations: userData.affiliationList }),
-              ...(userData.roleList.length > 0 && { roles: userData.roleList }),
-              ...(userData.skillsInterests.length > 0 && { skills: userData.skillsInterests }),
-              ...(userData.employmentType === "employed" && {
-                industry: userData.industrySector,
-                ...(userData.companyName && { company_name: userData.companyName }),
-                job_title: userData.jobTitle,
-                country: userData.workCountry,
-                city: userData.workCity,
-                work_mode: userData.workType,
-                employer_class: userData.workType,
-                tenured_status: userData.tenureStatus,
-                salary_grade: userData.salaryRange,
-              }),
-              ...(userData.employmentType === "unemployed" && { reasons: userData.reason }),
-              employment_status: userData.employmentType,
-            };
+          userType === "student"
+            ? {
+                standing: userData.standing ?? "",
+                scholarships: userData.scholarshipList ?? [],
+                affiliations: userData.affiliationList ?? [],
+                roles: userData.roleList ?? [],
+                skills: userData.skillsInterests ?? [],
+              }
+            : {
+                scholarships: userData.scholarshipList ?? [],
+                affiliations: userData.affiliationList ?? [],
+                roles: userData.roleList ?? [],
+                skills: userData.skillsInterests ?? [],
+                industry: userData.employmentType === "employed" ? userData.industrySector ?? "" : "",
+                company_name: userData.employmentType === "employed" ? userData.companyName ?? "" : "",
+                job_title: userData.employmentType === "employed" ? userData.jobTitle ?? "" : "",
+                country: userData.employmentType === "employed" ? userData.workCountry ?? "" : "",
+                city: userData.employmentType === "employed" ? userData.workCity ?? "" : "",
+                work_mode: userData.employmentType === "employed" ? userData.workType ?? "" : "",
+                employer_class: userData.employmentType === "employed" ? userData.workType ?? "" : "",
+                tenured_status: userData.employmentType === "employed" ? userData.tenureStatus ?? "" : "",
+                salary_grade: userData.employmentType === "employed" ? userData.salaryRange ?? "" : "",
+                reasons: userData.employmentType === "unemployed" ? userData.reason ?? [] : [],
+                employment_status: userData.employmentType ?? "",
+              };
+
+
+      console.log("Payload being sent:", payload);
+      console.log(userType)
       await axios.post(endpoint, payload, {
         headers: {
           Authorization: `Bearer ${token}`,

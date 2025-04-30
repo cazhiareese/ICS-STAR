@@ -104,6 +104,29 @@ function App() {
     }
   }
 
+  function isVerifiedOnboarded() {
+    const User = localStorage.getItem("token");
+    //const User = true;
+    let tokenType = null;
+    if (User) {
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      //tokenType = "admin";
+      //tokenType = "alumni";
+      const onBoarding = decoded.is_onboarded; // Adjust this based on your token structure
+      const verified = decoded.is_verified
+      console.log("Decoded token type:", tokenType);
+
+      console.log
+      if (!onBoarding && verified){    
+        return false
+      } 
+        return true
+    } else {
+      console.warn("⚠️ No token found in sessionStorage");
+    }
+  }
+
   console.log(isSignedIn);
 
   return (
@@ -174,7 +197,9 @@ function App() {
 
       {isSignedIn && checkType() === "student" && (
         <>
-          <Route path="/" element={<Root />}>
+          {isVerifiedOnboarded() ?
+          <>
+            <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
             <Route path="student/events" element={<EventsLanding />} />
             <Route path="students/events/:eventid" element={<EventCardsMain />} />
@@ -187,6 +212,17 @@ function App() {
             <Route path="student/jobPosting" element={<JobPostingLanding />} />
             <Route path="*" element={<UserProfile />} />
           </Route>
+          </>
+          :
+            <Route
+              path="setup"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+              />
+        }
         </>
       )}
 

@@ -3,12 +3,13 @@ import "../../index.css";
 import Constellation from "../../assets/SignupAssets/constellationMain.png"
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import Unathorized from "../Unauthorized";
+import { jwtDecode } from "jwt-decode";
 
 function OnBoarding() {
     const { currentSection, setCurrentSection, name, setName, setEmail , setUserType} = useOnboardingContext();
     const [first_name, setFirstName] = useState("");
     const [error, setError] = useState(null); // State to handle errors
-    
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
         const fetchName = async () => {
@@ -21,8 +22,8 @@ function OnBoarding() {
                     return;
                 }
 
-                const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                
+                const response = await fetch(`${API_BASE_URL}/profile/me/personal-information`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -42,23 +43,26 @@ function OnBoarding() {
 
                 // Log the raw response for debugging
                 const text = await response.text();
-                console.log("Raw response:", text);
+                // console.log("Raw response:", text);
 
                 // Try to parse the response as JSON
                 let result;
                 try {
+                    
                     result = JSON.parse(text);
+                    // console.log(result)
                 } catch (jsonError) {
                     setError("Failed to parse the server response.");
                     console.error("JSON parsing error: ", jsonError);
                     return;
                 }
                 // Correctly access 'data'
-                setFirstName(result.first_name); // Set first name from the fetched data
-                setName(result.first_name + " " + result.last_name)
-                setEmail(result.email)
-                setUserType(result.user_type)
-                console.log(result)
+                setFirstName(result.data.first_name); // Set first name from the fetched data
+                setName(result.data.first_name + " " + result.data.last_name)
+                setEmail(result.data.email)
+                
+                const decoded = jwtDecode(token);
+                setUserType(decoded.role)
             } catch (err) {
 
                 console.error("Error fetching data: ", err);
