@@ -104,6 +104,32 @@ function App() {
     }
   }
 
+  function isOnboarded() {
+    const User = localStorage.getItem("token");
+    //const User = true;
+    let tokenType = null;
+    if (User) {
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      //tokenType = "admin";
+      //tokenType = "alumni";
+      const onBoarding = decoded.is_onboarded; // Adjust this based on your token structure
+      const verified = decoded.is_verified
+      console.log("Decoded token type:", tokenType);
+
+      console.log
+      if (onBoarding && verified){    
+        return true
+      } else if (!verified){
+        return true
+      }
+        return false
+    } else {
+      console.warn("⚠️ No token found in sessionStorage");
+    }
+  }
+
+
   console.log(isSignedIn);
 
   return (
@@ -137,6 +163,8 @@ function App() {
       
       {isSignedIn && checkType() === "alumni" && (
         <>
+          {isOnboarded()?
+           <>
           <Route path="/" element={<Root />}>
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
@@ -160,21 +188,28 @@ function App() {
 
             <Route path="*" element={<Unauthorized />} />
 
-            <Route
-            path="setup"
-            element={
-              <OnboardingProvider>
-                <OnBoarding />
-              </OnboardingProvider>
-            }
-            />
+
           </Route>
+          </>
+          :
+          <Route
+              path="/setup"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+            
+            />
+         } 
         </>
       )} 
 
       {isSignedIn && checkType() === "student" && (
         <>
-          <Route path="/" element={<Root />}>
+          {isOnboarded() ?
+          <>
+            <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
             <Route path="student/events" element={<EventsLanding />} />
             <Route path="students/events/:eventid" element={<EventCardsMain />} />
@@ -187,6 +222,17 @@ function App() {
             <Route path="student/jobPosting" element={<JobPostingLanding />} />
             <Route path="*" element={<UserProfile />} />
           </Route>
+          </>
+           : 
+            <Route
+              path="setup"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+              />
+         }
         </>
       )}
 

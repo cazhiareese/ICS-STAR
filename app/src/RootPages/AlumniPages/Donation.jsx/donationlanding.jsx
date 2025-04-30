@@ -199,11 +199,7 @@ function DonationLanding() {
               <div className="grid gap-4 grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] justify-center items-center pl-5" style={{ direction: "ltr" }}>
                 {filteredData.length > 0 ? (
                   filteredData.map((drive, index) => (
-                    
-
                     <DonationCards key={index} drive={drive} loading={true} />
-                    
-                
                   ))
                 ) : (
                   <p className="w-full text-center text-gray-500">

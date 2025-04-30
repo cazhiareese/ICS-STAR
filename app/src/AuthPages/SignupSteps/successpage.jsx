@@ -25,7 +25,6 @@
                 userData.academicYear,
                 userData.selectedYear
             )
-
             setLoading(false)
         };
 
@@ -58,35 +57,19 @@
                 const data = await response.json();
         
                 if (response.ok) {
-                    const loginResponse = await fetch(`${baseURL}/token`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                        },
-                        body: new URLSearchParams({
-                            username: userData.email,
-                            password: userData.password,
-                        }),
-                    });
-        
-                    const loginData = await loginResponse.json();
-        
-                    if (loginResponse.ok) {
-                        // You can store the token if needed:
-                        localStorage.setItem("token", loginData.access_token);
-        
+                    localStorage.setItem("token", data.access_token);
                         alert("Registration Successful!");
         
                         // Redirect based on userType
                         if (userType === "alumni") {
                             navigate("/alumni/dashboard");
                         } else {
-                            navigate("/student/student");
+                            navigate("/student/dashboard");
                         }
-                    } else {
                         alert("Login failed after registration.");
                         console.error("Login Error:", loginData);
-                    }
+                        return
+                    
                 } else {
                     alert(data.detail || "Registration failed!");
                     console.error("Response Status:", response.status);
@@ -95,7 +78,7 @@
                 }
             } catch (error) {
                 console.error("Error:", error);
-                alert("Something went wrong!");
+                // alert("Something went wrong!");
             }
         };
         

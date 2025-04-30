@@ -13,7 +13,8 @@ function AlumnInfo(){
     const [fileSize, setFileSize] = useState(0);
     const [file, setFile] = useState(null);
     const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
-
+    const [academicYearDropdownOpen, setAcademicYearDropdownOpen] = useState(false);
+    // const years = ["AY 2024–2025", "AY 2023–2024", "AY 2022–2023", "AY 2021–2022"];
     const {setUserData, userData, updateUserData} = useAppContext();
 
     const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
@@ -65,13 +66,13 @@ function AlumnInfo(){
 
     const processFile = (selectedFile) => {
         if (selectedFile) {
-            const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
-            updateUserData("file", selectedFile)
-            updateUserData("fileName", selectedFile.name)
-            updateUserData("fileSize", selectedFile.size)
-            updateUserData("image", "May image na")
-            setImage("MAy image na")
-
+            const formattedSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB";
+            console.log(formattedSize)
+            updateUserData("file", selectedFile);
+            updateUserData("fileName", selectedFile.name);
+            updateUserData("fileSize", formattedSize);  // ✅ store formatted string
+            updateUserData("image", "May image na");
+            setImage("MAy image na");
         }
     };
 
@@ -201,25 +202,51 @@ function AlumnInfo(){
                     Year and Term Graduated <label className="text-red-700">*</label>
                 </div>
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
-                    <select 
-                        value={userData.selectedTerm} 
+                    <div className="relative w-[45%]">
+                    <select
+                        value={userData.selectedTerm}
                         onChange={(e) => updateUserData("selectedTerm", e.target.value)}
-                        className={`border rounded-lg h-10 w-[45%] text-center text-gray-400  ${termGraduated==false ? 'border-black':'border-red-600'}`}
+                        className={`pl-10 appearance-none border rounded-lg h-10 w-full text-center ${userData.selectedTerm==""? "text-gray-400": ""} pr-12 ${termGraduated==false ? 'border-black':'border-red-600'}`}
                     >
-                        <option value="" disabled >Select a Term</option>
+                        <option value="" disabled>Select a Term</option>
                         <option value="1st Semester">First Semester</option>
                         <option value="2nd Semester">Second Semester</option>
-                        
                     </select>
+
+                    {/* Custom Arrow Icon — shifted LEFT slightly */}
+                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-600">
+                        <ChevronDown className="w-4 h-4" />
+                    </div>
+                    </div>
+
                     <label>-</label>
-                    <div className={`justify-center flex items-center border rounded-lg px-4 py-2 w-[45%] shadow-sm ${termGraduated==false ? 'border-black':'border-red-600'}`}>
-                        <input
-                            type="text"
-                            value={userData.academicYear} 
-                            onChange={handleInputChange}
-                            placeholder="AY YYYY - YYYY"
-                            className={`outline-none w-full text-gray-700 placeholder-gray-400 mx-auto text-center`}
-                        />
+                    <div className={`justify-center flex items-center border rounded-lg px-4 py-0 w-[45%] shadow-sm ${termGraduated == false ? 'border-black' : 'border-red-600'}`}>
+                        <div className="relative w-full">
+                            <button
+                            onClick={() => setAcademicYearDropdownOpen(!academicYearDropdownOpen)}
+                            className={`flex items-center justify-between w-full h-10 px-4 text-left rounded-lg ${userData.academicYear ? 'text-black' : 'text-gray-400'} `}
+                            >
+                            <span className="mx-auto">{userData.academicYear ? (userData.academicYear+"-"+ (userData.academicYear+1)) :"Select AY YYYY"}</span>
+                            <ChevronDown className="w-4 h-4 text-gray-600" />
+                            </button>
+
+                            {academicYearDropdownOpen && (
+                            <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
+                                {years.map((year) => (
+                                <li
+                                    key={year}
+                                    onClick={() => {
+                                    updateUserData("academicYear", year);
+                                    setAcademicYearDropdownOpen(false);
+                                    }}
+                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                >
+                                    {year}
+                                </li>
+                                ))}
+                            </ul>
+                            )}
+                        </div>
                     </div>
                 </div>
 

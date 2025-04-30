@@ -28,10 +28,12 @@ function PersonalInformation(){
 
         const checker = await checkEmailAvailability(userData.email)
         console.log(checker)
-        if (!checker) {
+        if (checker.detail==="Email already registered") {
             alert("Email already Registered, please register a new email address")
             userData.email=""
             console.log("HELJDKFDSF", checker)
+            setLoading(false)
+            return
         }
         else if (userData.firstName == "" || userData.lastName== "" || (userData.email=="" || validateEmail(userData.email) == false) || userData.password==""){
             setError(false)
