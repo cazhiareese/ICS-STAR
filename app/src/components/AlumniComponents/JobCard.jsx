@@ -2,12 +2,18 @@ import { Star } from 'lucide-react'
 import { decode } from 'punycode';
 import React from 'react'
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
-const token = localStorage.getItem("token");
-const decoded = jwtDecode(token);
-const currentUserID = decoded.sub;
+
 
 function JobCard({job, selectedJobId, setSelectedJobId, setMobileExpanded}) {
+
+    const token = localStorage.getItem("token");
+const decoded = jwtDecode(token);
+const currentUserID = decoded.sub;
+const navigate = useNavigate();
+    
+    console.log(job);
     const handleJobClick = () => {
         // store the card's post id to selected post_id
         setSelectedJobId(job.post_id);
@@ -28,7 +34,7 @@ function JobCard({job, selectedJobId, setSelectedJobId, setMobileExpanded}) {
                 <div className="flex items-center gap-1 pt-2">
                 {job.user_id === currentUserID ? (
   <button
-    onClick={() => navigate(`/alumni/jobPosting/interested/${jobId}`)}
+    onClick={() => navigate(`/alumni/jobPosting/interested/${job.post_id}`)}
     className="md:text-lg text-sm text-primary font-satoshi-bold underline hover:text-hover cursor-pointer"
   >
     {job.interested_count} are interested
