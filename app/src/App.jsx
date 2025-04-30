@@ -240,7 +240,7 @@ function App() {
       {!isSignedIn  && (
         <>
           <Route path="/" element={<Root />}>
-            <Route path="/dashboard" element={<GuestLanding />} />
+            <Route path="guest/dashboard" element={<GuestLanding />} />
 
           </Route>
         </>
