@@ -127,8 +127,6 @@ function GuestLanding() {
         <div className="flex flex-wrap justify-center gap-4 mt-6">
           <CardComponent icon={Calendar} text="Look for events to attend" />
           <CardComponent icon={Newspaper} text="Catch up with ICS" />
-          <CardComponent icon={Briefcase} text="Browse job opportunities" />
-          <CardComponent icon={User} text="Connect with Alumni" />
         </div>
       </div>
 
