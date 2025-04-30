@@ -126,7 +126,7 @@ function AdminRecords() {
               setFocused={setFocused}
             />
             {/* View Pending Verifications */}
-            <button className='bg-primary h-11 w-11 lg:h-auto lg:w-auto rounded-full lg:rounded-3xl lg:px-5 lg:py-1 flex items-center justify-center gap-2 text-sm cursor-pointer' onClick={() => {navigate('/admin/records/pending-verifications')}}> 
+            <button className='bg-primary h-11 w-11 lg:h-auto lg:w-auto rounded-full lg:rounded-3xl lg:px-5 lg:py-1 flex items-center justify-center gap-2 text-sm cursor-pointer hover:bg-hover' onClick={() => {navigate('/admin/records/pending-verifications')}}> 
               <BadgeCheck className='text-white'/>
               <p className='text-white lg:block hidden'>View Pending Verifications </p>
             </button>
