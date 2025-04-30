@@ -185,7 +185,7 @@ function Step3Onboarding() {
               </div>
 
               {/* {console.log(userData.employmentType)} */}
-              {userData.employmentType == "unemployed" | userData.employmentType == "unemployed_no_exp" && (
+              {userData.employmentType == "unemployed" || userData.employmentType == "unemployed_no_exp" && (
                 <div className="relative flex flex-col items-center bg-secondary px-6 lg:py-6 py-3 rounded-2xl shadow-md mt-5 lg:w-[30%] w-[100%] lg:ml-10">
                   {/* Speech bubble arrow */}
                   <div className="hidden lg:block absolute top-0 -left-6 w-0 h-0 border-t-[20px] border-t-transparent border-r-[30px] border-r-secondary border-b-[20px] border-b-transparent"></div>

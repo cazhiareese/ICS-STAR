@@ -183,15 +183,17 @@ function App() {
 
             <Route path="*" element={<Unauthorized />} />
 
-            <Route
-            path="setup"
-            element={
-              <OnboardingProvider>
-                <OnBoarding />
-              </OnboardingProvider>
-            }
-            />
+
           </Route>
+          <Route
+              path="/setup"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+            
+            />
         </>
       )} 
 
