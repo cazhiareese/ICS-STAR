@@ -17,7 +17,6 @@ function AdminRecords() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [viewStyle, setViewStye] = useState('List')
-  const [maxRows, setMaxRows] = useState(12)
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false)
  
@@ -90,7 +89,7 @@ function AdminRecords() {
         setTotalPages(response.data.total_pages)
 
       } catch (error) {
-        console.log('Error getting users');
+        console.log(error);
         setUsers([]);
       } finally {
         setLoading(false);
@@ -98,7 +97,11 @@ function AdminRecords() {
     };
   
     fetchData();
-  }, [userType, sortBy, sortDirection, query, selectedFilters, page]);
+  }, [userType, sortBy, sortDirection, query, selectedFilters, page, orderBy]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, userType, sortBy, sortDirection, selectedFilters]);
   
   // Initial fetch
   useEffect(() => {
