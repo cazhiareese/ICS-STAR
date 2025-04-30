@@ -49,15 +49,18 @@ const EventCards = ({event}) => {
         <div className="w-90 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1"
         onClick={() => {openEventDetails(event.event_id)}} 
         >
-            <div className="h-40 bg-gray-300">
-                {event.image && (
-                        <img
-                            src={event.image}
-                            alt="&nbsp;"
-                            className="w-full h-full object-cover"
-                        />
-                )}
-            </div>
+<div className="h-40 w-full">
+  {event.image ? (
+    <img
+      src={event.image}
+      alt="Event"
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <div className="w-full h-full bg-primary" />
+  )}
+</div>
+
             
             
             <div className="p-4">
