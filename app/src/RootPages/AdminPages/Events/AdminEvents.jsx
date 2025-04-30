@@ -143,25 +143,28 @@ function AdminEvents() {
             totalPages={totalPages}
           />
         </div>
-        {
-          loading ? (
-            <div className="flex justify-center items-center h-screen">
-              <CircularLoading size={90} />
+          {eventType === 'active' ? (
+            <div className="pt-4 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-auto mx-auto">
+              {loading ? (
+                // Skeleton Cards
+                Array.from({ length: 10 }).map((_, index) => (
+                  <AdminEventCard key={`skeleton-${index}`} loading={true} />
+                ))
+              ) : (
+                // Actual Data
+                events.map((event, index) => (
+                  <AdminEventCard key={index} event={event} />
+                ))
+              )}
             </div>
-          ) : eventType === 'active' ? (
-          <div className="pt-4 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-auto mx-auto">
-            {events.map((event, index) => (
-              <AdminEventCard key={index} event={event} />
-            ))}
-          </div>
           ) : eventType === 'finished' ? (
-            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white">
+            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white h-fit">
               {events.length == 0 ? (
-                <div className='h-full w-full flex flex-row items-center justify-center'>
+                <div className='min-h-90 w-full flex flex-row items-center justify-center'>
                   <h1 className='font-satoshi-regular text-3xl text-primary'>No events to show</h1>
                 </div>
               ) : (
-                <EventsTable data={events}/>
+                <EventsTable data={events} loading = {loading}/>
               )}
             </div>
           ) : null
