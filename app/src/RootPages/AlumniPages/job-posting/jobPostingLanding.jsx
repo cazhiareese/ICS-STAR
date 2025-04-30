@@ -7,6 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
 import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import axios from 'axios';
 
 
 function JobPostingLanding() {
@@ -29,6 +30,8 @@ function JobPostingLanding() {
     const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 });
 
     const [mobileExpanded, setMobileExpanded] = useState(false);
+
+    const [isError, setError] = useState(false);
 
     const toggleWorkType = (workType) => {
         setSelectedWorkTypes((prev) =>
@@ -110,8 +113,12 @@ function JobPostingLanding() {
             const data = await response.json();
             console.log(data)
             setJobList(data);
+            setLoading(false);
+            setError(false);
         } catch (err) {
             console.log(err.message || 'Something went wrong');
+            setLoading(false);
+            setError(true);
         } finally {
             setLoading(false);
         }
@@ -137,9 +144,7 @@ function JobPostingLanding() {
             setSelectedJob(data)
         } catch (err) {
             console.log(err.message || 'Something went wrong');
-        } //finally {
-        //     setLoading(false);
-        // }
+        } 
         };
 
         fetchJobs();
@@ -154,7 +159,6 @@ function JobPostingLanding() {
     // Get company by id
     useEffect(() => {
         const fetchJobs = async () => {
-        setLoading(true);
         try {
             const response = await fetch(`${API_BASE_URL}/get-company-by-id/${userId}`);
             if (!response.ok) {
@@ -165,13 +169,78 @@ function JobPostingLanding() {
             
         } catch (err) {
             console.log(err.message || 'Something went wrong');
-        } finally {
-            setLoading(false);
-        }
+        } //finally {
+        //     setLoading(false);
+        // }
         };
 
         fetchJobs();
     }, []);
+
+
+    //Builds URL using object
+    function buildSearchUrl(filters) {
+        let baseUrl = `${API_BASE_URL}/admin/job/search`;
+        let queryParams = new URLSearchParams(filters).toString();
+        return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
+    }
+
+    //creates an object for url making
+    const search = () => {
+        let filters = {};
+
+        if (Array.isArray(selectedWorkTypes) && selectedWorkTypes.length > 0) {
+            filters.employment_type = selectedWorkTypes;
+        }
+
+        if (Array.isArray(selectedRemoteOption) && selectedRemoteOption.length > 0) {
+            filters.mode_options = selectedRemoteOption;
+        }
+
+        if (
+            salaryRange &&
+            salaryRange.min !== undefined &&
+            salaryRange.max !== undefined &&
+            salaryRange.max != 0
+        ) {
+            filters.min_salary = salaryRange.min;
+            filters.max_salary = salaryRange.max;
+        }
+        console.log(filters);
+        
+
+        if (Object.keys(filters).length > 0){
+            // Pass filters to buildSearchUrl and make API call
+            let apiUrl = buildSearchUrl(filters);
+            // console.log(apiUrl);
+            return apiUrl;
+        }
+    }
+
+    const fetchJobs = async () => {
+        setLoading(true);
+        try {
+            const apiUrl = search(); // get the full URL based on current filters
+            console.log(apiUrl);
+            if (!apiUrl) {
+                setLoading(false);
+                return console.log('No valid filters to search.');
+            }
+    
+            const response = await axios.get(apiUrl);
+            console.log(response.data);
+            setJobList(response.data);
+            setError(false);
+            setLoading(false);
+        } catch (err) {
+            console.error(err);
+            console.log('Job not found');
+            setError(true);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
+    };
     
 
     return (
@@ -313,7 +382,7 @@ function JobPostingLanding() {
                         </button>
                         
                         <div className="flex w-8 h-8 aspect-square items-center justify-center md:ml-0 ml-auto ">
-                            <button className="bg-primary rounded-full w-full h-full flex items-center justify-center p-0 box-border mt-3">
+                            <button onClick={fetchJobs} className="bg-primary rounded-full w-full h-full flex items-center justify-center p-0 box-border mt-3">
                                 <Check size={18} className="text-white" />
                             </button>
                         </div>
@@ -355,10 +424,10 @@ function JobPostingLanding() {
                 <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
                     {!loading ? (
                         <div className='flex flex-col gap-5 items-center '>
-                            {jobList.length > 0 ? (
+                            {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
                                 jobList.map((job, index) => (
                                     <JobCard
-                                    key={index}
+                                    key={index} // Consider using job.id if available instead of index
                                     job={job}
                                     selectedJobId={selectedJobId}
                                     setSelectedJobId={setSelectedJobId}
@@ -366,10 +435,10 @@ function JobPostingLanding() {
                                     />
                                 ))
                                 ) : (
-                                <p className="text-gray-500 text-center mt-4">No jobs found.</p>
+                                <p className="text-gray-500 text-center mt-4">
+                                    {isError ? 'No jobs found.' : 'No jobs available.'}
+                                </p>
                             )}
-
-
                         </div>
                     ) : (
                         <div className='flex flex-row justify-center h-full gap-5'>
