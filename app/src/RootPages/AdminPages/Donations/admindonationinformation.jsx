@@ -38,6 +38,71 @@ function AdminDonationInformation() {
   const [newGoal, setNewGoal] = useState('');
   const editButtonRef = useRef(null);
 
+  const [editing, setEditing] = useState(false);
+  const [description, setDescription] = useState(donation?.description || '');
+  const [links, setLinks] = useState(donation?.links || []);
+
+  // Reset description and links when donation data loads
+  useEffect(() => {
+    if (donation) {
+      setDescription(donation.description || '');
+      setLinks(donation.links || []);
+    }
+  }, [donation]);
+
+  // TODO: Add API to update here
+  const handleSave = async () => {
+    try {
+      await axios.put(
+        `${API_BASE_URL}/admin/donations/update/${driveid}`,
+        { description, links },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setDonation({ ...donation, description, links });
+      setEditing(false);
+    } catch (error) {
+      console.error('Failed to update donation', error);
+    }
+  };
+
+  // Handle cancel editing
+  const handleCancel = () => {
+    setDescription(donation.description || '');
+    setLinks(donation.links || []);
+    setEditing(false);
+  };
+
+  // Add a new link input field
+  const addLink = () => {
+    setLinks([...links, '']);
+  };
+
+  // Update a link at a specific index
+  const updateLink = (index, value) => {
+    const updatedLinks = [...links];
+    updatedLinks[index] = value;
+    setLinks(updatedLinks);
+  };
+
+  // Remove a link at a specific index
+  const removeLink = (index) => {
+    setLinks(links.filter((_, i) => i !== index));
+  };
+
+  // Inside your component:
+const textareaRef = useRef(null);
+
+  // Adjust textarea height based on content
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = 'auto';
+      // Set height to match content (scrollHeight includes padding)
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [description]); // Run whenever description changes
+
   // TODO: Add the edit goal
   async function handleUpdateGoal() {
     try {
@@ -312,31 +377,89 @@ function AdminDonationInformation() {
               )}
             </div>
           </div>
-          <div className='border border-gray-300 rounded-xl p-4 mb-3 bg-white'>
-            <div className='flex flex-row justify-between'>
-              <h2 className='text-2xl font-satoshi-medium mb-2'>Description</h2>
-              <button onClick={() => {}}>
-                <Pencil/>
-              </button>
+          <div className="border border-gray-300 rounded-xl p-4 mb-3 bg-white">
+            {/* Description Section */}
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-satoshi-medium mb-2">Description</h2>
+              {editing ? (
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSave}
+                    className="bg-green-500 text-white p-1 rounded-full hover:bg-green-600"
+                  >
+                    <Check size={20} />
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              ) : (
+                <button onClick={() => setEditing(true)}>
+                  <Pencil />
+                </button>
+              )}
             </div>
-            <p className='font-satoshi-light'>{donation.description}</p>
-            <h2 className='text-lg font-satoshi-medium mt-4'>Relevant Links</h2>
-            <div className='border-b border-gray-300 mb-1' />
-            {donation.links.map((link) => (
-              <div
-                key={link}
-                className="flex flex-row gap-2 items-center text-primary hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-              >
-                <Link size={16} />
-                <a 
-                  className="font-satoshi-light text-md hover:text-hover" 
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  {link}
-                </a>
+            {editing ? (
+              <textarea
+                ref={textareaRef}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary font-satoshi-light resize-none"
+                rows={1}
+                style={{ lineHeight: '1.25rem' }} // Match font-satoshi-light line height
+              />
+            ) : (
+              <p className="font-satoshi-light">{donation?.description}</p>
+            )}
+            <h2 className="text-lg font-satoshi-medium mt-4">Relevant Links</h2>
+            <div className="border-b border-gray-300 mb-1" />
+            {editing ? (
+              <div className="flex flex-col gap-2">
+                {links.map((link, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={link}
+                      onChange={(e) => updateLink(index, e.target.value)}
+                      className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Enter link"
+                    />
+                    <button
+                      onClick={() => removeLink(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={addLink}
+                  className="text-primary hover:text-blue-600 font-satoshi-medium text-sm"
+                >
+                  + Add Link
+                </button>
               </div>
-            ))}
+            ) : (
+              donation?.links?.map((link, index) => (
+                <div
+                  key={index}
+                  className="flex flex-row gap-2 items-center text-primary hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded w-fit"
+                >
+                  <Link size={16} />
+                  <a
+                    className="font-satoshi-light text-md hover:text-hover"
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {link}
+                  </a>
+                </div>
+              ))
+            )}
           </div>
           {/* Donations and filters */}
           <div className='flex flex-row justify-between mb-3'>
