@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react'
-import { MoveLeft, X, Link, MoveRight } from 'lucide-react'
+import { MoveLeft, X, Link, MoveRight, Pencil } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import VerifiedDonationsTable from "../../../components/AdminComponents/verifieddonationstable"
 import PendingDonationsTable from '../../../components/AdminComponents/pendingdonationstable';
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 
 function AdminDonationInformation() {
   const navigate = useNavigate()
@@ -26,6 +27,8 @@ function AdminDonationInformation() {
   const [donation, setDonation] = useState()
   const [loading, setLoading] = useState(true)
   const [selectedTab, setSelectedTab] = useState('donations')
+  const [pendingPages, setPendingPages] = useState(1)
+  const [totalPendingPages, setTotalPendingPages] = useState(1)
 
   async function handleCloseDrive() {
     setCloseDonationLoading(true)
@@ -174,7 +177,14 @@ function AdminDonationInformation() {
             </div>
             {/* Pending donations table */}
               <div className='flex-2/3 border border-gray-300 rounded-xl p-6 w-full flex flex-col h-full bg-white'>
-                <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
+                <div className='flex flex-row justify-between'>
+                  <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
+                  <PaginationComponent
+                    page={pendingPages}
+                    setPage={setPendingPages}
+                    totalPages={totalPendingPages}
+                  />
+                </div>
                 <div className='w-full h-full flex-1 overflow-auto'>
                   {noPendingDonations ? (
                     <p className='text-center text-gray-500'>No donations to verify</p>
@@ -187,18 +197,29 @@ function AdminDonationInformation() {
               {noPendingDonations ? (
                 <></>
               ) : (
-                <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {
-                  navigate(`/admin/donations/pending-donations/${driveid}`, 
-                    {state: {pendingDonations, driveName: donation.title}})
-                  }}>
-                  <p className='font-satoshi-light hover:text-hover'> View all pending verifications </p>
-                  <MoveRight/>
-                </button>
+                <div className='flex flex-row justify-between'>
+                  <div className='flex flex-row gap-5 flex-1'>
+                    <h3 className='font-satoshi-light'>Monetary Total: <span className='text-primary'></span></h3>
+                    <h3 className='font-satoshi-light'>In-Kind Total: <span classname='text-primary'></span></h3>
+                  </div>
+                  <button className='flex gap-2 w-full flex-1 text-primary hover:text-hover transition-colors cursor-pointer justify-end items-center' onClick={() => {
+                    navigate(`/admin/donations/pending-donations/${driveid}`, 
+                      {state: {pendingDonations, driveName: donation.title}})
+                    }}>
+                    <p className='font-satoshi-light'> View all pending verifications </p>
+                    <MoveRight className='stroke-1'/>
+                  </button>
+                </div>
               )}
             </div>
           </div>
           <div className='border border-gray-300 rounded-xl p-4 mb-3 bg-white'>
-            <h2 className='text-2xl font-satoshi-medium mb-2'>Description</h2>
+            <div className='flex flex-row justify-between'>
+              <h2 className='text-2xl font-satoshi-medium mb-2'>Description</h2>
+              <button onClick={() => {}}>
+                <Pencil/>
+              </button>
+            </div>
             <p className='font-satoshi-light'>{donation.description}</p>
             <h2 className='text-lg font-satoshi-medium mt-2'>Relevant Links</h2>
             <div className='border-b border-gray-300 mb-1' />
