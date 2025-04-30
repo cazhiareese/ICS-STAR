@@ -11,8 +11,14 @@ import { MapPin } from "lucide-react";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import ErrorBox from "../errorbox";
 import Unauthorized from "../Unauthorized";
+import countryList from 'react-select-country-list';
+import CustomDropdown from "./dropdown";
+import Loading from "../../components/LoadingComponents/circularloading"
 
 function Step3Onboarding() {
+
+  const baseURL = import.meta.env.VITE_BACKEND_URL;
+
     const[employed, setEmployed] = useState(true);
     const [typeEmployed, setTypeEmployed] = useState("No")
     const[selfEmployed, setSelfemployed] = useState(false);
@@ -31,6 +37,8 @@ function Step3Onboarding() {
       { label: 'Other', value: 'other' },
       { label: 'Cannot start working at present (e.g. having illness, raising children)', value: 'cannot_start' },
     ];
+
+    const countries = countryList().getData();
 
     const handleEmployedClick =()=>{
       setEmployed(true)
@@ -53,6 +61,63 @@ function Step3Onboarding() {
       }
       
     }
+
+    const [industryInput, setIndustryInput] = useState(userData.industrySector || "");
+    const [industrySuggestions, setIndustrySuggestions] = useState([]);
+    const [loadingIndustries, setLoadingIndustries] = useState(false);
+
+
+  const handleIndustryChange = async (e) => {
+    const query = e.target.value;
+    setIndustryInput(query);
+    updateUserData("industrySector", query);
+
+    if (query.trim() === "") {
+      setIndustrySuggestions([]);
+      return;
+    }
+
+    setLoadingIndustries(true);
+
+    try {
+      const response = await fetch(`${baseURL}/admin/stats/industry/count`);
+      const result = await response.json();
+
+      if (response.ok && result.data) {
+        const industries = result.data.map((item) => item.industry);
+        // Filter industries matching the query (case-insensitive), limit 5
+        const filtered = industries
+          .filter((industry) => industry.toLowerCase().includes(query.toLowerCase()))
+          .slice(0, 5);
+        setIndustrySuggestions(filtered);
+      } else {
+        setIndustrySuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching industry suggestions:", error);
+      setIndustrySuggestions([]);
+    } finally {
+      setLoadingIndustries(false);
+    }
+  };
+
+    const customStyles = {
+      control: (provided) => ({
+        ...provided,
+        padding: 2,
+        minHeight: '36px',   // Smaller height of select box
+      }),
+      option: (provided, state) => ({
+        ...provided,
+        paddingTop: 4,       // Smaller padding
+        paddingBottom: 4,
+        fontSize: '14px',
+      }),
+      menu: (provided) => ({
+        ...provided,
+        zIndex: 9999, // prevent overlap issues
+      }),
+    };
 
 
     const handleSelfemployedClick =()=>{
@@ -105,7 +170,7 @@ function Step3Onboarding() {
     
   };
 
-
+  
   const [reasonError, setReasonError] = useState(false);
   const [countryError, setCountryError] = useState(false);
   const [cityError, setCityError] = useState(false);
@@ -185,7 +250,7 @@ function Step3Onboarding() {
               </div>
 
               {/* {console.log(userData.employmentType)} */}
-              {userData.employmentType == "unemployed" | userData.employmentType == "unemployed_no_exp" && (
+              {(userData.employmentType == "unemployed" || userData.employmentType == "unemployed_no_exp") && (
                 <div className="relative flex flex-col items-center bg-secondary px-6 lg:py-6 py-3 rounded-2xl shadow-md mt-5 lg:w-[30%] w-[100%] lg:ml-10">
                   {/* Speech bubble arrow */}
                   <div className="hidden lg:block absolute top-0 -left-6 w-0 h-0 border-t-[20px] border-t-transparent border-r-[30px] border-r-secondary border-b-[20px] border-b-transparent"></div>
@@ -294,37 +359,24 @@ function Step3Onboarding() {
       (step!=3 ?  (<> <div className="flex flex-col items-center p-15">
           {/* Icon and Title */}
           <div className="flex flex-col  space-x-2 mb-4 mr-auto">
-            <img src={Location} className="md:w-12 md:h-12 h-6 w-6" alt="Cloud Icon" />
+            <img src={Location} className="md:w-12 md:h-12 h-6 w-6" alt="" />
             <h2 className="md:text-4xl text-xl font-semibold pb-10">Where are you currently based?</h2>
           </div>
     
           {/* Input Fields */}
           <div className="flex flex-col w-full max-w-2xl space-y-6">
-            <div>
-              <label className="text-gray-700 font-satoshi-medium text-lg">Country</label>
-              <select
-                name="country"
-                value={userData.baseCountry}
-                onChange={(e) => updateUserData("baseCountry", e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
-              >
-                <option value="" disabled>Select your country</option>
-                <option value="USA">United States</option>
-                <option value="Canada">Canada</option>
-                <option value="Philippines">Philippines</option>
-                <option value="India">India</option>
-                <option value="Australia">Australia</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Germany">Germany</option>
-                <option value="France">France</option>
-                <option value="Japan">Japan</option>
-                <option value="China">China</option>
-                {/* Add more countries as needed */}
-              </select>
-            </div>
-            <div className={` -mt-4 ${countryError ? "block" : "hidden"}`}>
+          <div>
+            <label className="text-gray-700 font-satoshi-medium text-lg">Country</label>
+            <CustomDropdown
+              options={countries}
+              value={userData.baseCountry}
+              onChange={(value) => updateUserData('baseCountry', value)}
+            />
+            <div className={` mt-3 ${countryError ? "block" : "hidden"}`}>
               <ErrorBox message="Please enter your country"/>
             </div>
+          </div>
+          
 
             <div>
               <label className="text-gray-700 font-satoshi-medium text-lg">City/State</label>
@@ -391,18 +443,40 @@ function Step3Onboarding() {
           
 
           {/* Industry Sector */}
-          <div>
+          <div className="relative">
             <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Industry Sector</label>
             <input
               type="text"
               name="industrySector"
-              value={userData.industrySector}
-              onChange={(e)=>updateUserData( "industrySector", e.target.value)}
+              value={industryInput}
+              onChange={handleIndustryChange}
               className="w-full md:p-3 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
             />
-            <div className={`${industryerror ? "block" : "hidden"}`}>
-              <ErrorBox/>
-            </div>
+            {industryerror && <ErrorBox />}
+
+            {(industrySuggestions.length > 0 || loadingIndustries) && (
+              <div className="absolute left-0 top-full bg-white border border-gray-300 rounded-md shadow-md w-full max-h-40 overflow-y-auto z-20 mt-1">
+                {loadingIndustries ? (
+                  <div className="px-4 py-2 text-gray-500 flex justify-center items-center">
+                    <Loading size={20} /> <span className="ml-2 text-sm">Loading...</span>
+                  </div>
+                ) : (
+                  industrySuggestions.map((industry, index) => (
+                    <div
+                      key={index}
+                      className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-lg"
+                      onClick={() => {
+                        setIndustryInput(industry);
+                        updateUserData("industrySector", industry);
+                        setIndustrySuggestions([]);
+                      }}
+                    >
+                      {industry}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
           {/* Company Name */}
@@ -444,7 +518,8 @@ function Step3Onboarding() {
               >
                 <option>NGO</option>
                 <option>Government</option>
-                <option>Charitable</option>
+                <option>Private Sector</option>
+                <option>Others</option>
               </select>
             </div>
 
