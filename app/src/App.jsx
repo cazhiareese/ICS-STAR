@@ -118,14 +118,17 @@ function App() {
       console.log("Decoded token type:", tokenType);
 
       console.log
-      if (!onBoarding && verified){    
-        return false
-      } 
+      if (onBoarding && verified){    
         return true
+      } else if (!verified){
+        return true
+      }
+        return false
     } else {
       console.warn("⚠️ No token found in sessionStorage");
     }
   }
+
 
   console.log(isSignedIn);
 
@@ -160,6 +163,8 @@ function App() {
       
       {isSignedIn && checkType() === "alumni" && (
         <>
+          {isVerifiedOnboarded()?
+           <>
           <Route path="/" element={<Root />}>
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
@@ -185,6 +190,8 @@ function App() {
 
 
           </Route>
+          </>
+          :
           <Route
               path="/setup"
               element={
@@ -194,6 +201,7 @@ function App() {
               }
             
             />
+}
         </>
       )} 
 
