@@ -42,7 +42,10 @@ def admin_search_job(
         post_query = post_query.filter(JobPosting.company.ilike(f"%{company}%"))
         
     if employment_type:
-        post_query = post_query.filter(JobPosting.employment_type == employment_type)
+        employment_types_list = [e_type.strip() for e_type in employment_type.split(',') if e_type.strip()]
+        
+        if employment_types_list:
+            post_query = post_query.filter(or_(*[JobPosting.employment_type == e_type for e_type in employment_types_list]))
 
     if mode_options:
         post_query = post_query.filter(JobPosting.mode == mode_options)
