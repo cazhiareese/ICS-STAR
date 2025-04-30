@@ -84,6 +84,7 @@ import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 
 
 import GuestLanding from "./RootPages/GuestPages/guestlanding";
+import AccountSettings from "./RootPages/Account/accountsettings";
 //const isSignedIn = !!localStorage.getItem("token");
 
 
@@ -168,6 +169,7 @@ function App() {
            <>
           <Route path="/" element={<Root />}>
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
+            <Route path="alumni/account/settings" element={<AccountSettings />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
@@ -212,6 +214,7 @@ function App() {
           <>
             <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/account/settings" element={<AccountSettings />} />
             <Route path="student/events" element={<EventsLanding />} />
             <Route path="students/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
