@@ -1,10 +1,13 @@
+from typing import Dict, List, Tuple
+from fastapi import Query
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import String, func, or_, union_all, desc
+from sqlalchemy import String, func, or_, text, union_all, desc
 from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import AdminDonationDriveOut, AdminOneDonationDriveOut, PercentOut, AdminOverviewDonationDrive, MonetaryDonationOut, InKindDonationOut, GenericDriveOut, ShortenedMonetaryDonationsOut, ShortenedInKindDonationsOut, AdminGenericDriveView, AdminClosedDonationDriveOut
+from schemas.log import TimeRange
 from datetime import datetime, timedelta
 from uuid import UUID
 
@@ -1460,6 +1463,100 @@ def get_all_pending_inkind_donations(db: Session, drive_id: UUID) -> tuple[list[
     count = len(pending_donations_list)
 
     return pending_donations_list, {"total_count": count}
+
+def get_all_verified_donations_all_drive(
+    db: Session,
+    time_filter: str = None,
+    page: int = 1,
+    items_per_page: int = 10,
+    is_acknowledged: bool = None
+) -> Tuple[List[Dict], int]:
+    # Define the time filter based on time_filter
+    time_filter_date = None
+    if time_filter:
+        if time_filter == TimeRange.WEEK:
+            time_filter_date = datetime.utcnow() - timedelta(days=7)
+        elif time_filter == TimeRange.MONTH:
+            time_filter_date = datetime.utcnow() - timedelta(days=30)
+        elif time_filter == TimeRange.YEAR:
+            # Assuming 'monthly' means the current calendar month
+            today = datetime.utcnow()
+            time_filter_date = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    # Build the monetary query
+    monetary_query = (
+        db.query(
+            func.to_char(MonetaryDonation.created_at, 'MM/DD/YY').label('Date Donated'),
+            DonationDrive.title.label('Donation Drive'),
+            (User.first_name + ' ' + User.last_name).label('Name'),
+            func.cast('Monetary', String).label('Donation Type'),
+            ('₱' + func.to_char(MonetaryDonation.amount, 'FM999,999,990.00')).label('Donation Details'),
+            MonetaryDonation.is_acknowledged.label('Is Acknowledged')
+        )
+        .join(DonationDrive, MonetaryDonation.drive_id == DonationDrive.drive_id)
+        .join(User, MonetaryDonation.user_id == User.user_id)
+        .filter(
+            DonationDrive.is_deleted == False,
+            DonationDrive.is_closed == False,
+            MonetaryDonation.created_at >= time_filter_date if time_filter_date else True,
+            MonetaryDonation.is_acknowledged == is_acknowledged if is_acknowledged is not None else True
+        )
+    )
+
+    # Build the in-kind query
+    in_kind_query = (
+        db.query(
+            func.to_char(InKindDonation.created_at, 'MM/DD/YY').label('Date Donated'),
+            DonationDrive.title.label('Donation Drive'),
+            (User.first_name + ' ' + User.last_name).label('Name'),
+            func.cast('In-kind', String).label('Donation Type'),
+            InKindDonation.description.label('Donation Details'),
+            InKindDonation.is_acknowledged.label('Is Acknowledged')
+        )
+        .join(DonationDrive, InKindDonation.drive_id == DonationDrive.drive_id)
+        .join(User, InKindDonation.user_id == User.user_id)
+        .filter(
+            DonationDrive.is_deleted == False,
+            DonationDrive.is_closed == False,
+            InKindDonation.created_at >= time_filter_date if time_filter_date else True,
+            InKindDonation.is_acknowledged == is_acknowledged if is_acknowledged is not None else True
+        )
+    )
+
+    # Combine the queries using union_all for counting
+    union_query_count = union_all(monetary_query, in_kind_query)
+    count_query = db.query(func.count()).select_from(union_query_count.subquery())
+    total_records = count_query.scalar()
+
+    # Calculate offset for pagination
+    offset = (page - 1) * items_per_page
+
+    # Apply pagination and ordering to the union query
+    paginated_query = (
+        union_query_count
+        .order_by(text('"Date Donated" DESC'))
+        .limit(items_per_page)
+        .offset(offset)
+    )
+
+    # Execute the paginated query
+    result = db.execute(paginated_query)
+    
+    rows = result.fetchall()
+    data = [
+        {
+            "Date Donated": row[0],
+            "Donation Drive": row[1],
+            "Name": row[2],
+            "Donation Type": row[3],
+            "Donation Details": row[4],
+            "Is Acknowledged": row[5]
+        }
+        for row in rows
+    ]
+
+    return data, total_records
+
 
 def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[ShortenedMonetaryDonationsOut]:
     verified_monetary_donations = db.query(
