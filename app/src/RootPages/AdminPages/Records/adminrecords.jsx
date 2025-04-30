@@ -179,17 +179,9 @@ function AdminRecords() {
           </div>
         </div>
         {/* Table for desktop*/}
-        {
-          loading ? (
-            <div className="flex justify-center items-center h-screen">
-              <CircularLoading size={90} />
-            </div>
-          ) : (
             <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto">
-              <UsersTable data={users} />
+              <UsersTable data={users} loading={loading}/>
             </div>
-          )
-        }
       {/* Table for mobile */}
       <div className='flex flex-col lg:hidden overflow-auto'>
         {/* User Card */}
