@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react'
-import { MoveLeft, X, Link, MoveRight, Pencil } from 'lucide-react'
+import React, {useState, useEffect, useRef} from 'react'
+import { MoveLeft, X, Link, MoveRight, Pencil, Check } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import VerifiedDonationsTable from "../../../components/AdminComponents/verifieddonationstable"
@@ -19,9 +19,7 @@ function AdminDonationInformation() {
 
   const [pendingDonations, setPendingDonations] = useState([])
   const [verifiedDonations, setVerifiedDonations] = useState([])
-  const [isClosed, setIsClosed] = useState(false)
   const [viewDetailsModal, setViewDetailsModal] = useState(false) 
-  const [editing, setEditing] = useState(false)
   const [closeDonation, setCloseDonation] = useState(false)
   const [closeDonationLoading, setCloseDonationLoading] = useState(false)
   const [transitionComplete, setTransitionComplete] = useState(false)
@@ -29,7 +27,6 @@ function AdminDonationInformation() {
   const [donation, setDonation] = useState()
   const [loading, setLoading] = useState(true)
   const [pendingDonationLoading, setPendingDonationLoading] = useState(true)
-  const [selectedTab, setSelectedTab] = useState('donations')
   const [pendingPage, setPendingPage] = useState(1)
   const [totalPendingPages, setTotalPendingPages] = useState(1)
   const [verifiedDonationLoading, setVerifiedDonationLoading] = useState(true)
@@ -37,6 +34,25 @@ function AdminDonationInformation() {
   const [totalVerifiedPages, setTotalVerifiedPages] = useState(1)
   const [pendingMonetaryTotal, setPendingMonetaryTotal] = useState(null)
   const [pendingInKindTotal, setPendingInKindTotal] = useState(null)
+  const [editGoalModal, setEditGoalModal] = useState(false);
+  const [newGoal, setNewGoal] = useState('');
+  const editButtonRef = useRef(null);
+
+  // TODO: Add the edit goal
+  async function handleUpdateGoal() {
+    try {
+      await axios.put(
+        `${API_BASE_URL}/`,
+        { goal: parseFloat(newGoal) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEditGoalModal(false);
+      setNewGoal('');
+      fetchData();
+    } catch (error) {
+      console.error('Failed to update donation goal', error);
+    }
+  }
 
   async function handleCloseDrive() {
     setCloseDonationLoading(true)
@@ -155,7 +171,7 @@ function AdminDonationInformation() {
             </div>
             {/* Generate Report or close drive */}
             <div className='h-fit gap-5 flex flex-row'>
-              {isClosed ? (
+              {donation.is_closed ? (
                 // For closed
                 <>
                   {/* View Details */}
@@ -188,29 +204,70 @@ function AdminDonationInformation() {
           {/* Goal progress and recent transactions */}
           <div className='flex flex-row gap-2 mb-4 h-80'>
             {/* Goal Progress */}
-            <div className='flex flex-col items-center justify-center flex-1/3 pb-10 border border-gray-300 rounded-xl h-full bg-white'>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={progressData}
-                      startAngle={180}
-                      endAngle={0}
-                      cx="50%"
-                      cy="70%"
-                      innerRadius="100%"
-                      outerRadius="130%"
-                      dataKey="value"
-                    >
+            <div className="relative flex flex-col items-center justify-center flex-1/3 pb-10 border border-gray-300 rounded-xl h-full bg-white">
+              {/* Edit Goal Button */}
+              <div className="w-full flex flex-row justify-end mb-2 mt-2">
+                <button
+                  ref={editButtonRef}
+                  className="flex flex-row items-center px-4 py-2 bg-primary shadow-lg rounded-xl text-white mr-2 font-satoshi-regular hover:bg-hover cursor-pointer"
+                  onClick={() => setEditGoalModal(!editGoalModal)}
+                >
+                  Edit Goal
+                </button>
+              </div>
+              {/* Edit Goal Modal */}
+              {editGoalModal && (
+                <div className="absolute top-16 right-2 bg-white shadow-lg rounded-xl p-4 z-10 flex items-center gap-2 border border-gray-300">
+                  <label className="text-sm font-satoshi-medium text-gray-700">Enter new goal:</label>
+                  <div className="flex items-center border border-gray-300 rounded-lg px-2 py-1">
+                    <span className="text-gray-500 mr-1">₱</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={newGoal}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || (e.target.validity.valid && parseFloat(value) >= 0)) {
+                          setNewGoal(value);
+                        }
+                      }}
+                      className="w-24 outline-none text-sm font-satoshi-regular"
+                      placeholder="10,000"
+                    />
+                  </div>
+                  <button
+                    onClick={handleUpdateGoal}
+                    className="bg-success text-white p-1 rounded-full hover:bg-green-400 cursor-pointer"
+                  >
+                    <Check size={16} />
+                  </button>
+                </div>
+              )}
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={progressData}
+                    startAngle={180}
+                    endAngle={0}
+                    cx="50%"
+                    cy="70%"
+                    innerRadius="100%"
+                    outerRadius="130%"
+                    dataKey="value"
+                  >
                     {progressData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index]} />
                     ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
 
               <div className="text-center -mt-38">
                 <p className="text-sm text-gray-500 font-satoshi-medium">Goal Progress</p>
-                <p className="text-6xl font-bold text-[#1F2A63] font-satoshi-bold">{donation.percent_funded}%</p>
+                <p className="text-6xl font-bold text-[#1F2A63] font-satoshi-bold">
+                  {progressData[0]?.value ?? 0}%
+                </p>
               </div>
             </div>
             {/* Pending donations table */}
@@ -232,7 +289,7 @@ function AdminDonationInformation() {
                     <p className='text-center text-gray-500'>No donations to verify</p>
                 ) : (
                   <>
-                  <PendingDonationsTable data={pendingDonations} />
+                  <PendingDonationsTable data={pendingDonations} loading={pendingDonationLoading}/>
                   </>
                 )} 
               </div>
