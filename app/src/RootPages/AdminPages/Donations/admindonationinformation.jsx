@@ -33,6 +33,8 @@ function AdminDonationInformation() {
   const [verifiedDonationLoading, setVerifiedDonationLoading] = useState(true)
   const [verifiedPage, setVerifiedPage] = useState(1)
   const [totalVerifiedPages, setTotalVerifiedPages] = useState(1)
+  const [pendingMonetaryTotal, setPendingMonetaryTotal] = useState(null)
+  const [pendingInKindTotal, setPendingInKindTotal] = useState(null)
 
   async function handleCloseDrive() {
     setCloseDonationLoading(true)
@@ -92,6 +94,8 @@ function AdminDonationInformation() {
       console.log(response)
       setTotalPendingPages(response.data.total_pages)
       setPendingDonations(response.data.data)
+      setPendingMonetaryTotal(response.data.monetary_total)
+      setPendingInKindTotal(response.data.inkind_total)
       setNoPendingDonations(response.data.data.length === 0 ? true : false)
     } catch (error) {
       console.log(error)
@@ -254,8 +258,8 @@ function AdminDonationInformation() {
               ) : (
                 <div className='flex flex-row justify-between'>
                   <div className='flex flex-row gap-5 flex-1'>
-                    <h3 className='font-satoshi-light'>Monetary Total: <span className='text-primary'></span></h3>
-                    <h3 className='font-satoshi-light'>In-Kind Total: <span classname='text-primary'></span></h3>
+                    <h3 className='font-satoshi-light'>Monetary Total: <span className='text-primary'>{pendingMonetaryTotal}</span></h3>
+                    <h3 className='font-satoshi-light'>In-Kind Total: <span classname='text-primary'>{pendingInKindTotal}</span></h3>
                   </div>
                   <button className='flex gap-2 w-full flex-1 text-primary hover:text-hover transition-colors cursor-pointer justify-end items-center' onClick={() => {
                     navigate(`/admin/donations/pending-donations/${driveid}`, 
