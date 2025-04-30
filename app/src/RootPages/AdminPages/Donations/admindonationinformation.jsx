@@ -42,7 +42,7 @@ function AdminDonationInformation() {
     setCloseDonationLoading(true)
   
     try {
-      const response = await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {header})
+      await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
       // console.log(response)
   
       // Show success message
@@ -125,7 +125,7 @@ function AdminDonationInformation() {
   
 
   const COLORS = [
-    donation.percent_funded > 100 ? '#27AE60' : '#0B2B8C',
+    progressData[0]?.value > 100 ? '#27AE60' : '#0B2B8C',
     '#F4F4F4',
   ];
 
