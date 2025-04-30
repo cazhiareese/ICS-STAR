@@ -10,9 +10,42 @@ from datetime import datetime, timezone
 from typing import Optional, List
 import uuid
 import math
+from config.config import MAYA_PUBLIC_KEY, MAYA_CANCEL, MAYA_FAIL, MAYA_SUCCESS, MAYA_URL
+import random
+import string
+import httpx
 
+
+ref_num = ''.join(random.choices(string.ascii_letters + string.digits, k=8)).upper()
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
+
+async def maya_donation(value: int):
+    url = MAYA_URL
+
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": MAYA_PUBLIC_KEY
+    }
+
+    payload = {
+        "totalAmount": {
+            "value": value,
+            "currency": "PHP"
+        },
+        "redirectUrl": {
+            "success": MAYA_SUCCESS,
+            "failure": MAYA_FAIL,
+            "cancel": MAYA_CANCEL
+        },
+        "requestReferenceNumber": f'ICS-{ref_num}'
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        return response.json()
 
 def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[DonationDriveOut]:
     drives = (
