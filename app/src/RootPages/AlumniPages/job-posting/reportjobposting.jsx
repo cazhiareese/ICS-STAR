@@ -77,20 +77,20 @@ function ReportJobPosting() {
       <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] border border-disabled p-6 space-y-6 h-[506px]">
         {/* Report Details */}
         <div>
-          <label className="block font-medium text-gray-700 mb-2">
+          <label className="block font-satoshi-bold text-black mb-2">
             Report Details
           </label>
           <textarea
             value={formData.details}
             onChange={handleDetailsChange}
-            className="w-full border border-gray-300 rounded-md p-3 min-h-[220px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border font-satoshi-medium border-gray-300 rounded-md p-3 min-h-[220px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Please provide information that would help us understand your concern..."
           />
         </div>
 
         {/* File Upload with Drag & Drop */}
         <div>
-          <label className="block font-medium text-gray-700 mb-2">
+          <label className="block font-satoshi-bold text-black mb-2">
             Attach file(s) here:
           </label>
           <div
@@ -98,12 +98,12 @@ function ReportJobPosting() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={`w-full h-[130px] border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center text-center transition-colors ${
-              isDragging ? "border-blue-400 bg-blue-50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+              isDragging ? "border-blue-400 bg-blue-50" : "border-gray-300 bg-gray-200 hover:bg-gray-100"
             }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 mb-2 text-blue-500"
+              className="h-8 w-8 mb-2 text-primary"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -115,9 +115,9 @@ function ReportJobPosting() {
                 d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M16 7l-4-4m0 0L8 7m4-4v12"
               />
             </svg>
-            <p>
+            <p className="font-satoshi-medium text-lack">
               Drag and drop file here or{" "}
-              <label htmlFor="file-upload" className="text-blue-600 underline cursor-pointer">
+              <label htmlFor="file-upload" className="text-primary  cursor-pointer">
                 Choose file
               </label>
             </p>
@@ -128,21 +128,22 @@ function ReportJobPosting() {
               className="hidden"
               onChange={handleFileChange}
             />
-          </div>
-          {/* Preview file names */}
           {formData.files.length > 0 && (
-            <ul className="mt-2 text-sm text-gray-700 list-disc list-inside">
+            <ul className=" text-sm text-gray-700 list-disc list-inside">
               {formData.files.map((file, index) => (
                 <li key={index}>{file.name}</li>
               ))}
             </ul>
           )}
+          </div>
+          {/* Preview file names */}
+
         </div>
       </div>
 
       {/* Submit Button */}
       <div className="text-right mt-2">
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+        <button className="bg-primary  text-white px-6 py-2 rounded-[20px] font-satoshi-bold hover:bg-hover cursor-pointer transition-colors">
           Submit
         </button>
       </div>
