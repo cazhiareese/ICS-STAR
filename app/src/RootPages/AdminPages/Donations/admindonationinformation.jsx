@@ -39,7 +39,7 @@ function AdminDonationInformation() {
   
     try {
       const response = await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`)
-      console.log(response)
+      // console.log(response)
   
       // Show success message
       setCloseDonationLoading(false)
@@ -75,8 +75,8 @@ function AdminDonationInformation() {
     setVerifiedDonationLoading(true)
     try {
       const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`)
-      console.log(response)
-      setTotalVerifiedPages(response.total_pages)
+      // console.log(response)
+      setTotalVerifiedPages(response.data.total_pages)
       setVerifiedDonations(response.data.data)
     } catch (error) {
       console.log(error)
@@ -89,9 +89,10 @@ function AdminDonationInformation() {
     setPendingDonationLoading(true)
     try {
       const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page${pendingPage}1&page_size=5`)
-      // console.log(response)
-      setTotalPendingPages(response.total_pages)
+      console.log(response)
+      setTotalPendingPages(response.data.total_pages)
       setPendingDonations(response.data.data)
+      setNoPendingDonations(response.data.data.length === 0 ? true : false)
     } catch (error) {
       console.log(error)
     } finally {
@@ -229,11 +230,15 @@ function AdminDonationInformation() {
               <div className='flex-2/3 border border-gray-300 rounded-xl p-6 w-full flex flex-col h-full bg-white'>
                 <div className='flex flex-row justify-between'>
                   <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
-                  <PaginationComponent
-                    page={pendingPage}
-                    setPage={setPendingPage}
-                    totalPages={totalPendingPages}
-                  />
+                  {noPendingDonations ? (
+                    <></>
+                  ) : (
+                    <PaginationComponent
+                      page={pendingPage}
+                      setPage={setPendingPage}
+                      totalPages={totalPendingPages}
+                    />
+                  )}
                 </div>
                 <div className='w-full h-full flex-1 overflow-auto'>
                   {noPendingDonations ? (
