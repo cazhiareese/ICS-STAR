@@ -11,6 +11,8 @@ import { MapPin } from "lucide-react";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import ErrorBox from "../errorbox";
 import Unauthorized from "../Unauthorized";
+import countryList from 'react-select-country-list';
+import CustomDropdown from "./dropdown";
 
 function Step3Onboarding() {
     const[employed, setEmployed] = useState(true);
@@ -31,6 +33,8 @@ function Step3Onboarding() {
       { label: 'Other', value: 'other' },
       { label: 'Cannot start working at present (e.g. having illness, raising children)', value: 'cannot_start' },
     ];
+
+    const countries = countryList().getData();
 
     const handleEmployedClick =()=>{
       setEmployed(true)
@@ -53,6 +57,24 @@ function Step3Onboarding() {
       }
       
     }
+
+    const customStyles = {
+      control: (provided) => ({
+        ...provided,
+        padding: 2,
+        minHeight: '36px',   // Smaller height of select box
+      }),
+      option: (provided, state) => ({
+        ...provided,
+        paddingTop: 4,       // Smaller padding
+        paddingBottom: 4,
+        fontSize: '14px',
+      }),
+      menu: (provided) => ({
+        ...provided,
+        zIndex: 9999, // prevent overlap issues
+      }),
+    };
 
 
     const handleSelfemployedClick =()=>{
@@ -105,7 +127,7 @@ function Step3Onboarding() {
     
   };
 
-
+  
   const [reasonError, setReasonError] = useState(false);
   const [countryError, setCountryError] = useState(false);
   const [cityError, setCityError] = useState(false);
@@ -294,37 +316,24 @@ function Step3Onboarding() {
       (step!=3 ?  (<> <div className="flex flex-col items-center p-15">
           {/* Icon and Title */}
           <div className="flex flex-col  space-x-2 mb-4 mr-auto">
-            <img src={Location} className="md:w-12 md:h-12 h-6 w-6" alt="Cloud Icon" />
+            <img src={Location} className="md:w-12 md:h-12 h-6 w-6" alt="" />
             <h2 className="md:text-4xl text-xl font-semibold pb-10">Where are you currently based?</h2>
           </div>
     
           {/* Input Fields */}
           <div className="flex flex-col w-full max-w-2xl space-y-6">
-            <div>
-              <label className="text-gray-700 font-satoshi-medium text-lg">Country</label>
-              <select
-                name="country"
-                value={userData.baseCountry}
-                onChange={(e) => updateUserData("baseCountry", e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
-              >
-                <option value="" disabled>Select your country</option>
-                <option value="USA">United States</option>
-                <option value="Canada">Canada</option>
-                <option value="Philippines">Philippines</option>
-                <option value="India">India</option>
-                <option value="Australia">Australia</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Germany">Germany</option>
-                <option value="France">France</option>
-                <option value="Japan">Japan</option>
-                <option value="China">China</option>
-                {/* Add more countries as needed */}
-              </select>
-            </div>
+          <div>
+            <label className="text-gray-700 font-satoshi-medium text-lg">Country</label>
+            <CustomDropdown
+              options={countries}
+              value={userData.baseCountry}
+              onChange={(value) => updateUserData('baseCountry', value)}
+            />
             <div className={` -mt-4 ${countryError ? "block" : "hidden"}`}>
               <ErrorBox message="Please enter your country"/>
             </div>
+          </div>
+          
 
             <div>
               <label className="text-gray-700 font-satoshi-medium text-lg">City/State</label>
