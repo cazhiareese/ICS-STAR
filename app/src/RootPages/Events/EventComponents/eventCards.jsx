@@ -53,6 +53,7 @@ const EventCards = ({event}) => {
                 {event.image && (
                         <img
                             src={event.image}
+                            alt="&nbsp;"
                             className="w-full h-full object-cover"
                         />
                 )}
