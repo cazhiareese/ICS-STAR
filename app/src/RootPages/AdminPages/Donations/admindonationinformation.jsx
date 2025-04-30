@@ -37,12 +37,10 @@ function AdminDonationInformation() {
   const [editGoalModal, setEditGoalModal] = useState(false);
   const [newGoal, setNewGoal] = useState('');
   const editButtonRef = useRef(null);
-
   const [editing, setEditing] = useState(false);
   const [description, setDescription] = useState(donation?.description || '');
   const [links, setLinks] = useState(donation?.links || []);
 
-  // Reset description and links when donation data loads
   useEffect(() => {
     if (donation) {
       setDescription(donation.description || '');
@@ -50,18 +48,22 @@ function AdminDonationInformation() {
     }
   }, [donation]);
 
-  // TODO: Add API to update here
   const handleSave = async () => {
+    const formData = new FormData();
+    formData.append("description", description);
+    formData.append("links", JSON.stringify(links));
+  
     try {
-      await axios.put(
-        `${API_BASE_URL}/admin/donations/update/${driveid}`,
-        { description, links },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await axios.put(
+        `${API_BASE_URL}/edit-donation-drive/description-links/${driveid}`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
       );
+  
       setDonation({ ...donation, description, links });
       setEditing(false);
     } catch (error) {
-      console.error('Failed to update donation', error);
+      console.log(error);
     }
   };
 
@@ -96,18 +98,15 @@ const textareaRef = useRef(null);
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
-      // Reset height to auto to get the correct scrollHeight
       textarea.style.height = 'auto';
-      // Set height to match content (scrollHeight includes padding)
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
-  }, [description]); // Run whenever description changes
+  }, [description]);
 
-  // TODO: Add the edit goal
   async function handleUpdateGoal() {
     try {
       await axios.put(
-        `${API_BASE_URL}/`,
+        `${API_BASE_URL}/edit-donation-drive/goal/${driveid}`,
         { goal: parseFloat(newGoal) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -397,7 +396,7 @@ const textareaRef = useRef(null);
                   </button>
                 </div>
               ) : (
-                <button onClick={() => setEditing(true)}>
+                <button className='hover:text-hover cursor-pointer' onClick={() => setEditing(true)}>
                   <Pencil />
                 </button>
               )}
@@ -437,7 +436,7 @@ const textareaRef = useRef(null);
                 ))}
                 <button
                   onClick={addLink}
-                  className="text-primary hover:text-blue-600 font-satoshi-medium text-sm"
+                  className="text-primary hover:text-hover font-satoshi-medium text-sm cursor-pointer"
                 >
                   + Add Link
                 </button>
