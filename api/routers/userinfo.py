@@ -363,6 +363,25 @@ async def get_scholarships(
 
     return {"message": "success", "data": scholarships}
 
+@router.get("/profile/{user_id}/job-post-history")
+async def get_post_history(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+        
+    job_post_history = get_user_job_post_history(user_id, db)
+
+    return {"message": "success", "data": job_post_history}
+
+@router.get("/profile/{user_id}/job-post/{post_id}")
+async def get_user_post(
+    post_id: UUID,
+    db: Session = Depends(get_db)
+):
+    job_post = get_user_job_posting(post_id, db)
+
+    return {"message": "success", "data": job_post}
+
 # Get user profile details by user ID
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: user profile details
