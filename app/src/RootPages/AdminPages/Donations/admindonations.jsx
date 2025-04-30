@@ -7,6 +7,7 @@ import CircularLoading from '../../../components/LoadingComponents/circularloadi
 import SortModal from '../../../components/AdminComponents/sortmodal'
 import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
+import SearchComponent from "../../../components/AdminComponents/SearchComponent"
 
 function AdminDonations() {
   const navigate = useNavigate()
@@ -141,18 +142,13 @@ function AdminDonations() {
               <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
                 <p className='font-satoshi-medium text-primary block'>Name</p>
             </button> */}
-          <div className='relative flex items-center justify-end flex-1'>
-            <input
-              type="text"
-              placeholder="Search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+            
+            <SearchComponent
+              query={query}
+              setQuery={setQuery}
+              focused={focused}
+              setFocused={setFocused}
             />
-            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
-          </div>
             <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/>
             {/* Order Toggle */}
             <OrderToggle direction={sortDirection} onToggle={setSortDirection}/>
