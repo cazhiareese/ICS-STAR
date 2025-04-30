@@ -38,10 +38,10 @@ function VerifiedDonationsTable({ data, loading }) {
             // Actual Data
             data.map((donation, index) => (
               <tr key={index} className="hover:bg-secondary cursor-pointer">
-                <td className="py-3 px-4 flex items-center">{donation.date_donated}</td>
+                <td className="py-3 px-4 flex items-center">{donation.donation_date}</td>
                 <td className="py-3 px-4">{donation.name}</td>
-                <td className="py-3 px-4">{donation.donation_type}</td>
-                <td className="py-3 px-4">{donation.donation_details}</td>
+                <td className="py-3 px-4">{donation.type}</td>
+                <td className="py-3 px-4">{donation.type === 'Monetary' ? '₱' : ''} {donation.donation_details}</td>
               </tr>
             ))
           )}
