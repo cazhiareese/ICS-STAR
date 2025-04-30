@@ -96,7 +96,7 @@ function AdminDonations() {
         </button>
       </div>
       {/* HELP ICS */}
-      <div className='border border-gray-300 rounded-xl flex py-4 cursor-pointer hover:border-primary' onClick={() => {navigate("/admin/donations/help-ics")}}>
+      <div className='border border-gray-300 rounded-xl flex py-4 cursor-pointer hover:border-primary bg-white' onClick={() => {navigate("/admin/donations/help-ics")}}>
         {/* Help ICS */}
         <div className='flex flex-row text-2xl items-center justify-center flex-1 gap-2'> 
           <HandCoins/>
@@ -169,14 +169,8 @@ function AdminDonations() {
             />
           </div>
         </div>
-        <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white'>
-          {loading ? (
-            <div className='w-full h-full flex items-center justify-center'>
-              <CircularLoading/>
-            </div>
-          ) : (
-            <DonationsTable data={donations}/>
-          )}
+        <div className='border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto bg-white'>
+          <DonationsTable data={donations} loading={loading}/>
         </div>
     </div>
     )
