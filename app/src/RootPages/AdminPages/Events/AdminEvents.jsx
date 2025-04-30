@@ -8,6 +8,7 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import SortModal from '../../../components/AdminComponents/sortmodal'
 import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
+import SearchComponent from '../../../components/AdminComponents/SearchComponent'
 function AdminEvents() {
   const navigate = useNavigate()
   const [eventType, setEventType] = useState('active')
@@ -95,7 +96,7 @@ function AdminEvents() {
 
 
   return (
-    <div className='h-screen w-full p-6 flex flex-col bg-white'>
+    <div className='h-screen w-full p-6 flex flex-col bg-gray-100'>
       {/* Events header and new event button */}
       <div className='flex flex-row justify-between mb-10'>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Events</h1>
@@ -117,16 +118,13 @@ function AdminEvents() {
         </div>
 
         <div className='relative flex items-center justify-end flex-1'>
-          <input
-            type="text"
-            placeholder="Search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none mr-2 ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+          {/* Search */}
+          <SearchComponent
+            query={query}
+            setQuery={setQuery}
+            focused={focused}
+            setFocused={setFocused}
           />
-          <Search className={`absolute mr-3 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
             
           {eventType === 'finished'?  <>
             <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
