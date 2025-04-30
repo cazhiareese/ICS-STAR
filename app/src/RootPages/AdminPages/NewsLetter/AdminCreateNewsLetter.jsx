@@ -348,7 +348,7 @@ function AdminEditNewsletter() {
               <ChevronDown size={18} className="text-gray-600" />
             </div>
             {tagDropdownOpen && (
-              <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto font-satoshi-regular">
+              <div className="absolute w-160 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto font-satoshi-regular">
                 {tags.map((tag) => (
                   <label key={tag} className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100">
                     <input
