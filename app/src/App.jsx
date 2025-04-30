@@ -241,6 +241,10 @@ function App() {
         <>
           <Route path="/" element={<Root />}>
             <Route path="guest/dashboard" element={<GuestLanding />} />
+            <Route path="guest/events" element={<EventsLanding />} />
+            <Route path="guest/events/:eventid" element={<EventCardsMain />} />
+            <Route path="guest/newsletter" element={<NewsletterLanding />} />
+            <Route path="guest/newsletter/:newsletterid" element={<Newsletter />} />
 
           </Route>
         </>
