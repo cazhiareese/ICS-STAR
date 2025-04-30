@@ -75,7 +75,7 @@ function JobPostingLanding() {
         "Hybrid"
     ];
 
-    const [loading, setLoading] = useState(false);
+
     const [usertype, setUserType] = useState(null);
 
     useEffect(() => {
