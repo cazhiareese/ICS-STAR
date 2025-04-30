@@ -104,9 +104,12 @@ import {
                   <Star size={24} />
                 </button>
                 <div className="flex items-center gap-1 pt-2">
-                  <span className="text-lg text-primary font-satoshi-bold underline hover:text-blue-700">
-                    {job.interested_count} are interested
-                  </span>
+                <button
+      onClick={() => navigate('/dog')}
+      className="text-lg text-primary font-satoshi-bold underline hover:text-blue-700"
+    >
+      {job.interested_count} are interested
+    </button>
                 </div>
               </div>
             </div>

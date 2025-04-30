@@ -5,7 +5,7 @@ import JobSectionHeader from "./jobcomponent/jobsectionheader";
 import BackButton from "../../../components/backbutton";
 
 function InterestedUsers() {
-  // const { id } = useParams();
+  const did  = useParams();
   const id = "f7a09e35-1e12-4214-9bda-5c87de635416"; // temporary hardcoded ID
   const [interestedUsers, setInterestedUsers] = useState([]);
   const [jobOverview, setJobOverview] = useState(null);
