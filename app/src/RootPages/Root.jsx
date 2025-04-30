@@ -25,7 +25,7 @@ function Root() {
 
   return (
     <div>
-      {["alumni", "student"].includes(tokentype) && (
+      {["alumni", "student","guest"].includes(tokentype) && (
         <Navbar tokentype={tokentype} verified={verified} banned={banned} />
       )}
       <Outlet context={tokentype} />

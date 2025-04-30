@@ -68,25 +68,30 @@ function Navbar({ tokentype, verified, banned }) {
           >
             Newsletters
           </button>
-          <button
-            className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleCareer}
-          >
-            Career
-          </button>
-          <button
-            className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleSearch}
-          >
-            Alumni Search
-          </button>
-          {tokentype !== "student" && (
-            <button
-              className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-              onClick={handleDonation}
-            >
-              Donations
-            </button>
+
+          {tokentype !== "guest" && (
+            <>
+              <button
+                className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                onClick={handleCareer}
+              >
+                Career
+              </button>
+              <button
+                className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                onClick={handleSearch}
+              >
+                Alumni Search
+              </button>
+              {tokentype !== "student" && (
+                <button
+                  className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                  onClick={handleDonation}
+                >
+                  Donations
+                </button>
+              )}
+            </>
           )}
         </div>
 
@@ -103,57 +108,61 @@ function Navbar({ tokentype, verified, banned }) {
 
       {/* Mobile Navigation */}
       {menuOpen && (
-  <div className="bg-white shadow-md flex flex-col items-center gap-4 py-4 md:hidden sticky top-20 z-40">
-    <button
-      className={`${isActive(`/${tokentype}/events`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-      onClick={() => {
-        handleEvents();
-        setMenuOpen(false);
-      }}
-    >
-      Events
-    </button>
-    <button
-      className={`${isActive(`/${tokentype}/newsletter`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-      onClick={() => {
-        handleNewsletter();
-        setMenuOpen(false);
-      }}
-    >
-      Newsletters
-    </button>
-    <button
-      className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-      onClick={() => {
-        handleCareer();
-        setMenuOpen(false);
-      }}
-    >
-      Career
-    </button>
-    <button
-      className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-      onClick={() => {
-        handleSearch();
-        setMenuOpen(false);
-      }}
-    >
-      Alumni Search
-    </button>
-    {tokentype !== "student" && (
-      <button
-        className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-        onClick={() => {
-          handleDonation();
-          setMenuOpen(false);
-        }}
-      >
-        Donations
-      </button>
-    )}
-  </div>
-)}
+        <div className="bg-white shadow-md flex flex-col items-center gap-4 py-4 md:hidden sticky top-20 z-40">
+          <button
+            className={`${isActive(`/${tokentype}/events`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+            onClick={() => {
+              handleEvents();
+              setMenuOpen(false);
+            }}
+          >
+            Events
+          </button>
+          <button
+            className={`${isActive(`/${tokentype}/newsletter`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+            onClick={() => {
+              handleNewsletter();
+              setMenuOpen(false);
+            }}
+          >
+            Newsletters
+          </button>
 
+          {tokentype !== "guest" && (
+            <>
+              <button
+                className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                onClick={() => {
+                  handleCareer();
+                  setMenuOpen(false);
+                }}
+              >
+                Career
+              </button>
+              <button
+                className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                onClick={() => {
+                  handleSearch();
+                  setMenuOpen(false);
+                }}
+              >
+                Alumni Search
+              </button>
+              {tokentype !== "student" && (
+                <button
+                  className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                  onClick={() => {
+                    handleDonation();
+                    setMenuOpen(false);
+                  }}
+                >
+                  Donations
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 }
