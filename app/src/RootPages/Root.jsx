@@ -9,13 +9,15 @@ function Root() {
   const decoded = jwtDecode(User);
   //const tokentype = "alumni";
   const tokentype = decoded.role;
+  const verified = decoded.is_verified;
+  const banned = decoded.is_banned;
   console.log("Decoded token typee:", tokentype);
 
   return (
     <div>
 
 {["alumni", "student"].includes(tokentype) && (
-  <Navbar tokentype={tokentype} />
+  <Navbar tokentype={tokentype} verified={verified} banned={banned} />
 )}
 
       <Outlet context={tokentype} />

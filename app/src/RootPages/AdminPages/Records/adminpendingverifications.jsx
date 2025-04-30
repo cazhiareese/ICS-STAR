@@ -6,11 +6,13 @@ import CircularLoading from '../../../components/LoadingComponents/circularloadi
 import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
 import FilterModal from '../../../components/AdminComponents/UserFilter';
+import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
+
 function AdminPendingVerifications() {
     const navigate = useNavigate()
 
     const [page, setPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(48)
+    const [totalPages, setTotalPages] = useState(1)
     const [viewStyle, setViewStye] = useState('List')
     const [maxRows, setMaxRows] = useState(12)
     const [loading, setLoading] = useState(false)
@@ -64,7 +66,7 @@ function AdminPendingVerifications() {
 
 
 
-    const fetchUnverifiedUsers = async (type) => {
+    const fetchUnverifiedUsers = async (type, token) => {
       try {
         const params = new URLSearchParams();
 
@@ -79,14 +81,16 @@ function AdminPendingVerifications() {
         if (orderBy) {
           params.append('order_by', orderBy);
         }
+
+        params.append('page', page)
         
         const queryString = params.toString();        
         const url = `${API_BASE_URL}/admin/filter/unverified/${type}?${queryString}`
 
 
-        const response = await axios.get(url);
+        const response = await axios.get(url, {headers: {Authorization: `Bearer ${token}`}});
 
-        setPendingUsers(response.data);
+        setPendingUsers(response.data.items);
       } catch (error) {
         console.log('Error getting users');
         setPendingUsers([]);
@@ -94,9 +98,9 @@ function AdminPendingVerifications() {
     };
     
 
-    const fetchUsersCount = async () => {
+    const fetchUsersCount = async (token) => {
       // Fetch unverified alumni count
-      await axios.get(`${API_BASE_URL}/admin/unverified/alumni/count`)
+      await axios.get(`${API_BASE_URL}/admin/unverified/alumni/count`, {headers: {Authorization: `Bearer ${token}`}})
       .then(response => {
         console.log(response.data);
         setAlumniUserCount(response.data.unverified_alumni_count);
@@ -106,7 +110,7 @@ function AdminPendingVerifications() {
       })
 
       // Fetch unverified students count
-      await axios.get(`${API_BASE_URL}/admin/unverified/students/count`)
+      await axios.get(`${API_BASE_URL}/admin/unverified/students/count`, {headers: {Authorization: `Bearer ${token}`}})
       .then(response => {
         console.log(response.data);
         setStudentUserCount(response.data.unverified_students_count);
@@ -117,12 +121,13 @@ function AdminPendingVerifications() {
     };
     
     useEffect(() => {
+      const token = localStorage.getItem("token")
       const fetchData = async () => {
         setLoading(true)
         try {
           await Promise.all([
-            fetchUnverifiedUsers(userType),
-            fetchUsersCount()
+            fetchUnverifiedUsers(userType, token),
+            fetchUsersCount(token)
           ])
         } catch (error) {
           console.log(error)
@@ -135,11 +140,12 @@ function AdminPendingVerifications() {
     }, [userType])
 
     useEffect(() => {
+      const token = localStorage.getItem("token")
       const fetchData = async () => {
         setLoading(true)
         try {
           await Promise.all([
-            fetchUnverifiedUsers(userType),
+            fetchUnverifiedUsers(userType, token),
           ])
         } catch (error) {
           console.log(error)
@@ -224,18 +230,11 @@ function AdminPendingVerifications() {
           </button>
         </div>
           {/* Page */}
-          <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-            <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-              <p> Page </p>
-              <input
-                type="text"
-                value={page}
-                onChange={() => {}}
-                className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-              />
-            <p>of {totalPages}</p>
-            <MoveRight className='cursor-pointer' onClick={() => {}}/>
-          </div>
+          <PaginationComponent
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
       {/* Table for desktop */}

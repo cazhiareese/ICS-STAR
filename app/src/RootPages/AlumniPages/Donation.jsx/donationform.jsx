@@ -258,11 +258,11 @@ function Donationform() {
                                 <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:hidden block">
                                     {/* <DonationDeets/> */}
                                     {isMonetaryType && (
-                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary"/>
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary" landing={null}/>
                                     )}
 
                                     {!isMonetaryType && (
-                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id}/>
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} landing={null}/>
                                     )}
                                     
                                 </div>
