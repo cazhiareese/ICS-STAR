@@ -177,7 +177,7 @@ function StudentInformation(){
                                 {/* File Name */}
                                 <p className="text-primary text-md font-satoshi-bold truncate max-w-70">{userData.fileName}</p>
                                 {/* File Size */}
-                                <p className="text-gray-500 text-sm">{userData.fileSize}</p>
+                                <p className="text-gray-500 text-sm">{userData.fileSize ? `${(userData.fileSize / (1024 * 1024)).toFixed(2)} MB` : ""}</p>
                             </div>
                             {/* X Button */}
                             <button 

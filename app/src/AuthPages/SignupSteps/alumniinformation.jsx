@@ -66,13 +66,13 @@ function AlumnInfo(){
 
     const processFile = (selectedFile) => {
         if (selectedFile) {
-            const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
-            updateUserData("file", selectedFile)
-            updateUserData("fileName", selectedFile.name)
-            updateUserData("fileSize", selectedFile.size)
-            updateUserData("image", "May image na")
-            setImage("MAy image na")
-
+            const formattedSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB";
+            console.log(formattedSize)
+            updateUserData("file", selectedFile);
+            updateUserData("fileName", selectedFile.name);
+            updateUserData("fileSize", formattedSize);  // ✅ store formatted string
+            updateUserData("image", "May image na");
+            setImage("MAy image na");
         }
     };
 
