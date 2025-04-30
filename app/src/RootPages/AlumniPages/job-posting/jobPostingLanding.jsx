@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/AlumniComponents/searchbar'
 import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
-import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown } from 'lucide-react';
+import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown, Check } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
 import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
@@ -26,7 +26,7 @@ function JobPostingLanding() {
     const [selectedRemoteOption, setSelectedRemoteOption] = useState([]); 
 
     const [showSalaryRangeDropdown, setShowSalaryRangeDropdown] = useState(false);
-    const [salaryRange, setSalaryRange] = useState({ min: 0, max: 500000 });
+    const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 });
 
     const [mobileExpanded, setMobileExpanded] = useState(false);
 
@@ -52,28 +52,34 @@ function JobPostingLanding() {
         const { name, value } = e.target;
         setSalaryRange((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: value === "" ? "" : Number(value), // Convert to number
         }));
-        console.log(salaryRange);
+        console.log({
+            ...salaryRange,
+            [name]: Number(value),
+        });
     };
+    
     
 
     const workTypeOptions = [
-        "All",
-        "Full time",
-        "Part time",
-        "Contractual",
-        "Freelance",
-        "Internship",
-        "Apprenticeship",
+        // { label: "All", value: "all" },
+        { label: "Full time", value: "fulltime" },
+        { label: "Part time", value: "parttime" },
+        { label: "Contractual", value: "contractual" },
+        { label: "Freelance", value: "Freelance" },
+        { label: "Internship", value: "internship" },
+        { label: "Apprenticeship", value: "apprenticeship" },
     ];
+    
 
     const remoteOptions = [
-        "All",
-        "Onsite",
-        "Remote",
-        "Hybrid"
+        // { label: "All", value: "All" },
+        { label: "Onsite", value: "onsite" },
+        { label: "Remote", value: "remote" },
+        { label: "Hybrid", value: "hybrid" },
     ];
+    
 
     useEffect(() => {
         const token = localStorage.getItem('token'); 
@@ -105,7 +111,7 @@ function JobPostingLanding() {
             console.log(data)
             setJobList(data);
         } catch (err) {
-            setError(err.message || 'Something went wrong');
+            console.log(err.message || 'Something went wrong');
         } finally {
             setLoading(false);
         }
@@ -126,11 +132,11 @@ function JobPostingLanding() {
             throw new Error('Failed to fetch job using id');
             }
             const data = await response.json();
-            console.log(data)
+            console.log("data", data)
             // Set selected job
             setSelectedJob(data)
         } catch (err) {
-            setError(err.message || 'Something went wrong');
+            console.log(err.message || 'Something went wrong');
         } //finally {
         //     setLoading(false);
         // }
@@ -158,7 +164,7 @@ function JobPostingLanding() {
             console.log(data)
             
         } catch (err) {
-            setError(err.message || 'Something went wrong');
+            console.log(err.message || 'Something went wrong');
         } finally {
             setLoading(false);
         }
@@ -201,24 +207,25 @@ function JobPostingLanding() {
                             
                             {/* dropDown for work type */}
                             {showWorkTypeDropdown && (
-                            <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
+                                <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
                                 {workTypeOptions.map((type) => (
                                     <label
-                                    key={type}
-                                    className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
+                                        key={type.value}
+                                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
                                     >
-                                    <input
+                                        <input
                                         type="checkbox"
-                                        checked={selectedWorkTypes.includes(type)}
-                                        onChange={() => toggleWorkType(type)}
+                                        checked={selectedWorkTypes.includes(type.value)}
+                                        onChange={() => toggleWorkType(type.value)}
                                         className="w-5 h-5 text-blue-600 accent-primary"
-                                    />
-                                    <span className="text-gray-700 font-satoshi-medium">
-                                        {type}
-                                    </span>
+                                        />
+                                        <span className="text-gray-700 font-satoshi-medium">
+                                        {type.label}
+                                        </span>
                                     </label>
                                 ))}
                             </div>
+                          
                             )}
                         </button>
 
@@ -228,30 +235,31 @@ function JobPostingLanding() {
                         className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
                             <div className="flex flex-row items-center">
                                 <span className="truncate">
-                                    {remoteOptions.length > 0
-                                    ? remoteOptions.slice(0, 5).join(", ") + (remoteOptions.length > 2 ? "..." : "")
-                                    : "Work Type"}
+                                    {selectedRemoteOption.length > 0
+                                    ? selectedRemoteOption.slice(0, 5).join(", ") + (selectedRemoteOption.length > 2 ? "..." : "")
+                                    : "Work Mode"}
                                 </span>
                                 <h1 className="ml-auto"><ChevronDown size={30} /></h1>
                             </div>
                             {showRemoteOptionDropdown && (
                             <div onClick={(e) => e.stopPropagation()} className="absolute md:top-16 top-30 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
-                                {remoteOptions.map((type) => (
+                                {remoteOptions.map((option) => (
                                     <label
-                                    key={type}
-                                    className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
+                                        key={option.value}
+                                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
                                     >
-                                    <input
+                                        <input
                                         type="checkbox"
-                                        checked={selectedRemoteOption.includes(type)}
-                                        onChange={() => toggleRemoteType(type)}
+                                        checked={selectedRemoteOption.includes(option.value)}
+                                        onChange={() => toggleRemoteType(option.value)}
                                         className="w-5 h-5 text-blue-600 accent-primary"
-                                    />
-                                    <span className="text-gray-700 font-satoshi-medium">
-                                        {type}
-                                    </span>
+                                        />
+                                        <span className="text-gray-700 font-satoshi-medium">
+                                            {option.label}
+                                        </span>
                                     </label>
                                 ))}
+
                             </div>
                             )}
                         </button>
@@ -275,7 +283,11 @@ function JobPostingLanding() {
                                             value={salaryRange.min}
                                             onChange={handleSalaryChange}
                                             className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                                            min="0"
+                                            min={0}
+                                            onInput={(e) => {
+                                                // Prevents typing any character other than numbers and the dot (.)
+                                                e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+                                            }}
                                         />
                                     </div>
                                     
@@ -287,12 +299,27 @@ function JobPostingLanding() {
                                             value={salaryRange.max}
                                             onChange={handleSalaryChange}
                                             className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                                            min={salaryRange.min}
+                                            min={salaryRange.min}  // ensures max >= min
+                                            step="0.01"            // allows decimal precision
+                                            onInput={(e) => {
+                                                // Prevents typing any character other than numbers and the dot (.)
+                                                e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+                                            }}
                                         />
+
                                     </div>
                                 </div>
                             )}
                         </button>
+                        
+                        <div className="flex w-8 h-8 aspect-square items-center justify-center md:ml-0 ml-auto ">
+                            <button className="bg-primary rounded-full w-full h-full flex items-center justify-center p-0 box-border mt-3">
+                                <Check size={18} className="text-white" />
+                            </button>
+                        </div>
+
+
+
 
                         
 
@@ -307,6 +334,9 @@ function JobPostingLanding() {
                     setSearchInput={setSearchInput}
                     setLoading={setLoading}
                     setJobList={setJobList}
+                    selectedWorkTypes={selectedWorkTypes}
+                    selectedRemoteOption={selectedRemoteOption}
+                    salaryRange={salaryRange}
                     />
                 </div>
 
@@ -325,15 +355,21 @@ function JobPostingLanding() {
                 <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
                     {!loading ? (
                         <div className='flex flex-col gap-5 items-center '>
-                            {jobList.map((job, index) => (
-                                <JobCard
-                                key={index}
-                                job={job}
-                                selectedJobId={selectedJobId}
-                                setSelectedJobId={setSelectedJobId}
-                                setMobileExpanded={setMobileExpanded}
-                                />
-                            ))}
+                            {jobList.length > 0 ? (
+                                jobList.map((job, index) => (
+                                    <JobCard
+                                    key={index}
+                                    job={job}
+                                    selectedJobId={selectedJobId}
+                                    setSelectedJobId={setSelectedJobId}
+                                    setMobileExpanded={setMobileExpanded}
+                                    />
+                                ))
+                                ) : (
+                                <p className="text-gray-500 text-center mt-4">No jobs found.</p>
+                            )}
+
+
                         </div>
                     ) : (
                         <div className='flex flex-row justify-center h-full gap-5'>

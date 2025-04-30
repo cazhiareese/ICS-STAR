@@ -8,7 +8,8 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
     const modalRef = useRef(null);
     const ellipsisRef = useRef(null);
 
-    const jobId = job.post_id; // Assuming job.post_id is the ID of the job post
+    console.log(job);
+    const jobId = job.post_id || job.id; 
     const navigate = useNavigate();
     const navToEditJobPost = () => {
         console.log("Edit Job Posting clicked");

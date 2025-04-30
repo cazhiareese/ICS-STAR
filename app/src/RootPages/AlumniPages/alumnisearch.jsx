@@ -808,7 +808,7 @@ function AlumniSearch() {
               </div>}
 
               {(selectedGraduationYear !== "") && (<div className="flex flex-row bg-primary rounded-full h-7 items-center px-2">
-                <h1 className="text-white font-satoshi-light truncate md:text-md text-sm max-w-36">Graduated in {selectedBatchYear}</h1>
+                <h1 className="text-white font-satoshi-light truncate md:text-md text-sm max-w-36">Graduated in {selectedGraduationYear}</h1>
                 <button onClick={() => setSelectedGraduationYear("")}>
                   <X className="text-white ml-2" size={20} />
                 </button>

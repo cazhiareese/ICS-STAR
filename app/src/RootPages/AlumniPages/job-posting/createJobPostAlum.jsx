@@ -208,6 +208,8 @@ function CreateJobPostAlum() {
 
         const formData = new FormData();
 
+        
+
         formData.append('title', jobTitleInput);
         formData.append('company', companyInput);
         salaryInput && formData.append('salary', salaryInput);
@@ -221,6 +223,11 @@ function CreateJobPostAlum() {
         if (file != null) {
             formData.append('image', file);
         }
+
+        const formDataObj = {};
+        formData.forEach((value, key) => {
+            formDataObj[key] = value;
+        });
     
         try {
             const response = await axios.post(`${API_BASE_URL}/create-job-postings`, formData, {
@@ -246,6 +253,10 @@ function CreateJobPostAlum() {
             alert("There was an error submitting the job post.");
         }
     };
+
+   
+    
+
     
     useEffect(() => {
         const getCompany = async () => {
