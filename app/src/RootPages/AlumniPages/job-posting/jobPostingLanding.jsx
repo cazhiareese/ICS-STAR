@@ -15,7 +15,8 @@ function JobPostingLanding() {
     const [selectedJob, setSelectedJob] = useState({});
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
-    // const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null); // State to handle errors
 
     const [showFilterModal, setShowFilterModal] = useState(false);
 
@@ -75,7 +76,6 @@ function JobPostingLanding() {
         "Hybrid"
     ];
 
-    const [loading, setLoading] = useState(false);
     const [usertype, setUserType] = useState(null);
 
     useEffect(() => {

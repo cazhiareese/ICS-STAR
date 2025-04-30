@@ -515,7 +515,7 @@ function LoginPage() {
                         className="px-4 py-2 bg-green-500 text-white font-satoshi-regular rounded-3xl hover:bg-green-600"
                         onClick={() => {
                             setOpenModal(false);
-                            navigate("/login");
+                            navigate(`/guest/dashboard`);
                         }}
                     >
                         Continue

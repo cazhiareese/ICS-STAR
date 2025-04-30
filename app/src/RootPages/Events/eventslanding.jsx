@@ -39,13 +39,26 @@ const EventsLanding = () => {
     const [userType, setUserType] = useState(null);
 
     //cyrus was here
-    const User = localStorage.getItem("token");
+
+const User = localStorage.getItem("token");
+let tokentype = "guest";
+let userid = true;
+
+
+if (User) {
+  try {
     const decoded = jwtDecode(User);
-    console.log(decoded);
-    const tokentype = decoded.role;
-    const userid = decoded.sub;
-    console.log("User ID: ", userid);
-    console.log("Decoded token typee:", tokentype);
+    tokentype = decoded.role;
+    userid = decoded.sub;
+    console.log("Decoded token:", decoded);
+    console.log("User ID:", userid);
+    console.log("Token type:", tokentype);
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+} else {
+  console.log("No token found, defaulting to guest.");
+}
 
 
     useEffect(() => {
@@ -277,10 +290,15 @@ const EventsLanding = () => {
                 </div>
                 
                 <div className="flex flex-col -mt-20 mb-8 w-full sm:px-15 sm:items-start items-center">
-                    <div className="flex flex-row items-end space-x-5">
-                        <label className="text-3xl text-primary font-satoshi-bold">Your Reservations</label>
-                        <label className="text-xl text-primary font-satoshi-light">({reservations == null ? "0" : reservations.length})</label>
-                    </div>
+                {tokentype !== "student" && User !== null && (
+  <div className="flex flex-row items-end space-x-5">
+    <label className="text-3xl text-primary font-satoshi-bold">Your Reservations</label>
+    <label className="text-xl text-primary font-satoshi-light">
+      ({reservations == null ? "0" : reservations.length})
+    </label>
+  </div>
+)}
+
                     {userType === "alumni" && (
                         <div className="flex flex-row mt-5 sm:mr-10  sm:ml-0 sm:mx-0 mx-auto gap-5 overflow-scroll sm:w-full">
                         {reservations != null ? (
