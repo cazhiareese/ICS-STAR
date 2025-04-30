@@ -104,7 +104,7 @@ function App() {
     }
   }
 
-  function isVerifiedOnboarded() {
+  function isOnboarded() {
     const User = localStorage.getItem("token");
     //const User = true;
     let tokenType = null;
@@ -163,7 +163,7 @@ function App() {
       
       {isSignedIn && checkType() === "alumni" && (
         <>
-          {isVerifiedOnboarded()?
+          {isOnboarded()?
            <>
           <Route path="/" element={<Root />}>
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
@@ -201,13 +201,13 @@ function App() {
               }
             
             />
-}
+         } 
         </>
       )} 
 
       {isSignedIn && checkType() === "student" && (
         <>
-          {isVerifiedOnboarded() ?
+          {isOnboarded() ?
           <>
             <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
@@ -223,7 +223,7 @@ function App() {
             <Route path="*" element={<UserProfile />} />
           </Route>
           </>
-          :
+           : 
             <Route
               path="setup"
               element={
@@ -232,7 +232,7 @@ function App() {
                 </OnboardingProvider>
               }
               />
-        }
+         }
         </>
       )}
 
