@@ -10,11 +10,12 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
 
     const jobId = job.post_id; // Assuming job.post_id is the ID of the job post
     const navigate = useNavigate();
-    const navToEditJobPost = () => {
-        console.log("Edit Job Posting clicked");
-        console.log(jobId);
-        navigate(`editJobPosting/${jobId}`, { relative: 'path' });
-    };
+
+    // const navToEditJobPost = () => {
+    //     console.log("Edit Job Posting clicked");
+    //     console.log(jobId);
+    //     navigate(`/alumni/editjobPosting/${jobId}`);
+    // };
 
     // Close modal on outside click
     useEffect(() => {
@@ -34,6 +35,7 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
     }, []);
 
     return (
+
         <div>
             {/* WEBSITE VIEW */}
             <div className="md:flex flex-col lg:w-[800px] w-[500px] outline-0 gap-5 hidden">
@@ -155,6 +157,7 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
                                 
                             </div>
                         </div>
+
 
                         {/* Tags*/}
                         <div className='flex flex-col gap-2 pt-3'>

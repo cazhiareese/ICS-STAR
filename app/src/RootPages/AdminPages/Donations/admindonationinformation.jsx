@@ -25,6 +25,7 @@ function AdminDonationInformation() {
   const [noPendingDonations, setNoPendingDonations] = useState()
   const [donation, setDonation] = useState()
   const [loading, setLoading] = useState(true)
+  const [selectedTab, setSelectedTab] = useState('donations')
 
   async function handleCloseDrive() {
     setCloseDonationLoading(true)
@@ -143,6 +144,11 @@ function AdminDonationInformation() {
                   )}
                 </div>
               </div>
+              <div className='flex flex-row justify-end mr-4'>
+                  <button className={`rounded-tl-2xl border-x border-t border-r-transparent border-gray-300 px-3 py-1 w-24 cursor-pointer ${selectedTab === 'donations' ? 'bg-primary text-white font-satoshi-medium' : 'font-satoshi-light hover:text-hover transition-colors'}`} onClick={() => {setSelectedTab('donations')}}>Donations</button>
+                  <div className='border-r border-gray-300'></div>
+                  <button className={`rounded-tr-2xl border-x border-t border-l-transparent border-gray-300 px-3 py-1 w-24 cursor-pointer ${selectedTab === 'details' ? 'bg-primary text-white font-satoshi-medium' : 'font-satoshi-light hover:text-hover transition-colors'}`} onClick={() => {setSelectedTab('details')}}>Details</button>
+                </div>
               {/* Goal progress and recent transactions */}
               <div className='flex flex-row gap-2 h-1/3 mb-9'>
                 {/* Goal Progress */}
@@ -184,30 +190,30 @@ function AdminDonationInformation() {
                   </div> */}
                 </div>
                 {/* Pending donations table */}
-                <div className='flex-2/3 border border-gray-300 rounded-xl p-6 w-full flex flex-col'>
-                  <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
-                  <div className='w-full h-full flex-1 overflow-auto'>
-                    {noPendingDonations ? (
-                    <p className='text-center text-gray-500'>No donations to verify</p>
+                  <div className=' flex-2/3 border border-gray-300 rounded-xl p-6 w-full flex flex-col '>
+                    <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
+                    <div className='w-full h-full flex-1 overflow-auto'>
+                      {noPendingDonations ? (
+                        <p className='text-center text-gray-500'>No donations to verify</p>
+                    ) : (
+                      <>
+                      <PendingDonationsTable data={pendingDonations} />
+                      </>
+                    )} 
+                  </div>
+                  {noPendingDonations ? (
+                    <></>
                   ) : (
-                    <>
-                    <PendingDonationsTable data={pendingDonations} />
-                    </>
-                  )} 
+                    <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {
+                      navigate(`/admin/donations/pending-donations/${driveid}`, 
+                        {state: {pendingDonations, driveName: donation.title}})
+                      }}>
+                      <p className='font-satoshi-light'> View all pending verifications </p>
+                      <MoveRight/>
+                    </button>
+                    )}
+                  </div>
                 </div>
-                {noPendingDonations ? (
-                  <></>
-                ) : (
-                  <button className='flex gap-2 w-full justify-end text-primary cursor-pointer' onClick={() => {
-                    navigate(`/admin/donations/pending-donations/${driveid}`, 
-                    {state: {pendingDonations, driveName: donation.title}})
-                    }}>
-                    <p className='font-satoshi-light'> View all pending verifications </p>
-                    <MoveRight/>
-                  </button>
-                  )}
-                </div>
-              </div>
               {/* Donations and filters */}
               <div className='mb-3'>
                 <div className='flex items-end'>

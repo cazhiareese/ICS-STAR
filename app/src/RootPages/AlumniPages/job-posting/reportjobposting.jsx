@@ -1,5 +1,5 @@
 // ReportJobPosting.jsx
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import BackButton from "../../../components/backbutton";
 import JobSectionHeader from "./jobcomponent/jobsectionheader";
@@ -8,8 +8,9 @@ import { Info } from "lucide-react";
 
 function ReportJobPosting() {
   const [jobOverview, setJobOverview] = useState(null);
-  const id = "f7a09e35-1e12-4214-9bda-5c87de635416";
-  console.log(id);
+  const ids = useParams();
+  const id = ids.jobid;
+  console.log("naku",id);
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 

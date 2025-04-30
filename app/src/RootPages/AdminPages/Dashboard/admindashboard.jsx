@@ -7,6 +7,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios'
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading";
+import formatEvents from "../../../components/formatEvents";
 
 
 function AdminDashboard() {
@@ -14,25 +15,87 @@ function AdminDashboard() {
 
   const [loading, setLoading] = useState(true)
   const [pendingVerifications, setPendingVerifications] = useState()
+  const [donors, setDonors] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [registeredAlumni, setRegisteredAlumni] = useState(null);
+  const [alumniIndustries, setAlumniIndustries] = useState([]);
+  const [alumniLocations, setAlumniLocations] = useState([]);
+  const [fullEngagementReport, setFullEngagementReport] = useState([]);
+  const [daysFilter, setDaysFilter] = useState("30days");
+  const [batchFilter, setBatchFilter] = useState("2022");
+  const [error, setError] = useState(null);
+  const [events, setevents] = useState([]);
+  const COLORS = ["#0B2B6F", "#2858D6", "#8CA6DB", "#CBD7F1", "#E8F0FF"];
+  
+  
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+
+  //cyrus was here again
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const pendingVerificationCount = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
-        console.log(pendingVerificationCount.data.count);
-        setPendingVerifications(pendingVerificationCount.data.count);
+        // 1. Fetch Pending Verifications
+        const pendingVerificationResponse = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
+        setPendingVerifications(pendingVerificationResponse.data.count);
+  
+        // 2. Fetch Recent Donors
+        const donorsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/recent-donors`);
+        const donorsformat = donorsResponse.data.slice(0, donorsResponse.data.length - 1).map(item => ({
+          donation: item.drive_title,
+          name: item.donor_name,
+          amount: item.donation_details
+        }));
+        setDonors(donorsformat);
+
+  
+        // 3. Fetch User Statistics
+        const statsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`);
+        setStats(statsResponse.data);
+        setRegisteredAlumni(statsResponse.data.verified_alumni_count);
+  
+        const formattedIndustries = statsResponse.data.top_alumni_industries.map((item, index) => ({
+          name: item.industry,
+          value: item.percentage,
+          color: COLORS[index % COLORS.length]
+        }));
+        setAlumniIndustries(formattedIndustries);
+  
+        const formattedLocations = statsResponse.data.top_alumni_countries.map(item => ({
+          country: item.country,
+          percentage: `${item.percentage}%`
+        }));
+        setAlumniLocations(formattedLocations);
+
+         
+        const eventsupcoming = await axios.get(`${API_BASE_URL}/admin_dashboard/upcoming-events`);
+        console.log(eventsupcoming.data);
+
+        //tinanggal ko last index since, nag overflow
+        const trimmedEvents = eventsupcoming.data.slice(0, eventsupcoming.data.length - 1);
+        setevents(formatEvents(trimmedEvents));
+
+        //setevents(formatEvents(eventsupcoming.data));
+
+
+        let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
+        setFullEngagementReport(response.data);
+  
       } catch (error) {
-        console.log(error);
-        // setUsers([]);
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data.');
       } finally {
         setLoading(false);
       }
     };
+
+    
+  
     fetchData();
-  },[])
+  }, []);
+  
 
   const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
 
@@ -47,20 +110,20 @@ function AdminDashboard() {
   }
 
 
-  const events = [
-    {
-      dateLabel: "Tomorrow",
-      items: [{ title: "Lorem Ipsum Dolor sit Amet", time: "10 am, ICSMH" }]
-    },
-    {
-      dateLabel: "In 4 days",
-      items: [
-        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
-        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
-        { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" }
-      ]
-    }
-  ];
+  // const events = [
+  //   {
+  //     dateLabel: "Tomorrow",
+  //     items: [{ title: "Lorem Ipsum Dolor sit Amet", time: "10 am, ICSMH" }]
+  //   },
+  //   {
+  //     dateLabel: "In 4 days",
+  //     items: [
+  //       { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
+  //       { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" },
+  //       { title: "Lorem Ipsum Dolor sit Amet", time: "3 pm, ICSMH" }
+  //     ]
+  //   }
+  // ];
 
   const donations = [
     { name: "Lorem Ipsum Dolor", raised: 12000, goal: 15000, donors: 6 },
@@ -68,40 +131,40 @@ function AdminDashboard() {
     { name: "Lorem Ipsum", raised: 13500, goal: 20000, donors: 21 },
   ];
 
-  const donors = [
-    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
-    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
-    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
-    { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
-  ];
+  // const donors = [
+  //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  //   { donation: "Lorem Ipsum Dolor", name: "Lorem Ipsum", amount: "10,000 PHP" },
+  // ];
 
-  const alumniLocations = [
-    { "country": "Philippines", "percentage": "78%" },
-    { "country": "United States", "percentage": "22%" },
-    { "country": "Canada", "percentage": "18%" },
-    { "country": "Australia", "percentage": "12%" },
-    { "country": "United Kingdom", "percentage": "9%" }
-  ]
+  // const alumniLocations = [
+  //   { "country": "Philippines", "percentage": "78%" },
+  //   { "country": "United States", "percentage": "22%" },
+  //   { "country": "Canada", "percentage": "18%" },
+  //   { "country": "Australia", "percentage": "12%" },
+  //   { "country": "United Kingdom", "percentage": "9%" }
+  // ]
 
-  const alumniIndustries = [
-    { name: "Services", value: 40, color: "#0B2B6F" },
-    { name: "Finance", value: 25, color: "#2858D6" },
-    { name: "Manufacturing", value: 15, color: "#8CA6DB" },
-    { name: "Retail Trade", value: 10, color: "#CBD7F1" },
-    { name: "Others", value: 10, color: "#E8F0FF" }
-  ];
+  // const alumniIndustries = [
+  //   { name: "Services", value: 40, color: "#0B2B6F" },
+  //   { name: "Finance", value: 25, color: "#2858D6" },
+  //   { name: "Manufacturing", value: 15, color: "#8CA6DB" },
+  //   { name: "Retail Trade", value: 10, color: "#CBD7F1" },
+  //   { name: "Others", value: 10, color: "#E8F0FF" }
+  // ];
 
-  const systemEngagementReport = [
-    { date: "1 Oct", visits: 100 },
-    { date: "3 Oct", visits: 250 },
-    { date: "7 Oct", visits: 300 },
-    { date: "10 Oct", visits: 180 },
-    { date: "14 Oct", visits: 450 },
-    { date: "20 Oct", visits: 700 },
-    { date: "23 Oct", visits: 457 },
-    { date: "27 Oct", visits: 600 },
-    { date: "30 Oct", visits: 320 },
-  ];
+  // const systemEngagementReport = [
+  //   { date: "1 Oct", visits: 100 },
+  //   { date: "3 Oct", visits: 250 },
+  //   { date: "7 Oct", visits: 300 },
+  //   { date: "10 Oct", visits: 180 },
+  //   { date: "14 Oct", visits: 450 },
+  //   { date: "20 Oct", visits: 700 },
+  //   { date: "23 Oct", visits: 457 },
+  //   { date: "27 Oct", visits: 600 },
+  //   { date: "30 Oct", visits: 320 },
+  // ];
 
   const goToInfoReports = () =>{
     navigate('user-engagement-reports', { relative: 'path' });
@@ -282,7 +345,7 @@ function AdminDashboard() {
                 </div>
                 <div className="flex flex-col">
                   <p className="font-satoshi-light -mb-1">Registered Alumni</p>
-                  <p className="font-satoshi-medium text-4xl">{response.registeredAlumni}</p>
+                  <p className="font-satoshi-medium text-4xl">{registeredAlumni}</p>
                 </div>
               </div>
               {/* View Alumni Statistics */}
@@ -364,7 +427,7 @@ function AdminDashboard() {
             </div>
             <div className="flex items-center mt-2">
               <ResponsiveContainer width="90%" height={200}>
-                <LineChart data={systemEngagementReport}>
+                <LineChart data={fullEngagementReport}>
                   <CartesianGrid vertical={false} />
                   <XAxis 
                     dataKey="date" 

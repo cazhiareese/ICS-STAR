@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function DonationCard({ drive }) {
+function DonationCards({ drive, loading }) {
 const navigate = useNavigate();
 
 
@@ -19,7 +19,10 @@ console.log(token);
     //window.location.href = `/alumni/donationforms/${drive.drive_id}`; mar to janry
   }
   return (
-    <div onClick={handleClick} className="w-full md:w-[45%] rounded-[20px] border-disabled overflow-hidden shadow border bg-white ">
+    <div
+  onClick={handleClick}
+  className="w-full max-w-[400px] sm:w-[45%] md:w-[45%] mx-[2px] rounded-[20px] border-disabled overflow-hidden shadow border bg-white"
+>
       <div className="h-28 bg-primary flex items-center justify-center">
         {drive.image_url ? (
           <img
@@ -54,7 +57,8 @@ console.log(token);
 
         {/* Footer info */}
         <div className="mt-4 flex justify-between text-sm text-black font-satoshi-medium">
-          <p>{new Date(drive.created_at).toLocaleDateString()}</p>
+          {/*<p>{new Date(drive.created_at).toLocaleDateString()}</p>*/}
+          <p>"1212121"</p>
           <p className="text-primary font-satoshi-medium">
             {drive.donation_count} Donations
           </p>
@@ -64,4 +68,4 @@ console.log(token);
   );
 }
 
-export default DonationCard;
+export default DonationCards;
