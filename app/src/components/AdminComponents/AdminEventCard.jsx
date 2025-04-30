@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LockOpenIcon, Lock } from 'lucide-react'; 
+
 
 function formatDateTime(datetimeStr) {
   if (datetimeStr == null) {
@@ -80,8 +82,9 @@ function AdminEventCard({ event, loading = false }) {
           </div>
         </div>
         {/* Count attendees */}
-        <div className="flex flex-row items-center justify-center px-3 py-1 bg-green-50 rounded-3xl font-satoshi-light text-2xl text-green-600 gap-2 w-fit self-end">
-          <div className="rounded-full h-2 w-2 bg-green-600"></div>
+        <div className={`flex flex-row items-center justify-center px-3 py-1 rounded-3xl font-satoshi-light text-2xl gap-2 w-fit self-end ${event.is_closed ? 'bg-blue-50 text-blue-600' : 'bg-[#E0F0E8] text-success'}`}>
+          {event.is_closed ? <Lock size={16} /> : <LockOpenIcon size={16} />}
+          {/* <div className={`rounded-full h-2 w-2 ${event.is_closed ? 'bg-blue-600' : 'bg-green-600'}`}></div> */}
           <p>
             <span className="font-satoshi-medium">{event.attendees}</span> attendees
           </p>
