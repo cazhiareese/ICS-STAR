@@ -8,6 +8,7 @@ import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
 import FilterModal from '../../../components/AdminComponents/UserFilter';
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent';
+import SearchComponent from '../../../components/AdminComponents/SearchComponent'
 
 function AdminRecords() {
   const navigate = useNavigate()
@@ -110,7 +111,7 @@ function AdminRecords() {
   }, []);
   
   return ( 
-      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
+      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100'>
         {/* Records, search, view pending */}
         <div className='justify-between mt-2 lg:mb-8 flex relative'>
           {/* Records header */}
@@ -118,18 +119,12 @@ function AdminRecords() {
           {/* Search and view pending */}
           <div className='flex flex-row gap-5 lg:w-auto w-full px-3 lg:px-0'>
             {/* Search */}
-            <div className='relative flex items-center justify-end flex-1'>
-              <input
-                type="text"
-                placeholder="Search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
-                className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
-              />
-              <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
-            </div>
+            <SearchComponent
+              query={query}
+              setQuery={setQuery}
+              focused={focused}
+              setFocused={setFocused}
+            />
             {/* View Pending Verifications */}
             <button className='bg-primary h-11 w-11 lg:h-auto lg:w-auto rounded-full lg:rounded-3xl lg:px-5 lg:py-1 flex items-center justify-center gap-2 text-sm cursor-pointer' onClick={() => {navigate('/admin/records/pending-verifications')}}> 
               <BadgeCheck className='text-white'/>
@@ -182,7 +177,7 @@ function AdminRecords() {
           </div>
         </div>
         {/* Table for desktop*/}
-            <div className="border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto">
+            <div className="border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto bg-white">
               <UsersTable data={users} loading={loading}/>
             </div>
       {/* Table for mobile */}
