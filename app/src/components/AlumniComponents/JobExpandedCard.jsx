@@ -215,7 +215,7 @@ import {
                                             Delete Post
                                         </button>
                                         <button className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
-                                        onClick={()=>navToEditJobPost()}>
+                                        onClick={() => navigate(`/alumni/jobPosting/edit/${jobId}`)}>
                                             <Pencil size={16} 
                                             
                                             />
