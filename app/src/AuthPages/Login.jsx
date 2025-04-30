@@ -239,7 +239,7 @@ function LoginPage() {
                         <h1 className="text-4xl md:text-4xl font-satoshi-bold text-primary text-center">Across the Cosmos</h1>
             </div>
 
-            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-170 lg:min-h-170 my-15 ">
+            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-145 lg:min-h-145 my-15 pt-10">
                 
                 {/* Login Signup */}
                 <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl lg:min-w-lg md:min-w-lg lg:bg-[#F5F5F5] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] lg:rounded-4xl">
