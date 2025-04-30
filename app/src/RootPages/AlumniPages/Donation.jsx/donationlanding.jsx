@@ -115,7 +115,7 @@ function DonationLanding() {
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (
-    <div className="flex flex-col   space-y-5 h-[100px]">
+    <div className="flex flex-col space-y-5 h-[100px]">
       {/* Search bar */}
       <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white">
       <div className="relative flex flex-col w-full max-w-[350px] sm:max-w-[600px] mt-6">
@@ -140,8 +140,8 @@ function DonationLanding() {
 
   
       {/* Static Donation Drives Header */}
-      <div className="hidden sm:flex justify-start items-start pl-[180px] font-satoshi-bold text-[32px] text-primary">
-        Donation Drives
+      <div className="hidden lg:flex  pl-[180px] font-satoshi-bold text-[32px] text-primary">
+       
       </div>
   
       {/* Wrap everything else inside loading */}
@@ -182,23 +182,27 @@ function DonationLanding() {
 </div>
 
       ) : (
-        <div className="flex flex-col lg:flex-row gap-4 justify-center h-[2100px] sm:h-[680px] mt-6 sm:mt-1">
+        <div className="flex flex-col lg:flex-row gap-4 lg:justify-center h-[2100px] sm:h-[680px] mt-6 sm:mt-1">
           {/* Left column: Donation cards */}
-          <div className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-col">
+          <div className="order-2 lg:order-1 flex-1 lg:max-w-[600px] flex flex-col ">
+
             {/* Small device header */}
-            <div className="flex justify-center items-center sm:hidden font-satoshi-bold text-[28px] text-primary mb-4">
+            <div className="flex justify-center items-center font-satoshi-bold text-[28px] text-primary mb-4">
               Donation Drives
             </div>
   
             {/* Scrollable Cards */}
             <div
-              className="overflow-y-auto scrollbar-blue"
+              className="overflow-y-auto scrollbar-blue "
               style={{ maxHeight: "calc(100vh - 200px)", direction: "rtl" }}
             >
-              <div className="flex flex-wrap gap-4 justify-center items-center" style={{ direction: "ltr" }}>
+              <div className="grid gap-4 grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] justify-center items-center pl-5" style={{ direction: "ltr" }}>
                 {filteredData.length > 0 ? (
                   filteredData.map((drive, index) => (
+                    
+
                     <DonationCards key={index} drive={drive} loading={true} />
+                    
                 
                   ))
                 ) : (
@@ -211,15 +215,15 @@ function DonationLanding() {
           </div>
   
           {/* Right column: Announcements */}
-          <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit">
+          <div className="order-1 lg:order-2 lg:basis-[950px] px-4 rounded-xl text-center h-fit lg:mt-0 mt-10">
             {generalDrive ? (
-              <div className="-mt-5 flex flex-col sm:flex-row gap-4 justify-center sm:justify-center">
+              <div className="-mt-5 flex flex-col sm:flex-row gap-4 justify-center sm:justify-center lg:flex-auto flex-wrap">
                 {/* Container for DonationMainView */}
-                <div className="bg-whitey border border-disabled rounded-xl p-4">
+                <div className="bg-whitey border border-disabled rounded-xl p-4 flex lg:w-100 xl:w-auto">
                   <DonationMainView driveDetails={generalDrive} driveId={generalDrive.drive_id} landing={true} />
                 </div>
                 {/* DonationCard */}
-                <div className="items-center justify-center sm:justify-start sm:items-start flex flex-col sm:flex-row gap-4">
+                <div className="items-center justify-center lg:justify-start lg:items-start flex flex-col lg:flex-row gap-4">
                   <DonationCard driveDetails={generalDrive} driveId={generalDrive.drive_id} />
                 </div>
               </div>

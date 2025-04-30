@@ -21,7 +21,7 @@ console.log(token);
   return (
     <div
   onClick={handleClick}
-  className="w-full max-w-[400px] sm:w-[45%] md:w-[45%] mx-[2px] rounded-[20px] border-disabled overflow-hidden shadow border bg-white h-80"
+  className="w-full max-w-[400px] sm:w-[45%] md:w-full mx-[2px] rounded-[20px] border-disabled overflow-hidden shadow border bg-white h-80"
 >
       <div className="h-28 bg-primary flex items-center justify-center">
         {drive.image_url ? (

@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Paperclip } from 'lucide-react';
+import BackButton from "./backbutton";
 
 function DonationMainView({ driveDetails, driveId, type, landing }) {
     // const [image, setImage] = useState("null")
@@ -16,8 +17,8 @@ function DonationMainView({ driveDetails, driveId, type, landing }) {
   }`}
 >
 
-
-            <div className="w-[90%] sm:h-50 sm:max-h-85 border mx-auto rounded-4xl bg-primary sm:mt-0 mt-5 ">
+            
+            <div className="w-[90%] sm:h-50 sm:max-h-85 border mx-auto rounded-4xl bg-primary sm:-mt-0 md:mt-0 lg:mt-0 mt-5 h-40 ">
                 {<img src={driveDetails.image_url} alt="" className="w-full h-full object-cover rounded-4xl" />}
             </div>
             

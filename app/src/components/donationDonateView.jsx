@@ -15,7 +15,7 @@ export default function DonationCard({driveDetails, driveId}) {
   }
 
   return (
-    <div className="md:w-[105%] md:mt-0 my-10 max-w-sm border h-100 border-gray-300 rounded-2xl p-4 font-sans px-10 "> 
+    <div className="md:w-[90%] md:mt-0 my-auto max-w-sm min-w-xs border lg:h-110 sm:h-100 border-gray-300 rounded-2xl p-4 font-sans px-10 flex flex-col mb-10"> 
       {/* Top Row: Percentage Funded and Status Pill */}
       
       <div className="flex items-center justify-center w-30 h-10 mt-2  font-satoshi-black bg-green-100 text-green-600 text-md rounded-full px-5 ml-auto">
