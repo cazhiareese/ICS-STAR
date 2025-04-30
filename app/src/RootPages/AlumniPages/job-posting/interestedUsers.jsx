@@ -3,10 +3,13 @@ import { useParams } from "react-router-dom";
 import JobOverviewCard from "./jobcomponent/joboverview";
 import JobSectionHeader from "./jobcomponent/jobsectionheader";
 import BackButton from "../../../components/backbutton";
+import axios from "axios";
 
 function InterestedUsers() {
   const did  = useParams();
-  const id = "f7a09e35-1e12-4214-9bda-5c87de635416"; // temporary hardcoded ID
+  const id = did.jobid;
+  console.log(id);
+    //const id = "f7a09e35-1e12-4214-9bda-5c87de635416"; // temporary hardcoded ID
   const [interestedUsers, setInterestedUsers] = useState([]);
   const [jobOverview, setJobOverview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,31 +27,37 @@ function InterestedUsers() {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/job/interested_in/${id}`, {
-          method: "GET",
+        const page = 1;
+        console.log("hdsd",id);
+        const response = await axios.get(`${API_BASE_URL}/job/interested_in/${id}?page=${page}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (!response.ok) {
-          if (response.status === 401) {
+      
+        const data = response.data;
+        if (data.detail) {
+          setError(data.detail); // Show message like "No users found who are interested in this job posting."
+          setInterestedUsers([]); // Clear the list
+        } else {
+          setInterestedUsers(data); // Proceed normally
+        }
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401) {
             setError("Unauthorized access. Please log in.");
-          } else if (response.status === 404) {
+          } else if (err.response.status === 404) {
             setError("No users found who are interested in this job posting.");
           } else {
-            throw new Error("Failed to fetch interested users");
+            setError("Failed to fetch interested users.");
           }
-          return;
+        } else {
+          setError(err.message || "Network error.");
         }
-
-        const data = await response.json();
-        setInterestedUsers(data);
-      } catch (err) {
-        setError(err.message || "Failed to fetch interested users.");
       } finally {
         setLoading(false);
       }
+      
     };
     const fetchJobOverview = async () => {
       try {
@@ -87,7 +96,7 @@ function InterestedUsers() {
 
       {/* Content */}
       {loading && <p className="text-gray-500 mt-4">Loading...</p>}
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+      {error && <p className="text-primary font-satoshi-bold mt-4 justify-center text-center">{error}</p>}
 
       {/* Large screen table */}
       {!loading && !error && interestedUsers.length > 0 && (
