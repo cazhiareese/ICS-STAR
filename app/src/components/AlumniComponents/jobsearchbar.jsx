@@ -11,7 +11,8 @@ const JobSearchBar =
     setJobList,
     selectedWorkTypes,
     selectedRemoteOption,
-    salaryRange
+    salaryRange,
+    setSelectedJob
   })=> {
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -33,6 +34,7 @@ const JobSearchBar =
     //creates an object for url making
     const search = () => {
         let filters = {};
+        setSelectedJob({});
         if (searchInput != ""){
             filters.title = searchInput;
         }
@@ -62,22 +64,6 @@ const JobSearchBar =
         }
     }
 
-    
-    // const fetchJobs = async () => {
-    //     setLoading(true);
-    //     // console.log(`${API_BASE_URL}/admin/job/search?creator_name=${searchInput}`);
-    //     try {
-    //         const response = await axios.get(`${API_BASE_URL}/admin/job/search?creator_name=${searchInput}`);
-    //         console.log(response.data);
-    //         setJobList(response.data);
-    //     } catch (err) {
-    //         console.error(err); 
-    //         alert('Job not found');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
     const fetchJobs = async () => {
         setLoading(true);
         try {
@@ -100,6 +86,20 @@ const JobSearchBar =
     };
     
     
+    // const fetchJobs = async () => {
+    //     setLoading(true);
+    //     // console.log(`${API_BASE_URL}/admin/job/search?creator_name=${searchInput}`);
+    //     try {
+    //         const response = await axios.get(`${API_BASE_URL}/admin/job/search?creator_name=${searchInput}`);
+    //         console.log(response.data);
+    //         setJobList(response.data);
+    //     } catch (err) {
+    //         console.error(err); 
+    //         alert('Job not found');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     
 
@@ -112,12 +112,6 @@ const JobSearchBar =
                     type="search"
                     className="bg-gray-100 font-satoshi-medium text-lg w-full h-full px-4 py-2 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
                     placeholder="Enter Job"
-                    
-                    // onKeyDown={(e) => {
-                    //     if (e.key === "Enter") {
-                    //         fetchData(); // Call your search function
-                    //     }
-                    // }}
                     value={searchInput}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {

@@ -188,6 +188,7 @@ function JobPostingLanding() {
     //creates an object for url making
     const search = () => {
         let filters = {};
+        setSelectedJob({});
 
         if (Array.isArray(selectedWorkTypes) && selectedWorkTypes.length > 0) {
             filters.employment_type = selectedWorkTypes;
@@ -219,6 +220,7 @@ function JobPostingLanding() {
 
     const fetchJobs = async () => {
         setLoading(true);
+        setSelectedJob({});
         try {
             const apiUrl = search(); // get the full URL based on current filters
             console.log(apiUrl);
@@ -399,13 +401,14 @@ function JobPostingLanding() {
                 {/* Centered Search Bar */}
                 <div className="flex-1 flex justify-center md:ml-30 ml-8">
                     <JobSearchBar 
-                    searchInput={searchInput}
-                    setSearchInput={setSearchInput}
-                    setLoading={setLoading}
-                    setJobList={setJobList}
-                    selectedWorkTypes={selectedWorkTypes}
-                    selectedRemoteOption={selectedRemoteOption}
-                    salaryRange={salaryRange}
+                        searchInput={searchInput}
+                        setSearchInput={setSearchInput}
+                        setLoading={setLoading}
+                        setJobList={setJobList}
+                        selectedWorkTypes={selectedWorkTypes}
+                        selectedRemoteOption={selectedRemoteOption}
+                        salaryRange={salaryRange}
+                        setSelectedJob={setSelectedJob}
                     />
                 </div>
 
@@ -432,6 +435,7 @@ function JobPostingLanding() {
                                     selectedJobId={selectedJobId}
                                     setSelectedJobId={setSelectedJobId}
                                     setMobileExpanded={setMobileExpanded}
+                                    
                                     />
                                 ))
                                 ) : (
