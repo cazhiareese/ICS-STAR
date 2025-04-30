@@ -35,16 +35,16 @@ const navigate = useNavigate();
                 {job.user_id === currentUserID ? (
   <button
     onClick={() => navigate(`/alumni/jobPosting/interested/${job.post_id}`)}
-    className="md:text-lg text-sm text-primary font-satoshi-bold underline hover:text-hover cursor-pointer"
+    className="md:text-lg text-sm text-primary font-satoshi-bold  hover:text-hover cursor-pointer"
   >
     {job.interested_count} are interested
   </button>
 ) : (
-  <span className="md:text-lg text-sm text-gray-500 font-satoshi-bold">
+  <span className="md:text-lg text-sm text-primary font-satoshi-bold">
     {job.interested_count} are interested
   </span>
 )}
-s
+
                     <Star className="w-4 h-4 text-primary" />
                 </div>
             </div>
