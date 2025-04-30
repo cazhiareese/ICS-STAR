@@ -10,8 +10,8 @@ function PendingUsersTable({ pendingUsers = [], loading = false }) {
   // Define fixed column widths
   const columnWidths = {
     col1: '5%',  // Empty (for image placeholder)
-    col2: '30%', // Name
-    col3: '15%', // Email
+    col2: '20%', // Name
+    col3: '20%', // Email
     col4: '15%', // Student Number
     col5: '25%', // Graduating Class
     col6: '15%', // Date of Registration
