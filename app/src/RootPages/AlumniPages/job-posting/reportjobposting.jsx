@@ -11,6 +11,7 @@ function ReportJobPosting() {
     details: "",
     files: [],
   });
+  const [isDragging, setIsDragging] = useState(false);
 
   const { jobid: id } = useParams();
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -34,14 +35,28 @@ function ReportJobPosting() {
     fetchJobOverview();
   }, [id, token]);
 
-  // Handle textarea change
   const handleDetailsChange = (e) => {
     setFormData({ ...formData, details: e.target.value });
   };
 
-  // Handle file selection
   const handleFileChange = (e) => {
     setFormData({ ...formData, files: Array.from(e.target.files) });
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    setFormData({ ...formData, files: droppedFiles });
   };
 
   return (
@@ -73,12 +88,19 @@ function ReportJobPosting() {
           />
         </div>
 
-        {/* File Upload */}
+        {/* File Upload with Drag & Drop */}
         <div>
           <label className="block font-medium text-gray-700 mb-2">
             Attach file(s) here:
           </label>
-          <div className="w-full h-[130px] border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center text-center text-gray-500 bg-gray-50 hover:bg-gray-100 transition-colors">
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`w-full h-[130px] border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center text-center transition-colors ${
+              isDragging ? "border-blue-400 bg-blue-50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+            }`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-8 w-8 mb-2 text-blue-500"
@@ -107,6 +129,14 @@ function ReportJobPosting() {
               onChange={handleFileChange}
             />
           </div>
+          {/* Preview file names */}
+          {formData.files.length > 0 && (
+            <ul className="mt-2 text-sm text-gray-700 list-disc list-inside">
+              {formData.files.map((file, index) => (
+                <li key={index}>{file.name}</li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
