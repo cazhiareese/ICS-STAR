@@ -16,7 +16,7 @@ function Navbar({ tokentype, verified, banned }) {
   }
 
   function handleAccount() {
-    console.log("Interested clicked");
+    navigate(`/${tokentype}/account/settings`);
   }
 
   function handleSearch() {
