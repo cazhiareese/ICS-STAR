@@ -7,11 +7,13 @@ import PendingDonationsTable from '../../../components/AdminComponents/pendingdo
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
+import AdminBack from '../../../components/AdminComponents/AdminBack';
 
 function AdminDonationInformation() {
   const navigate = useNavigate()
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const {driveid} = useParams();
+  const [token, setToken] = useState(null)
 
   const [progressData, setProgressData] = useState([]);
 
@@ -40,7 +42,7 @@ function AdminDonationInformation() {
     setCloseDonationLoading(true)
   
     try {
-      const response = await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`)
+      const response = await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {header})
       // console.log(response)
   
       // Show success message
@@ -56,11 +58,11 @@ function AdminDonationInformation() {
     setLoading(true)
 
     try {
-      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`)
+      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
       // console.log(donationResponse.data)   
       setDonation(donationResponse.data)
 
-      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
+      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
       setProgressData([
         { name: "progress", value: percentResponse.data.percent_funded },
         { name: "remaining", value: percentResponse.data.remaining_percent }
@@ -76,7 +78,7 @@ function AdminDonationInformation() {
   async function fetchNextVerifiedPage() {
     setVerifiedDonationLoading(true)
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`)
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`, {headers: { Authorization: `Bearer ${token}` }})
       // console.log(response)
       setTotalVerifiedPages(response.data.total_pages)
       setVerifiedDonations(response.data.data)
@@ -90,7 +92,7 @@ function AdminDonationInformation() {
   async function fetchNextPendingPage() {
     setPendingDonationLoading(true)
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page${pendingPage}1&page_size=5`)
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page${pendingPage}1&page_size=5`, {headers: { Authorization: `Bearer ${token}` }})
       console.log(response)
       setTotalPendingPages(response.data.total_pages)
       setPendingDonations(response.data.data)
@@ -101,23 +103,6 @@ function AdminDonationInformation() {
       console.log(error)
     } finally {
       setPendingDonationLoading(false)
-    }
-  }
-
-  async function fetchProgress() {
-    setLoading(true)
-    try {
-      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`)
-      // console.log(percentResponse.data)
-
-      setProgressData([
-        { name: "progress", value: percentResponse.data.percent_funded },
-        { name: "remaining", value: percentResponse.data.remaining_percent }
-      ])
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -132,6 +117,7 @@ function AdminDonationInformation() {
 
 
   useEffect(() => {
+    setToken(localStorage.getItem('token'))
     fetchNextPendingPage()
     fetchNextVerifiedPage()
     fetchData()
@@ -139,7 +125,7 @@ function AdminDonationInformation() {
   
 
   const COLORS = [
-    '#0B2B8C',
+    donation.percent_funded > 100 ? '#27AE60' : '#0B2B8C',
     '#F4F4F4',
   ];
 
@@ -152,10 +138,7 @@ function AdminDonationInformation() {
       ) : (
         <>
         {/* Back */}
-          <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
-            <MoveLeft className='text-primary'/> 
-            <p className='text-primary font-satoshi-medium text-lg'>Back to Donations List</p>
-          </button>
+        <AdminBack label={'Back to Donations List'}/>
           {/* Donation name and tag */}
           <div className='flex flex-row justify-between mb-5'>
             <div className='flex flex-row gap-2'>
@@ -280,7 +263,7 @@ function AdminDonationInformation() {
               </button>
             </div>
             <p className='font-satoshi-light'>{donation.description}</p>
-            <h2 className='text-lg font-satoshi-medium mt-2'>Relevant Links</h2>
+            <h2 className='text-lg font-satoshi-medium mt-4'>Relevant Links</h2>
             <div className='border-b border-gray-300 mb-1' />
             {donation.links.map((link) => (
               <div
@@ -289,7 +272,7 @@ function AdminDonationInformation() {
               >
                 <Link size={16} />
                 <a 
-                  className="font-satoshi-light hover:text-hover" 
+                  className="font-satoshi-light text-md hover:text-hover" 
                   href={link}
                   target="_blank"
                   rel="noopener noreferrer">
@@ -299,11 +282,16 @@ function AdminDonationInformation() {
             ))}
           </div>
           {/* Donations and filters */}
-          <div className='mb-3'>
+          <div className='flex flex-row justify-between mb-3'>
             <div className='flex items-end'>
               <h2 className='text-4xl font-satoshi-bold'>Donations</h2>
               <p className='text-lg font-satoshi-light'>/Verified</p>
             </div>
+            <PaginationComponent
+              page={verifiedPage}
+              setPage={setVerifiedPage}
+              totalPages={totalVerifiedPages}
+            />
           </div>
           {/* Verified Donations Table */}
           <div className='border border-gray-300 rounded-xl p-6 hidden h-fit lg:block bg-white'>
