@@ -69,7 +69,8 @@ from util.admin_donations_logic import (search_donation_drives,
                                         update_generic_drive_stats_this_week,
                                         update_generic_drive_stats_this_year,
                                         get_top_drives_with_goals_reached,
-                                        get_top_performing_drives
+                                        get_top_performing_drives,
+                                        get_all_verified_donations_all_drive
                                         )
 from datetime import datetime
 from uuid import UUID
@@ -741,6 +742,35 @@ def verified_monetary(
         total_pages=total_pages,
         data=paginated_results
     )
+
+@router.get("/admin/donations/")
+def donations(
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+    time_filter: str = Query(..., description="Filter type: 'last_7_days', 'last_30_days', or 'monthly'"),
+    isAcknowledged: bool = Query(..., description="True for verified donations, False for unverified donations"),
+):
+    
+    # Get paginated data and total records
+    data, total_records = get_all_verified_donations_all_drive(
+        db,
+        time_filter=time_filter,
+        page=page,
+        items_per_page=10,
+        is_acknowledged=isAcknowledged
+    )
+    
+    # Calculate total pages
+    total_pages = math.ceil(total_records / 10)
+    
+    # Return structured response
+    return {
+        "success": True,
+        "message": "Verified donations retrieved successfully",
+        "page": page,
+        "total_pages": total_pages,
+        "data": data
+    }
 
 @router.get("/admin/donations/generic-drive-view", response_model=AdminGenericDriveView)
 def view_generic_donation_drive(
