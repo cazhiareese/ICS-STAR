@@ -9,6 +9,8 @@ import SortModal from '../../../components/AdminComponents/sortmodal'
 import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 import SearchComponent from '../../../components/AdminComponents/SearchComponent'
+import TabSwitcher from '../../../components/AdminComponents/TabSwitcher'
+
 function AdminEvents() {
   const navigate = useNavigate()
   const [eventType, setEventType] = useState('active')
@@ -25,6 +27,11 @@ function AdminEvents() {
     {label: 'Date Concluded', value: 'concluded'},
     {label: 'RSVP Count', value: 'count'}
   ]
+
+  const eventTabs = [
+    { label: 'Active', value: 'active' },
+    { label: 'Finished', value: 'finished' },
+  ];
 
   const [sortBy, setSortBy] = useState(sorters[0].value);
   const [sortDirection, setSortDirection] = useState('desc');
@@ -106,16 +113,11 @@ function AdminEvents() {
       </div>
       {/* Alumni or student */}
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
-        <div className='w-full lg:w-auto  min-w-xs'>
-          {/* Alumni button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'active' ? 'border-primary font-satoshi-bold' : 'border-transparent font-satoshi-light'}`} onClick={() => setEventType('active')}>
-            <p className='text-black text-md'> Active </p>
-          </button>
-          {/* Student button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${eventType === 'finished' ? ' border-primary font-satoshi-bold' : 'border-transparent font-satoshi-light'}`} onClick={() => setEventType('finished')}>
-            <p className='text-black text-md'> Finished </p>
-          </button>
-        </div>
+        <TabSwitcher
+          currentTab={eventType}
+          setTab={setEventType}
+          tabs={eventTabs}
+        />
 
         <div className='relative flex items-center justify-end flex-1'>
           {/* Search */}
@@ -153,7 +155,7 @@ function AdminEvents() {
             ))}
           </div>
           ) : eventType === 'finished' ? (
-            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto">
+            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white">
               {events.length == 0 ? (
                 <div className='h-full w-full flex flex-row items-center justify-center'>
                   <h1 className='font-satoshi-regular text-3xl text-primary'>No events to show</h1>
