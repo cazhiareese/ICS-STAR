@@ -7,7 +7,7 @@ import uuid
 from fastapi import Depends, HTTPException, status, UploadFile, File, APIRouter, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from sqlalchemy import distinct, or_
+from sqlalchemy import distinct, or_, func
 from passlib.context import CryptContext
 from typing import List, Optional
 from schemas.user import CurrentUser
@@ -15,7 +15,7 @@ from schemas.user import CurrentUser
 from config.config import SECRET_KEY, ALGORITHM, SUPABASE_BUCKET, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES, GOOGLE_CLIENT_ID
 from config.database import get_db
 from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum, UnemploymentReasonEnum, UserEmploymentStatus, UnemploymentReason
-
+from models.job_posting_model import JobPosting, JobPostingInterestedIn, JobPostingTag
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -491,3 +491,96 @@ def get_user_scholarships(
 ):
     scholarships = db.query(UserScholarship.scholarship).filter(UserScholarship.user_id==user_id).all()
     return [scholarship[0] for scholarship in scholarships]
+
+def get_user_job_post_history(
+        user_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    query_result = db.query(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
+    ).filter(
+        JobPosting.user_id == user_id
+    ).outerjoin(
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).group_by(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+    ).all()
+    
+    # Now we need to get tags for each job posting
+    result = []
+    for row in query_result:
+        job_id = row.post_id
+        tags = db.query(JobPostingTag.tag).filter(JobPostingTag.post_id == job_id).all()
+        tag_list = [tag[0] for tag in tags]
+        
+        result.append({
+            "post_id": row.post_id,
+            "title": row.title,
+            "company": row.company,
+            "description": row.description,
+            "tags": tag_list,
+            "interested_count": row.interested_count
+        })
+    
+    return result
+
+def get_user_job_posting(
+        post_id: uuid.UUID,
+        db: Session = Depends(get_db),
+):
+    query_result = db.query(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
+        JobPosting.link,
+        JobPosting.image,
+        func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
+    ).outerjoin(
+        JobPostingInterestedIn, JobPosting.post_id == JobPostingInterestedIn.post_id
+    ).filter(
+        JobPosting.post_id == post_id
+    ).group_by(
+        JobPosting.post_id,
+        JobPosting.title,
+        JobPosting.company,
+        JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
+    ).first()
+    
+    # If no job posting is found, raise a 404 error
+    if not query_result:
+        raise HTTPException(status_code=404, detail="Job posting not found")
+    
+    # Get tags for the job posting
+    tags = db.query(JobPostingTag.tag).filter(JobPostingTag.post_id == post_id).all()
+    tag_list = [tag[0] for tag in tags]
+    
+    # Construct the response
+    response = {
+        "post_id": query_result.post_id,
+        "title": query_result.title,
+        "company": query_result.company,
+        "description": query_result.description,
+        "employment_type": query_result.employment_type,
+        "mode": query_result.mode,
+        "salary": query_result.salary,
+        "link": query_result.link,
+        "image": query_result.image,
+        "tags": tag_list,
+        "interested_count": query_result.interested_count
+    }
+    
+    return response

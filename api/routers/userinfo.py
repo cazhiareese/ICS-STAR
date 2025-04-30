@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships, get_user_job_post_history, get_user_job_posting
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 from models.job_posting_model import JobPosting
@@ -281,6 +281,25 @@ async def get_scholarships(
     scholarships = get_user_scholarships(user.user_id, db)
 
     return {"message": "success", "data": scholarships}
+
+@router.get("/profile/me/job-post-history")
+async def get_post_history(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+        
+    job_post_history = get_user_job_post_history(user.user_id, db)
+
+    return {"message": "success", "data": job_post_history}
+
+@router.get("/profile/me/job-post/{post_id}")
+async def get_user_post(
+    post_id: UUID,
+    db: Session = Depends(get_db)
+):
+    job_post = get_user_job_posting(post_id, db)
+
+    return {"message": "success", "data": job_post}
 
 @router.get("/profile/{user_id}/personal-information")
 async def get_profile(
