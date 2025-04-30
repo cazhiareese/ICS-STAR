@@ -63,7 +63,8 @@ console.log("Decoded token typee:", tokentype);
         setUserDetails({
           city: data.city,country: data.country,email: data.email,facebook: data.facebook, linkedin: data.linkedin, github: data.github,
           first_name: data.first_name,last_name: data.last_name,state: data.state,marital_status: data.marital_status,mobile_number: data.mobile_number,
-          is_banned: decoded.is_banned,is_verified: decoded.is_verified,user_type: decoded.role,
+          is_banned: decoded.is_banned,is_verified: decoded.is_verified,user_type: decoded.role, graduation_year: "",
+          graduation_semester: "",
 
         });
       } catch (error) {

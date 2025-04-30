@@ -58,47 +58,46 @@ export default function JobPosted() {
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
-            <div className='flex flex-row  gap-2 justify-center'>
-                {/* Scrollable wrapper */}
-                <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
-                    {!loading ? (
-                        <div className='flex flex-col gap-5 '>
-                        {jobList.map((job, index) => (
-                            <JobCard
-                            key={index}
-                            job={job}
-                            selectedJobId={selectedJobId}
-                            setSelectedJobId={setSelectedJobId}
-                            />
-                        ))}
-                        </div>
-                    ) : (
-                        <div className='flex flex-row justify-center h-full gap-5'>
-                            <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
-                            <CircularLoading />
-                        </div>
-                    )}
-                </div>
-
-
-
-                {/* Job Preview */} 
-                
-                {!selectedJob || !selectedJob.tags ? (
-  <div className="flex flex-col items-center justify-center w-full max-w-[500px] mx-auto px-4 py-8 sm:py-12 rounded-xl ">
-    <div className="text-primary opacity-50">
-      <BriefcaseBusiness size={120} className="sm:size-[200px]" />
-    </div>
-    <h1 className="text-primary opacity-50 text-2xl sm:text-3xl font-satoshi-bold text-center mt-4">
-      Select Job Posting
-    </h1>
+<div className="flex flex-col lg:flex-row lg:gap-2 justify-start items-start px-1">
+  {/* Scrollable Job List */}
+  <div className="h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full lg:max-w-[420px] outline-0 flex-shrink-0">
+    {!loading ? (
+      <div className="flex flex-col gap-5">
+        {jobList.map((job, index) => (
+          <JobCard
+            key={index}
+            job={job}
+            selectedJobId={selectedJobId}
+            setSelectedJobId={setSelectedJobId}
+          />
+        ))}
+      </div>
+    ) : (
+      <div className="flex flex-row justify-center h-full gap-5">
+        <h1 className="text-xl font-satoshi-bold text-gray-400">Loading Jobs</h1>
+        <CircularLoading />
+      </div>
+    )}
   </div>
-) : (
-  <JobExpandedCard job={selectedJob} currentUserID={userId} />
-)}
 
-                
-            </div>
+  {/* Job Preview */}
+  <div className="w-full flex-grow">
+    {!selectedJob || !selectedJob.tags ? (
+      <div className="flex flex-col items-center justify-center px-4 py-8 sm:py-12 rounded-xl">
+        <div className="text-primary opacity-50">
+          <BriefcaseBusiness size={120} className="sm:size-[200px]" />
+        </div>
+        <h1 className="text-primary opacity-50 text-2xl sm:text-3xl font-satoshi-bold text-center mt-4">
+          Select Job Posting
+        </h1>
+      </div>
+    ) : (
+      <JobExpandedCard job={selectedJob} currentUserID={userId} />
+    )}
+  </div>
+</div>
+
+
     </div>
   );
 }
