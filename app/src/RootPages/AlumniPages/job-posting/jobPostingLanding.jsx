@@ -16,7 +16,7 @@ function JobPostingLanding() {
     const [selectedJob, setSelectedJob] = useState({});
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
 
     const [showFilterModal, setShowFilterModal] = useState(false);
 
@@ -253,15 +253,27 @@ function JobPostingLanding() {
         <div className='flex flex-col mb-16'>
             <div className="flex flex-row w-full mt-8 shadow-md pb-8  rounded-full md:px-8 px-4">
                 {/* Filter Button aligned to the left */}
-                <button  
-                    onClick={() => setShowFilterModal(!showFilterModal)}
-                    className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12  text-primary border-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
-                >
-                    <Filter />
-                    <h1 className='hidden md:block'>Filters</h1>
-                    
+                {(selectedWorkTypes.length > 0 ||
+                salaryRange.max > 0 ||
+                selectedRemoteOption.length > 0) ? (
+                    <button  
+                        onClick={() => setShowFilterModal(!showFilterModal)}
+                        className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12 text-white border-primary bg-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                    >
+                        <Filter />
+                        <h1 className='hidden md:block'>Filters</h1>
+                    </button>
+                ) : (
+                    <button  
+                        onClick={() => setShowFilterModal(!showFilterModal)}
+                        className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12 text-primary border-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                    >
+                        <Filter />
+                        <h1 className='hidden md:block'>Filters</h1>
+                    </button>
+                )}
 
-                </button>
+
 
                 {/* Filters */}
                 {showFilterModal && (
@@ -278,8 +290,7 @@ function JobPostingLanding() {
                                 </span>
                                 <h1 className="ml-auto"><ChevronDown size={30} /></h1>
                             </div>
-
-                            
+                           
                             {/* dropDown for work type */}
                             {showWorkTypeDropdown && (
                                 <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">

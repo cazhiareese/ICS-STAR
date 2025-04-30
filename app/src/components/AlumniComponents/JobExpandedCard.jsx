@@ -19,21 +19,21 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
     // };
 
     // Close modal on outside click
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                modalRef.current &&
-                !modalRef.current.contains(event.target) &&
-                !ellipsisRef.current.contains(event.target)
-            ) {
-                setShowOptions(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+    // useEffect(() => {
+    //     const handleClickOutside = (event) => {
+    //         if (
+    //             modalRef.current &&
+    //             !modalRef.current.contains(event.target) &&
+    //             !ellipsisRef.current.contains(event.target)
+    //         ) {
+    //             setShowOptions(false);
+    //         }
+    //     };
+    //     document.addEventListener('mousedown', handleClickOutside);
+    //     return () => {
+    //         document.removeEventListener('mousedown', handleClickOutside);
+    //     };
+    // }, []);
 
     return (
 
@@ -74,14 +74,14 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
                         <div className="flex items-center gap-2 pt-2">
                             <h1 className='font-satoshi-bold text-lg'>{job.company}</h1>
                             {/* TODO: Add onclick */}
-                            <button className='cursor-pointer'
+                            {/* <button className='cursor-pointer'
                             onClick={() => {
                                 const url = job.link.startsWith('http') ? job.link : `https://${job.link}`;
                                 window.open(url, '_blank');
                             }}
                             >
                                 <SquareArrowOutUpRight size={20} />
-                            </button> 
+                            </button>  */}
                         </div>
                         <div className="flex items-center gap-2 pt-1">
                             <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
@@ -93,7 +93,11 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
                         
                         <div className="flex items-center gap-4 pt-2">
                             {/* Apply Button TODO: Add onclick */}
-                            <button  
+                            <button 
+                            onClick={() => {
+                                const url = job.link.startsWith('http') ? job.link : `https://${job.link}`;
+                                window.open(url, '_blank');
+                            }} 
                             className=" rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-32 h-12 cursor-pointer"
                             >
                                 Apply Here
