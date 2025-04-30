@@ -254,7 +254,7 @@ function AdminUserDetails() {
               )}
 
               {/* Action Button */}
-              <button className="mt-4 bg-error text-white px-4 py-2 rounded-3xl w-full cursor-pointer" onClick={() => {limitAccountAccess()}}>
+              <button className="font-satoshi-medium mt-4 bg-error text-white px-4 py-2 rounded-3xl w-52 cursor-pointer" onClick={() => {limitAccountAccess()}}>
                 Limit Account Access
               </button>
             </div>
