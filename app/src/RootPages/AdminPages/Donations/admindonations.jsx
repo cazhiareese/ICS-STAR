@@ -86,12 +86,7 @@ function AdminDonations() {
   
     
     return (
-      loading ? (
-        <div className='flex flex-row justify-center items-center h-screen'>
-          <CircularLoading/>
-        </div>
-      ) : (
-      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
+      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100'>
       {/* Header and add donation button */}
       <div className='flex justify-between items-center mb-4'>
         <h1 className='text-primary text-5xl font-satoshi-bold'>Donations</h1>
@@ -131,13 +126,13 @@ function AdminDonations() {
       </div>
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
           <div className='w-full lg:w-auto  min-w-xs'>
-            {/* Alumni button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'open' ? 'border-primary' : 'border-transparent'}`} onClick={() => setDonationType('open')}>
-              <p className='text-black font-satoshi-medium text-md'> Open </p>
+            {/* Open button */}
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'open' ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('open')}>
+              <p className=''> Open </p>
             </button>
-            {/* Student button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'closed' ? ' border-primary' : 'border-transparent'}`} onClick={() => setDonationType('closed')}>
-              <p className='text-black font-satoshi-medium text-md'> Closed </p>
+            {/* Close button */}
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'closed' ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('closed')}>
+              <p className=''> Closed </p>
             </button>
           </div>
           {/* Sort by */}
@@ -174,7 +169,7 @@ function AdminDonations() {
             />
           </div>
         </div>
-        <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
+        <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white'>
           {loading ? (
             <div className='w-full h-full flex items-center justify-center'>
               <CircularLoading/>
@@ -185,7 +180,6 @@ function AdminDonations() {
         </div>
     </div>
     )
-  )
 }
 
 export default AdminDonations
