@@ -69,13 +69,14 @@ function AdminEvents() {
         ? `${endpoint}&page=${page}`
         : `${endpoint}page=${page}`;
 
-      console.log(endpoint)
+      // console.log(endpoint)
 
   
       const response = await axios.get(`${API_BASE_URL}${endpoint}`,
         {headers: {
           Authorization: `Bearer ${token}`,
       }});
+      console.log(response)
       setEvents(response.data.data);
       setTotalPages(response.data.total_pages)
     } catch (error) {
@@ -116,16 +117,16 @@ function AdminEvents() {
         </div>
 
         <div className='relative flex items-center justify-end flex-1'>
-            <input
-              type="text"
-              placeholder="Search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
-            />
-            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
+          <input
+            type="text"
+            placeholder="Search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none mr-2 ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+          />
+          <Search className={`absolute mr-3 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
             
           {eventType === 'finished'?  <>
             <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
@@ -135,13 +136,12 @@ function AdminEvents() {
             </>: null }
           </div>
 
-        
-        {/* Page */}
-        <PaginationComponent
-          page={page}
-          setPage={setPage}
-          totalPages={totalPages}
-        />
+          {/* Page */}
+          <PaginationComponent
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </div>
         {
           loading ? (
