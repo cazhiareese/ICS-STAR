@@ -95,7 +95,7 @@ function AdminDonationInformation() {
   };
 
   // Inside your component:
-const textareaRef = useRef(null);
+  const textareaRef = useRef(null);
 
   // Adjust textarea height based on content
   useEffect(() => {
@@ -108,21 +108,19 @@ const textareaRef = useRef(null);
 
   async function handleUpdateGoal() {
     const formData = new FormData();
-    formData.append("goal", parseFloat(newGoal));
+    formData.append("target_cost", parseFloat(newGoal));
   
     try {
       const response = await axios.put(
         `${API_BASE_URL}/edit-donation-drive/goal/${driveid}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setEditGoalModal(false);
       setNewGoal('');
       fetchData();
-      alert(response.data.message); // Success message
     } catch (error) {
       console.error("Failed to update donation goal:", error);
-      alert("Failed to update goal: " + (error.response?.data?.detail || error.message));
     }
   }
 
