@@ -1123,16 +1123,10 @@ def get_all_verified_donations(
 # this is the same as view_donation_drive, except it is hardcoded to the drive_id of the generic drive and we will return total amount
 # of verified monetary, and unverified monetary donations instead of the percent progress 
 def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
-    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+    drive = db.query(DonationDrive.drive_id, DonationDrive.title).filter(DonationDrive.drive_id == drive_id).first()
 
     if not drive:
         return []
-    
-    pending_monetary_donations = get_all_pending_monetary_donations(db, drive_id)
-    pending_inkind_donations = get_all_pending_inkind_donations(db, drive_id)
-    
-    verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
-    verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
     
     # Calculate total amount raised from acknowledged monetary donations only
     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(
@@ -1142,28 +1136,6 @@ def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
             MonetaryDonation.is_acknowledged.is_(None)
         )
     ).scalar() or 0
-
-    pending_verifications = []
-    
-    # Add pending monetary donations to the list
-    for donation in pending_monetary_donations[0]:
-        pending_verifications.append(donation.dict())
-    
-    # Add pending in-kind donations to the list
-    for donation in pending_inkind_donations[0]:
-        pending_verifications.append(donation.dict())
-
-    # Format the verified donations list
-    verified_donations = []
-    
-    # Add verified monetary donations to the list
-    for donation in verified_monetary_donations:
-        verified_donations.append(donation.dict())
-    
-    # Add verified in-kind donations to the list
-    for donation in verified_inkind_donations:
-        verified_donations.append(donation.dict())
-
     
     # Get the total amount of monetary donations for the generic drive
     total_verified_monetary = db.query(func.sum(MonetaryDonation.amount)).filter(
@@ -1175,8 +1147,6 @@ def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         drive_id = drive.drive_id,
         title = drive.title,
         grand_total = total_amount,
-        pending_list = pending_verifications,
-        verified_list = verified_donations,
         verified_total = total_verified_monetary,
     )
 
