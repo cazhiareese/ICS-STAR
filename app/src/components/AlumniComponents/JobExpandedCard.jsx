@@ -104,12 +104,20 @@ import {
                   <Star size={24} />
                 </button>
                 <div className="flex items-center gap-1 pt-2">
-                <button
-      onClick={() => navigate(`/alumni/jobPosting/interested/${jobId}`)}
-      className="text-lg text-primary font-satoshi-bold underline hover:text-hover cursor-pointer"
-    >
-      {job.interested_count} are interested
-    </button>
+                {job.user_id === currentUserID ? (
+  <button
+    onClick={() => navigate(`/alumni/jobPosting/interested/${jobId}`)}
+    className="text-lg text-primary font-satoshi-bold  hover:text-hover cursor-pointer"
+  >
+    {job.interested_count} are interested
+  </button>
+) : (
+  <span className="text-lg text-primary font-satoshi-bold">
+    {job.interested_count} are interested
+  </span>
+)}
+
+
                 </div>
               </div>
             </div>
