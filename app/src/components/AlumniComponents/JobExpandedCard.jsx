@@ -265,9 +265,19 @@ import {
 
                             {/* Interested count TODO: Add onclick */}
                             <div className="flex items-center gap-1 pt-2 cursor-pointer">
-                                <span className="text-lg text-primary font-satoshi-bold underline hover:text-blue-700">
-                                    {job.interested_count} are interested
-                                </span>
+                            {job.user_id === currentUserID ? (
+  <button
+    onClick={() => navigate(`/alumni/jobPosting/interested/${jobId}`)}
+    className="text-lg text-primary font-satoshi-bold hover:hover cursor-pointer"
+  >
+    {job.interested_count} are interested
+  </button>
+) : (
+  <span className="text-lg text-primary font-satoshi-bold">
+    {job.interested_count} are interested
+  </span>
+)}
+
                             </div>
                         </div>
                         
