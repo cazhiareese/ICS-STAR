@@ -453,7 +453,8 @@ function Step3Onboarding() {
               >
                 <option>NGO</option>
                 <option>Government</option>
-                <option>Charitable</option>
+                <option>Private Sector</option>
+                <option>Others</option>
               </select>
             </div>
 
