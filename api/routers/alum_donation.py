@@ -11,8 +11,17 @@ from util.userutil import get_current_user
 from schemas.user import CurrentUser
 from schemas.user import UserTypeEnum
 from uuid import UUID
+from util.alum_donation_util import maya_donation
 
 router = APIRouter()
+
+@router.post("/maya-payment")
+async def direct_payment(value: int, user: CurrentUser = Depends(get_current_user)):
+    
+    if user.user_type.value == UserTypeEnum.student:
+        raise HTTPException(status_code=400, detail="For alumni only")
+    
+    return await maya_donation(value)
 
 @router.get("/drive-suggestions")
 def get_drive_suggestions(

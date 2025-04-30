@@ -73,6 +73,7 @@ def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None,
     ITEMS_PER_PAGE = 10
     query = db.query(
         User.user_id,
+        User.image,
         User.first_name, 
         User.last_name,
         func.split_part(User.student_number, '-', 1).label("batch"),
@@ -166,6 +167,7 @@ def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None,
             check = False
         al = {
             "user_id": alum["user_id"],
+            "image": alum["image"],
             "name": f"{alum['first_name']} {alum['last_name']}",
             "batch": alum["batch"],
             "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
@@ -199,6 +201,7 @@ def get_alumni_filter(
     query = db.query(
         User.user_id,
         User.first_name, 
+        User.image,
         User.last_name,
         func.split_part(User.student_number, '-', 1).label("batch"),
         User.city,
@@ -340,6 +343,7 @@ def get_alumni_filter(
         if needs_verified:
             al = {
                 "user_id": alum["user_id"],
+                "image": alum["image"],
                 "name": f"{alum['first_name']} {alum['last_name']}",
                 "batch": alum["batch"],
                 "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
@@ -351,6 +355,7 @@ def get_alumni_filter(
         else:
             al = {
                  "user_id": alum["user_id"],
+                 "image": alum["image"],
                 "name": f"{alum['first_name']} {alum['last_name']}",
                 "email": alum["email"],
                 "student_number": alum["student_number"],
@@ -379,6 +384,7 @@ def get_student_filter(
         User.user_id,
         User.first_name, 
         User.last_name,
+        User.image,
         func.split_part(User.student_number, '-', 1).label("batch"),
         User.standing,
         func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_updated'), 
@@ -475,6 +481,7 @@ def get_student_filter(
         if needs_verified:
             student_data = {
                 "user_id": student["user_id"],
+                "image": student["image"],
                 "name": f"{student['first_name']} {student['last_name']}",
                 "batch": student["batch"],
                 "standing": student["standing"],
@@ -485,6 +492,7 @@ def get_student_filter(
         else:
             student_data = {
                 "user_id": student["user_id"],
+                "image": student["image"],
                 "name": f"{student['first_name']} {student['last_name']}",
                 "email": student["email"],
                 "student_number": student["student_number"],

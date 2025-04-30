@@ -23,20 +23,73 @@ from uuid import UUID
 # Returns: a list of AdminDonationDriveOut objects
 def search_donation_drives(
     db: Session, 
-    search_string: str = "", 
+    search_string: str = "",
+    sort_by: str = "",
+    is_closed: bool = False, 
 ) -> list[AdminDonationDriveOut]:
     
-    query = db.query(DonationDrive)
+    if is_closed:
+        query = db.query(DonationDrive.drive_id, DonationDrive.title, DonationDrive.created_at).filter(DonationDrive.is_closed == True)
+
+        if sort_by == "date_created_newest":
+            query = query.order_by(DonationDrive.created_at.desc())
+        elif sort_by == "date_created_oldest":
+            query = query.order_by(DonationDrive.created_at.asc())
+        elif sort_by == "amount_raised_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "amount_raised_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "percent_funded_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "percent_funded_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "donation_count_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "donation_count_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "date_closed_newest":
+            query = query.order_by(DonationDrive.updated_at.desc())
+        elif sort_by == "date_closed_oldest":
+            query = query.order_by(DonationDrive.updated_at.asc())
+        else: # default sort is newest created
+            query = query.order_by(DonationDrive.created_at.desc())
+
+    else:
+        query = db.query(DonationDrive.drive_id, DonationDrive.title, DonationDrive.created_at).filter(DonationDrive.is_closed == False)
+
+        if sort_by == "date_created_newest":
+            query = query.order_by(DonationDrive.created_at.desc())
+        elif sort_by == "date_created_oldest":
+            query = query.order_by(DonationDrive.created_at.asc())
+        elif sort_by == "amount_raised_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "amount_raised_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "percent_funded_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "percent_funded_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "donation_count_descending":
+            query = query.order_by(DonationDrive.target_cost.desc())
+        elif sort_by == "donation_count_ascending":
+            query = query.order_by(DonationDrive.target_cost.asc())
+        elif sort_by == "date_closed_newest":
+            query = query.order_by(DonationDrive.updated_at.desc())
+        elif sort_by == "date_closed_oldest":
+            query = query.order_by(DonationDrive.updated_at.asc())
+        else:
+            query = query.order_by(DonationDrive.created_at.desc())
+
     
     # Apply search filter if provided
     if search_string:
         query = query.filter(DonationDrive.title.ilike(f"%{search_string}%"))
-    
+
     drives = query.all()
-    
+
     drive_out_list = []
+
     for drive in drives:
-        # If generic drive, skip it
         if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
             continue
 
@@ -56,7 +109,6 @@ def search_donation_drives(
         total_percentage = percent_info.percent_funded
         remaining_percentage = percent_info.remaining_percent
 
-        # Format created_at date to Month DD, YYYY
         date_created = drive.created_at.strftime("%B %d, %Y") if drive.created_at else None
 
         drive_out = AdminDonationDriveOut(
@@ -68,6 +120,7 @@ def search_donation_drives(
             amount_raised = total_amount,
             remaining_percent = remaining_percentage,
         )
+
         drive_out_list.append(drive_out)
 
     return drive_out_list
@@ -139,6 +192,10 @@ def get_all_open_drives_by_amount_raised_descending(db: Session) -> list[AdminDo
     
     drive_out_list = []
     for drive in drives:
+
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
+
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -183,6 +240,8 @@ def get_all_open_drives_by_amount_raised_ascending(db: Session) -> list[AdminDon
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -227,6 +286,8 @@ def get_all_open_drives_by_percent_funded_descending(db: Session) -> list[AdminD
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -271,6 +332,8 @@ def get_all_open_drives_by_percent_funded_ascending(db: Session) -> list[AdminDo
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -315,6 +378,8 @@ def get_all_open_drives_by_donation_count_descending(db: Session) -> list[AdminD
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -359,6 +424,8 @@ def get_all_open_drives_by_donation_count_ascending(db: Session) -> list[AdminDo
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -403,6 +470,8 @@ def get_all_open_drives_by_date_created_newest(db: Session) -> list[AdminDonatio
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -447,6 +516,8 @@ def get_all_open_drives_by_date_created_oldest(db: Session) -> list[AdminDonatio
     
     drive_out_list = []
     for drive in drives:
+        if drive.drive_id == UUID("98ba9554-28e1-4ad8-a199-7ecd3a57b384"):
+            continue
         # Calculate monetary donation count
         monetary_count = db.query(func.count(MonetaryDonation.donation_id)).filter(MonetaryDonation.drive_id == drive.drive_id, MonetaryDonation.is_acknowledged == True).scalar() or 0
         
@@ -976,7 +1047,7 @@ def get_all_closed_drives_by_target_cost_ascending(db: Session) -> list[AdminClo
 # drive_id: UUID - ID of the donation drive to view
 # 
 # Returns: AdminOneDonationDriveOut object containing details of the donation drive
-def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
+def view_donation_drive(db: Session, drive_id: UUID) -> AdminOneDonationDriveOut:
     drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
 
     if not drive:
@@ -992,35 +1063,7 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
     total_percentage = percent_info.percent_funded
     remaining_percentage = percent_info.remaining_percent
 
-    pending_monetary_donations = get_all_pending_monetary_donations(db, drive_id)
-    pending_inkind_donations = get_all_pending_inkind_donations(db, drive_id)
-    
-    verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
-    verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
-
     drive_links = get_all_links_by_drive_id(db, drive_id)
-
-    # Format the pending donations list
-    pending_verifications = []
-    
-    # Add pending monetary donations to the list
-    for donation in pending_monetary_donations[0]:
-        pending_verifications.append(donation.dict())
-    
-    # Add pending in-kind donations to the list
-    for donation in pending_inkind_donations[0]:
-        pending_verifications.append(donation.dict())
-
-    # Format the verified donations list
-    verified_donations = []
-    
-    # Add verified monetary donations to the list
-    for donation in verified_monetary_donations:
-        verified_donations.append(donation.dict())
-    
-    # Add verified in-kind donations to the list
-    for donation in verified_inkind_donations:
-        verified_donations.append(donation.dict())
 
     date_started = drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None
 
@@ -1028,8 +1071,6 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         drive_id = drive.drive_id,
         title = drive.title,
         percent_funded = total_percentage,
-        pending_list = pending_verifications,
-        verified_list = verified_donations,
         current_amount = total_amount,
         target_cost = drive.target_cost,
         is_closed = drive.is_closed,
@@ -1039,19 +1080,56 @@ def view_donation_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         description = drive.description
     )
 
+def get_all_pending_donations(
+    db: Session,
+    drive_id: UUID,
+) -> dict:
+    
+    # Get all pending monetary donations
+    pending_monetary_donations, monetary_stats = get_all_pending_monetary_donations(db, drive_id)
+    
+    # Get all pending in-kind donations
+    pending_inkind_donations, inkind_stats = get_all_pending_inkind_donations(db, drive_id)
+
+    # Combine pending donations into one list
+    pending_verifications = []
+    for donation in pending_monetary_donations:
+        pending_verifications.append(donation.dict())
+    for donation in pending_inkind_donations:
+        pending_verifications.append(donation.dict())
+
+    return pending_verifications, {
+        "monetary_stats": monetary_stats,
+        "inkind_stats": inkind_stats
+    }
+
+def get_all_verified_donations(
+    db: Session,
+    drive_id: UUID,
+) -> list:
+    
+    # Get all verified monetary donations
+    verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
+    
+    # Get all verified in-kind donations
+    verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
+
+    # Combine verified donations into one list
+    pending_verifications = []
+    for donation in verified_monetary_donations:
+        pending_verifications.append(donation.dict())
+    for donation in verified_inkind_donations:
+        pending_verifications.append(donation.dict())
+
+    return pending_verifications
+
 # this is the same as view_donation_drive, except it is hardcoded to the drive_id of the generic drive and we will return total amount
 # of verified monetary, and unverified monetary donations instead of the percent progress 
 def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
-    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+    drive = db.query(DonationDrive.drive_id, DonationDrive.title).filter(DonationDrive.drive_id == drive_id).first()
 
     if not drive:
         return []
-    
-    pending_monetary_donations = get_all_pending_monetary_donations(db, drive_id)
-    pending_inkind_donations = get_all_pending_inkind_donations(db, drive_id)
-    
-    verified_monetary_donations = get_all_verified_monetary_donations(db, drive_id)
-    verified_inkind_donations = get_all_verified_inkind_donations(db, drive_id)
     
     # Calculate total amount raised from acknowledged monetary donations only
     total_amount = db.query(func.sum(MonetaryDonation.amount)).filter(
@@ -1061,28 +1139,6 @@ def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
             MonetaryDonation.is_acknowledged.is_(None)
         )
     ).scalar() or 0
-
-    pending_verifications = []
-    
-    # Add pending monetary donations to the list
-    for donation in pending_monetary_donations[0]:
-        pending_verifications.append(donation.dict())
-    
-    # Add pending in-kind donations to the list
-    for donation in pending_inkind_donations[0]:
-        pending_verifications.append(donation.dict())
-
-    # Format the verified donations list
-    verified_donations = []
-    
-    # Add verified monetary donations to the list
-    for donation in verified_monetary_donations:
-        verified_donations.append(donation.dict())
-    
-    # Add verified in-kind donations to the list
-    for donation in verified_inkind_donations:
-        verified_donations.append(donation.dict())
-
     
     # Get the total amount of monetary donations for the generic drive
     total_verified_monetary = db.query(func.sum(MonetaryDonation.amount)).filter(
@@ -1094,8 +1150,6 @@ def view_generic_drive(db: Session, drive_id: UUID) -> AdminDonationDriveOut:
         drive_id = drive.drive_id,
         title = drive.title,
         grand_total = total_amount,
-        pending_list = pending_verifications,
-        verified_list = verified_donations,
         verified_total = total_verified_monetary,
     )
 

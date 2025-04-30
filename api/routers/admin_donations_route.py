@@ -70,7 +70,9 @@ from util.admin_donations_logic import (search_donation_drives,
                                         update_generic_drive_stats_this_year,
                                         get_top_drives_with_goals_reached,
                                         get_top_performing_drives,
-                                        get_all_verified_donations_all_drive
+                                        get_all_verified_donations_all_drive,
+                                        get_all_pending_donations,
+                                        get_all_verified_donations
                                         )
 from datetime import datetime
 from uuid import UUID
@@ -101,10 +103,12 @@ def paginate_results_donation(results: list, page: int, page_size: int):
 @router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
 def search_drives(
     title: str = "",
+    sort_by: str = "",
+    is_closed: bool = False,
     db: Session = Depends(get_db)
 ):
     
-    results = search_donation_drives(db, title)
+    results = search_donation_drives(db, title, sort_by, is_closed)
 
     return results
 
@@ -788,7 +792,8 @@ def view_generic_donation_drive(
 @router.get("/admin/donations/view/{drive_id}", response_model=AdminOneDonationDriveOut)
 def view_drive(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+
 ):
     results = view_donation_drive(db, drive_id)
 
@@ -796,6 +801,64 @@ def view_drive(
         raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
+
+@router.get("/admin/donations/get-all-pending-donations/{drive_id}", response_model=dict)
+def all_pending_donations(
+    drive_id: UUID,
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(10, ge=1, le=100, description="Items per page"),
+    db: Session = Depends(get_db)
+):
+    results, stats = get_all_pending_donations(db, drive_id)
+
+    if not results:
+        return {
+            "message": "No pending donations found",
+            "page": page,
+            "total_pages": 0,
+            "data": [],
+            "monetary_total": 0,
+            "inkind_total": 0
+        }
+
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "data": paginated_results,
+        "monetary_total": stats["monetary_stats"].get("total_amount", 0),
+        "inkind_total": stats["inkind_stats"].get("total_count", 0)
+    }
+
+@router.get("/admin/donations/get-all-verified-donations/{drive_id}", response_model=dict)
+def all_verified_donations(
+    drive_id: UUID,
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(10, ge=1, le=100, description="Items per page"),
+    db: Session = Depends(get_db)
+):
+    results = get_all_verified_donations(db, drive_id)
+
+    if not results:
+        return {
+            "message": "No verified donations found",
+            "page": page,
+            "total_pages": 0,
+            "data": [],
+            "monetary_total": 0,
+            "inkind_total": 0
+        }
+
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "data": paginated_results
+    }
 
 @router.get("/admin/donations/percent-funded/{drive_id}", response_model=PercentOut)
 def percent_funded(

@@ -93,8 +93,6 @@ class AdminOneDonationDriveOut(BaseModel):
     drive_id: UUID
     title: str
     percent_funded: float
-    pending_list: list[dict]
-    verified_list: list[dict]
     current_amount: float
     target_cost: float
     is_closed: bool
@@ -102,7 +100,6 @@ class AdminOneDonationDriveOut(BaseModel):
     links: List[str]
     created_at: str
     description: str
-
     class Config:
         from_attributes = True
 
@@ -139,6 +136,7 @@ class ShortenedInKindDonationsOut(BaseModel):
     donation_time: str
     name: str
     donation_details: str
+    type: str
 
     class Config:
         from_attributes = True
@@ -173,8 +171,6 @@ class AdminGenericDriveView(BaseModel):
     drive_id: UUID
     title: str
     grand_total: float
-    pending_list: list[dict]
-    verified_list: list[dict]
     verified_total: float
 
     class Config:

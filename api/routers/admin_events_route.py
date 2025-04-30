@@ -272,9 +272,10 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
             Event.title,
             Event.image,
             Event.location,
-            func.count(EventConfirmedBy.user_id).label("attendee_count"),
-            func.array_agg(EventDate.date).label("event_dates"),
-            func.max(EventDate.date).label("latest_date")
+            func.count(func.distinct(EventConfirmedBy.user_id)).label("attendee_count"),
+            func.array_agg(func.distinct(EventDate.date)).label("event_dates"),
+            func.max(EventDate.date).label("latest_date"),
+            Event.is_closed
         )\
         .filter(Event.is_concluded == False, Event.is_deleted==False, Event.title.ilike(f"%{title}%") )\
         .outerjoin(EventConfirmedBy, Event.event_id == EventConfirmedBy.event_id)\
@@ -324,7 +325,8 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
             "image": event.image,
             "location": event.location,
             "datetime": dates_list,
-            "attendees": event.attendee_count
+            "attendees": event.attendee_count, 
+            "is_closed": event.is_closed
         })
     
     return {"message": "success", "total_pages": total_pages, "page": page, "data": processed_events}
@@ -336,7 +338,7 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
         query = db.query(
             Event.event_id,
             Event.title,
-            func.count(EventConfirmedBy.user_id).label("attendee_count"),
+            func.count(func.distinct(EventConfirmedBy.user_id)).label("attendee_count"),
             func.array_agg(EventDate.date).label("event_dates"),
             func.array_agg(EventTag.tag).label("event_tags"),
             Event.updated_at.label("Date Concluded")
