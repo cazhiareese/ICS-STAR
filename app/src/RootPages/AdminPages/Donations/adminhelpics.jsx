@@ -21,7 +21,7 @@ function AdminHelpIcs() {
     setLoading(true)
 
     try {
-      const genDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/view/generic-drive`)
+      const genDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/generic-drive-view`)
       console.log(genDriveRes.data)
       setDriveData(genDriveRes.data)
       setPendingDonations(genDriveRes.data.pending_list)
