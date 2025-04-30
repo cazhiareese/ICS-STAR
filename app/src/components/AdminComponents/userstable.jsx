@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function UsersTable({ data, loading=null }) {
+function UsersTable({ data, loading = null }) {
   const navigate = useNavigate();
 
   return (
-    <table className="w-full h-full">
+    <table className="w-full">
       {/* Table Header */}
       <thead>
         <tr className="text-left text-xs text-primary font-satoshi-regular">
@@ -22,36 +22,27 @@ function UsersTable({ data, loading=null }) {
       {/* Table Body */}
       <tbody className="font-satoshi-regular text-md">
         {loading ? (
-          // Skeleton Rows
-          Array.from({ length: 8 }).map((_, index) => (
-            <tr key={`skeleton-${index}`} className="border-b border-gray-200">
+          // Skeleton Rows (10 rows for pagination)
+          Array.from({ length: 10 }).map((_, index) => (
+            <tr key={`skeleton-${index}`} className="border-b border-gray-200 h-10">
               <td className="py-3 px-4"></td>
               <td className="py-3 px-4">
+                <div className="h-5 bg-gray-200 rounded animate-pulse w-3/4"></div>
+              </td>
+              <td className="py-3 px-4">
                 <div className="h-5 bg-gray-200 rounded animate-pulse w-1/2"></div>
-              </td>
-              <td className="py-3 px-4">
-                <div className="h-5 bg-gray-200 rounded animate-pulse w-1/4"></div>
-              </td>
-              <td className="py-3 px-4">
-                <div className="h-5 bg-gray-200 rounded animate-pulse w-1/3"></div>
               </td>
               <td className="py-3 px-4">
                 <div className="h-5 bg-gray-200 rounded animate-pulse w-2/3"></div>
               </td>
               <td className="py-3 px-4">
+                <div className="h-5 bg-gray-200 rounded animate-pulse w-3/4"></div>
+              </td>
+              <td className="py-3 px-4">
+                <div className="h-5 bg-gray-200 rounded animate-pulse w-1/2"></div>
+              </td>
+              <td className="py-3 px-4">
                 <div className="h-5 bg-gray-200 rounded animate-pulse w-1/3"></div>
-              </td>
-              <td className="py-3 px-4">
-                <div className="h-5 bg-gray-200 rounded animate-pulse w-1/4"></div>
-              </td>
-              <td className="py-3 px-4">
-                <div className="h-5 bg-gray-200 rounded animate-pulse w-1/4"></div>
-              </td>
-              <td className="py-3 px-4">
-                <div className="h-5 bg-gray-200 rounded animate-pulse w-1/4"></div>
-              </td>
-              <td className="py-3 px-4">
-                <div className="h-5 bg-gray-200 rounded animate-pulse w-1/4"></div>
               </td>
             </tr>
           ))
@@ -59,11 +50,11 @@ function UsersTable({ data, loading=null }) {
           // Actual Data
           data.map((user, index) => (
             <tr
-              key={index}
-              className="hover:bg-secondary cursor-pointer"
+              key={user.user_id}
+              className="border-b border-gray-200 h-10 hover:bg-secondary cursor-pointer"
               onClick={() => navigate(`/admin/records/${user.user_id}`)}
             >
-              <td></td>
+              <td className="py-3 px-4"></td>
               <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold">{user.name}</td>
               <td className="py-3 px-4">{user.batch}</td>
               <td className="py-3 px-4">{user.location_base}</td>

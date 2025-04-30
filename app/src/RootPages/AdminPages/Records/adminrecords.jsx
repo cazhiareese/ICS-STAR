@@ -179,7 +179,7 @@ function AdminRecords() {
           </div>
         </div>
         {/* Table for desktop*/}
-            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto">
+            <div className="border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto">
               <UsersTable data={users} loading={loading}/>
             </div>
       {/* Table for mobile */}
