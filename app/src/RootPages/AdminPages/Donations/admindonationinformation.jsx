@@ -86,9 +86,9 @@ function AdminDonationInformation() {
   const COLORS = ["#0B2B8C", "#F4F4F4"];
 
   return (
-    <div className='flex flex-col lg:p-6 overflow-auto max-w-7xl mx-auto'>
+    <div className='flex flex-col lg:p-6 overflow-auto max-w-7xl mx-auto bg-gray-100'>
       {loading ? (
-        <div className='flex h-full w-full items-center justify-center'>
+        <div className='flex h-screen w-full items-center justify-center'>
           <CircularLoading/>
         </div>
       ) : (
@@ -147,7 +147,7 @@ function AdminDonationInformation() {
           {/* Goal progress and recent transactions */}
           <div className='flex flex-row gap-2 mb-4 h-60'>
             {/* Goal Progress */}
-            <div className='flex flex-col items-center justify-center flex-1/3 pb-10 border border-gray-300 rounded-xl h-full'>
+            <div className='flex flex-col items-center justify-center flex-1/3 pb-10 border border-gray-300 rounded-xl h-full bg-white'>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -173,7 +173,7 @@ function AdminDonationInformation() {
               </div>
             </div>
             {/* Pending donations table */}
-              <div className='flex-2/3 border border-gray-300 rounded-xl p-6 w-full flex flex-col h-full'>
+              <div className='flex-2/3 border border-gray-300 rounded-xl p-6 w-full flex flex-col h-full bg-white'>
                 <h2 className='font-satoshi-medium text-black text-2xl'>Pending Verification</h2>
                 <div className='w-full h-full flex-1 overflow-auto'>
                   {noPendingDonations ? (
@@ -191,13 +191,13 @@ function AdminDonationInformation() {
                   navigate(`/admin/donations/pending-donations/${driveid}`, 
                     {state: {pendingDonations, driveName: donation.title}})
                   }}>
-                  <p className='font-satoshi-light hover:hover'> View all pending verifications </p>
+                  <p className='font-satoshi-light hover:text-hover'> View all pending verifications </p>
                   <MoveRight/>
                 </button>
               )}
             </div>
           </div>
-          <div className='border border-gray-300 rounded-xl p-4 mb-3'>
+          <div className='border border-gray-300 rounded-xl p-4 mb-3 bg-white'>
             <h2 className='text-2xl font-satoshi-medium mb-2'>Description</h2>
             <p className='font-satoshi-light'>{donation.description}</p>
             <h2 className='text-lg font-satoshi-medium mt-2'>Relevant Links</h2>
@@ -226,7 +226,7 @@ function AdminDonationInformation() {
             </div>
           </div>
           {/* Verified Donations Table */}
-          <div className='border border-gray-300 rounded-xl p-6 hidden h-fit lg:block'>
+          <div className='border border-gray-300 rounded-xl p-6 hidden h-fit lg:block bg-white'>
             <VerifiedDonationsTable data={verifiedDonations}/>
           </div>
           {/* View Details Modal */}
