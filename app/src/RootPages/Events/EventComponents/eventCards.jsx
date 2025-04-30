@@ -53,7 +53,6 @@ const EventCards = ({event}) => {
                 {event.image && (
                         <img
                             src={event.image}
-                            alt="Event"
                             className="w-full h-full object-cover"
                         />
                 )}
@@ -71,10 +70,11 @@ const EventCards = ({event}) => {
                 </div>
                 <div className="flex items-center mt-2 text-gray-600 space-x-3">
                     <Calendar />
-                    <div className="flex flex-col w-1/2 overflow-y-scroll max-h-32">
+                    <div className="flex flex-row w-full overflow-y-scroll max-h-32 space-x-5">
                             {event.dates.map((datetime, index) => (
                                 <label key={index}>{parseTime(datetime)}</label>
                             ))}
+
                     </div>
                 </div>
                 <div className="flex flex-row gap-2 mt-4 overflow-x-scroll">

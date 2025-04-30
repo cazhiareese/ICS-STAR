@@ -22,7 +22,7 @@ function OnBoarding() {
                 }
 
                 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-                const response = await fetch(`https://ics-star-api.vercel.app/users/me`, {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -58,7 +58,9 @@ function OnBoarding() {
                 setName(result.first_name + " " + result.last_name)
                 setEmail(result.email)
                 setUserType(result.user_type)
+                console.log(result)
             } catch (err) {
+
                 console.error("Error fetching data: ", err);
                 setError("Failed to load profile data. Please try again.");
             }
