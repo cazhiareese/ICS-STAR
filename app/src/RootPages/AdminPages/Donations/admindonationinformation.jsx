@@ -51,19 +51,22 @@ function AdminDonationInformation() {
   const handleSave = async () => {
     const formData = new FormData();
     formData.append("description", description);
-    formData.append("links", JSON.stringify(links));
+  
+    if (links && links.length > 0) {
+      links.forEach((link) => {
+        formData.append("support_links", link);
+      });
+    }
   
     try {
-      const response = await axios.put(
-        `${API_BASE_URL}/edit-donation-drive/description-links/${driveid}`,
+      await axios.put(`${API_BASE_URL}/edit-donation-drive/description-links/${driveid}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+        { headers: { Authorization: `Bearer ${token}` }}
       );
-  
       setDonation({ ...donation, description, links });
       setEditing(false);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to update donation:", error);
     }
   };
 
@@ -104,17 +107,22 @@ const textareaRef = useRef(null);
   }, [description]);
 
   async function handleUpdateGoal() {
+    const formData = new FormData();
+    formData.append("goal", parseFloat(newGoal));
+  
     try {
-      await axios.put(
+      const response = await axios.put(
         `${API_BASE_URL}/edit-donation-drive/goal/${driveid}`,
-        { goal: parseFloat(newGoal) },
-        { headers: { Authorization: `Bearer ${token}` } }
+        formData,
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
       );
       setEditGoalModal(false);
       setNewGoal('');
       fetchData();
+      alert(response.data.message); // Success message
     } catch (error) {
-      console.error('Failed to update donation goal', error);
+      console.error("Failed to update donation goal:", error);
+      alert("Failed to update goal: " + (error.response?.data?.detail || error.message));
     }
   }
 
