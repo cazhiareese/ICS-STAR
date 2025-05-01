@@ -23,6 +23,7 @@ function JobPostingLanding() {
 
     const [showRemoteOptionDropdown, setShowRemoteDropdown] = useState(false);
     const [selectedRemoteOption, setSelectedRemoteOption] = useState([]); 
+const [loading, setLoading] = useState(false);
 
     const [showSalaryRangeDropdown, setShowSalaryRangeDropdown] = useState(false);
     const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 });
@@ -130,6 +131,7 @@ function JobPostingLanding() {
                 setLoading(false);
                 setError(true);
             } 
+
         };
 
         fetchJobs();
