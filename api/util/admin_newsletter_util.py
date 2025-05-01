@@ -1,13 +1,16 @@
 
 
 from typing import Any, Dict, List, Optional
+import brevo_python
+from brevo_python.rest import ApiException
 from fastapi import Depends, Form, HTTPException, UploadFile
 from requests import Session
 from sqlalchemy import UUID, func, or_
+from api.util.emailing.newsletter import newsLetter
 from models.newsletter_model import Newsletter, NewsletterLink, NewsletterTag
 from models.usermodel import User
 from schemas.newsletter_schema import ListNewsletterOut, SingleNewsLetterOut
-from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET
+from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET,brevo_configuration, email_sender
 from config.database import get_db
 from datetime import datetime
 
@@ -117,7 +120,9 @@ def create_util(
                     .all()
                 employFiltered =  {"name": f"{query.first_name} {query.last_name}", "email": query.email}
                 sendSet.update(employFiltered)
-   
+        sendSet = list(sendSet)
+        
+        send_email(newsId=newsletter.newsletter_id, recipients=sendSet, db=db)
     return newsletter.newsletter_id
 
 def edit_util(
@@ -293,3 +298,53 @@ def delete_util(
         db.refresh(newsletter)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete newsletter: {e}")
+    
+def get_newsletter_by_id(newsId: UUID, db: Session):
+    newsletter = db.query(Newsletter.title, 
+                          Newsletter.newsletter_id,
+                            Newsletter.image, 
+                            Newsletter.content, 
+                            Newsletter.date_posted).filter(Newsletter.newsletter_id == newsId, Newsletter.is_deleted == False).first()
+    
+    return {
+        "newsletter_id": newsletter.newsletter_id,
+        "title": newsletter.title,
+        "image": newsletter.image,
+        "date_posted": newsletter.date_posted.strftime("%B %d, %Y, %I:%M %p"),
+        "content": newsletter.content
+    }
+
+def send_email(newsId: UUID, recipients: List[dict], db: Session):
+    try:
+        newsletter = get_newsletter_by_id(newsId= newsId, db=db)
+        newsContent = {
+            "content" : newsletter['content'],
+            "title": newsletter['title'], 
+            "newsId": newsletter['newsletter_id'], 
+            "image": newsletter['image'], 
+            "datePosted": newsletter['date_posted']
+        }
+        print(recipients)
+        finalImage = newsContent['image'] if newsContent.get('image') else 'https://rtyworjvisvjmixvxwmc.supabase.co/storage/v1/object/public/128storage/emailing_assets/default.jpg'
+        api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
+        subject = f"{newsContent['title']}"
+        sender = email_sender
+        html_content = newsLetter(newsId=newsContent['newsId'], 
+                                title=newsContent['title'],
+                                datePosted=newsContent['datePosted'],
+                                image=finalImage,
+                                content= newsContent['content'])
+        to = [email_sender]
+        bcc=recipients
+        send_smtp_email = brevo_python.SendSmtpEmail(to=to, bcc=bcc, html_content=html_content, sender=sender, subject=subject)
+
+        try:
+            print("before execute")
+            api_response = api_instance.send_transac_email(send_smtp_email)
+            return {"message": api_response}
+        except ApiException as e:
+            print(f"Error: {e}")
+
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {e}")

@@ -5,7 +5,7 @@ import brevo_python
 from brevo_python.rest import ApiException
 from sqlalchemy import UUID, func, or_
 from util.emailing.invitation import invitation
-from models.usermodel import User, UserAffiliation
+from models.usermodel import User, UserAffiliation, UserTypeEnum
 from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET, brevo_configuration, email_sender
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -157,6 +157,7 @@ async def create_event_util(
     
     if sendEmail:
         details = []
+        
         if not isAll:
             if visibleList and len(visibleList)>0:
                 for userId in visibleList:
@@ -165,6 +166,13 @@ async def create_event_util(
                         "name": f"{recipients.first_name} {recipients.last_name}",
                         "email": recipients.email
                     })
+        else:
+            users = db.query(User.first_name, User.last_name, User.email).filter(User.user_type == UserTypeEnum.alumni, User.is_verified == True).all()
+            for user in users:
+                details.append({
+                    "name": f"{user.first_name} {user.last_name}",
+                    "email": user.email
+                })
         
             send_email_util(eventId=event.event_id, recipients=details, db=db)
 

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, Query
 from datetime import date, datetime
 import pytz
 from sqlalchemy import asc, desc, func
-from models.usermodel import User
+from models.usermodel import User, UserTypeEnum
 from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, EventTag, EventVisibleTo
 from uuid import UUID
 from sqlalchemy.orm import Session
@@ -389,14 +389,26 @@ def get_tags(db: Session = Depends(get_db)):
 
 @event_router.post("/send-email/{event_id}")
 def send_email(event_id: UUID, db: Session=Depends(get_db)):
-    user_ids = db.query(EventVisibleTo.user_id).filter(EventVisibleTo.event_id == event_id).all()
-    details = []
-    for user in user_ids:
-        recipients = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
-        details.append({
-            "name": f"{recipients.first_name} {recipients.last_name}",
-            "email": recipients.email
-        })
+    event = db.query(Event.is_all).filter(Event.event_id == event_id).first()
+
+    if event.is_all:
+        details = []
+        users = db.query(User.first_name, User.last_name, User.email).filter(User.user_type == UserTypeEnum.alumni, User.is_verified == True).all()
+        for user in users:
+            details.append({
+                "name": f"{user.first_name} {user.last_name}",
+                "email": user.email
+            })
+    
+    else:
+        user_ids = db.query(EventVisibleTo.user_id).filter(EventVisibleTo.event_id == event_id).all()
+        details = []
+        for user in user_ids:
+            recipients = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
+            details.append({
+                "name": f"{recipients.first_name} {recipients.last_name}",
+                "email": recipients.email
+            })
 
     try:
         response = send_email_util(eventId=event_id, recipients=details, db=db)
