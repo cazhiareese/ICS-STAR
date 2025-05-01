@@ -23,13 +23,13 @@ def admin_search_job(
         mode_options: str = "",
         min_salary: int = 0,
         max_salary: int = 0,
-        sort_by: str = "date_desc"
+        sort_by: str = "date_desc",
 ) -> list[JobSearchOut]:
     
     # Start with a base query
     post_query = db.query(JobPosting.post_id)\
         .join(User, User.user_id == JobPosting.user_id)\
-        .filter(JobPosting.is_deleted == False)
+        .filter(JobPosting.is_deleted == False) 
 
     # Apply optional filters
     if title:
