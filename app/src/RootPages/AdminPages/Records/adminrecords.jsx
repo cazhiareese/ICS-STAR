@@ -178,10 +178,9 @@ function AdminRecords() {
         </div>
         {/* Table for desktop*/}
         <div
-          className="border border-gray-300 rounded-xl p-6 hidden lg:block overflow-auto bg-white"
-          // style={{ height: '29.75rem' }} // Fixed height for 10 rows + header + padding
+          className="border border-gray-300 h-fit rounded-xl p-6 hidden lg:block bg-white"
         >
-          <UsersTable data={users} loading={loading} />
+          <UsersTable data={users} loading={loading} userType={userType}/>
         </div>
       {/* Table for mobile */}
       <div className='flex flex-col lg:hidden overflow-auto'>
