@@ -202,7 +202,7 @@ function AdminAlumniInfo() {
   const activeInactiveColors = ["#00369C", "#F7F7FB"]
 
   return (
-    <div className='bg-[rgb(243,241,244)] p-6 max-h-screen flex flex-col overflow-auto'>
+    <div className='bg-[#f9f9fb] p-6 max-h-screen flex flex-col overflow-auto'>
       <div className='flex gap-2 mb-5'>
         <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
             <MoveLeft className='text-primary'/> 
@@ -261,7 +261,7 @@ function AdminAlumniInfo() {
         <div className={`${cardDesign} row-start-1 col-start-2 flex flex-col`}>
           {/* Batch header */}
           <div className='flex items-center justify-between'>
-            <h2 className='font-satoshi-medium text-lg' >Batch Information</h2>
+            <h2 className='font-satoshi-medium pl-1 medium text-xl' >Batch Information</h2>
             <div className='flex gap-2'>
               {/* <button className='border border-disabled rounded-xl px-3 py-1 cursor-pointer'> */}
                 {/* <p className='font-satoshi-regular'>Sort by <span className='font-satoshi-medium'>Count</span></p> */}
@@ -282,11 +282,11 @@ function AdminAlumniInfo() {
                 </button>
               </div>
             </div>
-            <div className='flex items-center'> 
+            <div className='flex items-center mt-2'> 
               <table className="w-full text-center text-gray-800">
               {/* Table Header */}
               <thead>
-                <tr className="text-xs text-primary font-satoshi-regular">
+                <tr className="text-sm text-primary font-satoshi-regular">
                   <th className="p-2 w-1/4">BATCH</th>
                   <th className="p-2 w-1/4">COUNT</th>
                   <th className="p-2 w-1/4">ACTIVE</th>
@@ -300,7 +300,7 @@ function AdminAlumniInfo() {
                   const inactivePercentage = ((row.inactive_users / row.total_users) * 100).toFixed(0);
                   
                   return (
-                    <tr key={index} className="text-sm cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`, 
+                    <tr key={index} className="text-md cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`, 
                       {
                         state: {
                           batch: row.batch,
@@ -311,12 +311,12 @@ function AdminAlumniInfo() {
                           inactive_percentage: row.inactive_users_percentage
                         },
                     })}}>
-                      <td className="p-2">{row.batch}</td>
-                      <td className="p-2">{row.total_users}</td>
-                      <td className="p-2">
+                      <td className="px-2 py-1">{row.batch}</td>
+                      <td className="px-2 py-1">{row.total_users}</td>
+                      <td className="px-2 py-1">
                         {row.active_users} <span className="text-gray-500">({activePercentage}%)</span>
                       </td>
-                      <td className="p-2">
+                      <td className="px-2 py-1">
                         {row.inactive_users} <span className="text-gray-500">({inactivePercentage}%)</span>
                       </td>
                     </tr>
