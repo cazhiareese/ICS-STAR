@@ -42,7 +42,7 @@ function JobTable({ data, jobType }) {
     <>
       <table className="w-full">
         <thead>
-          <tr className="text-left text-sm text-primary font-satoshi-bold">
+          <tr className="text-left text-sm text-primary font-satoshi-bold border-b border-gray-200">
             <th className="py-2 px-4">Date Posted</th>
             <th className="py-2 px-4">Job Title</th>
             <th className="py-2 px-4">Creator</th>
@@ -55,7 +55,7 @@ function JobTable({ data, jobType }) {
           {data.map((job, index) => (
             <tr 
               key={index}
-              className="border-b border-gray-200 h-10 hover:bg-secondary"
+              className="border-b border-gray-200 h-10"
               >
               <td className="py-3 px-4 font-satoshi-regular">{job.date_posted}</td>
               <td className="py-3 px-4">{job.title}</td>
@@ -95,7 +95,7 @@ function JobTable({ data, jobType }) {
                     <div className="overflow-auto flex-1 rounded-2xl w-full border border-gray-300">
                         <table className="w-full">
                         <thead>
-                            <tr className=" text-sm text-left text-primary">
+                            <tr className="text-sm text-left text-primary border-b border-gray-200">
                             <th className="py-2 px-3">Date Reported</th>
                             <th className="py-2 px-3">Alumni</th>
                             <th className="py-2 px-3">Reason</th>
@@ -104,7 +104,10 @@ function JobTable({ data, jobType }) {
                         </thead>
                         <tbody className="text-sm">
                             {reports.map((report, i) => (
-                            <tr key={i} className="">
+                            <tr 
+                              key={i} 
+                              className="border-b border-gray-200 h-10"
+                              >
                                 <td className="py-2 px-3">{report.date_reported}</td>
                                 <td className="py-2 px-3">{report.reporter_name}</td>
                                 <td className="py-2 px-3">{report.reason}</td>
@@ -129,7 +132,7 @@ function JobTable({ data, jobType }) {
                     </div>
                     {/* TODO: Add remove post */}
                     <div className="pt-4 flex w-full justify-end">
-                        <button className="bg-red-800 text-white px-6 py-3 rounded-2xl font-satoshi-medium text-lg cursor-pointer" 
+                        <button className="bg-error hover:bg-red-800 text-white px-6 py-2 rounded-3xl font-satoshi-medium text-lg cursor-pointer" 
                         onClick={() => setShowRemoveModal(true)}>
                         Remove Post
                         </button>
@@ -233,13 +236,13 @@ function JobTable({ data, jobType }) {
                   </p>
                   <div className="flex gap-3 mt-6 w-full justify-center">
                     <button
-                      className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
+                      className="bg-white border border-gray-300 hover:bg-disabled text-black px-4 py-2 rounded-3xl w-1/4 cursor-pointer"
                       onClick={() => setShowRemoveModal(false)}
                     >
                       Cancel
                     </button>
                     <button
-                      className="bg-red-800 text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                      className="bg-error hover:bg-red-800 text-white px-4 py-2 rounded-3xl w-1/4 cursor-pointer"
                       onClick={removePost}
                     >
                       Confirm

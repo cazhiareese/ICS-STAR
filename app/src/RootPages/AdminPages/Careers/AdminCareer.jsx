@@ -174,7 +174,7 @@ function AdminCareer() {
 
 
       {/* Dots */}
-      <div className='flex gap-1 mt-4'>
+      <div className='mb-3 flex gap-1 mt-4'>
         {topLoading ? (
           <></>
         ) : (
