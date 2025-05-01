@@ -1,36 +1,35 @@
 import React, { useState, useEffect } from "react";
 import ChangeModal from "./component/accountmodal";
 import axios from "axios";
+
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function AccountSettings() {
-
   const token = localStorage.getItem("token");
 
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(null); // 'email' or 'password'
   const [email, setEmail] = useState(null);
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/email-name/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true
-        });
-        setEmail(response.data.data.email); // assuming { email: "...", name: "..." }
-        console.log("User Info:", response.data.data.email);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    };
+  // Fetch user info function (used on mount & after update)
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/email-name/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
+      });
+      setEmail(response.data.data.email);
+      console.log("User Info:", response.data.data.email);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
 
+  useEffect(() => {
     if (token) {
       fetchUserInfo();
     }
   }, []);
-
-  
 
   return (
     <div className="w-full flex justify-center items-center px-4">
@@ -85,6 +84,7 @@ export default function AccountSettings() {
         <ChangeModal
           type={modalType}
           onClose={() => setShowModal(false)}
+          setEmail={setEmail} // 👈 pass callback
           email={email}
         />
       )}

@@ -5,7 +5,7 @@ import { a } from "framer-motion/client";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const token = localStorage.getItem("token");
 
-export default function ChangeModal({ type, onClose, email }) {
+export default function ChangeModal({ type, onClose, setEmail, email }) {
   const [newEmail, setNewEmail] = useState(email || "");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -97,7 +97,7 @@ export default function ChangeModal({ type, onClose, email }) {
         });
   
         setSuccess(true);
-        showToast("Email updated successfully", "success");
+        setEmail(newEmail.trim());
       }
     } catch (err) {
       const message = err.response?.data?.detail || "An error occurred";
