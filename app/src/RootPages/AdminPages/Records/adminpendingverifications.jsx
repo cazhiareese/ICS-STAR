@@ -163,7 +163,7 @@ function AdminPendingVerifications() {
   return (
     
     <div className='flex flex-col lg:p-6 h-screen max-w-7xl mx-auto bg-gray-100'>
-      <div className='flex gap-2 mb-3'>
+      <div className='flex gap-2 mb-0'>
       <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
           <MoveLeft className='text-primary'/> 
           <p className='text-primary font-satoshi-medium text-lg'>Back</p>
@@ -230,7 +230,7 @@ function AdminPendingVerifications() {
         </div>
       </div>
       {/* Table for desktop */}
-      <div className='border border-gray-400 rounded-xl p-6 h-fit lg:block hidden overflow-auto bg-white'>
+      <div className='border border-gray-300 rounded-xl p-6 h-fit lg:block hidden overflow-auto bg-white'>
         <PendingUsersTable
           pendingUsers={pendingUsers}
           loading={loading}
