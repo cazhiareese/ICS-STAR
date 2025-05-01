@@ -29,6 +29,7 @@ class JobPostingOut(BaseModel):
     interested_count: int
     employment_type: EmploymentTypeEnum
     mode: JobModeEnum
+    salary: Optional[float] = None
     link: str
     image: Optional[str] = None
     
