@@ -4,7 +4,7 @@ from sqlalchemy import String, func, or_, union_all
 from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn, AppliesFor
-from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut
+from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut, PaginatedJobSearchResponse
 import datetime
 from uuid import UUID
 import csv
@@ -14,22 +14,26 @@ from typing import Optional
 
 
 def admin_search_job(
-        db: Session,
-        title: str = "",
-        creator_name: str = "",
-        tag: str = "",
-        company: str = "",
-        employment_type: str = "",
-        mode_options: str = "",
-        min_salary: int = 0,
-        max_salary: int = 0,
-        sort_by: str = "date_desc",
-) -> list[JobSearchOut]:
-    
-    # Start with a base query
+    db: Session,
+    title: str = "",
+    creator_name: str = "",
+    tag: str = "",
+    company: str = "",
+    employment_type: str = "",
+    mode_options: str = "",
+    min_salary: int = 0,
+    max_salary: int = 0,
+    sort_by: str = "date_desc",
+    page: int = 1,
+    page_size: int = 10
+) -> PaginatedJobSearchResponse:
+    # Calculate offset
+    offset = (page - 1) * page_size
+
+    # Start with a base query to get matching post_ids and count total items
     post_query = db.query(JobPosting.post_id)\
         .join(User, User.user_id == JobPosting.user_id)\
-        .filter(JobPosting.is_deleted == False) 
+        .filter(JobPosting.is_deleted == False)
 
     # Apply optional filters
     if title:
@@ -43,13 +47,11 @@ def admin_search_job(
         
     if employment_type:
         employment_types_list = [e_type.strip() for e_type in employment_type.split(',') if e_type.strip()]
-        
         if employment_types_list:
             post_query = post_query.filter(or_(*[JobPosting.employment_type == e_type for e_type in employment_types_list]))
 
     if mode_options:
         mode_options_list = [mode.strip() for mode in mode_options.split(',') if mode.strip()]
-
         if mode_options_list:
             post_query = post_query.filter(or_(*[JobPosting.mode == mode for mode in mode_options_list]))
 
@@ -61,18 +63,26 @@ def admin_search_job(
 
     if tag:
         tags_list = [t.strip() for t in tag.split(',') if t.strip()]
-        
         if tags_list:
             tag_post_ids = db.query(JobPostingTag.post_id).filter(or_(*[JobPostingTag.tag.ilike(f"%{t}%") for t in tags_list])).distinct()
-            
             post_query = post_query.filter(JobPosting.post_id.in_(tag_post_ids))
     
-    matching_post_ids = [post_id for (post_id,) in post_query.all()]
+    # Get total count of matching posts for pagination
+    total_items = post_query.count()
+    total_pages = (total_items + page_size - 1) // page_size  # Ceiling division
+
+    # Get matching post_ids with pagination
+    matching_post_ids = [post_id for (post_id,) in post_query.offset(offset).limit(page_size).all()]
     
     if not matching_post_ids:
-        return []
+        return {
+            "success": "No job postings found matching the search criteria",
+            "page": page,
+            "total_pages": total_pages,
+            "result": []
+        }
     
-    # Now we create the bigger query
+    # Create the detailed query for job postings
     query = db.query(
         JobPosting.post_id,
         JobPosting.title,
@@ -80,6 +90,7 @@ def admin_search_job(
         JobPosting.description,
         JobPosting.created_at,
         JobPosting.employment_type,
+        JobPosting.mode,
         func.concat(User.first_name, ' ', User.last_name).label("posted_by"),
         func.count(JobPostingInterestedIn.post_id).label("interested_in")
     ).join(
@@ -106,6 +117,7 @@ def admin_search_job(
 
     jobs = query.all()
     
+    # Fetch all tags for matching posts
     all_tags = db.query(JobPostingTag.post_id, JobPostingTag.tag).filter(JobPostingTag.post_id.in_(matching_post_ids)).all()
     
     # Organize tags by post_id
@@ -115,6 +127,7 @@ def admin_search_job(
             tags_by_post[post_id] = []
         tags_by_post[post_id].append(tag)
     
+    # Build response
     jobs_out_list = []
     for job in jobs:
         job_out = JobSearchOut(
@@ -123,6 +136,7 @@ def admin_search_job(
             company=job.company,
             description=job.description,
             employment_type=job.employment_type,
+            mode=job.mode,
             posted_by=job.posted_by,
             created_at=job.created_at.strftime("%m/%d/%Y") if job.created_at else None,
             interested_in=job.interested_in,
@@ -130,7 +144,12 @@ def admin_search_job(
         )
         jobs_out_list.append(job_out)
 
-    return jobs_out_list
+    return {
+        "success": "Job postings retrieved successfully",
+        "page": page,
+        "total_pages": total_pages,
+        "result": jobs_out_list
+    }
 
 def view_interested_in(
         db: Session,
