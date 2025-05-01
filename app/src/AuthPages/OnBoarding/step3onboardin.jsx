@@ -512,7 +512,7 @@ function Step3Onboarding() {
               <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Employer Classification</label>
               <select
                 name="employmentType"
-                value={userData.employmentType}
+                value={userData.employerclass}
                 onChange={(e)=>updateUserData("employerclass", e.target.value)}
                 className="w-full md:p-3 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
               >

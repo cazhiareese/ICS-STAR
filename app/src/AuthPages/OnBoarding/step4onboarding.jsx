@@ -89,8 +89,8 @@ export default function Step4Onboarding() {
                 job_title: userData.employmentType === "employed" ? userData.jobTitle ?? "" : "",
                 country: userData.employmentType === "employed" ? userData.workCountry ?? "" : "",
                 city: userData.employmentType === "employed" ? userData.workCity ?? "" : "",
-                work_mode: userData.employmentType === "employed" ? userData.workType ?? "" : "",
-                employer_class: userData.employmentType === "employed" ? userData.workType ?? "" : "",
+                work_mode: userData.employmentType === "employed" ? (userData.remote ? "remote" : "f2f") : "",
+                employer_class: userData.employmentType === "employed" ? userData.employerclass ?? "" : "",
                 tenured_status: userData.employmentType === "employed" ? userData.tenureStatus ?? "" : "",
                 salary_grade: userData.employmentType === "employed" ? userData.salaryRange ?? "" : "",
                 reasons: userData.employmentType === "unemployed" ? userData.reason ?? [] : [],
@@ -100,13 +100,13 @@ export default function Step4Onboarding() {
 
       console.log("Payload being sent:", payload);
       console.log(userType)
-      await axios.post(endpoint, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // await axios.post(endpoint, payload, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
       console.log("Onboarding information submitted successfully.");
-      setCurrentSection(5);
+      // setCurrentSection(5);
     } catch (error) {
       console.error("Error submitting onboarding information:", error);
     }
@@ -187,8 +187,6 @@ export default function Step4Onboarding() {
           className="w-70 md:h-17 h-10 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
           onClick={submitStep4}
           >
-
-
             <label className="font-satoshi-bold cursor-pointer">Proceed</label>
           </div>
         )

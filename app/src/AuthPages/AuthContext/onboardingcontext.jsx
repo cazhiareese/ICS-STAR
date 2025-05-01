@@ -14,6 +14,7 @@ export function OnboardingProvider({ children }) {
     const [affiliations, setAffiliations] = useState(false);
 
     const [userData, setUserData] = useState({
+        standing: "null",
         profilePicture: null,
         scholarshipList: [],
         affiliationList:[],
@@ -23,9 +24,9 @@ export function OnboardingProvider({ children }) {
         industrySector: "",
         workType: "",
         employmentType: "employed",
-        tenureStatus: "",
+        tenureStatus: "Permanent",
         sameAsBase: false,
-        salaryRange: 11,
+        salaryRange: 1,
         remote: false,
         reason: [],
         workCountry: "",
@@ -36,7 +37,7 @@ export function OnboardingProvider({ children }) {
         skillsInterests: [],
         profilePictureFile: null,
         workMode: "Onsite",     // Onsite or Remote
-        employerclass: "",
+        employerclass: "NGO",
         suggestions: [
             "Artificial Intelligence",
             "Cybersecurity",
