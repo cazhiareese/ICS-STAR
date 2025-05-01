@@ -4,7 +4,7 @@ from uuid import UUID
 from datetime import datetime
 
 class JobSearchOut(BaseModel):
-    id: UUID
+    post_id: UUID
     title: str
     company: str
     description: Optional[str] = None,
