@@ -62,7 +62,8 @@ def get_name_suggestions(db: Session, query_text: str, limit: int = 8) -> List[s
                 or_(
                     User.first_name.ilike(f"%{query_text}%"),
                     User.last_name.ilike(f"%{query_text}%")
-                )
+                ),
+                User.is_onboarded == True
               )\
               .order_by(User.first_name, User.last_name)\
               .limit(limit)\
