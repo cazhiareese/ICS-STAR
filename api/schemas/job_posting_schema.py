@@ -36,6 +36,12 @@ class JobPostingOut(BaseModel):
     class Config:
         from_attributes = True
 
+class PaginatedJobPostingsOut(BaseModel):
+    success: str
+    page: int
+    total_pages: int
+    result: List[JobPostingOut]
+
 class JobPostingForAdminOut(BaseModel):
     post_id: UUID
     title: str
