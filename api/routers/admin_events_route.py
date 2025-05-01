@@ -246,7 +246,7 @@ async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=
 
     confirm_list = [str(conf[0]) for conf in confirmed]
     if not confirmed:
-        raise HTTPException(status_code=404, detail="No attendees found for this event")
+        return []
 
     user_details = []
     for people in confirm_list:
