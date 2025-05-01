@@ -1,7 +1,30 @@
 import {useState} from 'react';
 import { MapPinned, Calendar, Star } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import {jwtDecode} from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 const EventCards = ({event}) => {
+
+        //cyrus was here
+    
+    const User = localStorage.getItem("token");
+    let tokentype = "guest";
+    let userid = true;
+    
+    
+    if (User) {
+      try {
+        const decoded = jwtDecode(User);
+        tokentype = decoded.role;
+        userid = decoded.sub;
+        console.log("Decoded token:", decoded);
+        console.log("User ID:", userid);
+        console.log("Token type:", tokentype);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    } else {
+      console.log("No token found, defaulting to guest.");
+    }
 
     const [status, setStatus] = useState()
     const navigate = useNavigate();
@@ -36,7 +59,7 @@ const EventCards = ({event}) => {
         //     alert("You have not RSVP'd for this event yet.");
         // }
         console.log("RSVP clicked for event ID:", eventId);
-        navigate(`/alumni/events/${eventId}`);
+        navigate(`/${tokentype}/events/${eventId}`);
     }
     const truncateDescription = (description, maxLines = 2) => {
         if (description===null) return null;

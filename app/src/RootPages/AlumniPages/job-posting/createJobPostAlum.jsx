@@ -12,9 +12,6 @@ function CreateJobPostAlum() {
     const token = localStorage.getItem("token");
     const decoded = jwtDecode(token);
     //console.log(typeof decoded.sub);
-    
-    
-
     const [tagInput, setTagInput] = useState('');
     const [tagss, setTagss] = useState([]);
     const [tagsSuggestions, setTagSuggestions] = useState([]);
@@ -36,7 +33,7 @@ function CreateJobPostAlum() {
           setTagInput('');
           console.log(tagss);
         }
-      };
+    };
     
     const handleAddTags = () => {
         // const newTags = tagInput
@@ -208,6 +205,8 @@ function CreateJobPostAlum() {
 
         const formData = new FormData();
 
+        
+
         formData.append('title', jobTitleInput);
         formData.append('company', companyInput);
         salaryInput && formData.append('salary', salaryInput);
@@ -221,6 +220,11 @@ function CreateJobPostAlum() {
         if (file != null) {
             formData.append('image', file);
         }
+
+        const formDataObj = {};
+        formData.forEach((value, key) => {
+            formDataObj[key] = value;
+        });
     
         try {
             const response = await axios.post(`${API_BASE_URL}/create-job-postings`, formData, {
@@ -246,6 +250,10 @@ function CreateJobPostAlum() {
             alert("There was an error submitting the job post.");
         }
     };
+
+   
+    
+
     
     useEffect(() => {
         const getCompany = async () => {
@@ -553,9 +561,9 @@ function CreateJobPostAlum() {
                             <option value="fulltime">Full-time</option>
                             <option value="parttime">Part-time</option>
                             <option value="contractual">Contractual</option>
-                            <option value="Freelance">Freelance</option>
+                            <option value="freelance">Freelance</option>
+                            <option value="apprenticeship">Apprenticeship</option>
                             <option value="internship">Internship</option>
-                            <option value="apprenticeship ">Apprenticeship</option>
                         </select>
 
                         {/* Fake dropdown with icon */}

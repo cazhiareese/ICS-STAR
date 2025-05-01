@@ -124,6 +124,44 @@ function Donationform() {
         }
     };
 
+    const submitMayaDonation = async () => {
+        console.log(monetaryAmountInput);
+        if (monetaryAmountInput <= 0 ) {
+            alert("Please enter a valid amount and upload a proof of payment.");
+            return;
+        }
+    
+        setSubmitting(true);
+        const formData = new FormData();
+        const token = localStorage.getItem("token");
+    
+        formData.append('monetary_donation', true);
+        formData.append('in_kind_donation', false);
+        formData.append('direct_maya', true); 
+        formData.append('amount', monetaryAmountInput);
+
+        
+
+        try {
+            console.log(formData);
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+    
+            if (response.status === 200) {
+console.log("Maya donation response:", response.data);
+            }
+        } catch (error) {
+            console.error("Error submitting donation:", error);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+    
+
     const submitInKindDonation = async () => {
         // Ensure that all required fields are not empty
         if (donationDetailsInput == null) {
@@ -208,6 +246,13 @@ function Donationform() {
                                     monetaryAmountInput={monetaryAmountInput}
                                     setMonetaryAmountInput={setMonetaryAmountInput}
                                 />
+                                <button
+  onClick={submitMayaDonation}
+  className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+>
+  Donate via Maya
+</button>
+
                                 <DonationInstructions donationType={"monetary"} />
                                 <PaymentProof
                                     fileInputRef={fileInputRef}
