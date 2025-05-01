@@ -147,9 +147,9 @@ function AlumniLanding() {
         ))}
 
       {/* Main header */}
-      <div className="flex flex-col items-center justify-center pt-32 relative z-20 mt-8">
+      <div className="flex flex-col items-center justify-center pt-32 relative z-20">
         <h1 className="text-center font-satoshi-medium sm:text-6xl text-4xl text-black ">Bridging Alumni</h1>
-        <h1 className="text-center font-satoshi-variable font-extrabold text-primary sm:text-6xl text-4xl">
+        <h1 className="text-center font-satoshi-black text-primary sm:text-6xl text-4xl">
           Across the Cosmos
         </h1>
         <h1 className="text-center font-satoshi-medium text-black sm:text-2xl text-lg pt-10">What do you want to view?</h1>
