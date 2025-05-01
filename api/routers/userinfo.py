@@ -754,3 +754,50 @@ async def get_job_posts(
     job_posts = db.query(JobPosting).filter(JobPosting.user_id == user.user_id).all()
 
     return {"message": "success", "data": job_posts}
+
+@router.get("/email-name/me")
+async def get_email_name(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    email_name = db.query(User.email, User.first_name, User.last_name).filter(User.user_id == user.user_id).first()
+
+    email, first_name, last_name = email_name
+    return {
+        "message": "success",
+        "data": {
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name
+        }
+    }
+
+@router.put("/update-email")
+async def update_email(
+    email: str = Form(...),
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    db.query(User).filter(User.user_id==user.user_id).update({User.email: email})
+    db.commit()
+    
+    return {"message": "Email updated successfully"}
+
+@router.get("/email-name/{user_id}")
+async def get_email_name_by_id(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    email_name = db.query(User.email, User.first_name, User.last_name).filter(User.user_id == user_id).first()
+
+    email, first_name, last_name = email_name
+    return {
+        "message": "success",
+        "data": {
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name
+        }
+    }
