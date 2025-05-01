@@ -6,15 +6,6 @@ export default function AccountSettings() {
 
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(null); // 'email' or 'password'
-  const [toast, setToast] = useState({ message: "", type: "" }); // For managing toast messages
-
-  // Show toast notification
-  const showToast = (message, type) => {
-    setToast({ message, type });
-    setTimeout(() => {
-      setToast({ message: "", type: "" }); // Clear toast message after 2 seconds
-    }, 2000); // Toast will disappear after 2 seconds
-  };
 
   return (
     <div className="w-full flex justify-center items-center px-4">
@@ -49,7 +40,6 @@ export default function AccountSettings() {
               <h2 className="text-lg font-semibold">Password</h2>
               <p className="text-sm text-gray-500">The password connected to your account</p>
             </div>
-            <div className="md:w-1/3 font-medium text-gray-800">••••••••</div>
             <div className="md:w-1/3 text-right">
               <button
                 onClick={() => {
@@ -70,20 +60,7 @@ export default function AccountSettings() {
         <ChangeModal
           type={modalType}
           onClose={() => setShowModal(false)}
-          showToast={showToast} // Pass the showToast function to the modal
         />
-      )}
-
-      {/* Toast Notification */}
-      {toast.message && (
-        <div
-          className={`fixed top-4 right-4 p-4 rounded-md text-white shadow-lg ${
-            toast.type === "success" ? "bg-green-500" : "bg-red-500"
-          } transition-opacity duration-300 ease-in-out`}
-          style={{ opacity: toast.message ? 1 : 0 }}
-        >
-          {toast.message}
-        </div>
       )}
     </div>
   );
