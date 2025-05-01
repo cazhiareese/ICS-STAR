@@ -126,9 +126,8 @@ function Donationform() {
     };
 
     const submitMayaDonation = async () => {
-        console.log(monetaryAmountInput);
-        if (monetaryAmountInput <= 0 ) {
-            alert("Please enter a valid amount and upload a proof of payment.");
+        if (monetaryAmountInput <= 0) {
+            alert("Please enter a valid amount.");
             return;
         }
     
@@ -136,27 +135,28 @@ function Donationform() {
         const formData = new FormData();
         const token = localStorage.getItem("token");
     
-        formData.append('monetary_donation', true);
-        formData.append('in_kind_donation', false);
-        formData.append('direct_maya', true); 
-        formData.append('amount', monetaryAmountInput);
-
-        
+        formData.append('monetary_donation', 'true'); // Use strings
+        formData.append('in_kind_donation', 'false');
+        formData.append('direct_maya', 'true'); 
+        formData.append('amount', String(monetaryAmountInput));
+    
         try {
             for (let pair of formData.entries()) {
                 console.log(`${pair[0]}: ${pair[1]}`);
             }
-            
+    
             const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
                 }
             });
-            console.log("asaasas",response);
-            
-            if (response.status === 200) {
-console.log("Maya donation response:", response.data);
+    
+            if (response.status === 200 && response.data.redirectUrl) {
+                // ✅ Automatically redirect
+                window.location.href = response.data.redirectUrl;
+            } else {
+                console.warn("No redirect URL found in response");
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
@@ -164,6 +164,7 @@ console.log("Maya donation response:", response.data);
             setSubmitting(false);
         }
     };
+    
     
 
     const submitInKindDonation = async () => {
