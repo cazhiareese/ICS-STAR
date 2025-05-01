@@ -9,7 +9,7 @@ import SkeletonLoading from "../../../components/LoadingComponents/skeletonloadi
 import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
 import SortModal from "../../../components/AdminComponents/sortmodal"
 import OrderToggle from "../../../components/AdminComponents/ordertoggle"
-
+import CareerFilterModal from '../../../components/AdminComponents/CareerFilter';
 function AdminCareer() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
@@ -25,12 +25,13 @@ function AdminCareer() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const sorters = [
-    { label: 'Job title', value: 'name' },
-    { label: 'Date posted', value: 'batch' },
-    { label: 'Interested', value: 'interested' },
+    { label: 'Date posted', value: 'date' },
+    { label: 'Interested', value: 'count' },
   ];
   const [sortBy, setSortBy] = useState(sorters[0].value);
-  const [sortDirection, setSortDirection] = useState('asc')
+  const [sortDirection, setSortDirection] = useState('desc');
+  const [orderBy, setOrderBy] = useState('date_desc');
+  
   const [openCount, setOpenCount] = useState(0)
   const [closedCount, setClosedCount] = useState(0)
   const [reportedCount, setReportedCount] = useState(0)
@@ -39,16 +40,48 @@ function AdminCareer() {
   const prev = () => setIndex((index - 1 + total) % total);
   const next = () => setIndex((index + 1) % total);
 
+  const filters = [
+    {label: 'Creator', value:'creator'}
+  ]
+  const [creatorValue, setCreatorValue] = useState('')
+
+
+  const handleSortFieldChange = (field) => {
+    setSortBy(field);
+    const newParam = `${field}_${sortDirection}`;
+    setOrderBy(newParam);
+  };
+
+  const handleDirectionToggle = (newDirection) => {
+    setSortDirection(newDirection);
+    const newParam = `${sortBy}_${newDirection}`;
+    setOrderBy(newParam);
+  };
+
   async function fetchJobs(type) {
     let endpoint = '';
-    if (type === 'open') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/open?page=${page}`;
-    } else if (type === 'closed') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/closed?page=${page}`;
-    } else if (type === 'reported') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/reported?page=${page}`;
+
+    const params = new URLSearchParams();
+    if (orderBy) {
+      params.append('order_by', orderBy);
     }
-  
+    if (creatorValue && creatorValue.length > 0){
+      params.append('creator', creatorValue)
+    }else{
+      params.delete('creator')
+    }
+
+    const queryString = params.toString();
+
+    if (type === 'open') {
+      endpoint = `${API_BASE_URL}/admin/job-postings/open?page=${page}&${queryString}`;
+    } else if (type === 'closed') {
+      endpoint = `${API_BASE_URL}/admin/job-postings/closed?page=${page}&${queryString}`;
+    } else if (type === 'reported') {
+      endpoint = `${API_BASE_URL}/admin/job-postings/reported?page=${page}&${queryString}`;
+    }
+    
+    console.log(endpoint)
     try {
       const response = await axios.get(endpoint);
       console.log(response)
@@ -104,7 +137,7 @@ function AdminCareer() {
     };
   
     fetchAllJobs();
-  }, [jobType, page]);
+  }, [jobType, page, sortBy, sortDirection, creatorValue]);
   
 
   return (
@@ -176,18 +209,22 @@ function AdminCareer() {
           <SortModal
             filters={sorters}
             selectedFilter={sortBy}
-            onSelect={() => {}}
+            onSelect={handleSortFieldChange}
           />
           {/* Order toggle */}
           <OrderToggle
             direction={sortDirection}
-            onToggle={() => {}}
+            onToggle={handleDirectionToggle}
           />
           {/* Filter */}
-          <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
+          {/* <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
             <Filter className='text-primary'/>
             <p className='text-primary fsont-satoshi-medium text-sm'> Filter</p>
-          </button>
+          </button> */}
+          <CareerFilterModal 
+              filters = {filters}
+              setterFunction = {setCreatorValue}
+          />
           {/* View changer */}
           <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
             {/* List View Button */}
