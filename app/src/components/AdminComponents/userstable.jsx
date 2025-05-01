@@ -84,19 +84,19 @@ function UsersTable({ data, loading = null, userType }) {
                 {/* Image */}
                 <td className="py-3 px-4" style={{ width: columnWidths.col1 }}>
                   {user.image == null ? (
-                    <UserCircle2 className='h-8 w-8 stroke-2'/>
+                    <UserCircle2 className="h-8 w-8 stroke-2" />
                   ) : (
                     <img
-                    src={user.image}
-                    alt=""
-                    className="rounded-full h-8 w-8 not-last:overflow-hidden object-cover"
+                      src={user.image}
+                      alt=""
+                      className="rounded-full h-8 w-8 object-cover"
                     />
                   )}
                 </td>
                 {/* Name */}
                 <td className="py-3 px-4 gap-2 font-satoshi-bold" style={{ width: columnWidths.col2 }}>
                   <div className="flex flex-row items-center gap-2">
-                    <span className="">{user.name}</span>
+                    <span>{user.name || 'N/A'}</span>
                     {user.is_reported && (
                       <ShieldAlert size={16} className="text-error flex-shrink-0" />
                     )}
@@ -104,29 +104,29 @@ function UsersTable({ data, loading = null, userType }) {
                 </td>
                 {/* Batch */}
                 <td className="py-3 px-4 whitespace-nowrap text-ellipsis" style={{ width: columnWidths.col3 }}>
-                  {userType == 'alum' && user.batch }
+                  {userType === 'alum' ? user.batch || 'N/A' : 'N/A'}
                 </td>
                 {/* Base Location && Student Number */}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
-                  {userType === 'alum' ? user.location_base : user.student_number}
+                  {userType === 'alum' ? user.location_base || 'N/A' : user.student_number || 'N/A'}
                 </td>
-                {/* Job Title && Graduating Class*/}
+                {/* Job Title && Graduating Class */}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
-                  {userType === 'alum' ? user.job_title : user.standing}
+                  {userType === 'alum' ? user.job_title || 'N/A' : user.standing || 'N/A'}
                 </td>
                 {/* Last Update */}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
-                  {user.last_updated}
+                  {user.last_updated || 'N/A'}
                 </td>
                 {/* Is Inactive */}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col7 }}>
-                  {user.is_inactive && <p>inactive</p>}
+                  {user.is_inactive ? <p>inactive</p> : ' '}
                 </td>
               </tr>
             ))}
             {/* Empty Rows to Fill Up to 10 */}
             {Array.from({ length: emptyRows }).map((_, index) => (
-              <tr key={`empty-${index}`} className="border-b border-gray-200 h-10">
+              <tr key={`empty-${index}`} className="border-b border-gray-200 h-14">
                 <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
                 <td className="py-3 px-4" style={{ width: columnWidths.col2 }}></td>
                 <td className="py-3 px-4" style={{ width: columnWidths.col3 }}></td>
