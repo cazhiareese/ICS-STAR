@@ -12,6 +12,7 @@ from schemas.report_schema import PostReportDetailOut, PaginatedReportedResponse
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn
 from util.job_posting_util import create_job_posting, edit_job_posting, get_top_4_job_tags
+from util.userutil import require_admin
 from config.database import get_db
 
 router = APIRouter()
@@ -273,7 +274,7 @@ def get_job_posting(
     return response
 
 # Get job postings that are open
-@router.get("/admin/job-postings/open", response_model=PaginatedJobPostingResponse)
+@router.get("/admin/job-postings/open", dependencies=[Depends(require_admin)], response_model=PaginatedJobPostingResponse)
 def get_open_job_postings(
     page: int = Query(1, ge=1, description="Page number"),
     creator: Optional[str] = "",
@@ -372,7 +373,7 @@ def get_open_job_postings(
     }
 
 # Get count job postings that are open
-@router.get("/admin/job-postings/open/count")
+@router.get("/admin/job-postings/open/count", dependencies=[Depends(require_admin)],)
 def get_open_job_postings_count(
     db: Session = Depends(get_db)
 ):
@@ -386,7 +387,7 @@ def get_open_job_postings_count(
     return {"open_job_postings_count": count}
 
 # Get job postings that are closed
-@router.get("/admin/job-postings/closed", response_model=PaginatedJobPostingResponse)
+@router.get("/admin/job-postings/closed", dependencies=[Depends(require_admin)], response_model=PaginatedJobPostingResponse)
 def get_closed_job_postings(
     page: int = Query(1, ge=1, description="Page number"),
     creator: Optional[str] = "",
@@ -486,7 +487,7 @@ def get_closed_job_postings(
     }
 
 # Get count job postings that are closed
-@router.get("/admin/job-postings/closed/count")
+@router.get("/admin/job-postings/closed/count", dependencies=[Depends(require_admin)],)
 def get_closed_job_postings_count(
     db: Session = Depends(get_db)
 ):
@@ -499,7 +500,7 @@ def get_closed_job_postings_count(
     
     return {"closed_job_postings_count": count}
 
-@router.get("/admin/job-postings/reported", response_model=PaginatedReportedResponse)
+@router.get("/admin/job-postings/reported", dependencies=[Depends(require_admin)], response_model=PaginatedReportedResponse)
 def get_reported_job_postings(
     page: int = Query(1, ge=1, description="Page number"),
     creator: Optional[str] = "",
@@ -590,7 +591,7 @@ def get_reported_job_postings(
     }
 
 # Get count job postings that are reported
-@router.get("/admin/job-postings/reported/count")
+@router.get("/admin/job-postings/reported/count", dependencies=[Depends(require_admin)],)
 def get_reported_job_postings_count(
     db: Session = Depends(get_db),
 ):
@@ -605,7 +606,7 @@ def get_reported_job_postings_count(
     return {"reported_job_postings_count": count}
 
 
-@router.get("/admin/job-postings/top-4-interested")
+@router.get("/admin/job-postings/top-4-interested", dependencies=[Depends(require_admin)],)
 def get_top_4_interested_job_postings(db: Session = Depends(get_db)):
     # Query to get the top 4 job postings with the most interested users
     query_result = db.query(
@@ -644,7 +645,7 @@ def get_top_4_interested_job_postings(db: Session = Depends(get_db)):
 
     return result
 
-@router.get("/admin/job-posts/{post_id}/reports", response_model=List[PostReportDetailOut])
+@router.get("/admin/job-posts/{post_id}/reports", dependencies=[Depends(require_admin)], response_model=List[PostReportDetailOut])
 def get_post_reports(post_id: str, db: Session = Depends(get_db)):
     # Get reports for the post
     reports = db.query(
@@ -691,6 +692,6 @@ async def get_comp_by_id(user_id: UUID, db: Session=Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail="Cant find company name")
     
-@router.get("/admin/job-postings/top-4-tags")
+@router.get("/admin/job-postings/top-4-tags", dependencies=[Depends(require_admin)])
 def get_top_4_job_tags_endpoint(db: Session = Depends(get_db)):
     return get_top_4_job_tags(db)
