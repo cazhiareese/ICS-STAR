@@ -12,9 +12,6 @@ function CreateJobPostAlum() {
     const token = localStorage.getItem("token");
     const decoded = jwtDecode(token);
     //console.log(typeof decoded.sub);
-    
-    
-
     const [tagInput, setTagInput] = useState('');
     const [tagss, setTagss] = useState([]);
     const [tagsSuggestions, setTagSuggestions] = useState([]);
@@ -36,7 +33,7 @@ function CreateJobPostAlum() {
           setTagInput('');
           console.log(tagss);
         }
-      };
+    };
     
     const handleAddTags = () => {
         // const newTags = tagInput
@@ -564,9 +561,9 @@ function CreateJobPostAlum() {
                             <option value="fulltime">Full-time</option>
                             <option value="parttime">Part-time</option>
                             <option value="contractual">Contractual</option>
-                            <option value="Freelance">Freelance</option>
+                            <option value="freelance">Freelance</option>
+                            <option value="apprenticeship">Apprenticeship</option>
                             <option value="internship">Internship</option>
-                            <option value="apprenticeship ">Apprenticeship</option>
                         </select>
 
                         {/* Fake dropdown with icon */}

@@ -16,8 +16,7 @@ function JobPostingLanding() {
     const [selectedJob, setSelectedJob] = useState({});
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
-    // const [loading, setLoading] = useState(true);
-
+    
     const [showFilterModal, setShowFilterModal] = useState(false);
 
     const [showWorkTypeDropdown, setShowWorkTypeDropdown] = useState(false);
@@ -32,6 +31,8 @@ function JobPostingLanding() {
     const [mobileExpanded, setMobileExpanded] = useState(false);
 
     const [isError, setError] = useState(false);
+    const [isAlumni, setIsAlumni] = useState(false);
+    
 
     const toggleWorkType = (workType) => {
         setSelectedWorkTypes((prev) =>
@@ -86,20 +87,21 @@ function JobPostingLanding() {
 
     const [loading, setLoading] = useState(false);
     const [usertype, setUserType] = useState(null);
-
+    
     useEffect(() => {
         const token = localStorage.getItem('token'); 
-        if (token) {
-            try {
-            const decoded = jwtDecode(token);
-            console.log("Decoded JWT:", decoded);
-            setUserId(decoded.sub); 
-            setUserType(decoded.role); //cyrus was here
-            // console.log(decoded.sub)
-            } catch (error) {
-            console.error("Invalid token", error);
-            }
+        const decoded = jwtDecode(token);
+        console.log("Decoded JWT:", decoded);
+        setUserId(decoded.sub); 
+        setUserType(decoded.role); //cyrus was here
+        // console.log(decoded.sub)
+        if (decoded.role == "alumni"){
+            setUserType("alumni");
         }
+        else{
+            setUserType("student");
+        }
+        
     }, []);
 
     
@@ -136,19 +138,19 @@ function JobPostingLanding() {
     // Get job by id
     useEffect(() => {
         const fetchJobs = async () => {
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/job-postings/${selectedJobId}`);
-            if (!response.ok) {
-            throw new Error('Failed to fetch job using id');
-            }
-            const data = await response.json();
-            console.log("data", data)
-            // Set selected job
-            setSelectedJob(data)
-        } catch (err) {
-            console.log(err.message || 'Something went wrong');
-        } 
+            console.log(`${API_BASE_URL}/job-postings/${selectedJobId}`);
+            try {
+                const response = await fetch(`${API_BASE_URL}/job-postings/${selectedJobId}`);
+                if (!response.ok) {
+                throw new Error('Failed to fetch job using id');
+                }
+                const data = await response.json();
+                console.log("data", data)
+                // Set selected job
+                setSelectedJob(data)
+            } catch (err) {
+                console.log(err.message || 'Something went wrong');
+            } 
         };
 
         fetchJobs();
@@ -429,15 +431,15 @@ function JobPostingLanding() {
 
                 {/* Button aligned to the right */}
 
-{usertype !== "student" && (
-                <button  
-                    onClick={navToCreateJobPost}
-                    className="flex items-center gap-2 md:w-56 w-12 md:h-14 h-12 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
-                >
-                    <PlusCircle />
-                    <h1 className='md:block hidden'>Create Job Posting</h1>
-                </button>
-)}
+                {usertype !== "student" && (
+                    <button  
+                        onClick={navToCreateJobPost}
+                        className="flex items-center gap-2 md:w-56 w-12 md:h-14 h-12 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                    >
+                        <PlusCircle />
+                        <h1 className='md:block hidden'>Create Job Posting</h1>
+                    </button>
+                )}
 
             </div>
 
