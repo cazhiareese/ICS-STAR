@@ -6,6 +6,7 @@ import { Mail, LockIcon } from "lucide-react";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function AccountSettings() {
+
   const token = localStorage.getItem("token");
 
   const [showModal, setShowModal] = useState(false);

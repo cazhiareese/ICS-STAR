@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/AlumniComponents/searchbar'
 import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
-import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown, Check } from 'lucide-react';
+import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown, Check, ArrowBigLeft, ArrowLeft, ArrowRight } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
 import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
@@ -32,6 +32,10 @@ const [loading, setLoading] = useState(false);
 
     const [isError, setError] = useState(false);
     const [isAlumni, setIsAlumni] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [maxPage, setMaxPage] = useState(1);
     
 
     const toggleWorkType = (workType) => {
@@ -71,7 +75,7 @@ const [loading, setLoading] = useState(false);
         { label: "Full time", value: "fulltime" },
         { label: "Part time", value: "parttime" },
         { label: "Contractual", value: "contractual" },
-        { label: "Freelance", value: "Freelance" },
+        { label: "Freelance", value: "freelance" },
         { label: "Internship", value: "internship" },
         { label: "Apprenticeship", value: "apprenticeship" },
     ];
@@ -109,28 +113,29 @@ const [loading, setLoading] = useState(false);
     // Get all jobs
     useEffect(() => {
         const fetchJobs = async () => {
+        console.log(`${API_BASE_URL}/job-postings/?page=${currentPage}`)
         setLoading(true);
-        try {
-            const response = await fetch(`${API_BASE_URL}/job-postings`);
-            if (!response.ok) {
-            throw new Error('Failed to fetch jobs');
-            }
-            const data = await response.json();
-            console.log(data)
-            setJobList(data.result);
-            setLoading(false);
-            setError(false);
-        } catch (err) {
-            console.log(err.message || 'Something went wrong');
-            setLoading(false);
-            setError(true);
-        } finally {
-            setLoading(false);
-        }
+            try {
+                const response = await fetch(`${API_BASE_URL}/job-postings/?page=${currentPage}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch jobs');
+                }
+                const data = await response.json();
+                setMaxPage(data.total_pages);
+                setJobList(data.result);
+            
+                setLoading(false);
+                setError(false);
+            } catch (err) {
+                console.log(err.message || 'Something went wrong');
+                setLoading(false);
+                setError(true);
+            } 
+
         };
 
         fetchJobs();
-    }, []);
+    }, [currentPage]);
 
     
 
@@ -164,20 +169,20 @@ const [loading, setLoading] = useState(false);
     // Get company by id
     useEffect(() => {
         const fetchJobs = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/get-company-by-id/${userId}`);
-            if (!response.ok) {
-            throw new Error('Failed to fetch company');
-            }
-            const data = await response.json();
-            console.log(data)
-            
-        } catch (err) {
-            console.log(err.message || 'Something went wrong');
-        } //finally {
-        //     setLoading(false);
-        // }
-        };
+            try {
+                const response = await fetch(`${API_BASE_URL}/get-company-by-id/${userId}`);
+                if (!response.ok) {
+                throw new Error('Failed to fetch company');
+                }
+                const data = await response.json();
+                console.log(data)
+                
+            } catch (err) {
+                console.log(err.message || 'Something went wrong');
+            } //finally {
+            //     setLoading(false);
+            // }
+            };
 
         fetchJobs();
     }, []);
@@ -212,6 +217,7 @@ const [loading, setLoading] = useState(false);
             filters.min_salary = salaryRange.min;
             filters.max_salary = salaryRange.max;
         }
+        filters.page=currentPage;
         console.log(filters);
         
 
@@ -226,6 +232,9 @@ const [loading, setLoading] = useState(false);
     const fetchJobs = async () => {
         setLoading(true);
         setSelectedJob({});
+        setCurrentPage(1);
+        setMaxPage(1);
+        setShowFilterModal(false);
         try {
             const apiUrl = search(); // get the full URL based on current filters
             console.log(apiUrl);
@@ -234,9 +243,10 @@ const [loading, setLoading] = useState(false);
                 return console.log('No valid filters to search.');
             }
     
-            const response = await axios.get(apiUrl);
+            const response = await axios.get(apiUrl); //API request
             console.log(response.data);
-            setJobList(response.data);
+            setJobList(response.data.result);
+            setMaxPage(response.data.total_pages)
             setError(false);
             setLoading(false);
         } catch (err) {
@@ -246,6 +256,19 @@ const [loading, setLoading] = useState(false);
             setLoading(false);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < maxPage){
+            setCurrentPage((prevPage) => prevPage + 1);
+        }
+        
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1){
+            setCurrentPage((prevPage) => prevPage - 1);
         }
     };
     
@@ -400,7 +423,7 @@ const [loading, setLoading] = useState(false);
                         </button>
                         
                         <div className="flex w-8 h-8 aspect-square items-center justify-center md:ml-0 ml-auto ">
-                            <button onClick={fetchJobs} className="bg-primary rounded-full w-full h-full flex items-center justify-center p-0 box-border mt-3">
+                            <button onClick={fetchJobs} className="bg-primary cursor-pointer rounded-full w-full h-full flex items-center justify-center p-0 box-border mt-3">
                                 <Check size={18} className="text-white" />
                             </button>
                         </div>
@@ -425,6 +448,10 @@ const [loading, setLoading] = useState(false);
                         selectedRemoteOption={selectedRemoteOption}
                         salaryRange={salaryRange}
                         setSelectedJob={setSelectedJob}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        maxPage={maxPage}
+                        setMaxPage={setMaxPage}
                     />
                 </div>
 
@@ -442,34 +469,51 @@ const [loading, setLoading] = useState(false);
 
             </div>
 
-            <div className='flex flex-row mt-16 gap-2 justify-center'>
-                {/* Scrollable wrapper */}
-                <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
-                    {!loading ? (
-                        <div className='flex flex-col gap-5 items-center '>
-                            {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
-                                jobList.map((job, index) => (
-                                    <JobCard
-                                    key={index} // Consider using job.id if available instead of index
-                                    job={job}
-                                    selectedJobId={selectedJobId}
-                                    setSelectedJobId={setSelectedJobId}
-                                    setMobileExpanded={setMobileExpanded}
-                                    
-                                    />
-                                ))
-                                ) : (
-                                <p className="text-gray-500 text-center mt-4">
-                                    {isError ? 'No jobs found.' : 'No jobs available.'}
-                                </p>
-                            )}
+            <div className='flex flex-row mt-10 gap-2 justify-center'>
+                <div className='flex flex-col'>
+                    <div className='flex flex-col items-center mb-6'>
+                        {/* Pagination */}
+                        <div className='flex flex-row gap-5 font-satoshi-medium text-lg'>
+                            <button onClick={handlePrevPage} className='cursor-pointer'><ArrowLeft/></button>
+                            <h1>Page</h1> 
+                            <div className='flex justify-center bg-blue-100 w-8 rounded-md'>
+                                <h1 className='text-primary'>{currentPage}</h1>
+                            </div> 
+                            <h1>of</h1> 
+                            <h1>{maxPage}</h1> 
+                            <button onClick={handleNextPage} className='cursor-pointer'><ArrowRight/></button>
                         </div>
-                    ) : (
-                        <div className='flex flex-row justify-center h-full gap-5'>
-                            <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
-                            <CircularLoading />
-                        </div>
-                    )}
+                    </div>
+                    {/* Scrollable wrapper */}
+                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
+                        
+                        {!loading ? (
+                            <div className='flex flex-col gap-5 items-center '>
+                                
+                                {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
+                                    jobList.map((job, index) => (
+                                        <JobCard
+                                        key={index} // Consider using job.id if available instead of index
+                                        job={job}
+                                        selectedJobId={selectedJobId}
+                                        setSelectedJobId={setSelectedJobId}
+                                        setMobileExpanded={setMobileExpanded}
+                                        
+                                        />
+                                    ))
+                                    ) : (
+                                    <p className="text-gray-500 text-center mt-4">
+                                        {isError ? 'No jobs found.' : 'No jobs available.'}
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <div className='flex flex-row justify-center h-full gap-5 pt-10'>
+                                <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
+                                <CircularLoading />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
 
@@ -482,7 +526,7 @@ const [loading, setLoading] = useState(false);
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} />
+                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} />
                 )}
                 
             </div>
