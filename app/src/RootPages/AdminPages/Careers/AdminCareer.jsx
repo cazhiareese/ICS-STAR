@@ -191,16 +191,16 @@ function AdminCareer() {
         {/* Buttons */}
         <div className='w-full lg:w-auto min-w-xs ml-5'>
           {/* Open button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${jobType === 'open' ? 'border-primary' : 'border-transparent'}`} onClick={() => setJobType('open')}>
-            <p className='text-black font-satoshi-medium text-md'> Open ({openCount}) </p>
+          <button className={`px-3 py-3 cursor-pointer border-b-3 w-1/4 lg:w-auto ${jobType === 'open' ? 'border-primary' : 'border-transparent'}`} onClick={() => setJobType('open')}>
+            <p className='text-black font-satoshi-medium text-sm'> Open ({openCount}) </p>
           </button>
           {/* Closed button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${jobType === 'closed' ? ' border-primary' : 'border-transparent'}`} onClick={() => setJobType('closed')}>
-            <p className='text-black font-satoshi-medium text-md'> Closed ({closedCount}) </p>
+          <button className={`px-3 py-3 cursor-pointer border-b-3 w-1/4 lg:w-auto ${jobType === 'closed' ? ' border-primary' : 'border-transparent'}`} onClick={() => setJobType('closed')}>
+            <p className='text-black font-satoshi-medium text-sm'> Closed ({closedCount}) </p>
           </button>
             {/* Reported button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${jobType === 'reported' ? ' border-primary' : 'border-transparent'}`} onClick={() => setJobType('reported')}>
-              <p className='text-black font-satoshi-medium text-md'> Reported ({reportedCount}) </p>
+          <button className={`px-3 py-3 cursor-pointer border-b-3 w-1/4 lg:w-auto ${jobType === 'reported' ? ' border-primary' : 'border-transparent'}`} onClick={() => setJobType('reported')}>
+              <p className='text-black font-satoshi-medium text-sm'> Reported ({reportedCount}) </p>
           </button>
         </div>
         {/* Sort by */}
@@ -226,15 +226,15 @@ function AdminCareer() {
               setterFunction = {setCreatorValue}
           />
           {/* View changer */}
-          <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
+          <div className="flex items-center border border-disabled rounded-3xl overflow-hidden h-9.5">
             {/* List View Button */}
-            <button className="px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStyle('List')}}>
-              <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
+            <button className="px-3 py-1 flex items-center gap-1 cursor-pointer text-primary text-xs" onClick={() => {setViewStyle('List')}}>
+              <List size={18} className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
             </button>
             <div className="h-6 w-px bg-disabled"></div>
             {/* Grid View Button */}
-            <button className="px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStyle('Grid')}}>
-              <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
+            <button className="px-3 py-1 flex items-center gap-1 cursor-pointer text-disabled text-xs" onClick={() => {setViewStyle('Grid')}}>
+              <LayoutGrid size={18} className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
             </button>
           </div>
           {/* Page */}

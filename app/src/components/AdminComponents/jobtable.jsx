@@ -42,7 +42,7 @@ function JobTable({ data, jobType }) {
     <>
       <table className="w-full">
         <thead>
-          <tr className="text-left text-xs text-primary font-satoshi-regular">
+          <tr className="text-left text-sm text-primary font-satoshi-bold">
             <th className="py-2 px-4">Date Posted</th>
             <th className="py-2 px-4">Job Title</th>
             <th className="py-2 px-4">Creator</th>
@@ -53,8 +53,11 @@ function JobTable({ data, jobType }) {
 
         <tbody className="font-satoshi-regular text-md">
           {data.map((job, index) => (
-            <tr key={index}>
-              <td className="py-3 px-4 font-satoshi-bold">{job.date_posted}</td>
+            <tr 
+              key={index}
+              className="border-b border-gray-200 h-10 hover:bg-secondary"
+              >
+              <td className="py-3 px-4 font-satoshi-regular">{job.date_posted}</td>
               <td className="py-3 px-4">{job.title}</td>
               <td className="py-3 px-4">{job.user_name}</td>
               <td className="py-3 px-4">{job.interested_count}</td>

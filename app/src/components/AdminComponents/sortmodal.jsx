@@ -13,8 +13,8 @@ function SortModal({filters, selectedFilter, onSelect}) {
     <div className="relative inline-block text-left">
       <button
         onClick={() => setOpen(!open)}
-        className="border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1 font-satoshi-light text-black hover:border-hover hover:shadow-md bg-white"
-      > Sort by <span className="font-satoshi-bold text-primary">{selectedLabel}</span>
+        className="w-full border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1 font-satoshi-light text-black text-sm hover:border-hover hover:shadow-md bg-white whitespace-nowrap overflow-hidden text-ellipsis"
+      > <span className="font-satoshi-bold text-primary">{selectedLabel}</span>
       </button>
 
       {open && (
