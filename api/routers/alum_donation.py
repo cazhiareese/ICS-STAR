@@ -5,7 +5,7 @@ from typing import List, Optional
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from config.database import get_db
-from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation, fetch_drive_suggestions
+from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation, fetch_drive_suggestions, maya_success
 from util.userutil import get_current_user
 # from models.usermodel import User
 from schemas.user import CurrentUser
@@ -14,14 +14,6 @@ from uuid import UUID
 from util.alum_donation_util import maya_donation
 
 router = APIRouter()
-
-@router.post("/maya-payment")
-async def direct_payment(value: int, user: CurrentUser = Depends(get_current_user)):
-    
-    if user.user_type.value == UserTypeEnum.student:
-        raise HTTPException(status_code=400, detail="For alumni only")
-    
-    return await maya_donation(value)
 
 @router.get("/drive-suggestions")
 def get_drive_suggestions(
@@ -114,6 +106,7 @@ async def make_donations(
     drive_id: UUID,
     monetary_donation: bool = Form(...),
     in_kind_donation: bool = Form(...),
+    direct_maya: bool = Form(...),
     amount: Optional[float] = Form(None),
     description: Optional[str] = Form(None),
     proof: Optional[UploadFile] = File(None),
@@ -140,13 +133,14 @@ async def make_donations(
         )
     
     return await make_donation(
-        db, user, drive, monetary_donation, in_kind_donation, amount, description, proof, is_anonymous
+        db, user, drive, monetary_donation, in_kind_donation, direct_maya, amount, description, proof, is_anonymous
     )
     
 @router.post("/make-general-donation")
 async def make_donations(
     monetary_donation: bool = Form(...),
     in_kind_donation: bool = Form(...),
+    direct_maya: bool = Form(...),
     amount: Optional[float] = Form(None),
     description: Optional[str] = Form(None),
     proof: Optional[UploadFile] = File(None),
@@ -174,5 +168,15 @@ async def make_donations(
         )
     
     return await make_donation(
-        db, user, drive, monetary_donation, in_kind_donation, amount, description, proof, is_anonymous
+        db, user, drive, monetary_donation, in_kind_donation, direct_maya, amount, description, proof, is_anonymous
     )
+    
+@router.post("/maya-callback")
+def maya_callback(
+    drive_id: UUID,
+    amount: float = Form(...),
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+    return maya_success(drive, amount, user.user_id, db)
