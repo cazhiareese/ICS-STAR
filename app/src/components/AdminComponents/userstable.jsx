@@ -36,7 +36,7 @@ function UsersTable({ data, loading = null }) {
       </thead>
 
       {/* Table Body */}
-      <tbody className="font-satoshi-regular text-md">
+      <tbody className="font-satoshi-regular text-black text-md">
         {loading ? (
           // Skeleton Rows (10 rows for pagination)
           rowsToRender.map((_, index) => (
@@ -62,50 +62,63 @@ function UsersTable({ data, loading = null }) {
               </td>
             </tr>
           ))
-        ) : (
+        ) : ( 
           <>
-            {/* Actual Data */}
-            {rowsToRender.map((user, index) => (
-              <tr
-                key={user.user_id || `data-${index}`}
-                className="border-b border-gray-200 h-10 hover:bg-secondary cursor-pointer"
-                onClick={() => navigate(`/admin/records/${user.user_id}`)}
-              >
-                <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
-                <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold whitespace-nowrap text-ellipsis" style={{ width: columnWidths.col2 }}>
-                  {user.name}
-                </td>
-                <td className="py-3 px-4 whitespace-nowrap text-ellipsis" style={{ width: columnWidths.col3 }}>
-                  {user.batch}
-                </td>
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
-                  {user.location_base}
-                </td>
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
-                  {user.job_title}
-                </td>
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
-                  {user.last_updated}
-                </td>
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col7 }}>
-                  {user.is_reported && (
-                      <Flag className='text-error'/>
-                  )}
+            {/* When Data is Empty*/}
+            {data.length === 0 ? (
+              <tr className="border-b border-gray-200 h-10">
+                <td colSpan="7" className="py-10 text-center text-gray-500">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-lg font-medium">No records found</p>
+                  </div>
                 </td>
               </tr>
-            ))}
-            {/* Empty Rows to Fill Up to 10 */}
-            {Array.from({ length: emptyRows }).map((_, index) => (
-              <tr key={`empty-${index}`} className="border-b border-gray-200 h-10">
-                <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col2 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col3 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col4 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col5 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col6 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col7 }}></td>
-              </tr>
-            ))}
+            ) : (
+              <>
+              {/* Actual Data */}
+              {rowsToRender.map((user, index) => (
+                <tr
+                  key={user.user_id || `data-${index}`}
+                  className="border-b border-gray-200 h-10 hover:bg-secondary/50 cursor-pointer transition ease-in duration-200"
+                  onClick={() => navigate(`/admin/records/${user.user_id}`)}
+                >
+                  <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
+                  <td className="py-3 px-4 flex items-center gap-2 font-satoshi-medium whitespace-nowrap text-ellipsis" style={{ width: columnWidths.col2 }}>
+                    {user.name}
+                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap text-ellipsis" style={{ width: columnWidths.col3 }}>
+                    {user.batch}
+                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
+                    {user.location_base}
+                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
+                    {user.job_title}
+                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
+                    {user.last_updated}
+                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col7 }}>
+                    {user.is_reported && (
+                        <Flag className='text-error'/>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {/* Empty Rows to Fill Up to 10 */}
+              {Array.from({ length: emptyRows }).map((_, index) => (
+                <tr key={`empty-${index}`} className="border-b border-gray-200 h-10">
+                  <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
+                  <td className="py-3 px-4" style={{ width: columnWidths.col2 }}></td>
+                  <td className="py-3 px-4" style={{ width: columnWidths.col3 }}></td>
+                  <td className="py-3 px-4" style={{ width: columnWidths.col4 }}></td>
+                  <td className="py-3 px-4" style={{ width: columnWidths.col5 }}></td>
+                  <td className="py-3 px-4" style={{ width: columnWidths.col6 }}></td>
+                  <td className="py-3 px-4" style={{ width: columnWidths.col7 }}></td>
+                </tr>
+              ))}
+            </>
+           )}
           </>
         )}
       </tbody>
