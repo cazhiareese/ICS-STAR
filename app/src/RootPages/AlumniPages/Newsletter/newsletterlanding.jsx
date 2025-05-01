@@ -179,8 +179,6 @@ const NewsletterLanding = () => {
     };
 
     useEffect(() => {
-        
-
         fetchFilteredCards();
     }, [selectedTags, card]);
 
