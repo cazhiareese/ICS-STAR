@@ -10,7 +10,7 @@ import check from "../../../assets/check.png";
 import axios from "axios";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
 import Curve from "../../../assets/curve.png";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
@@ -36,6 +36,8 @@ function Donationform() {
     const [summary, setSummary] = useState({});
     const [summaryLoading, setSummaryLoading] = useState(true);
     const [driveDetails, setDriveDetails] = useState(null);
+    const [searchParams] = useSearchParams();
+    const success = searchParams.get("success");
 
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -94,6 +96,7 @@ function Donationform() {
         formData.append('monetary_donation', true);
         formData.append('in_kind_donation', false);
         formData.append('amount', monetaryAmountInput);
+        formData.append('direct_maya', false); 
         formData.append('is_anonymous', isAnonymous);
 
         if (file != null) {
@@ -125,9 +128,8 @@ function Donationform() {
     };
 
     const submitMayaDonation = async () => {
-        console.log(monetaryAmountInput);
-        if (monetaryAmountInput <= 0 ) {
-            alert("Please enter a valid amount and upload a proof of payment.");
+        if (monetaryAmountInput <= 0) {
+            alert("Please enter a valid amount.");
             return;
         }
     
@@ -135,15 +137,16 @@ function Donationform() {
         const formData = new FormData();
         const token = localStorage.getItem("token");
     
-        formData.append('monetary_donation', true);
-        formData.append('in_kind_donation', false);
-        formData.append('direct_maya', true); 
-        formData.append('amount', monetaryAmountInput);
-
-        
-
+        formData.append('monetary_donation', 'true'); // Use strings
+        formData.append('in_kind_donation', 'false');
+        formData.append('direct_maya', 'true'); 
+        formData.append('amount', String(monetaryAmountInput));
+    
         try {
-            console.log(formData);
+            for (let pair of formData.entries()) {
+                console.log(`${pair[0]}: ${pair[1]}`);
+            }
+    
             const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -151,8 +154,13 @@ function Donationform() {
                 }
             });
     
-            if (response.status === 200) {
-console.log("Maya donation response:", response.data);
+            if (response.status === 200 && response.data.redirectUrl) {
+                // ✅ Automatically redirect
+                localStorage.setItem("maya_donation_amount", String(monetaryAmountInput));
+
+                window.location.href = response.data.redirectUrl;
+            } else {
+                console.warn("No redirect URL found in response");
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
@@ -160,7 +168,56 @@ console.log("Maya donation response:", response.data);
             setSubmitting(false);
         }
     };
+
+    useEffect(() => {
+        if (success === "true") {
+          console.log("Payment successful");
+          callMayaCallback();
+        }
+      }, [success]);
     
+
+
+
+      const callMayaCallback = async () => {
+        const token = localStorage.getItem("token");
+        const amount = localStorage.getItem("maya_donation_amount");
+    
+        console.log("Maya Callback triggered with amount:", amount);
+    
+        const formData = new FormData();
+        formData.append("amount", amount);  // Append the amount as form data
+    
+        try {
+            const response = await axios.post(`${API_BASE_URL}/maya-callback?drive_id=${drive_id}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'  
+                }
+            });
+    
+            if (response.status === 200) {
+                console.log("Donation acknowledged:", response.data);
+                setDonationSuccess(true);
+                setSummaryLoading(true); // Start loading for the summary
+                setSummary(response.data); // Set summary after successful donation
+                setMonetaryAmountInput(amount)
+                setIsMonetaryTypeOpen(false);
+                setIsInKindTypeOpen(false);
+                setSubmitting(false);
+                localStorage.removeItem("amount");
+
+            } else {
+                console.warn("Callback response issue:", response);
+            }
+        } catch (error) {
+            console.error("Error in Maya callback:", error);
+        }
+    };
+    
+    
+
+
 
     const submitInKindDonation = async () => {
         // Ensure that all required fields are not empty
@@ -174,6 +231,7 @@ console.log("Maya donation response:", response.data);
 
         formData.append('monetary_donation', false);
         formData.append('in_kind_donation', true);
+        formData.append('direct_maya', 'false'); 
         formData.append('description', donationDetailsInput);
 
         try {
