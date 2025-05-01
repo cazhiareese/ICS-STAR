@@ -26,25 +26,28 @@ const EventCardsMain = () => {
 
         //cyrus was here
     
-    const User = localStorage.getItem("token");
-    let tokentype = "guest";
-    let userId = true;
-    
-    
-    if (User) {
-      try {
-        const decoded = jwtDecode(User);
-        tokentype = decoded.role;
-        userId = decoded.sub;
-        console.log("Decoded token:", decoded);
-        console.log("User ID:", userId);
-        console.log("Token type:", tokentype);
-      } catch (error) {
-        console.error("Invalid token:", error);
-      }
-    } else {
-      console.log("No token found, defaulting to guest.");
-    }
+        const [tokentype, setTokentype] = useState("guest");
+        const [userId, setUserId] = useState(null);
+        
+        useEffect(() => {
+          const User = localStorage.getItem("token");
+          
+          if (User) {
+            try {
+              const decoded = jwtDecode(User);
+              setTokentype(decoded.role);
+              setUserId(decoded.sub);
+              console.log("Decoded token:", decoded);
+              console.log("User ID:", decoded.sub);
+              console.log("Token type:", decoded.role);
+            } catch (error) {
+              console.error("Invalid token:", error);
+            }
+          } else {
+            console.log("No token found, defaulting to guest.");
+          }
+        }, []);
+        
 
 
 

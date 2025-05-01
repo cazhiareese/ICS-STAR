@@ -60,6 +60,11 @@ if (User) {
   console.log("No token found, defaulting to guest.");
 }
 
+useEffect(() => { 
+    setUserId(userid);
+    setUser(userid);
+    setUserType(tokentype);     
+},[])
 
     useEffect(() => {
         const handleScroll = () => {
@@ -72,11 +77,7 @@ if (User) {
     }, []);
 
     //cyrus was here
-    useEffect(() => { 
-        setUserId(userid);
-        setUser(userid);
-        setUserType(tokentype);     
-    },[])
+
 
 
     useEffect(() => {
