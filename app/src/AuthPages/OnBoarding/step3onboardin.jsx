@@ -263,11 +263,18 @@ function Step3Onboarding() {
 
                     <button className={`bg-white border  text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-primary": "border-gray-300"}`}
                     
-                            onClick={()=>setUnemployedWorkExperience(true)}>Yes</button>
+                            onClick={()=>{
+                              updateUserData('employmentType', "unemployed");
+                              setUnemployedWorkExperience(true)
+
+                            }}>Yes</button>
 
                     <button className={`bg-white border text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-gray-300 bg-red-500": "border-primary"}`}
                     
-                            onClick={()=>{setUnemployedWorkExperience(false)}}>No</button>
+                            onClick={()=>{
+                              updateUserData('employmentType', "unemployed_no_exp");
+                              setUnemployedWorkExperience(false)
+                            }}>No</button>
                   </div>
                 </div>
               )}

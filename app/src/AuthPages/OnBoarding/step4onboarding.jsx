@@ -100,13 +100,13 @@ export default function Step4Onboarding() {
 
       console.log("Payload being sent:", payload);
       console.log(userType)
-      // await axios.post(endpoint, payload, {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
+      await axios.post(endpoint, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log("Onboarding information submitted successfully.");
-      // setCurrentSection(5);
+      setCurrentSection(5);
     } catch (error) {
       console.error("Error submitting onboarding information:", error);
     }

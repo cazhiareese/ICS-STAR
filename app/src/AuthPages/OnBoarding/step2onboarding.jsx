@@ -211,7 +211,12 @@ function Step2Onboarding() {
 
                     <div className="flex flex-row items-center justify-center my-10 lg:space-x-20 space-x-5 w-full">
                         <div className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl text-2xl" onClick={() => {
-                            setStandingStep(true)
+                            if (userType=="student"){
+                                setStandingStep(true)
+                            } else {
+                                setCurrentSection(1)
+                            }
+                            
                             confirmData()
                         }
                             }>
