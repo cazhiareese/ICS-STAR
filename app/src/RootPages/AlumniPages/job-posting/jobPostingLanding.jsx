@@ -23,6 +23,7 @@ function JobPostingLanding() {
 
     const [showRemoteOptionDropdown, setShowRemoteDropdown] = useState(false);
     const [selectedRemoteOption, setSelectedRemoteOption] = useState([]); 
+const [loading, setLoading] = useState(false);
 
     const [showSalaryRangeDropdown, setShowSalaryRangeDropdown] = useState(false);
     const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 });
@@ -116,7 +117,7 @@ function JobPostingLanding() {
             }
             const data = await response.json();
             console.log(data)
-            setJobList(data);
+            setJobList(data.result);
             setLoading(false);
             setError(false);
         } catch (err) {
