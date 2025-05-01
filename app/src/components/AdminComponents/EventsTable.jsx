@@ -24,7 +24,7 @@ function EventsTable({ data, loading = false }) {
   return (
     <table className="w-full">
       <thead>
-        <tr className="text-left text-xs text-primary font-satoshi-regular">
+        <tr className="text-left text-s text-primary font-satoshi-regular">
           <th className="py-2 px-4">Date Concluded</th>
           <th className="py-2 px-4">Event Title</th>
           <th className="py-2 px-4">RSVP Count</th>
@@ -66,7 +66,7 @@ function EventsTable({ data, loading = false }) {
             return (
               <tr
                 key={index}
-                className="hover:bg-secondary cursor-pointer"
+                className="border-b border-neutral-200 hover:bg-secondary cursor-pointer"
                 onClick={() => navigate(`/admin/events/${event.event_id}`)}
               >
                 <td className="py-3 px-4">{endDate}</td>

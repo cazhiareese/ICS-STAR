@@ -189,7 +189,7 @@ function AdminDashboard() {
   return <>
   <div className="">
     {/* Dashboard area */}
-    <div className="bg-[rgb(243,241,244)] flex-1 lg:max-h-screen overflow-auto">
+    <div className="bg-[#F9F9FB] flex-1 pt-4 h-screen lg:max-h-screen overflow-auto">
       <div className="p-4 flex flex-col max-w-7xl mx-auto">
         {/* Welcome admin div */}
         <div className="flex flex-row mb-3 items-center">
@@ -348,14 +348,14 @@ function AdminDashboard() {
           </div> 
         {/* Alumni part */}
         <div className="row-start-6 col-span-2 lg:row-start-5 lg:col-span-4 text-2xl font-satoshi-medium -mb-4">
-          <h2 className="">More about your Alumni</h2>
+          <h2>More about your Alumni</h2>
         </div>
         {/* Registered Alumni */}
-          <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 flex flex-col`}>
+          <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 mt-2 flex flex-col`}>
             {/* Alumni header */}
             <div className="flex flex-row justify-between">
               {/* Registed Alumni count */}
-              <div className="flex flex-row items-center gap-3">
+              <div className="flex flex-row pl-1 items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
                   <Users className="w-6 h-6 text-white" />
                 </div>
@@ -384,7 +384,7 @@ function AdminDashboard() {
                 <table className="w-full mt-2">
                   <tbody>
                     {alumniLocations.map((location, index) => (
-                          <tr key={index} className="flex justify-between px-6 py-1">
+                          <tr key={index} className="flex justify-between px-6 pb-1">
                             <td className="text-black font-satoshi-light text-sm">{location.country}</td>
                             <td className="text-primary font-medium text-sm">{location.percentage}</td>
                           </tr>
@@ -398,7 +398,7 @@ function AdminDashboard() {
                 <div className="bg-secondary rounded-2xl px-4 py-1">
                   <p className="font-satoshi-medium">Alumni Industries</p>
                 </div>
-                <div className="flex flex-row items-center justify-center">
+                <div className="flex flex-row items-center justify-center pl-2">
                   {/* Donut Chart */}
                   <PieChart width={140} height={140}>
                     <Pie
@@ -417,12 +417,12 @@ function AdminDashboard() {
                   {/* Legend */}
                   <div>
                     {alumniIndustries.map((entry, index) => (
-                      <div key={index} className="flex items-center gap-2 text-gray-800">
+                      <div key={index} className="flex items-center gap-2 pt-1 pl-3 text-gray-800">
                         <span
                           className="inline-block w-3 h-3 rounded-full"
                           style={{ backgroundColor: entry.color }}
                         ></span>
-                        <span>{entry.name}</span>
+                        <span className="text-sm">{entry.name}</span>
                       </div>
                     ))}
                   </div>
@@ -431,7 +431,7 @@ function AdminDashboard() {
             </div>
           </div> 
         {/* System Engagement */}
-          <div className={`${dashboardCard} col-start-1 row-start-8 lg:row-start-6 lg:col-start-3 col-span-2 flex flex-col`}> 
+          <div className={`${dashboardCard} col-start-1 row-start-8 lg:row-start-6 mt-2 lg:col-start-3 col-span-2 flex flex-col`}> 
             <div className="flex flex-row justify-between">
               <div className="flex flex-col">
                 <h2 className="font-satoshi-medium text-2xl"> System Engagement</h2>  

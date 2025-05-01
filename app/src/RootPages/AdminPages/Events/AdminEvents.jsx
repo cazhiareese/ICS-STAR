@@ -107,27 +107,28 @@ function AdminEvents() {
       {/* Events header and new event button */}
       <div className='flex flex-row justify-between mb-10'>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Events</h1>
-        <button className='flex flex-row items-center justify-center gap-2 font-satoshi-regular text-white bg-primary px-6 py-3 rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {navigate("/admin/events/create-event")}}> 
+        <button className='flex flex-row items-center justify-center gap-2 font-satoshi-bold text-white bg-primary px-6 py-3 rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {navigate("/admin/events/create-event")}}> 
           <Plus/> New Event
         </button>
       </div>
       {/* Alumni or student */}
-      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
+      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-4'>
         <TabSwitcher
           currentTab={eventType}
           setTab={setEventType}
           tabs={eventTabs}
         />
 
-        <div className='relative flex items-center justify-end flex-1'>
+        <div className='relative flex gap-2 justify-end flex-1 '>
           {/* Search */}
+    
           <SearchComponent
             query={query}
             setQuery={setQuery}
             focused={focused}
             setFocused={setFocused}
           />
-            
+    
           {eventType === 'finished'?  <>
             <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
           
@@ -158,7 +159,7 @@ function AdminEvents() {
               )}
             </div>
           ) : eventType === 'finished' ? (
-            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white h-fit">
+            <div className="border border-neutral-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white h-fit">
               {events.length == 0 ? (
                 <div className='min-h-90 w-full flex flex-row items-center justify-center'>
                   <h1 className='font-satoshi-regular text-3xl text-primary'>No events to show</h1>
