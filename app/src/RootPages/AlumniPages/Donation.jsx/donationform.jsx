@@ -94,6 +94,7 @@ function Donationform() {
         formData.append('monetary_donation', true);
         formData.append('in_kind_donation', false);
         formData.append('amount', monetaryAmountInput);
+        formData.append('direct_maya', false); 
         formData.append('is_anonymous', isAnonymous);
 
         if (file != null) {
@@ -141,16 +142,19 @@ function Donationform() {
         formData.append('amount', monetaryAmountInput);
 
         
-
         try {
-            console.log(formData);
+            for (let pair of formData.entries()) {
+                console.log(`${pair[0]}: ${pair[1]}`);
+            }
+            
             const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
                 }
             });
-    
+            console.log("asaasas",response);
+            
             if (response.status === 200) {
 console.log("Maya donation response:", response.data);
             }
