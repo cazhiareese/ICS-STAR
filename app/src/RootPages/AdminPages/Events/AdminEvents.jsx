@@ -159,7 +159,7 @@ function AdminEvents() {
               )}
             </div>
           ) : eventType === 'finished' ? (
-            <div className="border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white h-fit">
+            <div className="border border-neutral-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto bg-white h-fit">
               {events.length == 0 ? (
                 <div className='min-h-90 w-full flex flex-row items-center justify-center'>
                   <h1 className='font-satoshi-regular text-3xl text-primary'>No events to show</h1>

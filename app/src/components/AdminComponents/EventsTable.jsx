@@ -66,7 +66,7 @@ function EventsTable({ data, loading = false }) {
             return (
               <tr
                 key={index}
-                className="border-b border-gray-200 hover:bg-secondary cursor-pointer"
+                className="border-b border-neutral-200 hover:bg-secondary cursor-pointer"
                 onClick={() => navigate(`/admin/events/${event.event_id}`)}
               >
                 <td className="py-3 px-4">{endDate}</td>
