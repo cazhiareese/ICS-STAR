@@ -295,3 +295,26 @@ async def make_donation(
             "status": "Pending Acknowledgement",
             "details": in_kind.description
         }
+
+def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session):
+    name = db.query(User.first_name, User.last_name).filter(User.user_id == user_id).first()
+    monetary = MonetaryDonation(
+                date_donated = datetime.now(timezone.utc),
+                amount = amount,
+                drive_id = drive.drive_id,
+                user_id = user_id,
+                is_acknowledged = True
+            )
+    try:
+        db.add(monetary)
+        db.commit()
+        db.refresh(monetary)
+    except Exception as e:
+        raise HTTPException(status_code=500, details=e)
+    return {
+        "donation_drive": drive.title,
+        "date": monetary.date_donated,
+        "user": f"{name.first_name} {name.last_name}",
+        "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
+        "amount": monetary.amount
+    }
