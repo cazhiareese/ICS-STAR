@@ -231,6 +231,7 @@ function Donationform() {
 
         formData.append('monetary_donation', false);
         formData.append('in_kind_donation', true);
+        formData.append('direct_maya', 'false'); 
         formData.append('description', donationDetailsInput);
 
         try {
