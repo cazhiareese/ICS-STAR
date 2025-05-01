@@ -32,7 +32,8 @@ def fetch_newsletter_suggestions(
         {
             "newsletter_id": str(n.newsletter_id),
             "title": n.title,
-            "date_posted": n.date_posted,
+            "date_posted": n.date_posted.strftime("%b %d, %Y %I:%M%p"),
+            "content": n.content,
             "tags": [tag.tag for tag in n.tags]
         }
         for n in newsletters
