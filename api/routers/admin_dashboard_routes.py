@@ -242,7 +242,8 @@ async def get_top_funded_drives(
         )
         .where(
             DonationDrive.is_deleted == False,
-            DonationDrive.is_closed == False
+            DonationDrive.is_closed == False,
+            DonationDrive.is_general == False,
         )
         .group_by(DonationDrive.drive_id, DonationDrive.title, DonationDrive.target_cost)
         .order_by(desc("total_donations"))
