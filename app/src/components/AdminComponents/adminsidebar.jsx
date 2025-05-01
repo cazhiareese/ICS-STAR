@@ -53,13 +53,13 @@ function Sidebar({ sidebarItems }) {
 
         {/* Log Out */}
         <div
-          className="flex flex-row p-2 rounded-r-3xl items-center border-l-6 border-transparent hover:bg-gray-100 hover:text-hover mr-3 ml-2 mt-16 cursor-pointer"
+          className="flex flex-row p-2 rounded-r-3xl items-center border-l-6 border-transparent hover:bg-gray-100 hover:text-hover mr-3 mt-16 cursor-pointer"
           onClick={handleLogout}
         >
           <span className="mr-3">
             <LogOut />
           </span>
-          <p className="text-lg font-satoshi-regular">Log out</p>
+          <p className="text-lg font-satoshi-medium">Log out</p>
         </div>
       </div>
     </>
