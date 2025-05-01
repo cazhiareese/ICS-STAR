@@ -42,7 +42,7 @@ def logic_search_alumni(
         User.facebook,
         User.linkedin,
         User.github
-    ).filter(User.user_type == UserTypeEnum.alumni)
+    ).filter(User.is_onboarded == True, User.user_type == UserTypeEnum.alumni)
 
     # Append appropriate filters to the initial query
     if name:

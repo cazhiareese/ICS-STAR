@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 from fastapi import Query
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
@@ -182,8 +182,8 @@ def get_all_open_drives(db: Session, page: int = 1, page_size: int = 10) -> list
 
     return drive_out_list
 
-def get_all_open_drives_by_amount_raised_descending(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives_by_amount_raised_descending(db: Session, title: Optional[str]) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == False)
     
     drives = query.all()
 
@@ -230,8 +230,8 @@ def get_all_open_drives_by_amount_raised_descending(db: Session) -> list[AdminDo
     
     return drive_out_list
 
-def get_all_open_drives_by_amount_raised_ascending(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives_by_amount_raised_ascending(title: Optional[str], db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"), DonationDrive.is_closed == False)
     
     drives = query.all()
 
@@ -276,8 +276,8 @@ def get_all_open_drives_by_amount_raised_ascending(db: Session) -> list[AdminDon
     
     return drive_out_list
 
-def get_all_open_drives_by_percent_funded_descending(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives_by_percent_funded_descending(title: Optional[str],db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == False)
     
     drives = query.all()
 
@@ -322,8 +322,8 @@ def get_all_open_drives_by_percent_funded_descending(db: Session) -> list[AdminD
     
     return drive_out_list
 
-def get_all_open_drives_by_percent_funded_ascending(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives_by_percent_funded_ascending(title: Optional[str],db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == False)
     
     drives = query.all()
 
@@ -368,8 +368,8 @@ def get_all_open_drives_by_percent_funded_ascending(db: Session) -> list[AdminDo
     
     return drive_out_list
 
-def get_all_open_drives_by_donation_count_descending(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives_by_donation_count_descending(title: Optional[str], db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == False)
     
     drives = query.all()
 
@@ -414,8 +414,8 @@ def get_all_open_drives_by_donation_count_descending(db: Session) -> list[AdminD
     
     return drive_out_list
 
-def get_all_open_drives_by_donation_count_ascending(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives_by_donation_count_ascending(title: Optional[str],db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == False)
     
     drives = query.all()
 
@@ -460,8 +460,8 @@ def get_all_open_drives_by_donation_count_ascending(db: Session) -> list[AdminDo
     
     return drive_out_list
 
-def get_all_open_drives_by_date_created_newest(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives_by_date_created_newest(title: Optional[str],db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == False)
     
     drives = query.all()
 
@@ -506,8 +506,8 @@ def get_all_open_drives_by_date_created_newest(db: Session) -> list[AdminDonatio
     
     return drive_out_list
 
-def get_all_open_drives_by_date_created_oldest(db: Session) -> list[AdminDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == False)
+def get_all_open_drives_by_date_created_oldest(title: Optional[str], db: Session) -> list[AdminDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == False)
     
     drives = query.all()
 
@@ -590,8 +590,8 @@ def get_all_closed_drives(db: Session) -> list[AdminClosedDonationDriveOut]:
 
     return drive_out_list
 
-def get_all_closed_drives_by_date_closed_newest(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_date_closed_newest(title: Optional[str],db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -626,8 +626,8 @@ def get_all_closed_drives_by_date_closed_newest(db: Session) -> list[AdminClosed
     
     return drive_out_list
 
-def get_all_closed_drives_by_date_closed_oldest(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_date_closed_oldest(title: Optional[str],db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -662,8 +662,8 @@ def get_all_closed_drives_by_date_closed_oldest(db: Session) -> list[AdminClosed
     
     return drive_out_list
 
-def get_all_closed_drives_by_amount_raised_descending(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_amount_raised_descending(title: Optional[str], db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -698,8 +698,8 @@ def get_all_closed_drives_by_amount_raised_descending(db: Session) -> list[Admin
     
     return drive_out_list
 
-def get_all_closed_drives_by_amount_raised_ascending(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_amount_raised_ascending(title: Optional[str], db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -734,8 +734,8 @@ def get_all_closed_drives_by_amount_raised_ascending(db: Session) -> list[AdminC
     
     return drive_out_list
 
-def get_all_closed_drives_by_donation_count_descending(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_donation_count_descending(title: Optional[str],db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -779,8 +779,8 @@ def get_all_closed_drives_by_donation_count_descending(db: Session) -> list[Admi
     
     return drive_out_list
 
-def get_all_closed_drives_by_donation_count_ascending(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_donation_count_ascending(title: Optional[str],db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -824,8 +824,8 @@ def get_all_closed_drives_by_donation_count_ascending(db: Session) -> list[Admin
     
     return drive_out_list
 
-def get_all_closed_drives_by_date_created_newest(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_date_created_newest(title: Optional[str], db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -860,8 +860,8 @@ def get_all_closed_drives_by_date_created_newest(db: Session) -> list[AdminClose
     
     return drive_out_list
 
-def get_all_closed_drives_by_date_created_oldest(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_date_created_oldest(title: Optional[str],db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -896,8 +896,8 @@ def get_all_closed_drives_by_date_created_oldest(db: Session) -> list[AdminClose
     
     return drive_out_list
 
-def get_all_closed_drives_by_percent_funded_descending(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_percent_funded_descending(title: Optional[str],db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -932,8 +932,8 @@ def get_all_closed_drives_by_percent_funded_descending(db: Session) -> list[Admi
     
     return drive_out_list
 
-def get_all_closed_drives_by_percent_funded_ascending(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_percent_funded_ascending(title: Optional[str],db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -968,8 +968,8 @@ def get_all_closed_drives_by_percent_funded_ascending(db: Session) -> list[Admin
     
     return drive_out_list
 
-def get_all_closed_drives_by_target_cost_descending(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_target_cost_descending(title: Optional[str], db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 
@@ -1004,8 +1004,8 @@ def get_all_closed_drives_by_target_cost_descending(db: Session) -> list[AdminCl
     
     return drive_out_list
 
-def get_all_closed_drives_by_target_cost_ascending(db: Session) -> list[AdminClosedDonationDriveOut]:
-    query = db.query(DonationDrive).filter(DonationDrive.is_closed == True)
+def get_all_closed_drives_by_target_cost_ascending(title: Optional[str],db: Session) -> list[AdminClosedDonationDriveOut]:
+    query = db.query(DonationDrive).filter(DonationDrive.title.ilike(f"%{title}%"),DonationDrive.is_closed == True)
     
     drives = query.all()
 

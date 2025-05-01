@@ -23,13 +23,13 @@ def admin_search_job(
         mode_options: str = "",
         min_salary: int = 0,
         max_salary: int = 0,
-        sort_by: str = "date_desc"
+        sort_by: str = "date_desc",
 ) -> list[JobSearchOut]:
     
     # Start with a base query
     post_query = db.query(JobPosting.post_id)\
         .join(User, User.user_id == JobPosting.user_id)\
-        .filter(JobPosting.is_deleted == False)
+        .filter(JobPosting.is_deleted == False) 
 
     # Apply optional filters
     if title:
@@ -48,7 +48,10 @@ def admin_search_job(
             post_query = post_query.filter(or_(*[JobPosting.employment_type == e_type for e_type in employment_types_list]))
 
     if mode_options:
-        post_query = post_query.filter(JobPosting.mode == mode_options)
+        mode_options_list = [mode.strip() for mode in mode_options.split(',') if mode.strip()]
+
+        if mode_options_list:
+            post_query = post_query.filter(or_(*[JobPosting.mode == mode for mode in mode_options_list]))
 
     if min_salary:
         post_query = post_query.filter(JobPosting.salary >= min_salary)
@@ -115,7 +118,7 @@ def admin_search_job(
     jobs_out_list = []
     for job in jobs:
         job_out = JobSearchOut(
-            id=job.post_id,
+            post_id=job.post_id,
             title=job.title,
             company=job.company,
             description=job.description,
