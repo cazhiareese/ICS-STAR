@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import DatePicker from "react-multi-date-picker";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import colors from "react-multi-date-picker/plugins/colors"
 import { X } from "lucide-react";
+import "./YearPickerCss.css";
 
 const DatePickerModal = ({ setIsDatePickerModalOpen, setDateList }) => {
   const [selectedDates, setSelectedDates] = useState([]);
@@ -32,16 +35,26 @@ const DatePickerModal = ({ setIsDatePickerModalOpen, setDateList }) => {
 
         {/* Content: Date Picker */}
         <div className="flex flex-col items-center w-full mb-6">
+          {/* DatePicker Component */}
           <DatePicker
             multiple
             value={selectedDates}
-            onChange={setSelectedDates}
+            onChange={setSelectedDates}  // Use the handleYearChange function
             onlyYearPicker
             format="YYYY"
             sort
-            className="w-full"
-            inputClass="w-full border border-gray-300 rounded-xl py-2 px-2 text-sm focus:outline-none"
-            containerClassName="w-full"
+            inputClass="border border-gray-300 rounded-xl px-3 h-10 py-2 md:w-4xs w-full text-left focus:border-primary focus:outline-none focus:ring-0 pl-10 pr-10"
+            calendarClassName="p-4 w-sm"
+            colors={[colors("#FFFFFF")]}
+            renderButton={(direction, handleClick) => (
+              <button onClick={handleClick}>
+                {direction === "right" ? (
+                  <ChevronRight size={30} className="text-blue-950" />
+                ) : (
+                  <ChevronLeft size={30} className="text-blue-950" />
+                )}
+              </button>
+            )}
           />
         </div>
 
