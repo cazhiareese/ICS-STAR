@@ -308,18 +308,18 @@ function AdminDashboard() {
           </div>
           {/* Grid */}
           <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 grid-rows-[5em_7em_7em_14em_28em_1em_29em_19em] lg:grid-rows-[5em_7em_7em_14em_1em_18em] gap-4">
-            {/* Dashboard Banner */}
-            <div className="w-full h-200px overflow-hidden col-start-1 col-span-2 lg:col-span-4 row-start-1 rounded-2xl flex items-center justify-between relative">
-              <img
-                src="/assets/DashboardBanner.svg"
-                alt="Dashboard Banner"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <p className="text-white font-satoshi-bold text-2xl ml-5 z-10">Dashboard</p>
-              <p className="text-white font-satoshi-light mr-3 lg:mr-52 hidden lg:block z-10">
-                Bridging Alumni across the Cosmos
-              </p>
-            </div>
+          {/* Dashboard Banner */}
+          <div className="w-full h-[5em] overflow-clip col-start-1 col-span-2 lg:col-span-4 row-start-1 rounded-2xl flex items-center justify-between relative">
+            <img
+              src="/assets/DashboardBanner.svg"
+              alt="Dashboard Banner"
+              className="absolute inset-0 h-full object-cover"
+            />
+            <p className="text-white font-satoshi-bold text-2xl ml-5 z-10">Dashboard</p>
+            <p className="text-white font-satoshi-light mr-3 lg:mr-52 hidden lg:block z-10">
+              Bridging Alumni across the Cosmos
+            </p>
+          </div>
             {/* Pending Verifications */}
             <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-col justify-between`}> 
               {loading ? <SkeletonCard /> : (
@@ -390,7 +390,7 @@ function AdminDashboard() {
                 <>
                   <div className="flex flex-row justify-between">
                     <p className="font-satoshi-medium text-2xl"> Upcoming Events </p> 
-                    <button className="flex flex-row gap-4 items-center cursor-pointer"> 
+                    <button className="flex flex-row gap-4 items-center cursor-pointer hover:text-hover" onClick={() => {navigate("/admin/events")}}> 
                       <p className="font-satoshi-light">View All Events</p> 
                       <MoveRight/>
                     </button>
@@ -425,7 +425,7 @@ function AdminDashboard() {
                         <HandCoins/>
                         <p className="text-2xl "> Donations </p>
                       </div>
-                      <button className="flex flex-row gap-4 items-center cursor-pointer"> 
+                      <button className="flex flex-row gap-4 items-center cursor-pointer hover:text-hover" onClick={() => {navigate("/admin/donations")}}> 
                         <p className="font-satoshi-light text-sm">View All Donations</p> 
                         <MoveRight/>
                       </button>            
@@ -496,7 +496,7 @@ function AdminDashboard() {
                       </div>
                     </div>
                     <div>
-                      <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate("/admin/dashboard/alumni-report")}> 
+                      <button className="flex flex-row gap-4 items-center cursor-pointer hover:text-hover" onClick={() => navigate("/admin/dashboard/alumni-report")}> 
                         <p className="font-satoshi-light text-sm">View your Alumni</p> 
                         <MoveRight/>
                       </button>      
@@ -565,7 +565,7 @@ function AdminDashboard() {
                       <h2 className="font-satoshi-medium text-2xl"> System Engagement</h2>  
                       <p className="font-satoshi-light text-xs">User visit for the last 30 days</p>
                     </div>
-                    <button onClick={goToInfoReports} className="flex flex-row gap-4 cursor-pointer mt-2"> 
+                    <button onClick={goToInfoReports} className="flex flex-row gap-4 cursor-pointer mt-2 hover:text-hover"> 
                       <p className="font-satoshi-light text-sm">View User Information Reports</p> 
                       <MoveRight/>
                     </button>      
