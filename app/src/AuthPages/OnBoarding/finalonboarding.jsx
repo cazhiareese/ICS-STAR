@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 function FinalOnboarding() {
-    const {userType, } = useOnboardingContext();
+    const {userType,userData } = useOnboardingContext();
     const navigate = useNavigate();
 
     return (
@@ -29,6 +29,7 @@ function FinalOnboarding() {
             </div>
             <div className="w-80 h-20 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl my-30"
             onClick={()=> {
+                    localStorage.setItem("token", userData.userUpdatedToken);
                     window.location.reload(true); 
                     window.location.reload();
                     window.location.href = userType === "alumni" ? "/alumni/dashboard" : "/student/dashboard";

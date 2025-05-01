@@ -47,7 +47,8 @@ export function OnboardingProvider({ children }) {
             "UI/UX Designing",
             "Mobile Development",
             "Frontend Developing",
-        ]
+        ],
+        userUpdatedToken: ""
     });
 
     const updateUserData = (field, value) => {
