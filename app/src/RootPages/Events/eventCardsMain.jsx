@@ -49,22 +49,23 @@ const EventCardsMain = () => {
 
     useEffect(() => {
         const fetchEvent = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setEvent(response.data);
-                console.log("Event data:", response.data);
-            } catch (error) {
-                console.error('Error fetching event:', error);
-            }
+          try {
+            const config = tokenType === "guest"
+              ? {}
+              : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
+      
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`, config);
+            setEvent(response.data);
+            console.log("Event data:", response.data);
+          } catch (error) {
+            console.error("Error fetching event:", error);
+          }
         };
+      
         fetchEvent();
         console.log("Event data:", event);
-        
-    },[]);
+      }, []);
+      
 
         useEffect(() => {
             if (!token) throw new Error("User not authenticated");
@@ -97,67 +98,8 @@ const EventCardsMain = () => {
             console.log("Event data:", event);     
         },[])
 
-    useEffect(() => {
 
-        const fetchReservations = async () => {
 
-            try {
-                const response = await axios.get(`${API_BASE_URL}/events/confirmed`, {
-                    headers: {
-                      Authorization: `Bearer ${token}`
-                    }
-                  });
-                  setReservations(response.data);
-                  console.log(reservations.length)
-                
-            } catch (error) {
-                
-                console.error('Error fetching reservations:', error);
-            }
-        };
-
-        // fetchReservations();
-        // setReservationSignal(false);
-        console.log("RESERVATION SIGNAL")
-        
-
-        const fetchAllEvents = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/events-visible-to`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setAllEvents(response.data);
-                console.log(allEvents)
-
-            } catch (error) {
-                console.error('Error fetching all events:', error);
-                console.log(allEvents)
-            }
-        };
-
-        fetchAllEvents();
-        // setEvent(sampleEvent)
-        console.log("Event data:", event);
-
-    }, []);
-
-    const sampleEvent = {
-        id: 1,
-        title: "Community Clean-Up Drive",
-        description: "Join us for a community clean-up event to make our neighborhood cleaner and greener.",
-        date: "2023-12-15T08:00:00Z", // UTC time format
-        location: "Central Park, Main Street",
-        organizer: "Green Earth Organization",
-        image: "https://example.com/event-image.jpg",
-        tags: ["Community", "Environment", "Volunteer"],
-        links: [
-            "https://example.com/event-details",
-            "https://example.com/registration-form"
-        ],
-        is_closed: false,
-    };
 
     const parseTime = (isoTimestamp) => {
         console.log("ISO Timestamp:", isoTimestamp);
