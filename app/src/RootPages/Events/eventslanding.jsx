@@ -245,7 +245,7 @@ if (User) {
       {/* Search Input */}
       <input
         type="text"
-        placeholder="Search donation drives..."
+        placeholder="Search Available Events"
         className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
         onChange={(e) => {
           const value = e.target.value;
