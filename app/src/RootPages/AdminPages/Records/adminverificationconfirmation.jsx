@@ -14,6 +14,7 @@ function AdminVerificationConfirmation() {
   const [pdfFileUrl, setPdfFileUrl] = useState(null)
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  const [token, setToken] = useState(null)
   const { userid } = useParams();
   const [loading, setLoading] = useState(true)
   const [verifyTransition, setVerifyTransition] = useState(false)
@@ -24,7 +25,7 @@ function AdminVerificationConfirmation() {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const userProfile = await axios.get(`${API_BASE_URL}/admin/unverified/user/${userid}`)
+        const userProfile = await axios.get(`${API_BASE_URL}/admin/unverified/user/${userid}`, {headers: {Authorization: `Bearer ${token}`}})
         setUser(userProfile.data)
         if (userProfile.data.verification_file) {
           const extension = userProfile.data.verification_file.split('.').pop().toLowerCase()
@@ -47,6 +48,9 @@ function AdminVerificationConfirmation() {
         setLoading(false)
       }
     }
+
+    setToken(localStorage.getItem('token'))
+
     fetchData()
   }, [userid])
 
