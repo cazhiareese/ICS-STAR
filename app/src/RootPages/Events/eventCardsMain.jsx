@@ -23,6 +23,28 @@ const EventCardsMain = () => {
     const id = useParams(); // Get the drive_id from the URL params
     const event_id = id.eventid; // Extract the drive_id from the params
 
+        //cyrus was here
+    
+    const User = localStorage.getItem("token");
+    let tokentype = "guest";
+    let userid = true;
+    
+    
+    if (User) {
+      try {
+        const decoded = jwtDecode(User);
+        tokentype = decoded.role;
+        userid = decoded.sub;
+        console.log("Decoded token:", decoded);
+        console.log("User ID:", userid);
+        console.log("Token type:", tokentype);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    } else {
+      console.log("No token found, defaulting to guest.");
+    }
+
 
 
     useEffect(() => {
