@@ -12,6 +12,7 @@ import CircularLoading from "../../../components/LoadingComponents/circularloadi
 import Curve from "../../../assets/curve.png";
 import { useParams, useNavigate } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
+import PaymentMode from "../../../components/AlumniComponents/DonationComponents/paymentmode";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
@@ -208,6 +209,7 @@ function Donationform() {
                                     monetaryAmountInput={monetaryAmountInput}
                                     setMonetaryAmountInput={setMonetaryAmountInput}
                                 />
+                                <PaymentMode/>
                                 <DonationInstructions donationType={"monetary"} />
                                 <PaymentProof
                                     fileInputRef={fileInputRef}
