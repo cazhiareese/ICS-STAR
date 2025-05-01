@@ -39,13 +39,26 @@ const EventsLanding = () => {
     const [userType, setUserType] = useState(null);
 
     //cyrus was here
-    const User = localStorage.getItem("token");
+
+const User = localStorage.getItem("token");
+let tokentype = "guest";
+let userid = true;
+
+
+if (User) {
+  try {
     const decoded = jwtDecode(User);
-    console.log(decoded);
-    const tokentype = decoded.role;
-    const userid = decoded.sub;
-    console.log("User ID: ", userid);
-    console.log("Decoded token typee:", tokentype);
+    tokentype = decoded.role;
+    userid = decoded.sub;
+    console.log("Decoded token:", decoded);
+    console.log("User ID:", userid);
+    console.log("Token type:", tokentype);
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+} else {
+  console.log("No token found, defaulting to guest.");
+}
 
 
     useEffect(() => {
@@ -59,34 +72,7 @@ const EventsLanding = () => {
     }, []);
 
     //cyrus was here
-    useEffect(() => {
-        // if (!token) throw new Error("User not authenticated");
-
-        // const fetchUserId = async () => {
-        //     try {
-        //         const response = await fetch(`${API_BASE_URL}/profile`, {
-        //             method: 'GET',
-        //             headers: {
-        //                 Authorization: `Bearer ${token}`,
-        //                 'Content-Type': 'application/json'
-        //             }
-        //         });
-        
-        //         if (!response.ok) {
-        //             if (response.status === 401) throw new Error("Unauthorized access");
-        //             throw new Error("Failed to fetch profile");
-        //         }
-        
-        //         const result = await response.json();
-        //         console.log(result.data.user_id);
-        //         setUserId(result.data.user_id);
-        //         setUser(result.data);
-        //         setUserType(result.data.user_type);
-        //     } catch (error) {
-        //         console.error("Error fetching profile:", error.message);
-        //     }
-        // };
-        //fetchUserId();   
+    useEffect(() => { 
         setUserId(userid);
         setUser(userid);
         setUserType(tokentype);     
@@ -252,68 +238,70 @@ const EventsLanding = () => {
     return (
         <>
             <div className="flex flex-col items-center ">
-                <div className={`w-full z-40 transition-all duration-800 ease-in-out items-center justify-center flex ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
+            <div className="flex flex-col w-full shadow-md pb-4 items-center rounded-b-[35px] bg-white">
+            <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
+  <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
+    <div className="relative flex w-full max-w-[350px] sm:max-w-[600px]">
+      {/* Search Input */}
+      <input
+        type="text"
+        placeholder="Search Available Events"
+        className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
+        onChange={(e) => {
+          const value = e.target.value;
+          setSearchInput(value);
 
-                    <div className="flex overflow-hidden items-center bg-white justify-center p-5 shadow-xl rounded-2xl w-full mx-auto h-25">
-                        
-                        <div className='flex flex-row  z-10 w-full lg:w-1/2 h-16 max-w-[600px] px-4  border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                            <input
-                                type="text"
-                                placeholder="Search donation drives..."
-                                className="w-full h-full max-w-[600px] font-satoshi-regular text-xl"  
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    setSearchInput(value);
-                                    
-                                    if (value.trim() === '') {
-                                      setSuggestions("none");
-                                      return;
-                                    }
-                                  
-                                    const matches = allEvents
-                                      ?.filter(event =>
-                                        event.title.toLowerCase().includes(value.toLowerCase())
-                                      )
-                                      .slice(0, 5); // limit to 5
-                                  
-                                    setSuggestions(matches || []);
-                                  
-                                    // Scroll to explore events section
-                                    if (exploreRef.current) {
-                                        const yOffset = -130; // increase if you want more spacing above
-                                        const y = exploreRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                                        window.scrollTo({ top: y, behavior: 'smooth' });
-                                      }
-                                  }}                    >
+          if (value.trim() === "") {
+            setSuggestions("none");
+            return;
+          }
 
-                                
-                            </input>
-                            <div className='flex items-center justify-center w-25 h-full bg-primary ml-auto rounded-xl -mr-4'>
-                                <Search className='text-white w-7 h-7'/>
-                            </div>
-                        </div>
+          const matches = allEvents
+            ?.filter((event) =>
+              event.title.toLowerCase().includes(value.toLowerCase())
+            )
+            .slice(0, 5); // limit to 5
 
-                        
-                        
-                    </div>
-                    {/* <div className={`w-1/3 h-80 relative  border-2 z-30 rounded-2xl`}> */}
-                    {/* </div> */}
-                </div>
-                <div className='h-30'>
+          setSuggestions(matches || []);
 
-                </div>
+          if (exploreRef.current) {
+            const yOffset = -130;
+            const y = exploreRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }}
+        value={searchInput}
+      />
+
+      {/* Search Button */}
+      <div className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+        <Search size={20} />
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{/* Spacer to prevent layout shift */}
+<div className="h-28"></div>
+
                 
                 <div className="flex flex-col -mt-20 mb-8 w-full sm:px-15 sm:items-start items-center">
-                    <div className="flex flex-row items-end space-x-5">
-                        <label className="text-3xl text-primary font-satoshi-bold">Your Reservations</label>
-                        <label className="text-xl text-primary font-satoshi-light">({reservations == null ? "0" : reservations.length})</label>
-                    </div>
+                {tokentype !== "student" && User !== null && (
+  <div className="flex flex-row items-end space-x-5">
+    <label className="text-3xl text-primary font-satoshi-bold">Your Reservations</label>
+    <label className="text-xl text-primary font-satoshi-light">
+      ({reservations == null ? "0" : reservations.length})
+    </label>
+  </div>
+)}
+
                     {userType === "alumni" && (
-                        <div className="flex flex-row mt-5 mr-10  gap-5 overflow-scroll w-full">
+                        <div className="flex flex-row mt-5 sm:mr-10  sm:ml-0 sm:mx-0 mx-auto gap-5 overflow-scroll sm:w-full">
                         {reservations != null ? (
                             reservations.length > 0 ? (
                                 reservations.map((reservation, index) => (
-                                    <div key={index} className="flex relative">
+                                    <div key={index} className="flex relative ">
                                         <EventCards event={reservation} />
                                         
                                         <button
@@ -474,7 +462,7 @@ const EventsLanding = () => {
 
                     
 
-                    <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto">
+                    <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto justify-center sm:justify-start">
                         
                         {suggestions!= "none" ? (
                             
@@ -508,7 +496,7 @@ const EventsLanding = () => {
                                 <EventCards event={event} />
                                 {userType === "alumni" && (
                                     <button
-                                    className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
+                                    className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer  ${
                                         isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                                     }`}
                                     onClick={() => handleRSVPClick(event.event_id, event)}

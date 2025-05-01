@@ -58,17 +58,14 @@ function SignupMain() {
                     
                     </div>
                     <div className="flex flex-col items-start w-[70%]">
-                        <div className="flex flex-col w-[100%] max-w-2xl pt-10  ">
-                            
-
+                        <div className="flex flex-col w-[100%] max-w-2xl pt-10">
                             {/* ALumni */}
                             <div className="border border-gray-300 cursor-pointer shadow-xl flex items-center h-25 rounded-2xl mt-10" onClick={SetAlumni}>
                                 <div className="grid grid-cols-2 w-[60%]">
                                     
                                     <div 
                                         className="row-span-2 text-primary flex items-center justify-center">
-                                        <img src={Alumni}/>
-                                        
+                                        <img src={Alumni}/> 
                                     </div>
                                     <label className="text-black font-satoshi-bold text-2xl">Alumni</label>
                                     <label className="text-gray-600 font-satoshi-light text-md w-50">Join the alumni network</label>
@@ -92,8 +89,6 @@ function SignupMain() {
                             </div>
                         </div>
                     </div>
-                    
-                    
                 
                 </div>
             ):
@@ -110,7 +105,7 @@ function SignupMain() {
                     </div> */}
 
                     <div className="-mt-12 flex-1 flex w-full overflow-auto">
-                        {userType === "Student" 
+                        {userType === "student" 
                             ? (StudentComponents[currentSection] || <div>Invalid Section</div>) 
                             : (AlumniComponents[currentSection] || <div>Invalid Section</div>)
                         }

@@ -57,7 +57,7 @@ function AdminVerificationConfirmation() {
       </div>
     ) : (
     <div className='p-6 flex flex-col h-screen w-full'>
-      <div className='flex gap-2 mb-3'>
+      <div className='flex gap-2 mb-0'>
         <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
           <MoveLeft className='text-primary'/> 
           <p className='text-primary font-satoshi-medium text-lg'>Back</p>
@@ -69,7 +69,7 @@ function AdminVerificationConfirmation() {
           <h1 className='text-primary font-satoshi-bold text-5xl '> Records </h1>
           <p className='font-satoshi-light text-lg text-gray-500'>/ Pending Verifications</p>
         </div>
-        <button className='flex items-center bg-success text-white text-md font-satoshi-regular gap-2 rounded-3xl px-4 py-1 cursor-pointer hover:bg-green-400' onClick={() => {setShowVerificationModal(true)}}>
+        <button className='flex items-center bg-success text-white text-md font-satoshi-medium gap-2 rounded-3xl px-4 py-1 cursor-pointer hover:bg-green-400' onClick={() => {setShowVerificationModal(true)}}>
           <Check className=''/>
           <p> Confirm Verification</p>
         </button>
@@ -152,20 +152,20 @@ function AdminVerificationConfirmation() {
             ) : (
               <div className=''>
                 <p className="text-xl font-satoshi-medium text-center mt-4">
-                  Confirm verification?
+                  Are you sure you want to verify this account?
                 </p>
-                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                <div className="pt-8 font-satoshi-medium flex gap-3 mt-6 w-ful h-full justify-center">
                   <button
-                    className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="bg-white text-primary px-4 py-2 rounded-3xl w-25 outline outline-1 outline-primary cursor-pointer"
                     onClick={() => setShowVerificationModal(false)}
                   >
-                    Cancel
+                    Not yet
                   </button>
                   <button
-                    className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
                     onClick={verifyUser}
                   >
-                    Confirm
+                    Verify
                   </button>
                 </div>
               </div>

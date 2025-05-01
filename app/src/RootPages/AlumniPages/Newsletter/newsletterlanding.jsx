@@ -5,6 +5,7 @@ import "../../../index.css";
 import { select } from "framer-motion/client";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selectedTags }) => {
     const navigate = useNavigate();
@@ -13,11 +14,30 @@ export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick
     //     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
     //     return new Date(utcDate).toLocaleString('en-US', options);
     // };
+const User = localStorage.getItem("token");
+let tokentype = "guest";
+let userid = true;
+
+
+if (User) {
+  try {
+    const decoded = jwtDecode(User);
+    tokentype = decoded.role;
+    userid = decoded.sub;
+    console.log("Decoded token:", decoded);
+    console.log("User ID:", userid);
+    console.log("Token type:", tokentype);
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+} else {
+  console.log("No token found, defaulting to guest.");
+}
 
     return (
         <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative  border-gray-300 border shadow-md p-5">
             <div className=" "
-            onClick={() => navigate(`/alumni/newsletter/${id}`)}
+            onClick={() => navigate(`/${tokentype}/newsletter/${id}`)}
         >
                 <div className="flex flex-col h-full ">
                     <div className="w-full h-45 bg-primary rounded-lg overflow-hidden">
@@ -222,19 +242,23 @@ const NewsletterLanding = () => {
     }, []);
     
     return (
+        <>
+        <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white mb-4">
+  <div className="relative flex flex-col w-full max-w-[350px] sm:max-w-[600px] mt-6">
+    <input
+      type="text"
+      placeholder="Search newsletters..."
+      className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
+    />
+
+    <button className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+      <Search size={20} />
+    </button>
+  </div>
+</div>
         <div className={`flex-1 overflow-y-hidden sm:mx-10 md:mx-15 lg:mx-20 mx-3`}>
-            <div className="flex w-full h-20 border border-gray-300 shadow-lg items-center justify-center rounded-b-2xl">
-                <div className="flex flex-row w-3/5 relative">
-                    <input
-                        type="text"
-                        placeholder="Search newsletters..."
-                        className="w-full sm:h-14 h-10 px-4 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <div className="flex items-center justify-center absolute sm:w-20 w-10 bg-primary sm:h-14 h-10 rounded-3xl right-0">
-                        <Search className="sm:w-7 sm:h-7 h-5 w-5 text-white mr" />
-                    </div>
-                </div>
-            </div>
+
+
             { card.length>0 && tags!=null? 
 
             (<><div className={`h-7 flex flex-row items-center justify-start mt-7`}>
@@ -303,6 +327,7 @@ const NewsletterLanding = () => {
             }
             
         </div>
+        </>
     );
 };
 

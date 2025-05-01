@@ -83,6 +83,8 @@ import AdminUserReports from "./RootPages/AdminPages/Layouts/adminuserreports";
 import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 
 
+import GuestLanding from "./RootPages/GuestPages/guestlanding";
+import AccountSettings from "./RootPages/Account/accountsettings";
 //const isSignedIn = !!localStorage.getItem("token");
 
 
@@ -103,6 +105,32 @@ function App() {
       console.warn("⚠️ No token found in sessionStorage");
     }
   }
+
+  function isOnboarded() {
+    const User = localStorage.getItem("token");
+    //const User = true;
+    let tokenType = null;
+    if (User) {
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      //tokenType = "admin";
+      //tokenType = "alumni";
+      const onBoarding = decoded.is_onboarded; // Adjust this based on your token structure
+      const verified = decoded.is_verified
+      console.log("Decoded token type:", tokenType);
+
+      console.log
+      if (onBoarding && verified){    
+        return true
+      } else if (!verified){
+        return true
+      }
+        return false
+    } else {
+      console.warn("⚠️ No token found in sessionStorage");
+    }
+  }
+
 
   console.log(isSignedIn);
 
@@ -137,8 +165,11 @@ function App() {
       
       {isSignedIn && checkType() === "alumni" && (
         <>
+          {isOnboarded()?
+           <>
           <Route path="/" element={<Root />}>
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
+            <Route path="alumni/account/settings" element={<AccountSettings />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
             <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
@@ -160,22 +191,30 @@ function App() {
 
             <Route path="*" element={<Unauthorized />} />
 
-            <Route
-            path="setup"
-            element={
-              <OnboardingProvider>
-                <OnBoarding />
-              </OnboardingProvider>
-            }
-            />
+
           </Route>
+          </>
+          :
+          <Route
+              path="/setup"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+            
+            />
+         } 
         </>
       )} 
 
       {isSignedIn && checkType() === "student" && (
         <>
-          <Route path="/" element={<Root />}>
+          {isOnboarded() ?
+          <>
+            <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/account/settings" element={<AccountSettings />} />
             <Route path="student/events" element={<EventsLanding />} />
             <Route path="students/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
@@ -185,7 +224,32 @@ function App() {
             <Route path="student/jobPosting/interested/:jobid" element={<InterestedUsers />} />
             <Route path="student/jobPosting/report/:jobid" element={<ReportJobPosting />} />
             <Route path="student/jobPosting" element={<JobPostingLanding />} />
-            <Route path="*" element={<UserProfile />} />
+            <Route path="*" element={<Unauthorized />} />
+          </Route>
+          </>
+           : 
+            <Route
+              path="setup"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+              />
+         }
+        </>
+      )}
+
+      {!isSignedIn  && (
+        <>
+          <Route path="/" element={<Root />}>
+            <Route path="guest/dashboard" element={<GuestLanding />} />
+            <Route path="guest/events" element={<EventsLanding />} />
+            <Route path="guest/events/:eventid" element={<EventCardsMain />} />
+            <Route path="guest/newsletter" element={<NewsletterLanding />} />
+            <Route path="guest/newsletter/:newsletterid" element={<Newsletter />} />
+            <Route path="*" element={<Unauthorized />} />
+
           </Route>
         </>
       )}
