@@ -5,7 +5,6 @@ from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 from config.database import get_db
 from models.usermodel import User, UserTypeEnum, UserEmploymentStatus
-from routers.admin_account_management import isAdmin
 
 from util.user_information_stats import  employment_class_util, get_active_alumni_stats, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, grouped_by_industry, salary_grade_util, tenure_status_util, unemployment_reason_util, work_mode_util
 
