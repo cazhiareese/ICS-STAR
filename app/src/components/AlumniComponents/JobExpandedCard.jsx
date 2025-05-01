@@ -18,52 +18,119 @@ import {
     const [showOptions, setShowOptions] = useState(false);
     const modalRef = useRef(null);
     const ellipsisRef = useRef(null);
-  
-    const jobId = job.post_id;
+
+
+    console.log(job);
+    const jobId = job.post_id || job.id; 
     const navigate = useNavigate();
-  
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (
-          modalRef.current &&
-          !modalRef.current.contains(event.target) &&
-          !ellipsisRef.current.contains(event.target)
-        ) {
-          setShowOptions(false);
-        }
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-  
+
+    // const navToEditJobPost = () => {
+    //     console.log("Edit Job Posting clicked");
+    //     console.log(jobId);
+    //     navigate(`/alumni/editjobPosting/${jobId}`);
+    // };
+
+    // Close modal on outside click
+    // useEffect(() => {
+    //     const handleClickOutside = (event) => {
+    //         if (
+    //             modalRef.current &&
+    //             !modalRef.current.contains(event.target) &&
+    //             !ellipsisRef.current.contains(event.target)
+    //         ) {
+    //             setShowOptions(false);
+    //         }
+    //     };
+    //     document.addEventListener('mousedown', handleClickOutside);
+    //     return () => {
+    //         document.removeEventListener('mousedown', handleClickOutside);
+    //     };
+    // }, []);
+
     return (
-      <div>
-        {/* WEBSITE VIEW */}
-        <div className="hidden md:flex flex-col w-full px-4 gap-5 items-center">
-          <div className="flex w-full max-w-[1300px] gap-4">
-            {/* MAIN CARD */}
-            <div className="flex flex-col outline-1 outline-neutral-300 rounded-2xl px-6 pt-4 pb-8 flex-grow">
-              {job.user_id === currentUserID ? (
-                <div className="relative ml-auto" ref={ellipsisRef}>
-                  <button className="cursor-pointer" onClick={() => setShowOptions(!showOptions)}>
-                    <Ellipsis size={30} />
-                  </button>
-                  {showOptions && (
-                    <div
-                      ref={modalRef}
-                      className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
-                    >
-                      <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50">
-                        <Trash2 size={16} />
-                        Delete Post
-                      </button>
-                      <button
-                        className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100"
-                        onClick={() => navigate(`/alumni/jobPosting/edit/${jobId}`)}
-                      >
-                        <Pencil size={16} />
-                        Edit Post
-                      </button>
+
+        <div>
+            {/* WEBSITE VIEW */}
+            <div className="md:flex flex-col lg:w-[800px] w-[500px] outline-0 gap-5 hidden">
+                <div className='flex lg:flex-row flex-col gap-2'>
+                    {/* Main Card */}
+                    <div className='flex flex-col outline-1 outline-neutral-300 lg:w-7/12 w-full rounded-2xl px-8 pt-4 pb-8 cursor'>
+                        {/* Ellipsis & Modal */}
+                        {job.user_id === currentUserID && (
+                            <div className="relative ml-auto" ref={ellipsisRef}>
+                                <button className='cursor-pointer' onClick={() => setShowOptions(!showOptions)}>
+                                    <Ellipsis size={30} />
+                                </button>
+                                {showOptions && (
+                                    <div
+                                        ref={modalRef}
+                                        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+                                    >
+                                        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
+                                            <Trash2 size={16} />
+                                            Delete Post
+                                        </button>
+                                        <button className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
+                                        onClick={()=>navToEditJobPost()}>
+                                            <Pencil size={16} 
+                                            
+                                            />
+                                            Edit Post
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {/* Title and Company */}
+                        <h1 className='font-satoshi-bold text-3xl pt-5'>{job.title}</h1>
+                        <div className="flex items-center gap-2 pt-2">
+                            <h1 className='font-satoshi-bold text-lg'>{job.company}</h1>
+                            {/* TODO: Add onclick */}
+                            {/* <button className='cursor-pointer'
+                            onClick={() => {
+                                const url = job.link.startsWith('http') ? job.link : `https://${job.link}`;
+                                window.open(url, '_blank');
+                            }}
+                            >
+                                <SquareArrowOutUpRight size={20} />
+                            </button>  */}
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                            <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
+                            <h1 className='cursor-pointer font-satoshi-bold'>{job.user_name}</h1> 
+                        </div>  
+
+                        {/* Job Image */}
+                        <img src={job.image} className='w-sm rounded-4xl my-3 h-39 object-cover'/>
+                        
+                        <div className="flex items-center gap-4 pt-2">
+                            {/* Apply Button TODO: Add onclick */}
+                            <button 
+                            onClick={() => {
+                                const url = job.link.startsWith('http') ? job.link : `https://${job.link}`;
+                                window.open(url, '_blank');
+                            }} 
+                            className=" rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-32 h-12 cursor-pointer"
+                            >
+                                Apply Here
+                            </button>
+
+                            {/* favorite Button TODO: Add onclick */}
+                            <button  
+                            className="flex rounded-2xl justify-center items-center bg-primary font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
+                            >
+                                <Star size={24}/>
+                            </button>
+
+                            {/* Interested count TODO: Add onclick */}
+                            <div className="flex items-center gap-1 pt-2 cursor-pointer">
+                                <span className="text-lg text-primary font-satoshi-bold underline hover:text-blue-700">
+                                    {job.interested_count} are interested
+                                </span>
+                            </div>
+                        </div>
+                        
+
                     </div>
                   )}
                 </div>

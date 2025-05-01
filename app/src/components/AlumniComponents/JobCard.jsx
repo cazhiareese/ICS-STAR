@@ -16,8 +16,8 @@ const navigate = useNavigate();
     console.log(job);
     const handleJobClick = () => {
         // store the card's post id to selected post_id
-        setSelectedJobId(job.post_id);
-        console.log(job.post_id + " selected!");
+        setSelectedJobId(job.post_id || job.id);
+        console.log((job.post_id || job.id) + " selected!");
         setMobileExpanded(true);
     }
     
