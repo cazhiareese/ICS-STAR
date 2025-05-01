@@ -106,7 +106,7 @@ async def make_donations(
     drive_id: UUID,
     monetary_donation: bool = Form(...),
     in_kind_donation: bool = Form(...),
-    direct_maya: bool = Form(...),
+    direct_maya: Optional[bool] = Form(None),
     amount: Optional[float] = Form(None),
     description: Optional[str] = Form(None),
     proof: Optional[UploadFile] = File(None),
@@ -140,7 +140,7 @@ async def make_donations(
 async def make_donations(
     monetary_donation: bool = Form(...),
     in_kind_donation: bool = Form(...),
-    direct_maya: bool = Form(...),
+    direct_maya: Optional[bool] = Form(None),
     amount: Optional[float] = Form(None),
     description: Optional[str] = Form(None),
     proof: Optional[UploadFile] = File(None),
