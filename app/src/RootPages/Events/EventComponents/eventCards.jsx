@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import { MapPinned, Calendar, Star } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import {jwtDecode} from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 const EventCards = ({event}) => {
 
         //cyrus was here

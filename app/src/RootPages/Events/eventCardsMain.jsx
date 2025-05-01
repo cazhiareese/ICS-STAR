@@ -4,6 +4,7 @@ import { MapPinned, Calendar, Star } from 'lucide-react';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import EventCardsMainSkeleton from './eventCardsMainSkeleton';
+import {jwtDecode} from 'jwt-decode'; // Import jwtDecode for decoding JWT tokens
 
 
 const EventCardsMain = () => {
@@ -14,7 +15,7 @@ const EventCardsMain = () => {
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const token = localStorage.getItem("token");
     const [reservationSignal, setReservationSignal] = useState(false);
-    const [userId, setUserId] = useState(null);
+    //const [userId, setUserId] = useState(null);
     const [event, setEvent] = useState(null);
     
     const navigate = useNavigate();
@@ -27,16 +28,16 @@ const EventCardsMain = () => {
     
     const User = localStorage.getItem("token");
     let tokentype = "guest";
-    let userid = true;
+    let userId = true;
     
     
     if (User) {
       try {
         const decoded = jwtDecode(User);
         tokentype = decoded.role;
-        userid = decoded.sub;
+        userId = decoded.sub;
         console.log("Decoded token:", decoded);
-        console.log("User ID:", userid);
+        console.log("User ID:", userId);
         console.log("Token type:", tokentype);
       } catch (error) {
         console.error("Invalid token:", error);
@@ -66,40 +67,6 @@ const EventCardsMain = () => {
         console.log("Event data:", event);
       }, []);
       
-
-        useEffect(() => {
-            if (!token) throw new Error("User not authenticated");
-    
-            const fetchUserId = async () => {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/profile`, {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-            
-                    if (!response.ok) {
-                        if (response.status === 401) throw new Error("Unauthorized access");
-                        throw new Error("Failed to fetch profile");
-                    }
-            
-                    const result = await response.json();
-                    console.log(result.data.user_id);
-                    console.log(result)
-                    setUserId(result.data.user_id);
-                    setUser(result.data);
-                } catch (error) {
-                    console.error("Error fetching profile:", error.message);
-                }
-            };
-            fetchUserId();   
-            console.log("Event data:", event);     
-        },[])
-
-
-
 
     const parseTime = (isoTimestamp) => {
         console.log("ISO Timestamp:", isoTimestamp);
@@ -175,7 +142,7 @@ const EventCardsMain = () => {
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
 
             <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
-            {user?.role !== "student" && (
+            {tokentype !== "student" && (
                 <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                     !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
@@ -196,7 +163,7 @@ const EventCardsMain = () => {
                         />
                     )}
                 </div>
-                {user?.role !== "student" && (
+                {tokentype !== "student" && (
                     <button
                         className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                         !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
