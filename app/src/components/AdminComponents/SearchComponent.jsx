@@ -11,12 +11,12 @@ function SearchComponent({ query, setQuery, focused, setFocused }) {
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className={`w-full px-4 py-2 pr-10 border rounded-full focus:outline-none bg-white lg:w-xs ${
-          focused ? 'border-primary border-2' : 'border-neutral-300'
+        className={`w-full px-5 py-3 pr-10 border rounded-full text-black focus:outline-none bg-whitey lg:w-xs ${
+          focused ? 'border-primary' : 'border-neutral-300'
         }`}
       />
       <button
-        className="absolute right-1 py-2 px-4 bg-primary rounded-full text-white hover:bg-hover transition" >
+        className="absolute right-1 py-3 px-5 bg-primary rounded-full text-white hover:bg-hover transition" >
         <Search size={20} />
       </button>
     </div>
