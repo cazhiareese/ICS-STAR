@@ -280,6 +280,8 @@ def add_user_interested(
     db.commit()
     db.refresh(new_interest)
 
+    print(f"User {user_id} added to interested list for post {post_id}.")
+
     success_message = {
         "success": True,
         "message": "User added to interested list successfully.",

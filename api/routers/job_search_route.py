@@ -2,7 +2,9 @@ from math import ceil
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse, generate_interested_users_csv
+from util.userutil import get_current_user
 from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut, PaginatedUserInterestedResponse
+from schemas.user import CurrentUser
 from typing import Optional, List
 from config.database import get_db
 from uuid import UUID
@@ -39,17 +41,19 @@ def job_search(
     
     return results
 
-@router.put("/job/add-user-interested/{post_id}", response_model=dict)
+@router.post("/job/add-user-interested/{post_id}", response_model=dict)
 def add_user_interested_route(
     post_id: UUID,
-    user_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     
+    user_id = user.user_id
+
     result = add_user_interested(db, post_id=post_id, user_id=user_id)
 
     if not result:
-        raise HTTPException(status_code=404, detail="Failed to add user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
+        raise HTTPException(status_code=200, detail="Failed to add user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
     
     return result
 
