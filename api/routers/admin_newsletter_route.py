@@ -4,6 +4,7 @@ from requests import Session
 from uuid import UUID
 
 from util.admin_newsletter_util import create_util, edit_util, get_util, delete_util
+from util.userutil import require_admin
 from config.database import get_db
 from models.usermodel import User
 from models.newsletter_model import Newsletter
@@ -24,7 +25,7 @@ def clean_input(value):
             return [value[0].strip()] if value[0].strip() else []
     return value
 
-@newsletter_router.post("/create")
+@newsletter_router.post("/create", dependencies=[Depends(require_admin)],)
 async def create_news(
         db: Session = Depends(get_db),
         title: str = Form(...),
@@ -67,7 +68,7 @@ async def create_news(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
 
-@newsletter_router.put("/edit/{newsletter_id}")
+@newsletter_router.put("/edit/{newsletter_id}", dependencies=[Depends(require_admin)],)
 async def edit_news(
         newsletter_id: UUID,
         db: Session = Depends(get_db),
@@ -112,7 +113,7 @@ async def edit_news(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
 
-@newsletter_router.get("/get")
+@newsletter_router.get("/get", dependencies=[Depends(require_admin)],)
 async def get_news(
         skip: int = Query(0, ge=0, description="Number of items to skip"),
         limit: int = Query(10, ge=1, le=100, description="Number of items to return"),
@@ -140,7 +141,7 @@ async def get_news(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
     
-@newsletter_router.delete("/delete/{newsletter_id}")
+@newsletter_router.delete("/delete/{newsletter_id}",dependencies=[Depends(require_admin)], )
 async def delete_news(
         newsletter_id: UUID,
         db: Session = Depends(get_db)
