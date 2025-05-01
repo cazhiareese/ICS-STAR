@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from 'react'
-import { MoveLeft, Check, IdCard, GraduationCap, Download } from 'lucide-react'
+import { MoveLeft, Check, IdCard, GraduationCap, UserCircle2 } from 'lucide-react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
@@ -51,7 +51,6 @@ function AdminVerificationConfirmation() {
   }, [userid])
 
   useEffect(() => {
-    // Clean up the object URL when component unmounts
     return () => {
       if (pdfFileUrl) {
         URL.revokeObjectURL(pdfFileUrl)
@@ -73,16 +72,6 @@ function AdminVerificationConfirmation() {
     } finally {
       setVerificationLoading(false)
     }
-  }
-
-  const handleDownload = () => {
-    if (!pdfFileUrl) return
-    const link = document.createElement('a')
-    link.href = pdfFileUrl
-    link.download = 'verification_file.pdf'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
   }
 
   return (
@@ -110,8 +99,12 @@ function AdminVerificationConfirmation() {
       </div>
       <div className='w-full p-6 mt-10 flex flex-col'>
         <div className='flex'>
-          <div className='bg-primary rounded-full h-30 w-30'>
-            <img src={user.image} alt='' className='object-contain w-full' />
+          <div className='rounded-full h-30 w-30'>
+            {user.image === null ? (
+              <UserCircle2 className='w-full h-full object-cover stroke-1'/>
+            ) : (
+              <img src={user.image} alt='' className='object-contain w-full' />
+            )}
           </div>
           <div className='flex flex-col justify-between ml-6'>
             <div>
@@ -146,15 +139,12 @@ function AdminVerificationConfirmation() {
           ) : user.verification_file === null ? (
             <h2 className='font-satoshi-regular'>No verification file submitted</h2>
           ) : fileType === 'pdf' ? (
-            <div className='flex flex-col '>
-              <button
-                onClick={handleDownload}
-                disabled={!pdfFileUrl}
-                className='bg-primary flex flex-row items-center justify-center gap-2 text-white font-satoshi-regular h-fit w-fit px-4 py-2 rounded-3xl cursor-pointer hover:bg-hover disabled:opacity-50'
-              >
-                <Download/>
-                Download PDF
-              </button>
+            <div className='flex flex-col gap-4'>
+              <iframe
+                src={pdfFileUrl}
+                title="Verification PDF"
+                className="w-full h-96"
+              />
             </div>
           ) : (
             <img src={user.verification_file} alt="verification file" className="object-cover h-full border" />
