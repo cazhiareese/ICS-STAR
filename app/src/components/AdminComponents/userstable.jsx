@@ -27,8 +27,8 @@ function UsersTable({ data, loading = null, userType }) {
           <th className="py-2 px-4" style={{ width: columnWidths.col1 }}></th>
           <th className="py-2 px-4" style={{ width: columnWidths.col2 }}>NAME</th>
           <th className="py-2 px-4" style={{ width: columnWidths.col3 }}>BATCH</th>
-          <th className="py-2 px-4" style={{ width: columnWidths.col4 }}>BASE LOCATION</th>
-          <th className="py-2 px-4" style={{ width: columnWidths.col5 }}>JOB TITLE</th>
+          <th className="py-2 px-4" style={{ width: columnWidths.col4 }}>{userType === 'alum' ? 'BASE LOCATION' : 'STUDENT NUMBER'}</th>
+          <th className="py-2 px-4" style={{ width: columnWidths.col5 }}>{userType === 'alum' ? 'JOB TITLE' : 'GRADUATING CLASS'}</th>
           <th className="py-2 px-4" style={{ width: columnWidths.col6 }}>LAST UPDATE</th>
           <th className="py-2 px-4" style={{ width: columnWidths.col7 }}></th>
         </tr>
@@ -106,13 +106,13 @@ function UsersTable({ data, loading = null, userType }) {
                 <td className="py-3 px-4 whitespace-nowrap text-ellipsis" style={{ width: columnWidths.col3 }}>
                   {user.batch}
                 </td>
-                {/* Base Location */}
+                {/* Base Location && Student Number */}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
-                  {user.location_base}
+                  {userType === 'alum' ? user.location_base : user.student_number}
                 </td>
-                {/* Job Title */}
+                {/* Job Title && Graduating Class*/}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
-                  {user.job_title}
+                  {userType === 'alum' ? user.job_title : user.graduating_class}
                 </td>
                 {/* Last Update */}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
