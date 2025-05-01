@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, UserCircle2 } from 'lucide-react';
 
 function UsersTable({ data, loading = null, userType }) {
   const navigate = useNavigate();
@@ -48,7 +48,6 @@ function UsersTable({ data, loading = null, userType }) {
               <td className="py-3 px-4 gap-2 font-satoshi-bold" style={{ width: columnWidths.col2 }}>
                 <div className="flex flex-row items-center gap-2">
                   <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
-                  <div className="h-4 w-4 bg-gray-200 rounded-full animate-pulse flex-shrink-0"></div>
                 </div>
               </td>
               {/* Batch */}
@@ -84,11 +83,15 @@ function UsersTable({ data, loading = null, userType }) {
               >
                 {/* Image */}
                 <td className="py-3 px-4" style={{ width: columnWidths.col1 }}>
-                  <img
+                  {user.image == null ? (
+                    <UserCircle2 className='h-8 w-8 stroke-2'/>
+                  ) : (
+                    <img
                     src={user.image}
                     alt=""
                     className="rounded-full h-8 w-8 not-last:overflow-hidden object-cover"
-                  />
+                    />
+                  )}
                 </td>
                 {/* Name */}
                 <td className="py-3 px-4 gap-2 font-satoshi-bold" style={{ width: columnWidths.col2 }}>
