@@ -43,6 +43,7 @@ function UserProfile() {
   //fetch user details from backend
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log(token);
 const decoded = jwtDecode(token);
 const tokentype = decoded.role;
 console.log(decoded);
