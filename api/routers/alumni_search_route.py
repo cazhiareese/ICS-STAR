@@ -16,16 +16,14 @@ def search_alumni(
     industry: Optional[str] = None,
     batch: Optional[str] = None,
     affiliation: Optional[str] = None,
-    is_onboarded: bool = False,
     db: Session = Depends(get_db)
 ):
-    if is_onboarded:
+    try:
         results = logic_search_alumni(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation)
-    else:
-        raise HTTPException(status_code=400, detail="User not onboarded")
-
-    # Raise 404 if no results found
-    if not results:
-        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
+        if not results:
+            return []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Internal server error: {e}')
+    
     
     return results

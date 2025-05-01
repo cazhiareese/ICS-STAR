@@ -116,7 +116,7 @@ def get_employment_status(db: Session, batch:Optional[str] = None):
 
         User.is_verified == True,
 
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         User.employment_status.is_not(None),
         User.is_onboarded == True
         
@@ -135,7 +135,7 @@ def get_employment_status(db: Session, batch:Optional[str] = None):
             User.employment_status.label("employment_status"),
             func.count().label("total_alumni")
 
-        ).filter(User.is_onboarded == True, User.is_verified == True, User.user_type == 'alumni', User.employment_status.is_not(None))
+        ).filter(User.is_onboarded == True, User.is_verified == True, User.user_type == UserTypeEnum.alumni, User.employment_status.is_not(None))
 
     )
 
@@ -168,7 +168,7 @@ def get_job_util(db: Session, batch:Optional[str] = None, industry: Optional[str
 
         User.is_verified == True,
 
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         User.job_title.is_not(None),
         User.is_onboarded == True
     )
@@ -179,7 +179,7 @@ def get_job_util(db: Session, batch:Optional[str] = None, industry: Optional[str
             User.job_title,
             func.count().label("job_count")
         )
-        .filter(User.is_onboarded == True, User.is_verified == True,User.user_type == 'alumni', User.job_title.isnot(None))  
+        .filter(User.is_onboarded == True, User.is_verified == True,User.user_type == UserTypeEnum.alumni, User.job_title.isnot(None))  
 
         
     )
@@ -238,7 +238,7 @@ def get_top_country_batch(db: Session, batch: Optional[str] = None, limit: bool=
             User.country,
             func.count().label("count")
         )
-        .filter(User.is_onboarded == True,User.is_verified == True, User.user_type == 'alumni', User.country.isnot(None))  
+        .filter(User.is_onboarded == True,User.is_verified == True, User.user_type == UserTypeEnum.alumni, User.country.isnot(None))  
 
     )
 
@@ -278,7 +278,7 @@ def get_cities_country(db:Session, country:str):
     )
     .where(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         User.city.is_not(None),
         User.country == country,
         User.is_onboarded == True
@@ -289,7 +289,7 @@ def get_cities_country(db:Session, country:str):
 
     grouped_city= (
         db.query(User.city, func.count().label("count"))
-        .filter(User.is_onboarded == True,User.is_verified == True, User.user_type == 'alumni', User.country == country, User.city.is_not(None))
+        .filter(User.is_onboarded == True,User.is_verified == True, User.user_type == UserTypeEnum.alumni, User.country == country, User.city.is_not(None))
         .group_by(User.city).all()
     )
 
@@ -317,7 +317,7 @@ def employment_class_util(db: Session, industry:Optional[str] = None, batch: Opt
     )
     .filter(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         User.employer_class.is_not(None),
         User.is_onboarded == True
         
@@ -328,7 +328,7 @@ def employment_class_util(db: Session, industry:Optional[str] = None, batch: Opt
         db.query(
             User.employer_class.label("employer_class"),
             func.count().label("total_alumni")
-        ).filter(User.is_onboarded == True, User.is_verified == True,User.user_type == 'alumni', User.employer_class.is_not(None))
+        ).filter(User.is_onboarded == True, User.is_verified == True,User.user_type == UserTypeEnum.alumni, User.employer_class.is_not(None))
     )
 
     if batch:
@@ -368,7 +368,7 @@ def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional
     )
     .where(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         User.salary_grade.is_not(None),
         User.is_onboarded == True
     )
@@ -379,7 +379,7 @@ def salary_grade_util(db: Session, industry:Optional[str] = None, batch:Optional
             User.salary_grade,
             func.count().label("count")
         )
-        .filter(User.is_onboarded == True,User.is_verified == True, User.user_type == 'alumni', User.salary_grade.isnot(None))  
+        .filter(User.is_onboarded == True,User.is_verified == True, User.user_type == UserTypeEnum.alumni, User.salary_grade.isnot(None))  
         
     )
 
@@ -419,7 +419,7 @@ def grouped_by_industry(db: Session, batch: Optional[str] = None, country: Optio
     )
     .where(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         User.industry.is_not(None),
         User.is_onboarded == True
     )
@@ -431,7 +431,7 @@ def grouped_by_industry(db: Session, batch: Optional[str] = None, country: Optio
             User.industry,
             func.count().label("industry_count")
         )
-        .filter(User.is_onboarded == True,User.is_verified == True,User.user_type == 'alumni', User.industry.isnot(None))  
+        .filter(User.is_onboarded == True,User.is_verified == True,User.user_type == UserTypeEnum.alumni, User.industry.isnot(None))  
     )
 
     if batch:
@@ -472,7 +472,7 @@ def tenure_status_util(db: Session, industry: Optional[str] = None):
     )
     .where(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         User.tenured_status.is_not(None),
         User.is_onboarded == True
     ))
@@ -484,7 +484,7 @@ def tenure_status_util(db: Session, industry: Optional[str] = None):
             func.count().label("count")
         )
 
-        .filter(User.is_onboarded == True,User.is_verified == True,User.user_type == 'alumni', User.tenured_status.isnot(None))
+        .filter(User.is_onboarded == True,User.is_verified == True,User.user_type == UserTypeEnum.alumni, User.tenured_status.isnot(None))
         
     )
 
@@ -519,7 +519,7 @@ def work_mode_util(db: Session, industry: Optional[str] = None):
     .where(
 
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         User.work_mode.is_not(None),
         User.is_onboarded == True
     ))
@@ -530,7 +530,7 @@ def work_mode_util(db: Session, industry: Optional[str] = None):
             User.work_mode,
             func.count().label("count")
         )
-        .filter(User.is_onboarded == True,User.is_verified == True,User.user_type == 'alumni', User.work_mode.isnot(None))         
+        .filter(User.is_onboarded == True,User.is_verified == True,User.user_type == UserTypeEnum.alumni, User.work_mode.isnot(None))         
     )
 
     if industry:
@@ -567,7 +567,7 @@ def unemployment_reason_util(db: Session, batch: Optional[str] = None):
     .filter(
         User.is_verified == True,
         User.is_onboarded == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
         or_(User.employment_status == UserEmploymentStatus.unemployed, User.employment_status == UserEmploymentStatus.unemployed_no_exp)
         
     )

@@ -12,10 +12,17 @@ class JobSearchOut(BaseModel):
     posted_by: str
     created_at: str
     interested_in: int
+    mode: str
     tags: List[str] = []
 
     class Config:
         from_attributes = True
+
+class PaginatedJobSearchResponse(BaseModel):
+    success: str
+    page: int
+    total_pages: int
+    result: List[JobSearchOut]
 
 class UserInterestedOut(BaseModel):
     id: UUID
