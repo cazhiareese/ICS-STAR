@@ -1,58 +1,114 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { a } from "framer-motion/client";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const token = localStorage.getItem("token");
 
-export default function ChangeModal({ type, onClose, showToast }) {
-  const [newEmail, setNewEmail] = useState("");
+export default function ChangeModal({ type, onClose, setEmail, email }) {
+  const [newEmail, setNewEmail] = useState(email || "");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false); // Track success state
+  console.log(email);
 
   const handleSave = async () => {
     setError("");
-    setSuccess(false); // Reset success state on new attempt
+    setSuccess(false);
     setLoading(true);
-
+  
+    if (type === "email") {
+      if (!newEmail.trim()) {
+        setError("Email is required");
+        setLoading(false);
+        return;
+      }
+      if (newEmail.trim() === email.trim()) {
+        setError("The new email is the same as the current email");
+        setLoading(false);
+        return;
+      }
+  
+      try {
+        const availabilityRes = await axios.post(
+          `${API_BASE_URL}/get-email`,
+          { email: newEmail.trim() }, 
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+      
+        console.log("Availability response:", availabilityRes.data);
+      
+        if (!availabilityRes.data) {
+          setError("This email is already taken.");
+          setLoading(false);
+          return;
+        }
+      } catch (checkErr) {
+        console.error("Email check failed:", checkErr);
+        setError("Email already registered");
+        setLoading(false);
+        return;
+      }
+      
+      
+    } else if (type === "password") {
+      if (!oldPassword.trim() || !newPassword.trim()) {
+        setError("Both old and new passwords are required");
+        setLoading(false);
+        return;
+      }
+    }
+  
     try {
       if (type === "password") {
         const formData = new FormData();
         formData.append("old_password", oldPassword);
         formData.append("new_password", newPassword);
-
-        const response = await axios.put(
-          `${API_BASE_URL}/profile/change-password`,
-          formData,
-          {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        setSuccess(true); // Set success state after successful API call
+  
+        await axios.put(`${API_BASE_URL}/profile/change-password`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        });
+  
+        setSuccess(true);
         setOldPassword("");
         setNewPassword("");
-        showToast("Password updated successfully", "success");
-      } else if (type === "email") {
-        // Logic for email update goes here...
-        setSuccess(true); // Set success state after email update
-        showToast("Email updated successfully", "success");
+      } else {
+        const formData = new FormData();
+        formData.append("email", newEmail.trim());
+  
+        await axios.put(`${API_BASE_URL}/update-email`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        });
+  
+        setSuccess(true);
+        setEmail(newEmail.trim());
       }
-
-      // Hide modal after success
     } catch (err) {
       const message = err.response?.data?.detail || "An error occurred";
       setError(message);
-      showToast(message, "error");
     } finally {
       setLoading(false);
     }
   };
+  
+  
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
