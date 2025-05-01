@@ -271,7 +271,6 @@ async def upload_profile(profile_picture, user, db):
     return profile_picture_url
 
 def get_user(db, email: str):
-    db = SessionLocal()
     user = db.query(User.user_id, User.user_type, User.is_verified, User.is_onboarded, User.password, User.is_banned).filter(User.email == email).first()
     return user
 
