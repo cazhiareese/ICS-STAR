@@ -424,64 +424,9 @@ function LoginPage() {
 
                 {/* Description */}
                 <div className="my-auto lg:flex hidden  2xl:w-180 xl:w-150 lg:w-100 md:w-100 w-80 xl:h-50  bg-secondary ml-auto relative items-center rounded-l-2xl shadow-lg group">
-                    
-                    <div
-                        className={`absolute -top-5 h-[2px] bg-primary z-20 lg:block hidden left-0`}
-                        style={{
-                        right: `${0}px`,
-                        width: `${position + 15}px`, // Width grows as star moves
-                        transition: "width 50ms linear", // smooth width expansion
-                        }}
-                    />
-                    
-                    <div
-                        className="absolute -top-9 right-1 animate-spin z-20 lg:block hidden -left-5"
-                        style={{
-                        right: `${position}px`,
-                        width: "30px",
-                        height: "30px",
-                        fontSize: "24px",
-                        transformOrigin: "center",
-                        animation: `rotateStar 10s linear infinite`,
-                        }}
-                    >
-                        <img
-                        src={star}
-                        alt="Rotating Star"
-                        className="w-full h-full object-contain lg:block hidden"
-                        />
-                    </div>
-                    {/* The trail */}
-                    <div
-                        className={`absolute -bottom-5 h-[2px] bg-primary z-20 lg:block hidden left-0`}
-                        style={{
-                        right: `${0}px`,
-                        width: `${position + 15}px`, // Width grows as star moves
-                        transition: "width 50ms linear", // smooth width expansion
-                        }}
-                    />
-                    
-                    <div
-                        className="absolute -bottom-8 right-1 animate-spin z-20 lg:block hidden -left-5"
-                        style={{
-                        right: `${position}px`,
-                        width: "30px",
-                        height: "30px",
-                        fontSize: "24px",
-                        transformOrigin: "center",
-                        animation: `rotateStar 10s linear infinite`,
-                        }}
-                    >
-                        <img
-                        src={star}
-                        alt="Rotating Star"
-                        className="w-full h-full object-contain lg:block hidden"
-                        />
-                    </div>
-                    
                     <label className="2xl:text-2xl xl:text-xl sm:text-md font-satoshi-regular 2xl:mx-20 xl:mx-10 md:mx-2 mx-10 my-5 space-y-5 leading-11 text-justify">
                         Built to connect alumni, students, and the institute.
-                        <label className="font-satoshi-black text-primary">
+                        <label className="font-satoshi-bold text-primary">
                         &nbsp;ICS-STAR
                         </label> makes it easy to track alumni, share updates, and bring everyone together.
                     </label>
@@ -500,19 +445,19 @@ function LoginPage() {
         {openModal &&
             <div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">
             <div className="bg-white rounded-3xl shadow-lg p-6 w-[25rem]">
-                <h2 className="text-xl font-satoshi-bold mb-4 text-center">Continue as guest?</h2>
+                <h2 className="text-xl font-satoshi-bold mb-4 text-center mt-4 ">Continue as guest?</h2>
                 <p className="text-black font-satoshi-regular text-center mb-6">
                     You may only access the newsletters and events page. To access more features, log in or sign up with your account.
                 </p>
-                <div className="flex flex-row items-center space-x-5 justify-center">
+                <div className="flex flex-row items-center space-x-5 justify-center mt-8 mb-2">
                     <button
-                        className="px-4 py-2 border border-primary text-primary font-satoshi-regular rounded-3xl hover:bg-primary/10"
+                        className="px-4 py-2 border border-primary text-primary font-satoshi-regular rounded-3xl w-25 hover:bg-primary/10 cursor-pointer"
                         onClick={() => setOpenModal(false)}
                     >
                         Cancel
                     </button>
                     <button
-                        className="px-4 py-2 bg-green-500 text-white font-satoshi-regular rounded-3xl hover:bg-green-600"
+                        className="px-4 py-2 bg-green-500 text-white font-satoshi-medium rounded-3xl w-25 hover:bg-green-600 cursor-pointer"
                         onClick={() => {
                             setOpenModal(false);
                             localStorage.removeItem("token");
