@@ -45,11 +45,14 @@ function DonationHistoryUser({ userDetails }) {
         const [monetaryRes, inKindRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
             headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }),
           axios.get(`${API_BASE_URL}/donation-history/in-kind-donations`, {
             headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }),
         ]);
+        
 
         const monetary = monetaryRes.data.data.map((d) => ({
           ...d,
