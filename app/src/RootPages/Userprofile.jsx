@@ -50,28 +50,69 @@ console.log("Decoded token typee:", tokentype);
 
 
 
-    const fetchPersonalInformation = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/profile/me/personal-information`, {
-          headers: {
-            'Authorization': `Bearer ${token}`  // replace with actual token logic
-          }
-        });
-    
-        const data = response.data.data;
-        console.log(data);
-        setUserDetails({
-          city: data.city,country: data.country,email: data.email,facebook: data.facebook, linkedin: data.linkedin, github: data.github,
-          first_name: data.first_name,last_name: data.last_name,state: data.state,marital_status: data.marital_status,mobile_number: data.mobile_number,
-          is_banned: decoded.is_banned,is_verified: decoded.is_verified,user_type: decoded.role, graduation_year: "",
-          graduation_semester: "",
+const fetchUserProfileData = async () => {
+  try {
+    // Fetch personal information
+    const personalResponse = await axios.get(`${API_BASE_URL}/profile/me/personal-information`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        });
-      } catch (error) {
-        console.error('Error fetching personal information:', error);
-        throw error;
-      }
-    };
+    const personalData = personalResponse.data.data;
+
+    // Fetch work information
+    const workResponse = await axios.get(`${API_BASE_URL}/profile/me/work`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const workData = workResponse.data.data;
+
+    console.log("Personal Info:", personalData);
+    console.log("Work Info:", workData);
+
+    // Set combined user details
+    setUserDetails({
+      // Personal Info
+      city: personalData.city,
+      country: personalData.country,
+      email: personalData.email,
+      facebook: personalData.facebook,
+      linkedin: personalData.linkedin,
+      github: personalData.github,
+      first_name: personalData.first_name,
+      last_name: personalData.last_name,
+      state: personalData.state,
+      marital_status: personalData.marital_status,
+      mobile_number: personalData.mobile_number,
+      graduation_year: personalData.graduation_year,
+      graduation_semester: personalData.graduation_semester,
+      student_number: personalData.student_number,
+
+      // Decoded Token Info
+      is_banned: decoded.is_banned,
+      is_verified: decoded.is_verified,
+      user_type: decoded.role,
+
+      // Work Info (example fields, customize as needed)
+           employment_status: workData.employment_status,
+           industry: workData.industry,
+           job_title: workData.job_title,
+          company_name: workData.company_name,
+          work_location: workData.work_location,
+           work_mode: workData.work_mode,
+          employer_class: workData.employer_class,
+          tenured_status: workData.tenured_status,
+           salary_grade: workData.salary_grade,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile data:", error);
+    throw error;
+  }
+};
+
 
     const fetchskills = async () => {
       try {
@@ -170,10 +211,11 @@ console.log("Decoded token typee:", tokentype);
     //   }
     // };
 
-    fetchPersonalInformation();
+    fetchUserProfileData();
     fetchskills();
     fetchaffiliations();
     fetchscholarships();
+
     setIsLoading(false);
   }, []);
 

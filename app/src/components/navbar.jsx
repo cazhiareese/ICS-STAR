@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { LogOut, User, Globe, Menu, X } from "lucide-react";
+import { LogOut, User, Globe, Menu, X, Settings } from "lucide-react";
 import logo from "../assets/Subtract.png";
 
 function Navbar({ tokentype, verified, banned }) {
@@ -15,8 +15,8 @@ function Navbar({ tokentype, verified, banned }) {
     window.location.href = "/login";
   }
 
-  function handleInterested() {
-    navigate(`${tokentype}/jobPosting/interested/${id}`);
+  function handleAccount() {
+    navigate(`/${tokentype}/account/settings`);
   }
 
   function handleSearch() {
@@ -98,7 +98,7 @@ function Navbar({ tokentype, verified, banned }) {
         {/* Icons and Mobile Menu Button */}
         <div className="flex items-center gap-4">
           <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
-          <Globe className="cursor-pointer hover:text-primary transition" size={20} onClick={handleInterested} />
+          <Settings className="cursor-pointer hover:text-primary transition" size={20} onClick={handleAccount} />
           <LogOut className="cursor-pointer hover:text-red-500 transition" size={20} onClick={handleLogout} />
           <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}

@@ -4,6 +4,7 @@ import JobOverviewCard from "./jobcomponent/joboverview";
 import JobSectionHeader from "./jobcomponent/jobsectionheader";
 import BackButton from "../../../components/backbutton";
 import axios from "axios";
+import { MoveLeft, MoveRight } from "lucide-react";
 
 function InterestedUsers() {
   const did  = useParams();
@@ -14,6 +15,8 @@ function InterestedUsers() {
   const [jobOverview, setJobOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); // Assuming you have a total pages state
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -105,7 +108,33 @@ function InterestedUsers() {
 
       {/* Large screen table */}
       {!loading && !error && interestedUsers.length > 0 && (
+        
         <>
+              {/* Page controls */}
+      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
+        <div className='w-full lg:w-auto min-w-xs'>
+          
+        </div>
+ 
+        <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
+          <MoveLeft
+            className='cursor-pointer'
+            onClick={{}}
+          />
+          <p> Page </p>
+          <input
+            type='text'
+            value={page}
+            onChange={{}}
+            className='w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold'
+          />
+          <p>of {totalPages}</p>
+          <MoveRight
+            className='cursor-pointer'
+            onClick={{}}
+          />
+        </div>
+      </div>
           {/* Table View (lg and up) */}
           <div className="hidden lg:block overflow-auto mt-4">
   <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] shadow border border-disabled p-4">
