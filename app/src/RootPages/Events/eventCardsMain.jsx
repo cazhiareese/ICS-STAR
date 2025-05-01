@@ -50,7 +50,7 @@ const EventCardsMain = () => {
     useEffect(() => {
         const fetchEvent = async () => {
           try {
-            const config = tokenType === "guest"
+            const config = tokentype === "guest"
               ? {}
               : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
       
