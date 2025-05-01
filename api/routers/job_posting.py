@@ -7,7 +7,7 @@ from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
-from schemas.job_posting_schema import JobPostingOut, PaginatedJobPostingResponse
+from schemas.job_posting_schema import JobPostingOut, PaginatedJobPostingResponse, PaginatedJobPostingsOut
 from schemas.report_schema import PostReportDetailOut, PaginatedReportedResponse
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn
@@ -128,8 +128,21 @@ def close_job_posting_endpoint(
     return {"detail": "Job posting closed successfully"}
 
 # Get all job postings
-@router.get("/job-postings/", response_model=List[JobPostingOut])
-def get_job_postings(db: Session = Depends(get_db)):
+@router.get("/job-postings/", response_model=PaginatedJobPostingsOut)
+def get_job_postings(
+    page: int = Query(1, ge=1, description="Page number, starting from 1"),
+    db: Session = Depends(get_db),
+):
+    
+    page_size: int = 10
+    
+    # Calculate total number of job postings
+    total_items = db.query(JobPosting).count()
+    total_pages = (total_items + page_size - 1) // page_size  # Ceiling division
+
+    # Calculate offset
+    offset = (page - 1) * page_size
+
     # Query to get job postings with required information
     query_result = db.query(
         JobPosting.post_id,
@@ -138,10 +151,10 @@ def get_job_postings(db: Session = Depends(get_db)):
         JobPosting.description,
         JobPosting.employment_type,
         JobPosting.mode,
-        User.user_id,
         JobPosting.salary,
         JobPosting.link,
         JobPosting.image,
+        User.user_id,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -153,11 +166,16 @@ def get_job_postings(db: Session = Depends(get_db)):
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
+        JobPosting.link,
+        JobPosting.image,
         User.user_id,
         func.concat(User.first_name, ' ', User.last_name)
-    ).all()
+    ).offset(offset).limit(page_size).all()
     
-    # Now we need to get tags for each job posting
+    # Process results and get tags for each job posting
     result = []
     for row in query_result:
         job_id = row.post_id
@@ -180,7 +198,13 @@ def get_job_postings(db: Session = Depends(get_db)):
             "interested_count": row.interested_count
         })
     
-    return result
+    # Return structured response
+    return {
+        "success": "Job postings retrieved successfully",
+        "page": page,
+        "total_pages": total_pages,
+        "result": result
+    }
 
 # Get job posting by ID
 @router.get("/job-postings/{job_id}", response_model=JobPostingOut)
