@@ -525,18 +525,18 @@ function removeLink(index) {
                 <p className="text-gray-500 text-sm text-center mt-2">
                   Email invites will be sent automatically.
                 </p>
-                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                <div className="flex gap-3 mt-14 w-full h-full justify-center">
                   <button
-                    className="border border-primary text-primary px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="border border-primary text-primary font-satoshi-medium px-4 py-2 rounded-3xl w-25 cursor-pointer"
                     onClick={() => setShowSubmitModal(false)}
                   >
-                    Not Yet
+                    Not yet
                   </button>
                   <button
-                    className="bg-primary text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="bg-success font-satoshi-medium text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
                     onClick={handleSubmit}
                   >
-                    {purpose === 'create' ? 'Create Event' : 'Save Changes'}
+                    {purpose === 'create' ? 'Create' : 'Save'}
                   </button>
                 </div>
               </>
