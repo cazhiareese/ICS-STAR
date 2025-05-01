@@ -214,6 +214,7 @@ function JobPostingLanding() {
             filters.min_salary = salaryRange.min;
             filters.max_salary = salaryRange.max;
         }
+        filters.page=currentPage;
         console.log(filters);
         
 
@@ -228,6 +229,9 @@ function JobPostingLanding() {
     const fetchJobs = async () => {
         setLoading(true);
         setSelectedJob({});
+        setCurrentPage(1);
+        setMaxPage(1);
+        setShowFilterModal(false);
         try {
             const apiUrl = search(); // get the full URL based on current filters
             console.log(apiUrl);
@@ -236,9 +240,10 @@ function JobPostingLanding() {
                 return console.log('No valid filters to search.');
             }
     
-            const response = await axios.get(apiUrl);
+            const response = await axios.get(apiUrl); //API request
             console.log(response.data);
-            setJobList(response.data);
+            setJobList(response.data.result);
+            setMaxPage(response.data.total_pages)
             setError(false);
             setLoading(false);
         } catch (err) {
@@ -415,7 +420,7 @@ function JobPostingLanding() {
                         </button>
                         
                         <div className="flex w-8 h-8 aspect-square items-center justify-center md:ml-0 ml-auto ">
-                            <button onClick={fetchJobs} className="bg-primary rounded-full w-full h-full flex items-center justify-center p-0 box-border mt-3">
+                            <button onClick={fetchJobs} className="bg-primary cursor-pointer rounded-full w-full h-full flex items-center justify-center p-0 box-border mt-3">
                                 <Check size={18} className="text-white" />
                             </button>
                         </div>
@@ -440,6 +445,10 @@ function JobPostingLanding() {
                         selectedRemoteOption={selectedRemoteOption}
                         salaryRange={salaryRange}
                         setSelectedJob={setSelectedJob}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        maxPage={maxPage}
+                        setMaxPage={setMaxPage}
                     />
                 </div>
 
@@ -457,9 +466,9 @@ function JobPostingLanding() {
 
             </div>
 
-            <div className='flex flex-row mt-16 gap-2 justify-center'>
+            <div className='flex flex-row mt-10 gap-2 justify-center'>
                 <div className='flex flex-col'>
-                    <div className='flex flex-col items-center mb-16'>
+                    <div className='flex flex-col items-center mb-6'>
                         {/* Pagination */}
                         <div className='flex flex-row gap-5 font-satoshi-medium text-lg'>
                             <button onClick={handlePrevPage} className='cursor-pointer'><ArrowLeft/></button>
@@ -496,7 +505,7 @@ function JobPostingLanding() {
                                 )}
                             </div>
                         ) : (
-                            <div className='flex flex-row justify-center h-full gap-5'>
+                            <div className='flex flex-row justify-center h-full gap-5 pt-10'>
                                 <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
                                 <CircularLoading />
                             </div>
