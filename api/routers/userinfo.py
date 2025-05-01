@@ -800,3 +800,11 @@ async def get_email_name_by_id(
             "last_name": last_name
         }
     }
+
+@router.get("/profile-picture/{userid}")
+async def get_profile_picture_by_id(
+    userid: UUID,
+    db: Session = Depends(get_db),
+):
+    img = db.query(User.image).filter(User.user_id==userid).first()
+    return {"profile_picture": img.image}
