@@ -89,6 +89,7 @@ const JobSearchBar =
         } catch (err) {
             console.error(err);
             console.log('Job not found');
+            setMaxPage(1);
         } finally {
             setLoading(false);
         }

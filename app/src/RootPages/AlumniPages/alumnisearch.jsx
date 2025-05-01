@@ -645,7 +645,7 @@ function AlumniSearch() {
           </button>
         </div>
       </motion.div>
-      <div className="flex flex-col w-full mt-28 shadow-md pb-8 items-center rounded-full">
+      <div className="flex flex-col w-full mt-8 shadow-md pb-8 items-center rounded-full">
         <div className="flex flex-row gap-5 w-full items-center justify-center">
           <SearchBar
             selectedBatchYear={selectedBatchYear}

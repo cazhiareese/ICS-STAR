@@ -2,8 +2,9 @@ import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, Squa
 import {React, useState, useEffect, useRef} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
+import axios from 'axios';
 
-function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}) {
+function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded, setJob}) {
     const [showOptions, setShowOptions] = useState(false);
     const modalRef = useRef(null);
     const ellipsisRef = useRef(null);
@@ -11,30 +12,50 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
     console.log(job);
     const jobId = job.post_id || job.id; 
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
 
-    // const navToEditJobPost = () => {
-    //     console.log("Edit Job Posting clicked");
-    //     console.log(jobId);
-    //     navigate(`/alumni/editjobPosting/${jobId}`);
-    // };
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-    // Close modal on outside click
-    // useEffect(() => {
-    //     const handleClickOutside = (event) => {
-    //         if (
-    //             modalRef.current &&
-    //             !modalRef.current.contains(event.target) &&
-    //             !ellipsisRef.current.contains(event.target)
-    //         ) {
-    //             setShowOptions(false);
-    //         }
-    //     };
-    //     document.addEventListener('mousedown', handleClickOutside);
-    //     return () => {
-    //         document.removeEventListener('mousedown', handleClickOutside);
-    //     };
-    // }, []);
+    const fetchJobs = async () => {
+        console.log(`${API_BASE_URL}/job-postings/${jobId}`);
+        try {
+            const response = await fetch(`${API_BASE_URL}/job-postings/${jobId}`);
+            if (!response.ok) {
+            throw new Error('Failed to fetch job using id');
+            }
+            const data = await response.json();
+            console.log("data", data)
+            // Set selected job
+            setJob(data)
+        } catch (err) {
+            console.log(err.message || 'Something went wrong');
+        } 
+    };
 
+    async function addUserInterested() {
+        try {
+          const url = `${API_BASE_URL}/job/add-user-interested/${jobId}`;
+          
+          const response = await axios.post(url, null, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+      
+          console.log('Success:', response.data);
+          fetchJobs();
+          return response.data;
+        } catch (error) {
+          console.error('Error adding user interest:', error);
+          throw error;
+        }
+    }
+
+
+    
+
+    
     return (
 
         <div>
@@ -104,7 +125,8 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
                             </button>
 
                             {/* favorite Button TODO: Add onclick */}
-                            <button  
+                            <button 
+                            onClick={addUserInterested} 
                             className="flex rounded-2xl justify-center items-center bg-primary font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
                             >
                                 <Star size={24}/>
@@ -282,6 +304,7 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded}
 
                             {/* favorite Button TODO: Add onclick */}
                             <button  
+                            onClick={addUserInterested}
                             className="flex rounded-2xl justify-center items-center bg-primary font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
                             >
                                 <Star size={24}/>

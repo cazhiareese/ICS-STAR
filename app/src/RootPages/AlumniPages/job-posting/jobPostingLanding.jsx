@@ -112,6 +112,7 @@ function JobPostingLanding() {
     // Get all jobs
     useEffect(() => {
         const fetchJobs = async () => {
+        console.log(`${API_BASE_URL}/job-postings/?page=${currentPage}`)
         setLoading(true);
             try {
                 const response = await fetch(`${API_BASE_URL}/job-postings/?page=${currentPage}`);
@@ -166,20 +167,20 @@ function JobPostingLanding() {
     // Get company by id
     useEffect(() => {
         const fetchJobs = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/get-company-by-id/${userId}`);
-            if (!response.ok) {
-            throw new Error('Failed to fetch company');
-            }
-            const data = await response.json();
-            console.log(data)
-            
-        } catch (err) {
-            console.log(err.message || 'Something went wrong');
-        } //finally {
-        //     setLoading(false);
-        // }
-        };
+            try {
+                const response = await fetch(`${API_BASE_URL}/get-company-by-id/${userId}`);
+                if (!response.ok) {
+                throw new Error('Failed to fetch company');
+                }
+                const data = await response.json();
+                console.log(data)
+                
+            } catch (err) {
+                console.log(err.message || 'Something went wrong');
+            } //finally {
+            //     setLoading(false);
+            // }
+            };
 
         fetchJobs();
     }, []);
@@ -523,7 +524,7 @@ function JobPostingLanding() {
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} />
+                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} />
                 )}
                 
             </div>
