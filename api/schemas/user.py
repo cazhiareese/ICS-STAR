@@ -89,3 +89,7 @@ class CurrentUser(BaseModel):
     is_banned: bool
     class Config:
         from_attributes = True
+
+
+class EmailRequest(BaseModel):
+    email: str
