@@ -39,7 +39,7 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const share = true;                                       //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
+  const share = false;                                       //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
   const id = "3729301d-f181-44f7-a4e2-9a793d105653";
 
   //fetch user details from backend
