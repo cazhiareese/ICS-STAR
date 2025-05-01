@@ -21,7 +21,6 @@ function AdminDonations() {
   const [loading, setLoading] = useState(false);
   const [genericDriveDetails, setGenericDriveDetails] = useState({});
 
-  // Updated filters to match the sort_by options from the new endpoint
   const filters = [
     { label: 'Amount Raised', value: 'amount_raised' },
     { label: 'Percent Funded', value: 'percent_funded' },
@@ -37,10 +36,8 @@ function AdminDonations() {
   async function fetchData(token) {
     setLoading(true);
     try {
-      // Base endpoint for search
       let endpoint = '/admin/donations/search';
 
-      // Map sortBy and sortDirection to the endpoint's sort_by format
       const sortOptions = {
         amount_raised: `amount_raised_${sortDirection}`,
         percent_funded: `percent_funded_${sortDirection}`,
@@ -56,8 +53,9 @@ function AdminDonations() {
         sort_by: sortOptions[sortBy] || 'amount_raised_descending',
       });
 
-      if (query) {
-        params.append('title', query);
+      // Only include title parameter if query is not empty
+      if (query.trim()) {
+        params.append('title', query.trim());
       }
 
       const pageUrl = `${endpoint}?${params.toString()}`;
@@ -68,16 +66,14 @@ function AdminDonations() {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(response);
-        setDonations(response.data); // The endpoint returns an array directly
-        // Note: The sample response doesn't include pagination metadata.
-        // If the actual API returns total_pages, update this accordingly, e.g., setTotalPages(response.data.total_pages)
-        setTotalPages(1); // Placeholder; adjust based on actual API response
+        setDonations(response.data);
+        // Adjust based on actual API response for pagination
+        setTotalPages(response.data.total_pages || 1); // Placeholder; assumes total_pages in response
       } catch (error) {
         console.error('Error fetching donations:', error);
         setDonations([]);
       }
 
-      // Fetch generic drive details (unchanged)
       const genDriveResponse = await axios.get(`${API_BASE_URL}/admin/donations/update-generic-drive`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -90,14 +86,17 @@ function AdminDonations() {
     }
   }
 
+  // Handle query changes to reset page to 1 when query is cleared
   useEffect(() => {
+    if (!query.trim()) {
+      setPage(1); // Reset to first page when search is empty
+    }
     const token = localStorage.getItem('token');
     fetchData(token);
   }, [sortBy, sortDirection, page, donationType, query]);
 
   return (
     <div className="flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100">
-      {/* Header and add donation button */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-primary text-5xl font-satoshi-bold">Donations</h1>
         <button
@@ -108,7 +107,6 @@ function AdminDonations() {
           <p>New Donation</p>
         </button>
       </div>
-      {/* HELP ICS */}
       <div
         className="border border-gray-300 rounded-xl flex py-4 cursor-pointer hover:border-primary bg-white"
         onClick={() => navigate('/admin/donations/help-ics')}
