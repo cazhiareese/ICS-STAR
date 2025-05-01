@@ -172,7 +172,7 @@ async def search_alumni(
     
     # Raise 404 if no results found
     if not results:
-        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
+        return[]
     
     return {
         "message": "success",
@@ -207,7 +207,7 @@ async def search_alumni_unverified(
     
     # Raise 404 if no results found
     if not results:
-        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
+        return[]
     
     return {
         "message": "success",
@@ -238,7 +238,7 @@ async def search_student(
     
     # Raise 404 if no results found
     if not results:
-        raise HTTPException(status_code=404, detail="No student found matching the search criteria")
+        return []
     
     return {
         "message": "success",
@@ -267,7 +267,7 @@ async def search_student(
     
     # Raise 404 if no results found
     if not results:
-        raise HTTPException(status_code=404, detail="No alumni student matching the search criteria")
+        return []
     
     return {
         "message": "success",

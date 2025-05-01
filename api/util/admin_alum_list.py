@@ -27,7 +27,7 @@ def get_all_alumni(db: Session):
         ).label('is_inactive')
     ).filter(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
     ).all()
 
     count_alumni = (
@@ -35,12 +35,12 @@ def get_all_alumni(db: Session):
             func.count()
         ).where(
             User.is_verified == True,
-            User.user_type == 'alumni',
+            User.user_type == UserTypeEnum.alumni,
         ).scalar()
     )
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return []
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -88,7 +88,7 @@ def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None,
         ).label('is_inactive')
     ).filter(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
     )
 
     if batch:
@@ -153,7 +153,7 @@ def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None,
     alumni = query.all()
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return[]
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -223,12 +223,12 @@ def get_alumni_filter(
     if not needs_verified:
         query = query.filter(
         User.is_verified == False,
-        User.user_type == 'alumni'
+        User.user_type == UserTypeEnum.alumni
         )
     else:
         query = query.filter(
         User.is_verified == True,
-        User.user_type == 'alumni'
+        User.user_type == UserTypeEnum.alumni
         )
     if name:
         name_parts = name.split()
@@ -327,7 +327,7 @@ def get_alumni_filter(
     alumni = query.all()
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return []
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -469,7 +469,7 @@ def get_student_filter(
     students = query.all()
 
     if not students:
-        raise HTTPException(status_code=404, detail="No students found")
+        return []
 
     students_dict = [row._asdict() for row in students]
     student_list = []
