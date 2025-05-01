@@ -248,18 +248,18 @@ function AdminEventDetails() {
                 <p className="text-xl font-satoshi-medium text-center mt-4">
                   Are you sure you want to delete this event?
                 </p>
-                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                <div className="flex gap-3 mt-14 w-full h-full justify-center font-satoshi-medium">
                   <button
-                    className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-400"
+                    className="border border-primary text-primary font-satoshi-medium px-4 py-2 rounded-3xl w-25 cursor-pointer"
                     onClick={() => setDeleteModal(false)}
                   >
                     Cancel
                   </button>
                   <button
-                    className="bg-error text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="bg-error text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
                     onClick={() => deleteEvent()}
                   >
-                    Confirm
+                    Delete
                   </button>
                 </div>
               </>
