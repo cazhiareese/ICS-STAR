@@ -512,7 +512,7 @@ function AdminDashboard() {
                           <tbody>
                             {alumniLocations.map((location, index) => (
                               <tr key={index} className="flex justify-between px-6 py-1">
-                                <td className="text-black font-satoshi-light text-sm">{location.country}</td>
+                                <td className="text-black font-satoshi-light text-sm mr-5 whitespace-nowrap text-ellipsis overflow-clip">{location.country}</td>
                                 <td className="text-primary font-medium text-sm">{location.percentage}</td>
                               </tr>
                             ))}
@@ -543,10 +543,10 @@ function AdminDashboard() {
                           {alumniIndustries.map((entry, index) => (
                             <div key={index} className="flex items-center gap-2 text-gray-800">
                               <span
-                                className="inline-block w-3 h-3 rounded-full"
+                                className="inline-block min-w-3 min-h-3 rounded-full"
                                 style={{ backgroundColor: entry.color }}
                               ></span>
-                              <span>{entry.name}</span>
+                              <span className="text-sm">{entry.name}</span>
                             </div>
                           ))}
                         </div>
