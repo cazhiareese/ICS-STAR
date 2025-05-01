@@ -55,9 +55,16 @@ function AdminDonations() {
     
         endpoint = `${endpointBase}-${sortBy}${sortSuffix ? `-${sortSuffix}` : ''}`;
       }
-    
-      const pageUrl = `${endpoint}?page=${page}`;
 
+
+    
+      let pageUrl = `${endpoint}?page=${page}`;
+
+      if (query){
+        pageUrl += `&title=${query}`
+      }
+
+      console.log(pageUrl)
       try{
        const response = await axios.get(`${API_BASE_URL}${pageUrl}`, {headers: {Authorization: `Bearer ${token}`}});
        console.log(response)
@@ -83,7 +90,7 @@ function AdminDonations() {
   useEffect(() =>{
     const token = localStorage.getItem("token")
     fetchData(token)
-  }, [sortBy, sortDirection, page, donationType])
+  }, [sortBy, sortDirection, page, donationType, query])
   
     
     return (
