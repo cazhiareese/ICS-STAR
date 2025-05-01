@@ -238,56 +238,53 @@ if (User) {
     return (
         <>
             <div className="flex flex-col items-center ">
-                <div className={`w-full z-40 transition-all duration-800 ease-in-out items-center justify-center flex ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
+            <div className="flex flex-col w-full shadow-md pb-4 items-center rounded-b-[35px] bg-white">
+            <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
+  <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
+    <div className="relative flex w-full max-w-[350px] sm:max-w-[600px]">
+      {/* Search Input */}
+      <input
+        type="text"
+        placeholder="Search donation drives..."
+        className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
+        onChange={(e) => {
+          const value = e.target.value;
+          setSearchInput(value);
 
-                    <div className="flex overflow-hidden items-center bg-white justify-center p-5 shadow-xl rounded-2xl w-full mx-auto h-25">
-                        
-                        <div className='flex flex-row  z-10 w-full lg:w-1/2 h-16 max-w-[600px] px-4  border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                            <input
-                                type="text"
-                                placeholder="Search donation drives..."
-                                className="w-full h-full max-w-[600px] font-satoshi-regular text-xl"  
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    setSearchInput(value);
-                                    
-                                    if (value.trim() === '') {
-                                      setSuggestions("none");
-                                      return;
-                                    }
-                                  
-                                    const matches = allEvents
-                                      ?.filter(event =>
-                                        event.title.toLowerCase().includes(value.toLowerCase())
-                                      )
-                                      .slice(0, 5); // limit to 5
-                                  
-                                    setSuggestions(matches || []);
-                                  
-                                    // Scroll to explore events section
-                                    if (exploreRef.current) {
-                                        const yOffset = -130; // increase if you want more spacing above
-                                        const y = exploreRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                                        window.scrollTo({ top: y, behavior: 'smooth' });
-                                      }
-                                  }}                    >
+          if (value.trim() === "") {
+            setSuggestions("none");
+            return;
+          }
 
-                                
-                            </input>
-                            <div className='flex items-center justify-center w-25 h-full bg-primary ml-auto rounded-xl -mr-4'>
-                                <Search className='text-white w-7 h-7'/>
-                            </div>
-                        </div>
+          const matches = allEvents
+            ?.filter((event) =>
+              event.title.toLowerCase().includes(value.toLowerCase())
+            )
+            .slice(0, 5); // limit to 5
 
-                        
-                        
-                    </div>
-                    {/* <div className={`w-1/3 h-80 relative  border-2 z-30 rounded-2xl`}> */}
-                    {/* </div> */}
-                </div>
-                <div className='h-30'>
+          setSuggestions(matches || []);
 
-                </div>
+          if (exploreRef.current) {
+            const yOffset = -130;
+            const y = exploreRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }}
+        value={searchInput}
+      />
+
+      {/* Search Button */}
+      <div className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+        <Search size={20} />
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{/* Spacer to prevent layout shift */}
+<div className="h-28"></div>
+
                 
                 <div className="flex flex-col -mt-20 mb-8 w-full sm:px-15 sm:items-start items-center">
                 {tokentype !== "student" && User !== null && (
