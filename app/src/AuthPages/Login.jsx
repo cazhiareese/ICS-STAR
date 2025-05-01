@@ -224,7 +224,7 @@ function LoginPage() {
                     className="lg:absolute lg:left-15 lg:top-0 lg:w-[30%] md:w-50 md:h-10 w-50"
                 />
                 <div className=" hidden md:flex flex-row ">
-                <div className="w-1 h-11 bg-black ml-11">`</div>
+                <div className="w-0.75 h-10 bg-black ml-11">`</div>
                 <div className="flex flex-col -mt-1 text-xl font-satoshi-bold ml-3 leading-6">
                     <label><label className="text-primary">S</label>ystem for <label className="text-primary">T</label>racking</label>
                     <label><label className="text-primary">A</label>lumni <label className="text-primary">R</label>elations</label>
@@ -235,24 +235,24 @@ function LoginPage() {
             </div>
             
 
-            <div className="lg:hidden flex flex-col w-full mt-5 s">
-                        <h1 className="text-4xl md:text-4xl font-satoshi-light text-center">Bridging Alumni</h1>
+            <div className="lg:hidden flex flex-col w-full mt-5">
+                        <h1 className="text-4xl md:text-4xl font-satoshi-bold text-center">Bridging Alumni</h1>
                         <h1 className="text-4xl md:text-4xl font-satoshi-bold text-primary text-center">Across the Cosmos</h1>
             </div>
 
-            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-175 lg:min-h-155 pt-10">
+            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-175 lg:min-h-155 pt-10 ">
                 
                 {/* Login Signup */}
                 <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl lg:min-w-lg md:min-w-lg lg:bg-[#f9f9fb] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] lg:rounded-4xl">
-                        <h1 className="hidden lg:block text-8xl pt-4 font-satoshi-regular mb-0 text-[#102E46]">Login</h1> 
+                        <h1 className="hidden lg:block text-8xl pt-4 font-satoshi-regular mb-0 text-[#102E46] cursor-default">Login</h1> 
                         
                         
                         {/* Email Input */}
                         
-                        <div className=" flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 -mt-3 cursor-pointer w-[60%] sm:w-[70%]">
+                        <div className=" flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 -mt-3 w-[60%] sm:w-[70%]">
 
                        
-                            <label className= "block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
+                            <label className= "block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg font-satoshi-regular" onClick={() => {
                                     setActiveEmail(true);
                                     setTimeout(() => {
                                         emailRef.current?.focus();
@@ -261,19 +261,19 @@ function LoginPage() {
                                 }
                                 }>
                                 {!activeEmail ? (
-                                    email ? `Email: ${email}` : <span className="text-gray-600">Email</span>
+                                    email ? `Email: ${email}` : <span className="font-satoshi-regular text-black">Email</span>
                                 ) : (
                                     "Email"
                                 )}
                             </label>
                             
                                 
-                            <div className="relative overflow-x-clip">
+                            <div className="relative overflow-x-clip font-satoshi-regular">
 
                             
                                 {/* Diamond swing */}
                                 <span
-                                    className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activeEmail ? 'translate-x-full right-0 pt-7 mr-3 ' : 'translate-x-0  '}`}
+                                    className={`input Diamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activeEmail ? 'translate-x-full right-0 pt-7 mr-3 ' : 'translate-x-0 '}`}
                                     onClick={() => setActiveEmail(!activeEmail)}
                                 >◆</span>
 
@@ -287,8 +287,8 @@ function LoginPage() {
                                     ref={emailRef}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="inputLine w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-variable"
-                                    placeholder="Enter Email Here"
+                                    className="inputLine w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-regular"
+                                    placeholder="Enter email here"
                                     /> }
                                 
                             </div>
@@ -298,7 +298,7 @@ function LoginPage() {
                         <div className="flex flex-col justify-end  h-[15%] -passwordButton mb-15 cursor-pointer w-[60%] sm:w-[70%]">
 
                             
-                            <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
+                            <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg font-satoshi-regular" onClick={() => {
                                 setActivePassword(true); // only set to true, don't toggle
                                 setTimeout(() => {
                                     passwordRef.current?.focus();
@@ -306,7 +306,7 @@ function LoginPage() {
                                 
                                 }}>
                                 {!activePassword ? (
-                                    password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="text-gray-600">Password</span>
+                                    password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="font-satoshi-regular text-black">Password</span>
                                 ) : (
                                     "Password"
                                 )}
@@ -318,7 +318,7 @@ function LoginPage() {
                             
                                 {/* Diamond swing */}
                                 <span
-                                    className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-3 pt-6.5' : 'translate-x-0'} z-10`}
+                                    className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-3 pt-7' : 'translate-x-0'} z-10`}
                                     onClick={() => setActivePassword(!activePassword)}
                                 >◆</span>
 
@@ -349,8 +349,8 @@ function LoginPage() {
                                             value={password}
                                             ref={passwordRef}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="inputLine  w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
-                                            placeholder="Enter Password Here"
+                                            className="inputLine  w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-regular pr-10"
+                                            placeholder="Enter password here"
                                         /> 
 
                                         <span 
@@ -388,16 +388,16 @@ function LoginPage() {
                         ) : (
                             <>
                             <button
-                            className="bg-primary text-white py-3 rounded-3xl text-lg w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 transition mt-0"
+                            className="bg-primary text-white py-3 rounded-3xl text-lg w-[60%] sm:w-[70%] font-satoshi-medium hover:bg-blue-700 transition mt-0 cursor-pointer"
                             onClick={()=>(loginClick())}
                             >
                             Login
                             </button>
                             <button
-                                className=" relative bg-white border-2   py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 hover:text-white transition mt-3"
+                                className="relative bg-white border-1 py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular transition mt-3 cursor-pointer hover:shadow-md hover:scale-[1.001]"
                                 // onClick={loginClick}
                                 >
-                                <label className="hover:text-white">Sign In with Google</label>
+                                <label className="cursor-pointer">Sign In with Google</label>
                                 
                                     <img 
                                         src={google} 
@@ -413,11 +413,11 @@ function LoginPage() {
                         
 
                         {/* Signup Link */}
-                        <p className="text-center text-gray-600 mt-7">
+                        <p className="font-satoshi-regular text-center text-gray-600 mt-7 cursor-default">
                             Don't have an account? 
                         </p>
                         <p className="mb-3 space-x-1    ">
-                        <a href="/signup" className="text-primary font-satoshi-regular underline">Signup here</a> <label>or</label> <a className="text-primary font-satoshi-regular underline" onClick={handleModal}>Continue as guest</a>
+                        <a href="/signup" className="text-primary font-satoshi-regular underline">Signup here</a> <label className="font-satoshi-regular">or</label> <a className="text-primary font-satoshi-regular underline cursor cursor-pointer" onClick={handleModal}>Continue as guest</a>
                         </p>
                         
                 </div>
@@ -493,7 +493,7 @@ function LoginPage() {
             
             {/* Caption below */}
             <div className="absolute hidden lg:flex flex-col w-full pt-10 bottom-10 -left-10 ">
-                <h1 className="text-5xl font-satoshi-light text-right ">Bridging Alumni</h1>
+                <h1 className="text-5xl font-satoshi-regular text-right ">Bridging Alumni</h1>
                 <h1 className="text-5xl font-satoshi-bold  text-primary text-right">Across the Cosmos</h1>
             </div>
         </div>
