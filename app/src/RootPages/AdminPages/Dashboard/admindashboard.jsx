@@ -309,10 +309,17 @@ function AdminDashboard() {
           {/* Grid */}
           <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 grid-rows-[5em_7em_7em_14em_28em_1em_29em_19em] lg:grid-rows-[5em_7em_7em_14em_1em_18em] gap-4">
             {/* Dashboard Banner */}
-            <div className="col-start-1 col-span-2 lg:col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
-              <p className="text-white font-satoshi-bold text-2xl ml-5"> Dashboard </p>
-              <p className="text-white font-satoshi-light mr-3 lg:mr-52 hidden lg:block"> Bridging Alumni across the Cosmos </p>
-            </div> 
+            <div className="w-full h-200px overflow-hidden col-start-1 col-span-2 lg:col-span-4 row-start-1 rounded-2xl flex items-center justify-between relative">
+              <img
+                src="/assets/DashboardBanner.svg"
+                alt="Dashboard Banner"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <p className="text-white font-satoshi-bold text-2xl ml-5 z-10">Dashboard</p>
+              <p className="text-white font-satoshi-light mr-3 lg:mr-52 hidden lg:block z-10">
+                Bridging Alumni across the Cosmos
+              </p>
+            </div>
             {/* Pending Verifications */}
             <div className={`${dashboardCard} col-start-1 row-start-2 flex flex-col justify-between`}> 
               {loading ? <SkeletonCard /> : (
