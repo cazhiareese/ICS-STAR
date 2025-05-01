@@ -1,7 +1,7 @@
 from math import ceil
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse, generate_interested_users_csv
+from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse, generate_interested_users_csv, remove_user_interested, check_user_interested
 from util.userutil import get_current_user
 from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut, PaginatedUserInterestedResponse, PaginatedJobSearchResponse
 from schemas.user import CurrentUser
@@ -256,3 +256,26 @@ def admin_get_interested_users(
     db: Session = Depends(get_db),
 ):
     return generate_interested_users_csv(db, post_id)
+
+@router.delete("/job/remove-user-interested/{post_id}", response_model=dict)
+def remove_user_interested_route(
+    post_id: UUID,
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    result = remove_user_interested(db, user_id=user_id, post_id=post_id)
+
+    if not result:
+        raise HTTPException(status_code=200, detail="Failed to remove user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
+    
+    return result
+
+@router.get("/job/check-user-interested/{post_id}", response_model=bool)
+def check_user_interested_route(
+    post_id: UUID,
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    result = check_user_interested(db, user_id=user_id, post_id=post_id)
+    
+    return result
