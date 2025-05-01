@@ -13,8 +13,8 @@ function UsersTable({ data, loading = null, userType }) {
     col1: '5%',  // Empty
     col2: '20%', // Name
     col3: '8%',  // Batch
-    col4: '25%', // Base Location
-    col5: '15%', // Job Title
+    col4: '25%', // Base Location && student number
+    col5: '15%', // Job Title && graduating class
     col6: '10%', // Last Update
     col7: '5%',  // Status
   };
@@ -112,7 +112,7 @@ function UsersTable({ data, loading = null, userType }) {
                 </td>
                 {/* Job Title && Graduating Class*/}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
-                  {userType === 'alum' ? user.job_title : user.graduating_class}
+                  {userType === 'alum' ? user.job_title : user.standing}
                 </td>
                 {/* Last Update */}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
