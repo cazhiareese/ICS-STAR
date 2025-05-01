@@ -6,7 +6,7 @@ from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, g
 from uuid import UUID
 #from models.usermodel import User
 from schemas.user import CurrentUser
-from util.userutil import get_current_user
+from util.userutil import get_current_user, get_current_user_optional
 from schemas.events_schema import EventOut, OneEventOut
 from datetime import date
 
@@ -55,17 +55,23 @@ def get_user_confirmed_events(user: CurrentUser = Depends(get_current_user), db:
     return events
 
 @router.get("/one-event/{event_id}", response_model=OneEventOut)
-def get_event(event_id: UUID, db: Session = Depends(get_db)):
-    return get_event_by_id(event_id, db)
+def get_event(
+    event_id: UUID, 
+    db: Session = Depends(get_db), 
+    user: Optional[CurrentUser] = Depends(get_current_user_optional)
+):
+    user_id = user.user_id if user else None
+    return get_event_by_id(event_id, db, user_id=user_id)
 
 @router.get("/events-visible-to", response_model=List[EventOut])
 def get_visible_events(
-    user: CurrentUser = Depends(get_current_user),
     db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user_optional),
     date_filter: Optional[str] = Query(
         default=None,
         description='Filter events by date: "today", "tomorrow", "this_weekend", or a date in YYYY-MM-DD format'
     )
 ):
-    
-    return get_visible_events_for_user(user.user_id, db, date_filter)
+    user_id = user.user_id if user else None
+    # print(user.user_id)
+    return get_visible_events_for_user(db, user_id, date_filter)

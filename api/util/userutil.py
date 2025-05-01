@@ -4,13 +4,14 @@ from jose import JWTError
 from google.oauth2 import id_token
 from google.auth.transport import requests
 import uuid
-from fastapi import Depends, HTTPException, status, UploadFile, File, APIRouter, status
+from fastapi import Depends, HTTPException, status, UploadFile, File, APIRouter, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct, or_, func
 from passlib.context import CryptContext
 from typing import List, Optional
 from schemas.user import CurrentUser
+from collections import namedtuple
 
 from config.config import SECRET_KEY, ALGORITHM, SUPABASE_BUCKET, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES, GOOGLE_CLIENT_ID
 from config.database import get_db
@@ -313,6 +314,51 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     user = db.query(User.user_id, User.is_verified, User.user_type, User.is_onboarded, User.is_banned).filter(User.user_id == user_id).first()
     if user is None:
         raise credentials_exception
+    return user
+
+async def get_current_user_optional(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.lower().startswith("bearer "):
+        return None
+
+    token = auth_header[7:]
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: int = payload.get("sub")
+        role: str = payload.get("role")
+        is_onboarded: bool = payload.get("is_onboarded")
+        is_verified: bool = payload.get("is_verified")
+        is_banned: bool = payload.get("is_banned")
+
+        if user_id is None or role is None or is_onboarded is None or is_verified is None or is_banned is None:
+            return None
+
+    except JWTError:
+        return None
+
+    UserSummary = namedtuple("UserSummary", ["user_id", "is_verified", "user_type", "is_onboarded", "is_banned"])
+
+    result = (
+        db.query(
+            User.user_id, 
+            User.is_verified, 
+            User.user_type, 
+            User.is_onboarded, 
+            User.is_banned
+        )
+        .filter(User.user_id == user_id)
+        .first()
+    )
+
+    if result is None:
+        return None
+
+    user = UserSummary(*result)
+
     return user
 
 async def get_current_active_user(current_user: CurrentUser = Depends(get_current_user)):
