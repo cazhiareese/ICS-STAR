@@ -12,6 +12,7 @@ import CircularLoading from "../../../components/LoadingComponents/circularloadi
 import Curve from "../../../assets/curve.png";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
+import PaymentMode from "../../../components/AlumniComponents/DonationComponents/paymentmode";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
@@ -304,12 +305,8 @@ function Donationform() {
                                     monetaryAmountInput={monetaryAmountInput}
                                     setMonetaryAmountInput={setMonetaryAmountInput}
                                 />
-                                <button
-  onClick={submitMayaDonation}
-  className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
->
-  Donate via Maya
-</button>
+
+                                <PaymentMode/>
 
                                 <DonationInstructions donationType={"monetary"} />
                                 <PaymentProof
