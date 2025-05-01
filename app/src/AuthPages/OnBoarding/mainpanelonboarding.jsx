@@ -37,14 +37,14 @@ function MainPanelOnboarding() {
 
 
     return (
-    <>
-        <div className="flex items-center justify-center relative">
-            <div className="flex flex-col items-center  z-20 bg-white w-[90%] h-[90%] border overflow-auto rounded-4xl">
+    <div className="h-screen items-center flex flex-col z-30">
+        <div className="flex justify-center m-auto h-[95%]">
+            <div className="flex flex-col items-center  z-20 bg-white xl:w-300 w-[90vw] h-[90vh] max-w-300 border overflow-auto rounded-4xl">
                 
                 {currentSection!=5 && currentSection!=0 && <div className= "my-10">
                     {ProgressBar[currentSection]}
                 </div>}
-                <div className="w-[100%] rounded-xl max-h-[750px] overflow-y-auto">
+                <div className="w-full rounded-xl max-h-[750px] overflow-y-auto m-auto relative">
                     {OnboardingComponents[currentSection]}
                 </div>
             </div>
@@ -56,7 +56,7 @@ function MainPanelOnboarding() {
 
         
         
-    </>
+    </div>
     
     );
 }

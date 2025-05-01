@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Paperclip } from 'lucide-react';
+import BackButton from "./backbutton";
 
 function DonationMainView({ driveDetails, driveId, type, landing }) {
     // const [image, setImage] = useState("null")
@@ -11,17 +12,17 @@ function DonationMainView({ driveDetails, driveId, type, landing }) {
     //cyrus conditional rendering for landing page and specific, dont adjust the props and the condition
         
 <div
-  className={`flex flex-col w-full rounded-2xl items-center overflow-y-auto h-full justify-center ${
-    landing === true ? "sm:w-110" : landing === false ? "sm:w-160" : "sm:w-85"
+  className={`flex flex-col w-full rounded-2xl items-center overflow-y-auto h-full sm:justify-center ${
+    landing === true ? "sm:w-110" : landing === false ? "sm:w-full" : "sm:w-85"
   }`}
 >
 
-
-            <div className="w-[90%] h-50 max-h-85 border mx-auto rounded-4xl bg-primary ">
+            
+            <div className="w-[90%] sm:h-50 sm:max-h-85 border mx-auto rounded-4xl bg-primary sm:-mt-0 md:mt-0 lg:mt-0 mt-5 h-40 ">
                 {<img src={driveDetails.image_url} alt="" className="w-full h-full object-cover rounded-4xl" />}
             </div>
             
-            <div className="lg:w-[95%] w-[90%] pt-15 ">
+            <div className="lg:w-[95%] w-[90%] pt-15">
                 <label className="font-satoshi-black text-3xl">{driveDetails.title}</label>
             </div>
             <div className="lg:w-[95%] w-[90%] font-satoshi-regular ">
@@ -87,7 +88,7 @@ function DonationMainView({ driveDetails, driveId, type, landing }) {
             </div>
             {driveDetails.links != null && 
         
-                <div className="flex space-y-3 items-center flex-col mx-auto lg:w-2xl md:60 font-satoshi-regular text-primary">
+                <div className="flex space-y-3 items-center flex-col mx-auto lg:w-2xl lg:60 font-satoshi-regular text-primary">
             
                 {driveDetails.links.map((link, index) => (
                     <div key={index} className="flex flex-row space-x-2 items-center">

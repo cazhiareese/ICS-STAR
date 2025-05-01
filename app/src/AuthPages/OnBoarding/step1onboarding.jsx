@@ -139,15 +139,13 @@ function Step1Onboarding() {
       setSelectPicture(false);
     };
 
-
     const submitStep1 = async (e) => {
       try {
           const formData = new FormData();
           formData.append("file", userData.profilePictureFile);
-  
-          const baseURL = "https://ics-star-api.vercel.app/"
 
-          
+          const baseURL = import.meta.env.VITE_BACKEND_URL
+
           const response = await fetch(`${baseURL}upload-profile-picture`, {
               method: "POST",
               headers: {

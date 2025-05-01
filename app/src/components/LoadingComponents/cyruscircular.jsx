@@ -1,6 +1,6 @@
 import React from 'react';
 
-function NewLoading({ size, text , ts}) {
+function NewLoading({ size, text, ts }) {
   return (
     <div role="status" className="flex flex-col items-center justify-center">
       <svg
@@ -22,7 +22,7 @@ function NewLoading({ size, text , ts}) {
         />
       </svg>
       {text && (
-        <p className="mt-2 text-primary text-ts font-satoshi-bold text-center">
+        <p className="mt-2 text-primary text-center font-satoshi-bold text-xs sm:text-sm md:text-sm">
           {text}
         </p>
       )}
