@@ -18,11 +18,12 @@ def search_alumni(
     affiliation: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
+    try:
+        results = logic_search_alumni(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation)
+        if not results:
+            return []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Internal server error: {e}')
     
-    results = logic_search_alumni(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation)
-    
-    # Raise 404 if no results found
-    if not results:
-        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
     
     return results

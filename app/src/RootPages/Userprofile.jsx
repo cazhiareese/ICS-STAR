@@ -224,7 +224,7 @@ function UserProfile() {
         </>
       )}
       {activeTab === "Work" && (
-        <WorkSection userDetails={userDetails} handleChange={handleChange} />
+        <WorkSection userDetails={userDetails} handleChange={handleChange} isVerified={userDetails?.is_verified} />
       )}
       {activeTab === "Donation History" && (
         <DonationHistoryUser userDetails={userDetails} />

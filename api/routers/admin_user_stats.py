@@ -4,14 +4,17 @@ from fastapi import Depends, APIRouter, HTTPException, Query, status
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 from config.database import get_db
-from models.usermodel import User, UserTypeEnum
+from models.usermodel import User, UserTypeEnum, UserEmploymentStatus
 from routers.admin_account_management import isAdmin
 
 from util.user_information_stats import  employment_class_util, get_active_alumni_stats, get_employment_status, get_cities_country, get_job_util, get_top_country_batch, grouped_by_industry, salary_grade_util, tenure_status_util, unemployment_reason_util, work_mode_util
 
 from util.admin_alum_list import get_alumni_list_filter,  get_alumni_filter, get_all_alumni, get_student_filter
 
-router = APIRouter()
+router = APIRouter(
+    tags=["Admin Stats"],
+    responses={404: {"description": "Not found"}}
+)
 
 
 
@@ -22,10 +25,10 @@ async def get_all_alumni_route(db: Session = Depends(get_db)):
     return{"message": "success", "data": all_alumni}
 
 @router.get("/admin/stats/get_active_by_batch")
-async def get_active_batch(db: Session= Depends(get_db), order:Optional[str] = None):
-    active_batch = get_active_alumni_stats(db, order=order, alumni_general=False)
+async def get_active_batch(db: Session= Depends(get_db), order:Optional[str] = None, page: int =1):
+    active_batch, total_pages = get_active_alumni_stats(db, order=order, page=page, alumni_general=False)
 
-    return{"message": "success", "data": active_batch}
+    return{"message": "success", "total_pages": total_pages, "data": active_batch}
 
 @router.get("/admin/stats/get_active/{batch}")
 async def get_active_batch(db: Session= Depends(get_db), batch:Optional[str] = None):
@@ -44,7 +47,7 @@ async def get_active_batch(db: Session= Depends(get_db), batch:Optional[str] = N
                     else_=0
                 )
             ).label("inactive_users")
-        ).where(User.is_verified == True, User.user_type == 'alumni', func.split_part(User.student_number, '-', 1) == batch, User.student_number.is_not(None)).first()
+        ).where(User.is_onboarded == True, User.is_verified == True, User.user_type == 'alumni', func.split_part(User.student_number, '-', 1) == batch, User.student_number.is_not(None)).first()
 
 
     active_batch = {
@@ -60,7 +63,7 @@ async def get_active_batch(db: Session= Depends(get_db), batch:Optional[str] = N
 async def get_all_years(db: Session=Depends(get_db)):
     query = db.query(
         func.split_part(User.student_number, '-', 1).label("batch")
-    ).filter(User.user_type == UserTypeEnum.alumni).distinct().order_by('batch').all()
+    ).filter(User.user_type == UserTypeEnum.alumni, User.is_onboarded == True).distinct().order_by('batch').all()
     print(query)
 
     return {"message": "success", "data": [batch[0] for batch in query if batch[0] is not None]}
@@ -122,22 +125,22 @@ async def get_country_cities(db:Session=Depends(get_db), country:str=""):
 
 ##ADD ORDER BY- pwede input ay 'name', 'batch', 'last_updated'
 @router.get("/admin/stats/alumni_batch_filter")
-async def get_alumni_batch(db: Session = Depends(get_db), batch: str="", order_by: list[str]=Query([])):
-    alumni_batch = get_alumni_list_filter(db, batch=batch, industry = None, country=None, order_by= order_by)
+async def get_alumni_batch(db: Session = Depends(get_db), batch: str="", order_by: list[str]=Query([]), page:int=1):
+    alumni_batch, total_pages = get_alumni_list_filter(db, batch=batch, industry = None, country=None, page=page, order_by= order_by)
 
-    return{"message":"success", "data":alumni_batch}
+    return{"message":"success", "page":page, "total_pages": total_pages, "data":alumni_batch}
 
 @router.get("/admin/stats/alumni_industry_filter")
-async def get_alumni_industry(db: Session = Depends(get_db), industry: str="", order_by: list[str]=Query([])):
-    alumni_industry = get_alumni_list_filter(db, batch=None, industry = industry, country=None, order_by= order_by)
+async def get_alumni_industry(db: Session = Depends(get_db), industry: str="", order_by: list[str]=Query([]), page: int=1):
+    alumni_industry, total_pages = get_alumni_list_filter(db, batch=None, industry = industry, country=None, order_by= order_by, page=page)
 
-    return{"message":"success", "data":alumni_industry}
+    return{"message":"success","page":page, "total_pages": total_pages,   "data":alumni_industry}
 
 @router.get("/admin/stats/alumni_country_filter")
-async def get_alumni_country(db: Session = Depends(get_db), country: str="",order_by: list[str]=Query([])):
-    alumni_country = get_alumni_list_filter(db, batch=None, industry = None, country=country, order_by= order_by)
+async def get_alumni_country(db: Session = Depends(get_db), country: str="",order_by: list[str]=Query([]), page:int=1):
+    alumni_country, total_pages = get_alumni_list_filter(db, batch=None, industry = None, country=country, page=page,order_by= order_by)
 
-    return{"message":"success", "data":alumni_country}
+    return{"message":"success","page":page, "total_pages": total_pages, "data":alumni_country}
 
 @router.get("/admin/filter/alum")
 async def search_alumni(
@@ -150,17 +153,33 @@ async def search_alumni(
     batch: Optional[str] = None,
     affiliation: Optional[str] = None,
     order_by: list[str]=Query([]),
+    page: int = 1,
     db: Session = Depends(get_db)
 ):
     
-    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=job_title, city=city, skill=skill, industry=industry, batch=batch, affiliation=affiliation, order_by=order_by, needs_verified=True)
+    results,total_pages = get_alumni_filter(db, 
+                                name=name,
+                                page=page,
+                                graduation_year=graduation_year, 
+                                job_title=job_title, 
+                                city=city, skill=skill, 
+                                industry=industry, 
+                                batch=batch, 
+                                affiliation=affiliation, 
+                                order_by=order_by, 
+                                needs_verified=True)
 
     
     # Raise 404 if no results found
     if not results:
-        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
+        return[]
     
-    return results
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "items": results
+    }
 
 
 @router.get("/admin/filter/unverified/alum")
@@ -169,16 +188,33 @@ async def search_alumni_unverified(
     graduation_year: Optional[int] = None,
     batch: Optional[str] = None,
     order_by: list[str]=Query([]),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = 1
 ):
     
-    results = get_alumni_filter(db, name=name, graduation_year=graduation_year, job_title=None, city=None, skill=None, industry=None, batch=batch, affiliation=None, order_by=order_by, needs_verified=False)
+    results, total_pages = get_alumni_filter(db, 
+                                name=name, 
+                                graduation_year=graduation_year,
+                                page =page, 
+                                job_title=None, 
+                                city=None, 
+                                skill=None, 
+                                industry=None, 
+                                batch=batch, 
+                                affiliation=None, 
+                                order_by=order_by, 
+                                needs_verified=False)
     
     # Raise 404 if no results found
     if not results:
-        raise HTTPException(status_code=404, detail="No alumni found matching the search criteria")
+        return[]
     
-    return results
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "items": results
+    }
 
 
 @router.get("/admin/filter/student")
@@ -188,32 +224,57 @@ async def search_student(
     affiliation: Optional[str] = None,
     order_by: list[str]=Query([]),
     standing: Optional[str] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int =1
 ):
     
-    results = get_student_filter(db, name=name, batch=batch, standing=standing, affiliation=affiliation, order_by=order_by, needs_verified=True)
+    results, total_pages = get_student_filter(db, name=name, 
+                                 batch=batch, 
+                                 standing=standing, 
+                                 affiliation=affiliation, 
+                                 order_by=order_by, 
+                                 page=page,
+                                 needs_verified=True)
     
     # Raise 404 if no results found
     if not results:
-        raise HTTPException(status_code=404, detail="No student found matching the search criteria")
+        return []
     
-    return results
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "items": results
+    }
 
 @router.get("/admin/filter/unverified/student")
 async def search_student(
     name: Optional[str] = None,
     batch: Optional[str] = None,
     order_by: list[str]=Query([]),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page:int =1
 ):
     
-    results = get_student_filter(db, name=name, batch=batch, standing=None, affiliation=None, order_by=order_by, needs_verified=False)
+    results, total_pages = get_student_filter(db, 
+                                 name=name, 
+                                 batch=batch, 
+                                 standing=None, 
+                                 affiliation=None, 
+                                 order_by=order_by, 
+                                 page =page,
+                                 needs_verified=False)
     
     # Raise 404 if no results found
     if not results:
-        raise HTTPException(status_code=404, detail="No alumni student matching the search criteria")
+        return []
     
-    return results
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "items": results
+    }
 
 @router.get("/admin/unverified/count")
 async def count_unverified(db: Session = Depends(get_db)):
@@ -290,7 +351,7 @@ async def country_route(db: Session = Depends(get_db), batch: Optional[str] = No
 
 @router.get("/admin/stats/activity")
 async def general_activity_route(db: Session = Depends(get_db)):
-    activity_data= get_active_alumni_stats(db, alumni_general = True)
+    activity_data= get_active_alumni_stats(db, alumni_general = True, page=1)
 
 
     return{"message": "success", "data": activity_data}
@@ -306,7 +367,7 @@ async def get_industries(db: Session= Depends(get_db)):
     query = db.query(
        User.industry,
        func.count().label("count")
-    ).filter().distinct().group_by(User.industry).order_by(User.industry).all()
+    ).filter(User.is_onboarded == True, User.employment_status == UserEmploymentStatus.employed).distinct().group_by(User.industry).order_by(User.industry).all()
 
     return {"message": "success", "data": [{"industry": industry.industry, "count": industry.count} for industry in query if industry[0] is not None or industry[0] != ""]}
 
@@ -315,6 +376,6 @@ async def get_industries(db: Session= Depends(get_db)):
     query = db.query(
        User.country,
        func.count().label("count")
-    ).filter().distinct().group_by(User.country).order_by(User.country).all()
+    ).filter(User.is_onboarded == True).distinct().group_by(User.country).order_by(User.country).all()
 
     return {"message": "success", "data": [{"country": country.country, "count": country.count} for country in query if country[0] is not None or country[0] != ""]}

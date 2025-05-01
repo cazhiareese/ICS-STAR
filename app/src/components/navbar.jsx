@@ -6,11 +6,16 @@ import logo from "../assets/Subtract.png";
 function Navbar({ tokentype }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const id = "0ed168b4-344b-4760-bb68-0b7c5c3a9252";
 
   function handleLogout() {
     sessionStorage.removeItem("User");
     localStorage.removeItem("token");
     window.location.href = "/login";
+  }
+
+  function handleInterested() {
+    navigate(`${tokentype}/jobPosting/interested/${id}`) ;
   }
 
   function handleSearch() {
@@ -26,6 +31,10 @@ function Navbar({ tokentype }) {
     window.location.href = `/alumni/donations`;
   }
 
+  function handleEvents(){
+    window.location.href = `/alumni/events`;
+  }
+
   return (
     <nav className="bg-white text-black px-6 py-4 shadow-md flex justify-between items-center border-b border-gray-300 h-20 relative">
       {/* Logo + Title */}
@@ -36,7 +45,7 @@ function Navbar({ tokentype }) {
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex gap-6 font-medium">
-        <button className="hover:text-primary transition font-satoshi-bold">Events</button>
+        <button className="hover:text-primary transition font-satoshi-bold" onClick={handleEvents}>Events</button>
         <button className="hover:text-primary transition font-satoshi-bold">Newsletters</button>
         <button className="hover:text-primary transition font-satoshi-bold">Career</button>
         <button className="hover:text-primary transition font-satoshi-bold" onClick={handleSearch}>Alumni Search</button>
@@ -46,7 +55,7 @@ function Navbar({ tokentype }) {
       {/* Icons and Mobile Menu Button */}
       <div className="flex items-center gap-4">
         <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
-        <Globe className="cursor-pointer hover:text-primary transition" size={20} />
+        <Globe className="cursor-pointer hover:text-primary transition" size={20} onClick={handleInterested}/>
         <LogOut className="cursor-pointer hover:text-red-500 transition" size={20} onClick={handleLogout} />
         <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={24} /> : <Menu size={24} />}

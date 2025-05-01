@@ -4,7 +4,7 @@ from uuid import UUID
 from datetime import datetime
 
 class JobSearchOut(BaseModel):
-    id: UUID
+    post_id: UUID
     title: str
     company: str
     description: Optional[str] = None,
@@ -12,10 +12,17 @@ class JobSearchOut(BaseModel):
     posted_by: str
     created_at: str
     interested_in: int
+    mode: str
     tags: List[str] = []
 
     class Config:
         from_attributes = True
+
+class PaginatedJobSearchResponse(BaseModel):
+    success: str
+    page: int
+    total_pages: int
+    result: List[JobSearchOut]
 
 class UserInterestedOut(BaseModel):
     id: UUID
@@ -29,6 +36,12 @@ class UserInterestedOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PaginatedUserInterestedResponse(BaseModel):
+    total_pages: int
+    current_page: int
+    page_size: int
+    results: List[UserInterestedOut]
 
 class JobPostingOverviewOut(BaseModel):
     title: str

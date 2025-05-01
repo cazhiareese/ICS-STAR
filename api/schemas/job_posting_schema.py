@@ -29,11 +29,18 @@ class JobPostingOut(BaseModel):
     interested_count: int
     employment_type: EmploymentTypeEnum
     mode: JobModeEnum
+    salary: Optional[float] = None
     link: str
     image: Optional[str] = None
     
     class Config:
         from_attributes = True
+
+class PaginatedJobPostingsOut(BaseModel):
+    success: str
+    page: int
+    total_pages: int
+    result: List[JobPostingOut]
 
 class JobPostingForAdminOut(BaseModel):
     post_id: UUID
@@ -50,3 +57,12 @@ class JobPostingForAdminOut(BaseModel):
     
     class Config:
         from_attributes = True
+class PaginationMeta(BaseModel):
+    page: int
+    per_page: int
+    total_items: int
+    total_pages: int
+
+class PaginatedJobPostingResponse(BaseModel):
+    items: List[JobPostingForAdminOut]
+    meta: PaginationMeta
