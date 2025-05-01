@@ -13,10 +13,10 @@ function AdminNewsletter() {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [focused, setFocused] = useState(false)
-  const [query, setQuery] = useState('')
+  const [focused, setFocused] = useState(false);
+  const [query, setQuery] = useState('');
 
-  const limit = 5; // Number of newsletters per page, matching updated code
+  const limit = 5;
 
   useEffect(() => {
     const fetchNewsletters = async () => {
@@ -24,23 +24,29 @@ function AdminNewsletter() {
         setLoading(true);
         setError(null);
 
-        const skip = (page - 1) * limit;
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/get?skip=${skip}&limit=${limit}`;
+        let response;
 
-        const response = await axios.get(url);
-        const { news, total_count } = response.data;
+        if (query.trim() !== '') {
+          // Use search endpoint when query is present
+          const searchUrl = `${import.meta.env.VITE_BACKEND_URL}/search-newsletters?title=${encodeURIComponent(query)}&limit=20`;
+          response = await axios.get(searchUrl);
+          const news = response.data;
 
-        // Set newsletters directly, as API returns only non-deleted entries
-        setNewsletters(news);
+          setNewsletters(news);
+          setTotalPages(1); // Search results are not paginated
+        } else {
+          // Default paginated fetch
+          const skip = (page - 1) * limit;
+          const url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/get?skip=${skip}&limit=${limit}`;
+          const result = await axios.get(url);
+          const { news, total_count } = result.data;
 
-        // Calculate total pages using total_count (non-deleted newsletters only)
-        setTotalPages(Math.max(1, Math.ceil(total_count / limit)));
+          setNewsletters(news);
+          setTotalPages(Math.max(1, Math.ceil(total_count / limit)));
 
-        // Extract unique tags from newsletters
-        const allTags = news.reduce((acc, newsletter) => {
-          return [...acc, ...newsletter.tags];
-        }, []);
-        setTags([...new Set(allTags)]); // Remove duplicates
+          const allTags = news.reduce((acc, newsletter) => [...acc, ...newsletter.tags], []);
+          setTags([...new Set(allTags)]);
+        }
 
         setLoading(false);
       } catch (err) {
@@ -50,14 +56,13 @@ function AdminNewsletter() {
     };
 
     fetchNewsletters();
-  }, [page]);
+  }, [page, query]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
     }
-  };
-
+  };  
 
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
@@ -74,47 +79,43 @@ function AdminNewsletter() {
         </button>
       </div>
 
-  
       {/* Page controls */}
       <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
-        <div className='w-full lg:w-auto min-w-xs'>
-          
-        </div>
+        <div className='w-full lg:w-auto min-w-xs'></div>
         <div className='relative flex items-center justify-end flex-1 pr-3'>
-            <input
-              type="text"
-              placeholder="Search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => (setFocused(false))}
-              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
-            />
-            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
-          </div>
-        <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-          <MoveLeft
-            className='cursor-pointer'
-            onClick={() => handlePageChange(page - 1)}
-          />
-          <p> Page </p>
           <input
-            type='text'
-            value={page}
+            type="text"
+            placeholder="Search"
+            value={query}
             onChange={(e) => {
-              const newPage = parseInt(e.target.value);
-              if (!isNaN(newPage)) handlePageChange(newPage);
+              setPage(1); // Reset to page 1 when searching
+              setQuery(e.target.value);
             }}
-            className='w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold'
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2' : 'border-gray-400'}`}
           />
-          <p>of {totalPages}</p>
-          <MoveRight
-            className='cursor-pointer'
-            onClick={() => handlePageChange(page + 1)}
-          />
+          <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
         </div>
+        {query.trim() === '' && (
+          <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
+            <MoveLeft className='cursor-pointer' onClick={() => handlePageChange(page - 1)} />
+            <p> Page </p>
+            <input
+              type='text'
+              value={page}
+              onChange={(e) => {
+                const newPage = parseInt(e.target.value);
+                if (!isNaN(newPage)) handlePageChange(newPage);
+              }}
+              className='w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold'
+            />
+            <p>of {totalPages}</p>
+            <MoveRight className='cursor-pointer' onClick={() => handlePageChange(page + 1)} />
+          </div>
+        )}
       </div>
-  
+
       {/* Card display section */}
       <div className="flex flex-col items-center w-full mt-4">
         <div className="flex flex-col w-full max-w-full px-5">
@@ -122,8 +123,6 @@ function AdminNewsletter() {
             <div className="flex justify-center items-center py-10">
               <CircularLoading />
             </div>
-          ) : error ? (
-            <p className="text-red-500 text-center">{error}</p>
           ) : newsletters.length === 0 ? (
             <p className="text-center">No newsletters found</p>
           ) : (
@@ -143,7 +142,6 @@ function AdminNewsletter() {
       </div>
     </div>
   );
-  
 }
 
 export default AdminNewsletter;
