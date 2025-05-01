@@ -15,6 +15,9 @@ function AdminDashboard() {
 
   const [loading, setLoading] = useState(true)
   const [pendingVerifications, setPendingVerifications] = useState()
+  const [userReports, setUserReports] = useState()
+  const [postReports, setPostReports] = useState()
+  const [fundingRequests, setFundingRequests] = useState()
   const [donors, setDonors] = useState([]);
   const [stats, setStats] = useState(null);
   const [registeredAlumni, setRegisteredAlumni] = useState(null);
@@ -25,6 +28,7 @@ function AdminDashboard() {
   const [batchFilter, setBatchFilter] = useState("2022");
   const [error, setError] = useState(null);
   const [events, setevents] = useState([]);
+  const [topDonation, setTopDonation] = useState([])
   const COLORS = ["#0B2B6F", "#2858D6", "#8CA6DB", "#CBD7F1", "#E8F0FF"];
   
   
@@ -40,6 +44,15 @@ function AdminDashboard() {
         // 1. Fetch Pending Verifications
         const pendingVerificationResponse = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
         setPendingVerifications(pendingVerificationResponse.data.count);
+
+        const getUserReportsCount = await axios.get(`${API_BASE_URL}/admin_dashboard/pending-reported-users/count`)
+        setUserReports(getUserReportsCount.data.pending_reported_users_count)
+
+        const getPostReportsCount = await axios.get(`${API_BASE_URL}/admin_dashboard/pending-reported-posts/count`)
+        setPostReports(getPostReportsCount.data.pending_reported_posts_count)
+
+        const getFundingRequest = await axios.get(`${API_BASE_URL}/admin_dashboard/not_yet_acknowledged_donations_count`)
+        setFundingRequests(getFundingRequest.data.not_yet_acknowledged_donations_count)
   
         // 2. Fetch Recent Donors
         const donorsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/recent-donors`);
@@ -78,6 +91,9 @@ function AdminDashboard() {
         setevents(formatEvents(trimmedEvents));
 
         //setevents(formatEvents(eventsupcoming.data));
+
+        const getTopDonations = await axios.get(`${API_BASE_URL}/admin_dashboard/top-funded-drives`)
+        setTopDonation(getTopDonations.data)
 
 
         let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
@@ -126,9 +142,9 @@ function AdminDashboard() {
   // ];
 
   const donations = [
-    { name: "Lorem Ipsum Dolor", raised: 12000, goal: 15000, donors: 6 },
-    { name: "Lorem Ipsum", raised: 14000, goal: 20000, donors: 30 },
-    { name: "Lorem Ipsum", raised: 13500, goal: 20000, donors: 21 },
+    // { name: "Lorem Ipsum Dolor", raised: 12000, goal: 15000, donors: 6 },
+    // { name: "Lorem Ipsum", raised: 14000, goal: 20000, donors: 30 },
+    // { name: "Lorem Ipsum", raised: 13500, goal: 20000, donors: 21 },
   ];
 
   // const donors = [
@@ -213,19 +229,19 @@ function AdminDashboard() {
         {/* Reported Postings */}
         <div className={`${dashboardCard} col-start-2 row-start-2 flex flex-col justify-between`}> 
             <div className="flex flex-row justify-between">
-              <p className="text-5xl"> {response.reportedPostings} </p>
+              <p className="text-5xl"> {postReports} </p>
               <div className="">
                 <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
                   <TriangleAlert className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
-              <p className="font-satoshi-light text-sm "> Reported Postings </p>
+              <p className="font-satoshi-light text-sm "> Reported Job Postings </p>
           </div> 
         {/* Reported Users */}
         <div className={`${dashboardCard} col-start-1 row-start-3 flex flex-col justify-between`}> 
             <div className="flex flex-row justify-between">
-              <p className="text-5xl"> {response.reportedUsers} </p>
+              <p className="text-5xl"> {userReports} </p>
               <div className="">
                 <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
                   <ShieldUser className="w-6 h-6 text-white" />
@@ -237,7 +253,7 @@ function AdminDashboard() {
         {/* Funding Requests */}
         <div className={`${dashboardCard} col-start-2 row-start-3 flex flex-col justify-between`}> 
             <div className="flex flex-row justify-between">
-              <p className="text-5xl"> {response.fundingRequests} </p>
+              <p className="text-5xl"> {fundingRequests} </p>
               <div className="">
                 <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
                   <Wallet className="w-6 h-6 text-white" />
@@ -284,14 +300,14 @@ function AdminDashboard() {
               <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light text-sm">View All Donations</p> <MoveRight/></button>            
               </div>
               {/* Donation Bars */}
-              {donations.map((donation, index) => {
-                const progress = (donation.raised / donation.goal) * 100;
+              {topDonation.map((donation, index) => {
+                const progress =donation.percentage_funded;
                 return (
                   <div key={index} className="mb-4">
                     <div className="flex justify-between text-black text-sm mb-1">
-                      <span>{donation.name}</span>
+                      <span>{donation.title}</span>
                       <div className="flex flex-row gap-4">
-                        <span>{donation.raised.toLocaleString()} PHP / {donation.goal.toLocaleString()} PHP</span>
+                        <span>{donation.total_donations.toLocaleString()} PHP / {donation.target_cost.toLocaleString()} PHP</span>
                         <div className="w-6 h-6 text-xs font-semibold flex items-center justify-center bg-secondary text-primary rounded-full">
                           {donation.donors}
                         </div>

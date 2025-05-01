@@ -121,7 +121,7 @@ function FilterModal({filters, setterFunction}){
                 onClick={() => setOpen(!open)}
                 className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
               <Filter className='text-primary'/>
-              <p className='text-primary fsont-satoshi-medium text-sm'> Filter</p>
+              <p className='text-primary font-satoshi-bold text-base'> Filter</p>
             </button>
             
 

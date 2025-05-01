@@ -1,7 +1,30 @@
 import {useState} from 'react';
 import { MapPinned, Calendar, Star } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import {jwtDecode} from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 const EventCards = ({event}) => {
+
+        //cyrus was here
+    
+    const User = localStorage.getItem("token");
+    let tokentype = "guest";
+    let userid = true;
+    
+    
+    if (User) {
+      try {
+        const decoded = jwtDecode(User);
+        tokentype = decoded.role;
+        userid = decoded.sub;
+        console.log("Decoded token:", decoded);
+        console.log("User ID:", userid);
+        console.log("Token type:", tokentype);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    } else {
+      console.log("No token found, defaulting to guest.");
+    }
 
     const [status, setStatus] = useState()
     const navigate = useNavigate();
@@ -36,9 +59,10 @@ const EventCards = ({event}) => {
         //     alert("You have not RSVP'd for this event yet.");
         // }
         console.log("RSVP clicked for event ID:", eventId);
-        navigate(`/alumni/events/${eventId}`);
+        navigate(`/${tokentype}/events/${eventId}`);
     }
     const truncateDescription = (description, maxLines = 2) => {
+        if (description===null) return null;
         const lines = description.split('\n');
         return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '');
     };
@@ -48,15 +72,18 @@ const EventCards = ({event}) => {
         <div className="w-90 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1"
         onClick={() => {openEventDetails(event.event_id)}} 
         >
-            <div className="h-40 bg-gray-300">
-                {event.image && (
-                        <img
-                            src={event.image}
-                            alt="Event"
-                            className="w-full h-full object-cover"
-                        />
-                )}
-            </div>
+<div className="h-40 w-full">
+  {event.image ? (
+    <img
+      src={event.image}
+      alt="Event"
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <div className="w-full h-full bg-primary" />
+  )}
+</div>
+
             
             
             <div className="p-4">
@@ -70,10 +97,11 @@ const EventCards = ({event}) => {
                 </div>
                 <div className="flex items-center mt-2 text-gray-600 space-x-3">
                     <Calendar />
-                    <div className="flex flex-col w-1/2 overflow-y-scroll max-h-32">
+                    <div className="flex flex-row w-full overflow-y-scroll max-h-32 space-x-5">
                             {event.dates.map((datetime, index) => (
                                 <label key={index}>{parseTime(datetime)}</label>
                             ))}
+
                     </div>
                 </div>
                 <div className="flex flex-row gap-2 mt-4 overflow-x-scroll">

@@ -4,6 +4,7 @@ import { Newspaper, Calendar, Briefcase, User } from "lucide-react";
 import CardComponent from "../../components/cardcomponent";
 import star from "../../assets/star.png";
 import wave from "../../assets/wave.png";
+import { jwtDecode } from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 
 import { fetchPublicProfileById as apiFetchPublicProfile } from "../Profile/UserProfileAPI/userProfileApi"; // Assuming this is where the function is defined
 
@@ -17,6 +18,33 @@ const stars = [
   { id: 6, top: "45%", left: "80%", size: "w-6" },
   { id: 7, top: "8%", left: "88%", size: "w-4" },
 ];
+
+const Usera = localStorage.getItem("token");
+let tokentype = "guest";
+let userid = true;
+let banned = false;
+let verified = false;
+
+
+if (Usera) {
+  try {
+    const decoded = jwtDecode(Usera);
+    tokentype = decoded.role;
+    userid = decoded.sub;
+    console.log("Decoded token:", decoded);
+    console.log("User ID:", userid);
+    console.log("Token type:", tokentype);
+    banned = decoded.is_banned;
+    console.log("Banned status:", banned);
+    verified = decoded.is_verified;
+    console.log("Verified status:", verified);
+    
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+} else {
+  console.log("No token found, defaulting to guest.");
+}
 
 function StudentLanding() {
   const navigate = useNavigate();
@@ -125,11 +153,17 @@ function StudentLanding() {
 
         {/* Cards Section */}
         <div className="flex flex-wrap justify-center gap-4 mt-6">
-          <CardComponent icon={Calendar} text="Look for events to attend" />
-          <CardComponent icon={Newspaper} text="Catch up with ICS" />
-          <CardComponent icon={Briefcase} text="Browse job opportunities" />
-          <CardComponent icon={User} text="Connect with Alumni" />
-        </div>
+  <CardComponent icon={Calendar} text="Look for events to attend" />
+  <CardComponent icon={Newspaper} text="Catch up with ICS" />
+  
+  {!banned && verified && (
+    <>
+      <CardComponent icon={Briefcase} text="Browse job opportunities" />
+      <CardComponent icon={User} text="Connect with Alumni" />
+    </>
+  )}
+</div>
+
       </div>
 
       {/* Add CSS for rotation animation */}

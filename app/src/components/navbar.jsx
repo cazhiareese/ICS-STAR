@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { LogOut, User, Globe, Menu, X } from "lucide-react";
+import { LogOut, User, Globe, Menu, X, Settings } from "lucide-react";
 import logo from "../assets/Subtract.png";
 
 function Navbar({ tokentype, verified, banned }) {
@@ -15,8 +15,8 @@ function Navbar({ tokentype, verified, banned }) {
     window.location.href = "/login";
   }
 
-  function handleInterested() {
-    navigate(`${tokentype}/jobPosting/interested/${id}`);
+  function handleAccount() {
+    navigate(`/${tokentype}/account/settings`);
   }
 
   function handleSearch() {
@@ -68,32 +68,37 @@ function Navbar({ tokentype, verified, banned }) {
           >
             Newsletters
           </button>
-          <button
-            className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleCareer}
-          >
-            Career
-          </button>
-          <button
-            className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleSearch}
-          >
-            Alumni Search
-          </button>
-          {tokentype !== "student" && (
-            <button
-              className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-              onClick={handleDonation}
-            >
-              Donations
-            </button>
+
+          {tokentype !== "guest" && (
+            <>
+              <button
+                className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                onClick={handleCareer}
+              >
+                Career
+              </button>
+              <button
+                className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                onClick={handleSearch}
+              >
+                Alumni Search
+              </button>
+              {tokentype !== "student" && (
+                <button
+                  className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                  onClick={handleDonation}
+                >
+                  Donations
+                </button>
+              )}
+            </>
           )}
         </div>
 
         {/* Icons and Mobile Menu Button */}
         <div className="flex items-center gap-4">
           <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
-          <Globe className="cursor-pointer hover:text-primary transition" size={20} onClick={handleInterested} />
+          <Settings className="cursor-pointer hover:text-primary transition" size={20} onClick={handleAccount} />
           <LogOut className="cursor-pointer hover:text-red-500 transition" size={20} onClick={handleLogout} />
           <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -106,35 +111,55 @@ function Navbar({ tokentype, verified, banned }) {
         <div className="bg-white shadow-md flex flex-col items-center gap-4 py-4 md:hidden sticky top-20 z-40">
           <button
             className={`${isActive(`/${tokentype}/events`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleEvents}
+            onClick={() => {
+              handleEvents();
+              setMenuOpen(false);
+            }}
           >
             Events
           </button>
           <button
             className={`${isActive(`/${tokentype}/newsletter`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleNewsletter}
+            onClick={() => {
+              handleNewsletter();
+              setMenuOpen(false);
+            }}
           >
             Newsletters
           </button>
-          <button
-            className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleCareer}
-          >
-            Career
-          </button>
-          <button
-            className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleSearch}
-          >
-            Alumni Search
-          </button>
-          {tokentype !== "student" && (
-            <button
-              className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-              onClick={handleDonation}
-            >
-              Donations
-            </button>
+
+          {tokentype !== "guest" && (
+            <>
+              <button
+                className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                onClick={() => {
+                  handleCareer();
+                  setMenuOpen(false);
+                }}
+              >
+                Career
+              </button>
+              <button
+                className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                onClick={() => {
+                  handleSearch();
+                  setMenuOpen(false);
+                }}
+              >
+                Alumni Search
+              </button>
+              {tokentype !== "student" && (
+                <button
+                  className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                  onClick={() => {
+                    handleDonation();
+                    setMenuOpen(false);
+                  }}
+                >
+                  Donations
+                </button>
+              )}
+            </>
           )}
         </div>
       )}

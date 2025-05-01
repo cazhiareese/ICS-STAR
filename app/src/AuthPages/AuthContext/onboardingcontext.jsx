@@ -10,6 +10,8 @@ export function OnboardingProvider({ children }) {
     const [email, setEmail] = useState("___")
     const [userType, setUserType] = useState("___")
 
+    const [scholarships, setScholarships] = useState(false);
+    const [affiliations, setAffiliations] = useState(false);
 
     const [userData, setUserData] = useState({
         profilePicture: null,
@@ -55,7 +57,7 @@ export function OnboardingProvider({ children }) {
     };
 
     return (
-        <OnboardingContext.Provider value={{ setUserData, userData, updateUserData, email, setEmail, currentSection, setCurrentSection, name, setName, userType, setUserType}}>
+        <OnboardingContext.Provider value={{ scholarships, setScholarships, affiliations, setAffiliations, setUserData, userData, updateUserData, email, setEmail, currentSection, setCurrentSection, name, setName, userType, setUserType}}>
             {children}
         </OnboardingContext.Provider>
     );

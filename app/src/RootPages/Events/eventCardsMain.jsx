@@ -4,6 +4,7 @@ import { MapPinned, Calendar, Star } from 'lucide-react';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import EventCardsMainSkeleton from './eventCardsMainSkeleton';
+import {jwtDecode} from 'jwt-decode'; // Import jwtDecode for decoding JWT tokens
 
 
 const EventCardsMain = () => {
@@ -14,7 +15,7 @@ const EventCardsMain = () => {
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const token = localStorage.getItem("token");
     const [reservationSignal, setReservationSignal] = useState(false);
-    const [userId, setUserId] = useState(null);
+    //const [userId, setUserId] = useState(null);
     const [event, setEvent] = useState(null);
     
     const navigate = useNavigate();
@@ -23,119 +24,52 @@ const EventCardsMain = () => {
     const id = useParams(); // Get the drive_id from the URL params
     const event_id = id.eventid; // Extract the drive_id from the params
 
+        //cyrus was here
+    
+        const [tokentype, setTokentype] = useState("guest");
+        const [userId, setUserId] = useState(null);
+        
+        useEffect(() => {
+          const User = localStorage.getItem("token");
+          
+          if (User) {
+            try {
+              const decoded = jwtDecode(User);
+              setTokentype(decoded.role);
+              setUserId(decoded.sub);
+              console.log("Decoded token:", decoded);
+              console.log("User ID:", decoded.sub);
+              console.log("Token type:", decoded.role);
+            } catch (error) {
+              console.error("Invalid token:", error);
+            }
+          } else {
+            console.log("No token found, defaulting to guest.");
+          }
+        }, []);
+        
+
 
 
     useEffect(() => {
         const fetchEvent = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setEvent(response.data);
-                console.log("Event data:", response.data);
-            } catch (error) {
-                console.error('Error fetching event:', error);
-            }
+          try {
+            const config = tokentype === "guest"
+              ? {}
+              : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
+      
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`, config);
+            setEvent(response.data);
+            console.log("Event data:", response.data);
+          } catch (error) {
+            console.error("Error fetching event:", error);
+          }
         };
+      
         fetchEvent();
         console.log("Event data:", event);
-        
-    },[]);
-
-        useEffect(() => {
-            if (!token) throw new Error("User not authenticated");
-    
-            const fetchUserId = async () => {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/profile`, {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-            
-                    if (!response.ok) {
-                        if (response.status === 401) throw new Error("Unauthorized access");
-                        throw new Error("Failed to fetch profile");
-                    }
-            
-                    const result = await response.json();
-                    console.log(result.data.user_id);
-                    console.log(result)
-                    setUserId(result.data.user_id);
-                    setUser(result.data);
-                } catch (error) {
-                    console.error("Error fetching profile:", error.message);
-                }
-            };
-            fetchUserId();   
-            console.log("Event data:", event);     
-        },[])
-
-    useEffect(() => {
-
-        const fetchReservations = async () => {
-
-            try {
-                const response = await axios.get(`${API_BASE_URL}/events/confirmed`, {
-                    headers: {
-                      Authorization: `Bearer ${token}`
-                    }
-                  });
-                  setReservations(response.data);
-                  console.log(reservations.length)
-                
-            } catch (error) {
-                
-                console.error('Error fetching reservations:', error);
-            }
-        };
-
-        // fetchReservations();
-        // setReservationSignal(false);
-        console.log("RESERVATION SIGNAL")
-        
-
-        const fetchAllEvents = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/events-visible-to`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setAllEvents(response.data);
-                console.log(allEvents)
-
-            } catch (error) {
-                console.error('Error fetching all events:', error);
-                console.log(allEvents)
-            }
-        };
-
-        fetchAllEvents();
-        // setEvent(sampleEvent)
-        console.log("Event data:", event);
-
-    }, []);
-
-    const sampleEvent = {
-        id: 1,
-        title: "Community Clean-Up Drive",
-        description: "Join us for a community clean-up event to make our neighborhood cleaner and greener.",
-        date: "2023-12-15T08:00:00Z", // UTC time format
-        location: "Central Park, Main Street",
-        organizer: "Green Earth Organization",
-        image: "https://example.com/event-image.jpg",
-        tags: ["Community", "Environment", "Volunteer"],
-        links: [
-            "https://example.com/event-details",
-            "https://example.com/registration-form"
-        ],
-        is_closed: false,
-    };
+      }, []);
+      
 
     const parseTime = (isoTimestamp) => {
         console.log("ISO Timestamp:", isoTimestamp);
@@ -210,8 +144,8 @@ const EventCardsMain = () => {
     return (
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
 
-            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
-            {user?.role !== "student" && (
+            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate(`/${tokentype}/events`)}}><ArrowLeft/> <label>Go Back</label></label>
+            {tokentype !== "student" && tokentype !== "guest" && (
                 <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                     !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
@@ -232,7 +166,7 @@ const EventCardsMain = () => {
                         />
                     )}
                 </div>
-                {user?.role !== "student" && (
+                {tokentype !== "student" && tokentype !== "guest" &&(
                     <button
                         className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                         !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'

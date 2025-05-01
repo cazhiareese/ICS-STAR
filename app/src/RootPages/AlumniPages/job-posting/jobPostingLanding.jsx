@@ -16,7 +16,6 @@ function JobPostingLanding() {
     const [selectedJob, setSelectedJob] = useState({});
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
-    
     const [showFilterModal, setShowFilterModal] = useState(false);
 
     const [showWorkTypeDropdown, setShowWorkTypeDropdown] = useState(false);
@@ -85,7 +84,6 @@ function JobPostingLanding() {
     ];
     
 
-    const [loading, setLoading] = useState(false);
     const [usertype, setUserType] = useState(null);
     
     useEffect(() => {
