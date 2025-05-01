@@ -4,47 +4,61 @@ import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const token = localStorage.getItem("token");
 
-export default function ChangeModal({ type, onClose, showToast }) {
+export default function ChangeModal({ type, onClose, email }) {
   const [newEmail, setNewEmail] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false); // Track success state
+  console.log(email);
 
   const handleSave = async () => {
     setError("");
     setSuccess(false); // Reset success state on new attempt
     setLoading(true);
-
+  
     try {
       if (type === "password") {
         const formData = new FormData();
         formData.append("old_password", oldPassword);
         formData.append("new_password", newPassword);
-
+  
         const response = await axios.put(
           `${API_BASE_URL}/profile/change-password`,
           formData,
           {
             headers: {
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
             },
           }
         );
-
-        setSuccess(true); // Set success state after successful API call
+  
+        setSuccess(true);
         setOldPassword("");
         setNewPassword("");
         showToast("Password updated successfully", "success");
+  
       } else if (type === "email") {
-        // Logic for email update goes here...
-        setSuccess(true); // Set success state after email update
+        const formData = new FormData();
+        formData.append("new_email", newEmail);
+  
+        const response = await axios.put(
+          `${API_BASE_URL}/update-email`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+  
+        setSuccess(true);
         showToast("Email updated successfully", "success");
       }
-
-      // Hide modal after success
+  
     } catch (err) {
       const message = err.response?.data?.detail || "An error occurred";
       setError(message);
@@ -53,6 +67,7 @@ export default function ChangeModal({ type, onClose, showToast }) {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
@@ -92,7 +107,7 @@ export default function ChangeModal({ type, onClose, showToast }) {
                 <input
                   id="new-email"
                   type="email"
-                  value={newEmail}
+                  value={email}
                   onChange={(e) => setNewEmail(e.target.value)}
                   placeholder="Enter new email"
                   className="w-full border border-gray-300 rounded-lg p-2"
