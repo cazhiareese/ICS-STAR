@@ -26,7 +26,7 @@ function UsersTable({ data, loading = null, userType }) {
         <tr className="text-left text-xs text-primary font-satoshi-regular">
           <th className="py-2 px-4" style={{ width: columnWidths.col1 }}></th>
           <th className="py-2 px-4" style={{ width: columnWidths.col2 }}>NAME</th>
-          <th className="py-2 px-4" style={{ width: columnWidths.col3 }}>BATCH</th>
+          <th className="py-2 px-4" style={{ width: columnWidths.col3 }}>{userType === 'alum' && 'BATCH'}</th>
           <th className="py-2 px-4" style={{ width: columnWidths.col4 }}>{userType === 'alum' ? 'BASE LOCATION' : 'STUDENT NUMBER'}</th>
           <th className="py-2 px-4" style={{ width: columnWidths.col5 }}>{userType === 'alum' ? 'JOB TITLE' : 'GRADUATING CLASS'}</th>
           <th className="py-2 px-4" style={{ width: columnWidths.col6 }}>LAST UPDATE</th>
@@ -104,7 +104,7 @@ function UsersTable({ data, loading = null, userType }) {
                 </td>
                 {/* Batch */}
                 <td className="py-3 px-4 whitespace-nowrap text-ellipsis" style={{ width: columnWidths.col3 }}>
-                  {user.batch}
+                  {userType == 'alum' && user.batch }
                 </td>
                 {/* Base Location && Student Number */}
                 <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
