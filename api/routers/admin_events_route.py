@@ -8,7 +8,7 @@ from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, Ev
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from util.admin_events_util import create_event_util, edit_event_util, get_demographics, get_event_by_id_util
+from util.admin_events_util import create_event_util, edit_event_util, get_demographics, get_event_by_id_util, send_email_util
 from config.database import get_db
 
 event_router = APIRouter(
@@ -386,3 +386,21 @@ def get_tags(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No tags to fetch!")
     
     return{"message": "success", "data": [tag[0] for tag in query if tag is not None]}
+
+@event_router.post("/send-email/{event_id}")
+def send_email(event_id: UUID, db: Session=Depends(get_db)):
+    user_ids = db.query(EventVisibleTo.user_id).filter(EventVisibleTo.event_id == event_id).all()
+    details = []
+    for user in user_ids:
+        recipients = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
+        details.append({
+            "name": f"{recipients.first_name} {recipients.last_name}",
+            "email": recipients.email
+        })
+
+    try:
+        response = send_email_util(eventId=event_id, recipients=details, db=db)
+        return response 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+    

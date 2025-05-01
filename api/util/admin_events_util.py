@@ -4,6 +4,7 @@ from typing import List, Optional, Literal
 import brevo_python
 from brevo_python.rest import ApiException
 from sqlalchemy import UUID, func, or_
+from util.emailing.invitation import invitation
 from models.usermodel import User, UserAffiliation
 from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET, brevo_configuration, email_sender
 from fastapi import HTTPException, UploadFile
@@ -161,7 +162,7 @@ async def create_event_util(
                 for userId in visibleList:
                     recipients = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == userId).first()
                     details.append({
-                        "name": f"{recipients.first_name, recipients.last_name}",
+                        "name": f"{recipients.first_name} {recipients.last_name}",
                         "email": recipients.email
                     })
         
@@ -422,10 +423,11 @@ def send_email_util (eventId: UUID, recipients: List[dict], db: Session):
             "datetime": event["datetime"]
         }
         print(recipients)
+        finalImage = eventContents['image'] if eventContents.get('image') else 'https://rtyworjvisvjmixvxwmc.supabase.co/storage/v1/object/public/128storage/emailing_assets/default.jpg'
         api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
         subject = f"ICS-STAR invites you to: {eventContents['title']}"
         sender = email_sender
-        html_content = f"<html><body> {eventContents['title']} <br> {eventContents['description']} </body></html>"
+        html_content = invitation(eventId=eventId, title=eventContents['title'], datetime=event['datetime'][0],location=eventContents['location'], image=finalImage, description= eventContents['description'], )
         to = [email_sender]
         bcc=recipients
         send_smtp_email = brevo_python.SendSmtpEmail(to=to, bcc=bcc, html_content=html_content, sender=sender, subject=subject)
