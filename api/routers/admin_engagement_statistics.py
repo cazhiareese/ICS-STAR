@@ -4,6 +4,7 @@ from sqlalchemy import Date, and_, cast, desc, distinct, extract, func
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from config.database import get_db
+from util.userutil import require_admin
 from models.log import Log
 from models.usermodel import User
 from models.job_posting_model import JobPosting, JobPostingInterestedIn
@@ -28,7 +29,7 @@ router = APIRouter(
     }
 )
 
-@router.get("/visits", response_model=List[VisitResponse])
+@router.get("/visits", dependencies=[Depends(require_admin)], response_model=List[VisitResponse])
 def get_visits(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for visit data"),
     batch: Optional[str] = Query(None, description="Filter by batch year (e.g., '2002'). Default is all batches."),
@@ -150,7 +151,7 @@ def get_visits(
         
     return result
 
-@router.get("/jobs/top-3-interested", response_model=List[TopJobResponse])
+@router.get("/jobs/top-3-interested", dependencies=[Depends(require_admin)], response_model=List[TopJobResponse])
 def get_top_interested_jobs(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for job posting data"),
     db: Session = Depends(get_db)
@@ -206,7 +207,7 @@ def get_top_interested_jobs(
     
     return result
 
-@router.get("/donation-drives/top-3-donors", response_model=List[TopDriveResponse])
+@router.get("/donation-drives/top-3-donors", dependencies=[Depends(require_admin)], response_model=List[TopDriveResponse])
 def get_top_donation_drives(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -304,7 +305,7 @@ def get_top_donation_drives(
     
     return result
 
-@router.get("/donation-drives/most-donations", response_model=TopDonationDriveResponse)
+@router.get("/donation-drives/most-donations", dependencies=[Depends(require_admin)], response_model=TopDonationDriveResponse)
 def get_top_donation_drive(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -352,7 +353,7 @@ def get_top_donation_drive(
         percentage_progress=float(drive.percentage_progress)
     )
 
-@router.get("/donation-drives/most-donors", response_model=TopDonationDriveResponse)
+@router.get("/donation-drives/most-donors", dependencies=[Depends(require_admin)], response_model=TopDonationDriveResponse)
 def get_top_donation_drive_by_donors(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -464,7 +465,7 @@ def get_top_donation_drive_by_donors(
         percentage_progress=float(drive.percentage_progress)
     )
 
-@router.get("/jobs/top-interested", response_model=List[JobsResponse])
+@router.get("/jobs/top-interested", dependencies=[Depends(require_admin)], response_model=List[JobsResponse])
 def get_top_interested_jobs(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for job posting data"),
     db: Session = Depends(get_db),
@@ -525,7 +526,7 @@ def get_top_interested_jobs(
     return result
 
 # Fetch the top 3 most recent newsletter posts
-@router.get("/newsletters/top-3")
+@router.get("/newsletters/top-3", dependencies=[Depends(require_admin)],)
 def get_top_newsletters(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for newsletter data"),
     db: Session = Depends(get_db)
