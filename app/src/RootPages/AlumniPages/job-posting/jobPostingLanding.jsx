@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/AlumniComponents/searchbar'
 import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
-import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown, Check } from 'lucide-react';
+import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown, Check, ArrowBigLeft, ArrowLeft, ArrowRight } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
 import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
@@ -71,7 +71,7 @@ function JobPostingLanding() {
         { label: "Full time", value: "fulltime" },
         { label: "Part time", value: "parttime" },
         { label: "Contractual", value: "contractual" },
-        { label: "Freelance", value: "Freelance" },
+        { label: "Freelance", value: "freelance" },
         { label: "Internship", value: "internship" },
         { label: "Apprenticeship", value: "apprenticeship" },
     ];
@@ -448,6 +448,17 @@ function JobPostingLanding() {
                 <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
                     {!loading ? (
                         <div className='flex flex-col gap-5 items-center '>
+                            {/* Pagination */}
+                            <div className='flex flex-row gap-5 font-satoshi-medium text-lg'>
+                                <button className='cursor-pointer'><ArrowLeft/></button>
+                                <h1>Page</h1> 
+                                <div className='flex justify-center bg-blue-100 w-8 rounded-md'>
+                                    <h1 className='text-primary'>1</h1>
+                                </div> 
+                                <h1>of</h1> 
+                                <h1>80</h1> 
+                                <button className='cursor-pointer'><ArrowRight/></button>
+                            </div>
                             {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
                                 jobList.map((job, index) => (
                                     <JobCard
