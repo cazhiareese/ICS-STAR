@@ -15,14 +15,6 @@ from util.alum_donation_util import maya_donation
 
 router = APIRouter()
 
-@router.post("/maya-payment")
-async def direct_payment(value: int, user: CurrentUser = Depends(get_current_user)):
-    
-    if user.user_type.value == UserTypeEnum.student:
-        raise HTTPException(status_code=400, detail="For alumni only")
-    
-    return await maya_donation(value)
-
 @router.get("/drive-suggestions")
 def get_drive_suggestions(
     q: str = Query(..., min_length=1, description="Search donation drive title"),
@@ -178,3 +170,13 @@ async def make_donations(
     return await make_donation(
         db, user, drive, monetary_donation, in_kind_donation, direct_maya, amount, description, proof, is_anonymous
     )
+    
+@router.post("/maya-callback")
+def maya_callback(
+    drive_id: UUID,
+    amount: float = Form(...),
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+    return maya_success(drive, amount, user.user_id, db)
