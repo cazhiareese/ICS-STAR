@@ -17,7 +17,7 @@ function CardComponent({ icon: Icon, text }) {
       onMouseLeave={(e) => e.currentTarget.style.background = "#F9F9FB"}
     >
       {/* Display text with bold effect on hover */}
-      <span className="text-lg font-medium text-center font-satoshi-medium min-h-1/3 group-hover:font-bold">
+      <span className="text-[19px] font-medium text-center font-satoshi-medium min-h-1/3 group-hover:font-bold">
         {text}
       </span> 
 
