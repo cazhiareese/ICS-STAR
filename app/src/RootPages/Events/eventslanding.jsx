@@ -60,6 +60,11 @@ if (User) {
   console.log("No token found, defaulting to guest.");
 }
 
+useEffect(() => { 
+    setUserId(userid);
+    setUser(userid);
+    setUserType(tokentype);     
+},[])
 
     useEffect(() => {
         const handleScroll = () => {
@@ -72,11 +77,7 @@ if (User) {
     }, []);
 
     //cyrus was here
-    useEffect(() => { 
-        setUserId(userid);
-        setUser(userid);
-        setUserType(tokentype);     
-    },[])
+
 
 
     useEffect(() => {
@@ -85,95 +86,43 @@ if (User) {
 
         const fetchReservations = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/events/confirmed`, {
-                    headers: {
-                      Authorization: `Bearer ${token}`
-                    }
-                  });
-                  setReservations(response.data);
-                  console.log(reservations.length)
-                
+              const config = tokentype === "guest"
+                ? {}
+                : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
+          
+              const response = await axios.get(`${API_BASE_URL}/events/confirmed`, config);
+              setReservations(response.data);
+              console.log(reservations.length);
             } catch (error) {
-                
-                console.error('Error fetching reservations:', error);
+              console.error("Error fetching reservations:", error);
             }
-        };
-
-        fetchReservations();
-        setReservationSignal(false);
-        console.log("RESERVATION SIGNAL")
-        
-
-        const fetchAllEvents = async () => {
+          };
+          
+          fetchReservations();
+          setReservationSignal(false);
+          console.log("RESERVATION SIGNAL");
+          
+          const fetchAllEvents = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/events-visible-to`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setAllEvents(response.data);
-                console.log(allEvents)
-                console.log(allEvents)
-
+              const config = tokentype === "guest"
+                ? {}
+                : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
+          
+              const response = await axios.get(`${API_BASE_URL}/events-visible-to`, config);
+              setAllEvents(response.data);
+              console.log("naku",allEvents);
             } catch (error) {
-                console.error('Error fetching all events:', error);
-                console.log(allEvents)
+              console.error("Error fetching all events:", error);
+              console.log(allEvents);
             }
-        };
-
-        fetchAllEvents();
+          };
+          
+          fetchAllEvents();
+          
         // setAllEvents([sampleEvent1, sampleEvent2, sampleEvent3, sampleEvent4]);
         
         console.log("RESERVATION SIGNALasdfasdf")
     }, []);
-
-    const sampleEvent1 = {
-        event_id: 1,
-        title: "Community Clean-Up Drive",
-        description: "Join us for a community clean-up event to make our neighborhood cleaner and greener.",
-        dates: "2023-12-15T08:00:00Z", // UTC time format
-        location: "Central Park, Main Street",
-        organizer: "Green Earth Organization",
-        image: "https://example.com/clean-up-drive.jpg",
-        tags: ["Community", "Environment", "Volunteer"],
-        is_closed: false,
-    };
-
-    const sampleEvent2 = {
-        event_id: 2,
-        title: "Charity Fun Run",
-        description: "Participate in a fun run to raise funds for local charities.",
-        dates: "2023-12-20T06:00:00Z", // UTC time format
-        location: "Riverside Park, Elm Street",
-        organizer: "Helping Hands Foundation",
-        image: "https://example.com/fun-run.jpg",
-        tags: ["Charity", "Fitness", "Community"],
-        is_closed: false,
-    };
-
-    const sampleEvent3 = {
-        event_id: 3,
-        title: "Art Workshop for Beginners",
-        description: "Learn the basics of painting and drawing in this beginner-friendly workshop.",
-        dates: "2023-12-18T10:00:00Z", // UTC time format
-        location: "Art Center, Maple Avenue",
-        organizer: "Creative Minds Studio",
-        image: "https://example.com/art-workshop.jpg",
-        tags: ["Art", "Workshop", "Creativity"],
-        is_closed: false,
-    };
-    
-    const sampleEvent4 = {
-        event_id: 4,
-        title: "Tech Talk: Future of AI",
-        description: "Explore the latest advancements in AI technology with industry experts.",
-        dates: "2023-12-22T14:00:00Z", // UTC time format
-        location: "Tech Hub, Silicon Street",
-        organizer: "Innovators Network",
-        image: "https://example.com/tech-talk.jpg",
-        tags: ["Technology", "AI", "Education"],
-        is_closed: false,
-    };
 
     const handleRSVPClick = (eventId, event) => {
         // setReservations([])
