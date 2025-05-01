@@ -142,7 +142,7 @@ const EventCardsMain = () => {
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
 
             <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
-            {tokentype !== "student" && (
+            {tokentype !== "student" && tokentype !== "guest" && (
                 <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                     !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
@@ -163,7 +163,7 @@ const EventCardsMain = () => {
                         />
                     )}
                 </div>
-                {tokentype !== "student" && (
+                {tokentype !== "student" && tokentype !== "guest" &&(
                     <button
                         className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                         !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
