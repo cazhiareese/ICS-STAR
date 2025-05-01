@@ -260,9 +260,12 @@ def admin_get_interested_users(
 @router.delete("/job/remove-user-interested/{post_id}", response_model=dict)
 def remove_user_interested_route(
     post_id: UUID,
-    user_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    
+    user_id = user.user_id
+
     result = remove_user_interested(db, user_id=user_id, post_id=post_id)
 
     if not result:
