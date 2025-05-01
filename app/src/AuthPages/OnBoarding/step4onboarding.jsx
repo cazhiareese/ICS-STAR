@@ -70,41 +70,112 @@ export default function Step4Onboarding() {
         userType === "student"
           ? `${baseURL}/onboarding-info-student`
           : `${baseURL}/onboarding-info-alum`;
-      const payload =
-          userType === "student"
-            ? {
-                standing: userData.standing ?? "",
-                scholarships: userData.scholarshipList ?? [],
-                affiliations: userData.affiliationList ?? [],
-                roles: userData.roleList ?? [],
-                skills: userData.skillsInterests ?? [],
+
+          const employmentEnum= (employment) =>{
+            if (employment === "employed") {
+              return "employed";
+            } else if (employment === "self-employed") {
+              return "self_employed";
+            } else if (employment === "unemployed") {
+              return "unemployed";
+            } else if (employment === "unemployed_no_exp") {
+              return "unemployed_no_exp";
+            } else {
+              return "";
+            }
+          } 
+
+          const reasonsEnum = (reasons) => {
+            return reasons.map((reason) => {
+              if (reason === "training") {
+              return "Undergoing professional training";
+              } else if (reason === "academics") {
+              return "Currently pursuing academic studies";
+              } else if (reason === "seek") {
+              return "Still seeking work";
+              } else if (reason === "cannot_start") {
+              return "Cannot start working at present";
+              } else if (reason === "other") {
+              return "Other";
+              } else {
+              return "";
               }
-            : {
-                scholarships: userData.scholarshipList ?? [],
-                affiliations: userData.affiliationList ?? [],
-                roles: userData.roleList ?? [],
-                skills: userData.skillsInterests ?? [],
-                industry: userData.employmentType === "employed" ? userData.industrySector ?? "" : "",
-                company_name: userData.employmentType === "employed" ? userData.companyName ?? "" : "",
-                job_title: userData.employmentType === "employed" ? userData.jobTitle ?? "" : "",
-                country: userData.employmentType === "employed" ? userData.workCountry ?? "" : "",
-                city: userData.employmentType === "employed" ? userData.workCity ?? "" : "",
-                work_mode: userData.employmentType === "employed" ? userData.workType ?? "" : "",
-                employer_class: userData.employmentType === "employed" ? userData.workType ?? "" : "",
-                tenured_status: userData.employmentType === "employed" ? userData.tenureStatus ?? "" : "",
-                salary_grade: userData.employmentType === "employed" ? userData.salaryRange ?? "" : "",
-                reasons: userData.employmentType === "unemployed" ? userData.reason ?? [] : [],
-                employment_status: userData.employmentType ?? "",
-              };
+            });
+            };
+            const alumPayload = {
+            ...(userData.scholarshipList?.length > 0 && { scholarships: userData.scholarshipList }),
+            ...(userData.affiliationList?.length > 0 && { affiliations: userData.affiliationList }),
+            ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
+            ...(userData.employmentType === "employed" && userData.industry && { industry: userData.industrySector }),
+            ...(userData.employmentType && { employment_status: employmentEnum(userData.employmentType) }),
+            ...(userData.employmentType === "unemployed" && userData.reason?.length > 0 && { reasons: reasonsEnum(userData.reason) }),
+            ...(userData.employmentType === "employed" && userData.companyName && { company_name: userData.companyName }),
+            ...(userData.employmentType === "employed" && userData.jobTitle && { job_title: userData.jobTitle }),
+            ...(userData.employmentType === "employed" && userData.workCountry && { country: userData.workCountry }),
+            ...(userData.employmentType === "employed" && userData.workCity && { city: userData.workCity }),
+            ...(userData.employmentType === "employed" && { work_mode: userData.remote ? "remote" : "f2f" }),
+            ...(userData.employmentType === "employed" && userData.employerclass && { employer_class: userData.employerclass }),
+            ...(userData.employmentType === "employed" && userData.tenureStatus && { tenured_status: userData.tenureStatus }),
+            ...(userData.employmentType === "employed" && userData.salaryRange && { salary_grade: userData.salaryRange }),
+            // skills:null
+            ...(userData.skillsInterests?.length > 0 && { skills: userData.skillsInterests }),
+            };
+
+          const studentPayload = {
+            standing: userData.standing ?? "",
+            scholarships: userData.scholarshipList ?? [],
+            affiliations: userData.affiliationList ?? [],
+            roles: userData.roleList ?? [],
+            skills: userData.skillsInterests ?? [],
+          };
+
+          function objectToFormData(obj) {
+            const formData = new FormData();
+          
+            Object.entries(obj).forEach(([key, value]) => {
+              if (Array.isArray(value)) {
+                // Append each array element individually
+                value.forEach((item) => {
+                  formData.append(`${key}`, item);
+                });
+              } else if (value !== undefined && value !== null) {
+                formData.append(key, value);
+              }
+              // skip undefined/null values entirely
+            });
+          
+            return formData;
+          }
+          
+          const alumFormData = objectToFormData(alumPayload);
+          const studentFormData = objectToFormData(studentPayload);
+
+          
+          const payload = userType === "student" ? studentFormData : alumFormData;
 
 
       console.log("Payload being sent:", payload);
       console.log(userType)
-      await axios.post(endpoint, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      try {
+        const response = await axios.post(endpoint, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      
+        // Accessing the response data
+        console.log("Response data:", response.data);
+      
+        console.log("TOKEN UPDATED",response.data.updated_token)
+      
+        // Proceed with handling the response (e.g., navigate to next section)
+        setCurrentSection(5);
+        updateUserData("userUpdatedToken", response.data.updated_token)
+      } catch (error) {
+        console.error("Error submitting onboarding information:", error);
+      }
+
+
       console.log("Onboarding information submitted successfully.");
       setCurrentSection(5);
     } catch (error) {
@@ -187,8 +258,6 @@ export default function Step4Onboarding() {
           className="w-70 md:h-17 h-10 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
           onClick={submitStep4}
           >
-
-
             <label className="font-satoshi-bold cursor-pointer">Proceed</label>
           </div>
         )

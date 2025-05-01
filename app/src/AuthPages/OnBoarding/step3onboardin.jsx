@@ -263,11 +263,18 @@ function Step3Onboarding() {
 
                     <button className={`bg-white border  text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-primary": "border-gray-300"}`}
                     
-                            onClick={()=>setUnemployedWorkExperience(true)}>Yes</button>
+                            onClick={()=>{
+                              updateUserData('employmentType', "unemployed");
+                              setUnemployedWorkExperience(true)
+
+                            }}>Yes</button>
 
                     <button className={`bg-white border text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-gray-300 bg-red-500": "border-primary"}`}
                     
-                            onClick={()=>{setUnemployedWorkExperience(false)}}>No</button>
+                            onClick={()=>{
+                              updateUserData('employmentType', "unemployed_no_exp");
+                              setUnemployedWorkExperience(false)
+                            }}>No</button>
                   </div>
                 </div>
               )}
@@ -512,7 +519,7 @@ function Step3Onboarding() {
               <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Employer Classification</label>
               <select
                 name="employmentType"
-                value={userData.employmentType}
+                value={userData.employerclass}
                 onChange={(e)=>updateUserData("employerclass", e.target.value)}
                 className="w-full md:p-3 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
               >
