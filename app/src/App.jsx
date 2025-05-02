@@ -11,7 +11,6 @@ import Unauthorized from "./AuthPages/Unauthorized";
 
 
 
-
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
 import { OnboardingProvider } from "./AuthPages/AuthContext/onboardingcontext";
@@ -173,7 +172,7 @@ function App() {
             <Route path="alumni/account/settings" element={<AccountSettings />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
-            <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
+            <Route path="alumni/profile/:userId" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/events" element={<EventsLanding />} />
             <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
@@ -219,7 +218,6 @@ function App() {
             <Route path="student/events" element={<EventsLanding />} />
             <Route path="students/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
-            <Route path="students/donations" element={<DonationLanding />} />
             <Route path="student/newsletter" element={<NewsletterLanding />} />
             <Route path="student/newsletter/:newsletterid" element={<Newsletter />} />
             <Route path="student/jobPosting/interested/:jobid" element={<InterestedUsers />} />

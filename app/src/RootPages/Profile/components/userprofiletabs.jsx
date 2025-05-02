@@ -15,7 +15,7 @@ function UserProfileTabs({ userDetails, editMode, activeTab, setActiveTab }) {
         setActiveTab(tab);
       }
     }}
-    className={`relative font-satoshi-medium text-[20px] sm:text-[20px] leading-[30px] tracking-[-0.02em] transition cursor-pointer
+    className={`relative font-satoshi-medium text-[18px] sm:text-[20px] leading-[30px] tracking-[-0.02em] transition cursor-pointer
       ${
         editMode || !userDetails.is_verified
           ? "pointer-events-none text-gray-400 opacity-50"

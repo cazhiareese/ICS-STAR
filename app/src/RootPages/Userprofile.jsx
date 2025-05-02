@@ -11,6 +11,7 @@ import { Info } from "lucide-react";
 import JobPosted from "./Profile/JobPosting/userjobposting";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
+import { useParams } from "react-router-dom";
 
 
 import {
@@ -31,6 +32,8 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 function UserProfile() {
+  const id = useParams();
+  console.log("naku",id);
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState("About");
   const [skills, setSkills] = useState([]);
@@ -39,9 +42,9 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const share = false;                                       //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
-  const id = "3729301d-f181-44f7-a4e2-9a793d105653";
-
+  const [share, setShare] = useState(null)  
+  const [userId, setUserId] = useState(null);
+                                  //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
   //fetch user details from backend
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -53,8 +56,25 @@ const tokentype = decoded.role;
 console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
-const user_id = share? id : decoded.sub;
-console.log(user_id);
+console.log("unang id",id);
+//needs to fixed si janry ay userId, si redd ay userid
+
+
+const userIdFromURL = id.userId; // id is from useParams()
+console.log("User ID from URL:", userIdFromURL);
+const loggedInUserId = decoded.sub;
+console.log("Logged-in User ID:", loggedInUserId);
+
+if (!userIdFromURL || userIdFromURL === loggedInUserId) {
+  setShare(false);
+} else {
+  setShare(true);
+}
+
+
+const user_id = userIdFromURL && !share ? userIdFromURL : loggedInUserId;
+setUserId(user_id); // Set the user ID in state
+console.log("Final user ID:", user_id);
 
 
  
@@ -70,6 +90,7 @@ const fetchUserProfileData = async () => {
     });
 
     const personalData = personalResponse.data.data;
+    console.log("Personal Infoss:", personalData);
 
     // Fetch work information
     const workResponse = await axios.get(`${API_BASE_URL}/profile/${user_id}/work`, {
@@ -78,10 +99,17 @@ const fetchUserProfileData = async () => {
       },
     });
 
+    const verifyResponse = await axios.get(`${API_BASE_URL}/${user_id}/status`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const verifyData = verifyResponse.data.status;
+
     const workData = workResponse.data.data;
 
-    console.log("Personal Info:", personalData);
-    console.log("Work Info:", workData);
+
 
     // Set combined user details
     setUserDetails({
@@ -102,9 +130,9 @@ const fetchUserProfileData = async () => {
       student_number: personalData.student_number,
 
       // Decoded Token Info
-      is_banned: decoded.is_banned,
-      is_verified: decoded.is_verified,
-      user_type: decoded.role,
+      is_banned: verifyData.is_banned,
+      is_verified: verifyData.is_verified,
+      user_type: verifyData.user_type,
 
       // Work Info (example fields, customize as needed)
            employment_status: workData.employment_status,
@@ -117,6 +145,7 @@ const fetchUserProfileData = async () => {
           tenured_status: workData.tenured_status,
            salary_grade: workData.salary_grade,
     });
+
   } catch (error) {
     console.error("Error fetching user profile data:", error);
     throw error;
@@ -147,8 +176,9 @@ const fetchUserProfileData = async () => {
           }
         });
         const data = response.data.data;
+        console.log("Affiliations Data:", data); // Debugging line
         setAffiliations(data|| []);
-        console.log(affiliations)
+        console.log("hi",affiliations)
       } catch (error) {
         console.error('Error fetching personal information:', error);
         throw error;
@@ -225,7 +255,7 @@ const fetchUserProfileData = async () => {
     fetchskills();
     fetchaffiliations();
     fetchscholarships();
-
+  console.log(userDetails);
     setIsLoading(false);
   }, []);
 
@@ -303,6 +333,8 @@ const fetchUserProfileData = async () => {
   const handleChange = (e, field) => {
     setUserDetails({ ...userDetails, [field]: e.target.value });
   };
+  console.log("User Details:", userDetails);
+  console.log("iddddd",userId);
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       
@@ -323,11 +355,13 @@ const fetchUserProfileData = async () => {
         userDetails={userDetails}
         setEditMode={setEditMode}
         handleChange={handleChange}
+        share={share} // Pass share prop to ProfileSection
+        userId={userId} // Pass userId to ProfileSection
       />
-      {userDetails.user_type === "alumni" && (
+      {userDetails.user_type === "alumni" && !share && (
         <>
           {/* Navigation Tabs */}
-          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
 
           {/* Information Sections */}
         </>
@@ -347,6 +381,7 @@ const fetchUserProfileData = async () => {
             addSkills={addSkills}
             isLoading={isLoading}
             isVerified={userDetails?.is_verified}
+            share={share} // Pass share prop to SkillsInterestsSection
           />
           <AffiliationsSection
             editMode={editMode}
@@ -355,6 +390,7 @@ const fetchUserProfileData = async () => {
             addAffiliation={addAffiliation}
             isLoading={isLoading}
             isVerified={userDetails?.is_verified}
+            share={share} // Pass share prop to AffiliationsSection
           />
           <ScholarshipsSection
             editMode={editMode}
@@ -363,6 +399,7 @@ const fetchUserProfileData = async () => {
             addScholarship={addScholarship}
             isLoading={isLoading}
             isVerified={userDetails?.is_verified}
+            share={share} // Pass share prop to ScholarshipsSection
           />
         </>
       )}

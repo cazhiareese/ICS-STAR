@@ -77,7 +77,16 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               <span className="text-primary font-satoshi-bold">
                 {userDetails.city && userDetails.state && userDetails.country
                   ? `${userDetails.city}, ${userDetails.state}, ${userDetails.country}`
-                  : ""}
+                  :               <span className="text-primary font-satoshi-bold">
+                  {userDetails.marital_status === null ||
+                  userDetails.marital_status === "" ? (
+                    <span className="text-gray-500 italic">Not Available</span>
+                  ) : userDetails.marital_status ? (
+                    userDetails.marital_status
+                  ) : (
+                    <CircularLoading />
+                  )}
+                </span>}
               </span>
             )}
           </div>
