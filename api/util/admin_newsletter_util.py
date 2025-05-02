@@ -120,7 +120,7 @@ def create_util(
 
         sendList = [{"name": name, "email": email} for name, email in sendSet]
         print(sendList)
-        send_email(newsId=newsletter.newsletter_id, recipients=sendList, db=db)
+        # send_email(newsId=newsletter.newsletter_id, recipients=sendList, db=db)
     return newsletter.newsletter_id
 
 def edit_util(
