@@ -310,6 +310,48 @@ def add_user_interested(
 
     return success_message
 
+def remove_user_interested(
+        db: Session,
+        user_id: UUID,
+        post_id: UUID
+) -> dict:
+    
+    query = db.query(JobPostingInterestedIn).filter(JobPostingInterestedIn.user_id == user_id, JobPostingInterestedIn.post_id == post_id).first()
+
+    if query:
+        # Remove the user from the interested list
+        db.delete(query)
+        db.commit()
+        success_message = {
+            "success": True,
+            "message": "User removed from interested list successfully.",
+            "user_id": user_id,
+            "post_id": post_id
+        }
+        return success_message
+    else:
+        error_message = {
+            "success": False,
+            "message": "User not found in interested list.",
+            "user_id": user_id,
+            "post_id": post_id
+        }
+        return error_message
+    
+def check_user_interested(
+        db: Session,
+        user_id: UUID,
+        post_id: UUID
+) -> bool:
+    
+    # Check if the user is already in the interested list
+    query = db.query(JobPostingInterestedIn).filter(JobPostingInterestedIn.user_id == user_id, JobPostingInterestedIn.post_id == post_id).first()
+
+    if query:
+        return True
+    else:
+        return False
+
 def get_all_user_interested_by_name_alphabetical(
         db: Session,
         post_id: UUID

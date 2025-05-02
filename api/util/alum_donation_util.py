@@ -215,7 +215,7 @@ async def make_donation(
     drive: DonationDrive,
     monetary_donation: bool = False,
     in_kind_donation: bool = False,
-    direct_maya: bool = False,
+    direct_maya: Optional[bool] = None,
     amount: Optional[float] = None,
     description: Optional[str] = None,
     proof: Optional[UploadFile] = File(None),
