@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ChevronsUpDown } from 'lucide-react'
+import { ChevronsUpDown, Filter } from 'lucide-react'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
 import SortModal from '../../../components/AdminComponents/sortmodal'
@@ -7,6 +7,7 @@ import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 import InsightsDonationsTable from '../../../components/AdminComponents/InsightsDonationsTable'
 import DatePicker from 'react-multi-date-picker'
+import SearchComponent from '../../../components//AdminComponents/SearchComponent'
 
 function AdminDonationsInsights() {
   const [token, setToken] = useState(null)
@@ -25,9 +26,35 @@ function AdminDonationsInsights() {
   const [selectedYear, setSelectedYear] = useState(null)
   const [customStartDate, setCustomStartDate] = useState(null)
   const [customEndDate, setCustomEndDate] = useState(null)
+  const [isAcknowledged, setIsAcknowledged] = useState(true)
+  const [donations, setDonations] = useState([])
+  const [donationPage, setDonationPage] = useState(1)
+  const [totalDonationPage, setTotalDonationPage] = useState(1)
+  const [donationLoading, setDonationLoading] = useState(false)
   const formatFilter = (filter) => filter.replaceAll("_", " ");
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+
+  async function fetchDonations() {
+    setDonationLoading(true)
+    try{
+      let queryParams = `time_filter=${timeFilter}`
+      if (timeFilter === "monthly" && selectedMonth !== null && selectedYear !== null) {
+        queryParams += `&month=${selectedMonth}&year=${selectedYear}`;
+      }
+      queryParams += `&isAcknowledged=${isAcknowledged}&page=${donationPage}`
+      console.log(queryParams)
+      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations?${queryParams}`,{headers: {Authorization: `Bearer ${token}`}})
+      console.log(donationResponse)
+      setDonations(donationResponse.data.data)
+      setTotalDonationPage(donationResponse.data.total_pages)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setDonationLoading(false)
+    }
+  }
 
   async function fetchInitialData() {
     setLoading(true);
@@ -73,11 +100,18 @@ function AdminDonationsInsights() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    setDonationPage(1)
+    setTotalDonationPage(1)
+    fetchDonations()
+  }, [isAcknowledged, donationPage])
   
 
   useEffect(() => {
     setToken(localStorage.getItem("token"))
     fetchInitialData()
+    fetchDonations()
   }, [timeFilter])
 
   return (
@@ -170,7 +204,7 @@ function AdminDonationsInsights() {
         {/* Top performing drives and drives with goals reached */}
         <div className='flex flex-row gap-4 h-1/3 mt-2'>
           {/* Top performing drives */}
-          <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl'>
+          <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl bg-white'>
             <h2 className='font-satoshi-medium text-2xl'>Top Performing Drives</h2>
             {topPerformingDrives.length === 0 ? (
               <div className='flex justify-center items-center h-full'>
@@ -192,7 +226,7 @@ function AdminDonationsInsights() {
           )}
           </div>
           {/* Drives with goals reached */}
-          <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl'>
+          <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl bg-white'>
             <h2 className='font-satoshi-medium text-2xl'>Drives with Goals Reached</h2>
             {drivesWithGoalsReached.length === 0 ? (
               <div className='flex justify-center items-center h-full'>
@@ -219,11 +253,11 @@ function AdminDonationsInsights() {
         <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
           <div className='w-full lg:w-auto  min-w-xs'>
             {/* Verified button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'verified' ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('verified')}>
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${isAcknowledged === true ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setIsAcknowledged(true)}>
                Verified
             </button>
             {/* Unverified button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'unverified' ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('unverified')}>
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${isAcknowledged === false ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setIsAcknowledged(false)}>
               Unverified
             </button>
           </div>
@@ -234,16 +268,8 @@ function AdminDonationsInsights() {
                 <p className='font-satoshi-medium text-primary block'>Name</p>
             </button> */}
           <div className='relative flex items-center justify-end flex-1'>
-            {/* <input
-              type="text"
-              placeholder="Search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
+            <SearchComponent
             />
-            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} /> */}
           </div>
             {/* <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/> */}
             {/* Order Toggle */}
@@ -254,16 +280,16 @@ function AdminDonationsInsights() {
               <p className='text-primary font-satoshi-medium text-sm'> Filter</p>
             </button> */}
             {/* Page */}
-            {/* <PaginationComponent
-              page={page}
-              setPage={setPage}
-              totalPages={totalPages}
-            /> */}
+            <PaginationComponent
+              page={donationPage}
+              setPage={setDonationPage}
+              totalPages={totalDonationPage}
+            />
           </div>
         </div>
         {/* Table of donations */}
-        <div className='flex-1 border border-gray-300 rounded-3xl'>
-          <InsightsDonationsTable data={[]}/>
+        <div className='flex-1 border border-gray-300 rounded-3xl bg-white overflow-clip'>
+          <InsightsDonationsTable data={donations} loading={donationLoading}/>
         </div>
       </div>
     )
