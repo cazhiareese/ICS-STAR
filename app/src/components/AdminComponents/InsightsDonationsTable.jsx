@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function InsightsDonationsTable({ data, loading = false }) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const rowsPerPage = 10; // Fixed number of rows per page
 
   // Generate rows (data + empty) to reach rowsPerPage
@@ -14,7 +14,7 @@ function InsightsDonationsTable({ data, loading = false }) {
       <tr
         key={`data-${index}`}
         className="hover:bg-secondary cursor-pointer border-b border-gray-200"
-        onClick={() => navigate(`/admin/donations/${donation.drive_id}`)}
+        // onClick={() => navigate(`/admin/donations/${donation.drive_id}`)}
         style={{ minHeight: '48px' }}
       >
         <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold">

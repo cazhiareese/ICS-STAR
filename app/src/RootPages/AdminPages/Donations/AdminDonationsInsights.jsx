@@ -134,7 +134,7 @@ function AdminDonationsInsights() {
           </button>
 
           {filterOpen && (
-            <div className="absolute top-10 w-64 bg-white border border-gray-300 rounded-md shadow-lg p-4 z-10">
+            <div className="absolute top-15 right-0 w-64 bg-white border place-self-end border-gray-300 rounded-md shadow-lg p-4 z-10">
               <p className="font-satoshi-medium mb-2">Filter:</p>
               <div className="flex flex-col gap-2">
                 {filters.map((filter) => (
@@ -146,11 +146,11 @@ function AdminDonationsInsights() {
                       checked={timeFilter === filter}
                       onChange={() => {
                         if (filter === "Custom") {
-                          setTimeFilter(filter); // Set "Custom" but don't fetch yet
+                          setTimeFilter(filter);
                         } else {
                           setTimeFilter(filter);
                           setFilterOpen(false);
-                          fetchInitialData(); // Fetch immediately for non-custom filters
+                          // fetchInitialData();
                         }
                       }}
                     />
@@ -185,7 +185,6 @@ function AdminDonationsInsights() {
                       className="mt-2 bg-primary text-white py-1 px-2 rounded-md hover:bg-hover cursor-primary font-satoshi-regular"
                       onClick={() => {
                         if (!customStartDate || !customEndDate) {
-                          alert("Please select both start and end dates.");
                           return;
                         }
                         setFilterOpen(false);
