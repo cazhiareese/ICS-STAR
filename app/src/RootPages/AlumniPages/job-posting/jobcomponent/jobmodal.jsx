@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { X, Trash2, Flag } from "lucide-react";
 
-function JobModal({ jobId, setShowModal, onCancel, options }) {
+function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
   const [confirmed, setConfirmed] = useState(false);
+  console.log(formData)
 
   useEffect(() => {
     if (confirmed) {

@@ -155,6 +155,7 @@ function ReportJobPosting() {
     setShowModal={setShowModal}
     onCancel={() => setShowModal(false)}
     options={{ type: "report" }}
+    formData
   />
 )}
     </div>
