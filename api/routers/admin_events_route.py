@@ -3,12 +3,12 @@ from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, Query
 from datetime import date, datetime
 import pytz
 from sqlalchemy import asc, desc, func
-from models.usermodel import User
+from models.usermodel import User, UserTypeEnum
 from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, EventTag, EventVisibleTo
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from util.admin_events_util import create_event_util, edit_event_util, get_demographics
+from util.admin_events_util import create_event_util, edit_event_util, get_demographics, get_event_by_id_util, send_email_util
 from config.database import get_db
 
 event_router = APIRouter(
@@ -147,7 +147,7 @@ async def edit_event(
         tags = clean_input(tags)
         links = clean_input(links)
         job = clean_input(job)
-        affliation = clean_input(affliation)
+        affiliation = clean_input(affiliation)
         event = await edit_event_util(
                 db=db, 
                 event_id=event_id,
@@ -169,49 +169,8 @@ async def edit_event(
 
 @event_router.get("/event-by-id/{eventId}")
 async def get_event_by_id(eventId: UUID, db:Session=Depends(get_db)):
-    try:
-        event = db.query(Event.event_id, Event.title, Event.image, Event.location, Event.description, Event.is_closed, Event.is_concluded).filter(Event.event_id==eventId).first()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Event not found: {e}")
-    
-    try:
-        event_dates = db.query(EventDate.date).filter(EventDate.event_id == event.event_id).all()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Event date not found: {e}")
-    
-    try: 
-        event_links= db.query(EventLink.link).filter(EventLink.event_id == event.event_id).all()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Event link not found: {e}")
-    
-    try: 
-        event_tags = db.query(EventTag.tag).filter(EventTag.event_id == event.event_id).all()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Event link not found: {e}")
-
-    dates_list = []
-    for date in event_dates:
-        # print(date[0])
-        dt = datetime.fromisoformat(str(date[0]))
-        formatted = dt.strftime("%Y-%m-%d %H:%M")
-        dates_list.append(formatted)
-
-    links_list= [link[0] for link in event_links]
-    tags_list = [tag[0] for tag in event_tags]
-
-
-    return {"message": "success", "data": {
-        "event_id": event.event_id, 
-        "title": event.title, 
-        "image": event.image,
-        "location": event.location, 
-        "description": event.description, 
-        "datetime": dates_list,
-        "links": links_list,
-        "tags": tags_list,
-        "is_closed": event.is_closed,
-        "is_concluded": event.is_concluded
-    }}
+    return {"message": "success", "data": get_event_by_id_util(eventId=eventId, db=db)
+    }
 
 @event_router.put("/close/{event_id}")
 async def close_event(event_id: UUID, db: Session = Depends(get_db)):
@@ -427,3 +386,33 @@ def get_tags(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No tags to fetch!")
     
     return{"message": "success", "data": [tag[0] for tag in query if tag is not None]}
+
+@event_router.post("/send-email/{event_id}")
+def send_email(event_id: UUID, db: Session=Depends(get_db)):
+    event = db.query(Event.is_all).filter(Event.event_id == event_id).first()
+
+    if event.is_all:
+        details = []
+        users = db.query(User.first_name, User.last_name, User.email).filter(User.user_type == UserTypeEnum.alumni, User.is_verified == True).all()
+        for user in users:
+            details.append({
+                "name": f"{user.first_name} {user.last_name}",
+                "email": user.email
+            })
+    
+    else:
+        user_ids = db.query(EventVisibleTo.user_id).filter(EventVisibleTo.event_id == event_id).all()
+        details = []
+        for user in user_ids:
+            recipients = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
+            details.append({
+                "name": f"{recipients.first_name} {recipients.last_name}",
+                "email": recipients.email
+            })
+
+    try:
+        response = send_email_util(eventId=event_id, recipients=details, db=db)
+        return response 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+    
