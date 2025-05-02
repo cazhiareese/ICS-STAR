@@ -116,7 +116,7 @@ async def onboarding_student(
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(get_current_user)
 ):
-    process_student_onboarding(
+    data = process_student_onboarding(
         user=user,
         db=db,
         standing=standing,
@@ -126,8 +126,7 @@ async def onboarding_student(
         skills=skills,
     )
 
-    return {"message": "onboarding details updated successfully"}
-
+    return data
 
 @router.post("/onboarding-info-alum")
 async def onboarding_info(
@@ -150,7 +149,7 @@ async def onboarding_info(
     user: CurrentUser = Depends(get_current_user)
 ):
 
-    process_alumni_onboarding(
+    data = process_alumni_onboarding(
         user=user,
         db=db,
         scholarships=scholarships,
@@ -170,7 +169,7 @@ async def onboarding_info(
         skills=skills
     )
     
-    return {"message": "onboarding details updated successfully"}
+    return data
 
 @router.put("/update-employment")
 async def update_employment(
@@ -801,3 +800,11 @@ async def get_email_name_by_id(
             "last_name": last_name
         }
     }
+
+@router.get("/profile-picture/{userid}")
+async def get_profile_picture_by_id(
+    userid: UUID,
+    db: Session = Depends(get_db),
+):
+    img = db.query(User.image).filter(User.user_id==userid).first()
+    return {"profile_picture": img.image}

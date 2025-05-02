@@ -2034,7 +2034,8 @@ def get_top_performing_drives(
         MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id
     ).filter(
         MonetaryDonation.created_at < start_date,
-        DonationDrive.target_cost > 0  # Prevent division by zero
+        DonationDrive.target_cost > 0,  # Prevent division by zero
+        MonetaryDonation.is_acknowledged == True
     ).group_by(
         DonationDrive.drive_id
     ).subquery()
@@ -2047,7 +2048,8 @@ def get_top_performing_drives(
         MonetaryDonation, DonationDrive.drive_id == MonetaryDonation.drive_id
     ).filter(
         MonetaryDonation.created_at <= end_date,
-        DonationDrive.target_cost > 0
+        DonationDrive.target_cost > 0,
+        MonetaryDonation.is_acknowledged == True
     ).group_by(
         DonationDrive.drive_id
     ).subquery()

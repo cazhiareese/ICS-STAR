@@ -101,11 +101,19 @@ def process_student_onboarding(
                 User.standing: standing
             })
             
-        db.query(User).filter(User.user_id == user.user_id).update({
+        updated = db.query(User).filter(User.user_id == user.user_id).update({
             User.is_onboarded: True
         })
+        
+        print(updated)
     
         db.commit()
+        update = db.query(User).filter(User.user_id == user.user_id).first()
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": str(update.user_id), "role": update.user_type.value, "is_onboarded": update.is_onboarded, "is_verified": update.is_verified, "is_banned": update.is_banned}, expires_delta=access_token_expires
+        )
+        return {"message": "onboarding details updated successfully", "updated_token": access_token}
         
     except Exception as e:
             raise HTTPException(status_code=500, detail=f'Error updating info {e}')
@@ -181,6 +189,12 @@ def process_alumni_onboarding(
             User.is_onboarded: True
         })
         db.commit()
+        update = db.query(User).filter(User.user_id == user.user_id).first()
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": str(update.user_id), "role": update.user_type.value, "is_onboarded": update.is_onboarded, "is_verified": update.is_verified, "is_banned": update.is_banned}, expires_delta=access_token_expires
+        )
+        return {"message": "onboarding details updated successfully", "updated_token": access_token}
         
     except Exception as e:
             raise HTTPException(status_code=500, detail=f'"Error updating info {e}"')
@@ -271,7 +285,6 @@ async def upload_profile(profile_picture, user, db):
     return profile_picture_url
 
 def get_user(db, email: str):
-    db = SessionLocal()
     user = db.query(User.user_id, User.user_type, User.is_verified, User.is_onboarded, User.password, User.is_banned).filter(User.email == email).first()
     return user
 

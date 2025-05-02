@@ -121,7 +121,7 @@ async def get_upcoming_events(
         )
         .group_by(Event.event_id, Event.title, Event.location)
         .order_by("earliest_date")
-        .limit(5)
+        .limit(3)
         .subquery()
     )
     
