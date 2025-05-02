@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { MoveLeft, X } from 'lucide-react'
 import ExpandedPendingDonations from '../../../components/AdminComponents/expandedpendingdonations'
 import axios from 'axios'
@@ -10,7 +10,8 @@ function AdminPendingDonations() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const location = useLocation()
-  const { driveid } = useParams()
+  const [token, setToken] = useState()
+  // const { driveid } = useParams()
   const { pendingDonations, driveName } = location.state
 
   const [reviewDetailsModal, setReviewDetailsModal] = useState(false)
@@ -31,7 +32,7 @@ function AdminPendingDonations() {
       const choice = actionType === 'approve' ? 'approve' : 'disapprove'
       const url = `${API_BASE_URL}/admin/donations/${endpoint}/${selectedDonation.donation_id}?choice=${choice}`
 
-      await axios.post(url)
+      await axios.post(url, {headers: {Authorization: `Bearer ${token}`}})
 
       setVerificationLoading(false)
       setVerifyTransition(true)
@@ -44,6 +45,7 @@ function AdminPendingDonations() {
   }
 
   useEffect(() => {
+    setToken(localStorage.getItem('token'))
     console.log(pendingDonations)
   }, [pendingDonations])
 
