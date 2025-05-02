@@ -1,4 +1,4 @@
-import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, SquareArrowOutUpRight, Star, Trash2 } from 'lucide-react'
+import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, SquareArrowOutUpRight, Star, Trash2, Flag } from 'lucide-react'
 import {React, useState, useEffect, useRef} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
@@ -52,6 +52,10 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
         }
     }
 
+    const navToEditJobPost = () => {
+        navigate(`/alumni/jobPosting/edit/${jobId}`);
+    }
+
 
     
 
@@ -65,31 +69,40 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
                     {/* Main Card */}
                     <div className='flex flex-col outline-1 outline-neutral-300 lg:w-7/12 w-full rounded-2xl px-8 pt-4 pb-8 cursor'>
                         {/* Ellipsis & Modal */}
-                        {job.user_id === currentUserID && (
-                            <div className="relative ml-auto" ref={ellipsisRef}>
-                                <button className='cursor-pointer' onClick={() => setShowOptions(!showOptions)}>
-                                    <Ellipsis size={30} />
-                                </button>
-                                {showOptions && (
-                                    <div
-                                        ref={modalRef}
-                                        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
-                                    >
-                                        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
-                                            <Trash2 size={16} />
-                                            Delete Post
-                                        </button>
-                                        <button className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
-                                        onClick={()=>navToEditJobPost()}>
-                                            <Pencil size={16} 
-                                            
-                                            />
-                                            Edit Post
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                        {job.user_id === currentUserID ? (
+  <div className="relative ml-auto" ref={ellipsisRef}>
+    <button className='cursor-pointer' onClick={() => setShowOptions(!showOptions)}>
+      <Ellipsis size={30} />
+    </button>
+    {showOptions && (
+      <div
+        ref={modalRef}
+        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+      >
+        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
+          <Trash2 size={16} />
+          Delete Post
+        </button>
+        <button
+          className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
+          onClick={() => navToEditJobPost()}
+        >
+          <Pencil size={16} />
+          Edit Post
+        </button>
+      </div>
+    )}
+  </div>
+) : (
+  <button
+    className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
+    onClick={() => handleReport(job.id)} // create this function as needed
+  >
+    <Flag size={20} />
+    Report
+  </button>
+)}
+
                         {/* Title and Company */}
                         <h1 className='font-satoshi-bold text-3xl pt-5'>{job.title}</h1>
                         <div className="flex items-center gap-2 pt-2">
@@ -245,32 +258,40 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
                             <p className="text-primary font-satoshi-medium text-lg ml-2 ">Back</p>
                         </div>
                         {/* Ellipsis & Modal */}
-                        {job.user_id === currentUserID && (
-                            <div className="relative ml-auto" ref={ellipsisRef}>
-                                <button className='cursor-pointer' onClick={() => setShowOptions(!showOptions)}>
-                                    <Ellipsis size={30} />
-                                    
-                                </button>
-                                {showOptions && (
-                                    <div
-                                        ref={modalRef}
-                                        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
-                                    >
-                                        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
-                                            <Trash2 size={16} />
-                                            Delete Post
-                                        </button>
-                                        <button className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
-                                        onClick={()=>navToEditJobPost()}>
-                                            <Pencil size={16} 
-                                            
-                                            />
-                                            Edit Post
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                        {job.user_id === currentUserID ? (
+  <div className="relative ml-auto" ref={ellipsisRef}>
+    <button className="cursor-pointer" onClick={() => setShowOptions(!showOptions)}>
+      <Ellipsis size={30} />
+    </button>
+    {showOptions && (
+      <div
+        ref={modalRef}
+        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+      >
+        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
+          <Trash2 size={16} />
+          Delete Post
+        </button>
+        <button
+          className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
+          onClick={() => navToEditJobPost()}
+        >
+          <Pencil size={16} />
+          Edit Post
+        </button>
+      </div>
+    )}
+  </div>
+) : (
+  <button
+    className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
+    onClick={() => handleReport(job.id)} // Implement handleReport
+  >
+    <Flag size={20} />
+    Report
+  </button>
+)}
+
                         {/* Title and Company */}
                         <h1 className='font-satoshi-bold text-3xl pt-5'>{job.title}</h1>
                         <div className="flex items-center gap-2 pt-2">
