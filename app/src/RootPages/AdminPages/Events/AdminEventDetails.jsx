@@ -74,8 +74,8 @@ function AdminEventDetails() {
       </button>
       <div className='flex flex-row justify-between mb-3 items-center'>
         {/* Event title and accepting rsvp */}
-        <div className='flex flex-row gap-2'>
-          <h1 className='font-satoshi-bold text-4xl'>{eventDetails.title}</h1>
+        <div className='flex flex-row gap-2 flex-1'>
+          <h1 className='font-satoshi-bold text-4xl flex-1 border text-ellipsis overflow-hidden'>{eventDetails.title}</h1>
           {/* Accepting RSVP or closed */}
           {eventDetails.is_closed ? (
             <div className='flex flex-row items-center justify-center gap-2 bg-red-400 text-red-700 rounded-3xl h-fit self-end px-2 py-1'>
@@ -90,7 +90,7 @@ function AdminEventDetails() {
           )}
         </div>
         {/* Edit Event and Delete Event */}
-        <div className='flex flex-row gap-2'>
+        <div className='flex flex-row gap-2 flex-1 justify-end'>
           {/* Edit event */}
           <button className='bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer' onClick={() => {navigate(`/admin/events/edit-event/${eventid}`)}}>
             <Pencil/>
@@ -104,7 +104,7 @@ function AdminEventDetails() {
         </div>
       </div>
       {/* RSVP Details */}
-      <div className='flex flex-row items-center border border-gray-400 rounded-3xl h-24 px-12 py-6'>
+      <div className='flex flex-row items-center border border-gray-400 bg-white rounded-3xl h-24 px-12 py-6'>
         <div className='flex flex-1 items-center gap-12'>
           <h2 className='font-satoshi-bold text-primary text-3xl flex items-center'>{rsvpDetails.rsvp_count} RSVPs</h2>
           <div className='flex flex-row items-center gap-2'>
@@ -131,19 +131,19 @@ function AdminEventDetails() {
         </button>
         <div className='flex flex-row h-fit w-fit mr-5 self-end'>
           <button 
-            className={`${viewStyle == 'rsvpList' ? 'bg-primary text-white border-primary': ''} border-x border-t border-gray-300 rounded-tl-2xl py-1 px-8 cursor-pointer`} 
+            className={`${viewStyle == 'rsvpList' ? 'bg-primary text-white border-primary': ''} border-x border-t border-gray-400 rounded-tl-2xl py-1 px-8 cursor-pointer`} 
             onClick={() => {setViewStyle('rsvpList')}}> 
             RSVP List
           </button>
           <button 
-            className={`${viewStyle == 'eventDetails' ? 'bg-primary text-white border-primary' : ''} border-x border-t border-gray-300 rounded-tr-2xl py-1 px-6 cursor-pointer`} 
+            className={`${viewStyle == 'eventDetails' ? 'bg-primary text-white border-primary' : ''} border-x border-t border-gray-400 rounded-tr-2xl py-1 px-6 cursor-pointer`} 
             onClick={() => {setViewStyle('eventDetails')}}> 
             Event Details
           </button>
         </div>
       </div>
       {/* RSVP List table / Event Details */}
-      <div className='w-full h-full border border-gray-400 rounded-2xl overflow-auto'>
+      <div className='w-full h-full border border-gray-400 bg-white rounded-2xl overflow-auto'>
         {viewStyle == 'rsvpList' ? (
           rsvpList == null ? (
             <div className='flex items-center justify-center w-full h-full'>
