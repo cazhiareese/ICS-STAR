@@ -466,7 +466,7 @@ function AdminAlumniInfo() {
             <button className="flex flex-row gap-1 items-center cursor-pointer justify-self-end" onClick={()=> navigate("/admin/dashboard/country-reports/")}><p className="font-satoshi-light text-sm">View Country Breakdown</p><MoveRight/></button>
           </div>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={locationData} layout="vertical" margin={{ left: 20, right: 20, bottom: 40 }}>
+            <BarChart data={locationData} layout="vertical" margin={{ left: 40, right: 20, bottom: 40 }}>
               <XAxis type="number"/>
               <YAxis type="category" dataKey="country" width={100} />
               <Bar dataKey="count" barSize={20} radius={[0, 5, 5, 0]}>
