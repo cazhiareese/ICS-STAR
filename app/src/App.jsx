@@ -196,7 +196,7 @@ function App() {
           </>
           :
           <Route
-              path="/setup"
+              path="*"
               element={
                 <OnboardingProvider>
                   <OnBoarding />
@@ -229,7 +229,7 @@ function App() {
           </>
            : 
             <Route
-              path="setup"
+              path="*"
               element={
                 <OnboardingProvider>
                   <OnBoarding />
