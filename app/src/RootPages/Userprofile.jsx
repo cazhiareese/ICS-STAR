@@ -56,13 +56,15 @@ console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
 const userIdFromURL = id.userid; // id is from useParams()
+console.log("User ID from URL:", userIdFromURL);
 const loggedInUserId = decoded.sub;
+console.log("Logged-in User ID:", loggedInUserId);
 
 // Set share based on user match
-if (userIdFromURL && userIdFromURL === loggedInUserId) {
-  setShare(true);
-} else {
+if ( userIdFromURL === loggedInUserId) {
   setShare(false);
+} else {
+  setShare(true);
 }
 
 const user_id = userIdFromURL && !share ? userIdFromURL : loggedInUserId;
@@ -325,6 +327,7 @@ const fetchUserProfileData = async () => {
   const handleChange = (e, field) => {
     setUserDetails({ ...userDetails, [field]: e.target.value });
   };
+
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       
@@ -385,6 +388,7 @@ const fetchUserProfileData = async () => {
             addScholarship={addScholarship}
             isLoading={isLoading}
             isVerified={userDetails?.is_verified}
+            share={share} // Pass share prop to ScholarshipsSection
           />
         </>
       )}
