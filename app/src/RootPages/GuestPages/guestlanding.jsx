@@ -126,7 +126,7 @@ function GuestLanding() {
         {/* Cards Section */}
         <div className="flex flex-wrap justify-center gap-4 mt-6">
           <CardComponent icon={Calendar} text="Look for events to attend" />
-          <CardComponent icon={Newspaper} text="Catch up with ICS" />
+          <CardComponent icon={Newspaper} text="Catch up with ICS"  />
         </div>
       </div>
 
