@@ -808,3 +808,43 @@ async def get_profile_picture_by_id(
 ):
     img = db.query(User.image).filter(User.user_id==userid).first()
     return {"profile_picture": img.image}
+
+@router.get("/me/status")
+async def get_user_status(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    status = db.query(
+        User.is_banned,
+        User.is_verified,
+        User.user_type
+    ).filter(User.user_id==user.user_id).first()
+    
+    return {
+        "status": {
+            "is_banned": status[0],
+            "is_verified": status[1],
+            "user_type": status[2]
+        }
+    }
+
+@router.get("/{user_id}/status")
+async def get_user_status_by_id(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    status = db.query(
+        User.is_banned,
+        User.is_verified,
+        User.user_type
+    ).filter(User.user_id == user_id).first()
+
+
+    return {
+        "status": {
+            "is_banned": status[0],
+            "is_verified": status[1],
+            "user_type": status[2]
+        }
+    }
