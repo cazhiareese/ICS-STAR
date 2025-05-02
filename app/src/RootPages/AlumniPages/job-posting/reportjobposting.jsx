@@ -108,7 +108,7 @@ function ReportJobPosting() {
 
       {jobOverview && <JobOverviewCard overview={jobOverview} />}
 
-      <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] border border-disabled p-6 space-y-6 h-[506px]">
+      <div className="max-w-[1100px] mx-auto bg-whitey rounded-[20px] border border-disabled p-6 space-y-6 h-[506px]">
         {/* Report Details */}
         <div>
           <label className="block font-satoshi-bold text-black mb-2">
