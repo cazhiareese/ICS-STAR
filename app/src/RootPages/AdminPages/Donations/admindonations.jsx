@@ -100,7 +100,7 @@ function AdminDonations() {
         <h1 className='text-primary text-5xl font-satoshi-bold'>Donations</h1>
         <button className='flex bg-primary font-satoshi-regular px-6 py-3 text-white rounded-2xl gap-2 cursor-pointer hover:bg-hover' onClick={() => {navigate("/admin/donations/create-donation-drive")}}> 
           <Plus/>
-          <p> New Donation</p>
+          <p className='font-satoshi-bold'> New Donation</p>
         </button>
       </div>
       {/* HELP ICS */}
@@ -132,19 +132,19 @@ function AdminDonations() {
           <p className='font-satoshi-medium '>Unverified Donations</p>
         </div>
       </div>
-      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
-          <div className='w-full lg:w-auto  min-w-xs'>
+      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0 mt-8 mb-1'>
+          <div className='w-full lg:w-auto  min-w-48'>
             {/* Open button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'open' ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('open')}>
-              <p className=''> Open </p>
+            <button className={`px-3 py-3 cursor-pointer border-b-3 w-1/4 lg:w-auto ${donationType === 'open' ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('open')}>
+              <p className='text-black font-satoshi-medium text-sm'> Open </p>
             </button>
             {/* Close button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${donationType === 'closed' ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('closed')}>
-              <p className=''> Closed </p>
+            <button className={`px-3 py-3 cursor-pointer border-b-3 w-1/4 lg:w-auto ${donationType === 'closed' ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setDonationType('closed')}>
+              <p className='text-black font-satoshi-medium text-sm'> Closed </p>
             </button>
           </div>
           {/* Sort by */}
-          <div className='flex gap-2'>
+          <div className='flex gap-2 flex-row items-center'>
             {/* <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
               <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
                 <p className='font-satoshi-medium text-primary block'>Name</p>
@@ -172,7 +172,7 @@ function AdminDonations() {
             />
           </div>
         </div>
-        <div className='border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto bg-white'>
+        <div className='border border-gray-400 rounded-xl h-fit hidden lg:block overflow-auto bg-white'>
           <DonationsTable data={donations} loading={loading}/>
         </div>
     </div>
