@@ -189,7 +189,7 @@ function App() {
             <Route path="alumni/newsletter" element={<NewsletterLanding />} />
             <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
-            <Route path="*" element={<Unauthorized />} />
+            <Route path="*" element={<LoginPage />} />
 
 
           </Route>
@@ -224,7 +224,7 @@ function App() {
             <Route path="student/jobPosting/interested/:jobid" element={<InterestedUsers />} />
             <Route path="student/jobPosting/report/:jobid" element={<ReportJobPosting />} />
             <Route path="student/jobPosting" element={<JobPostingLanding />} />
-            <Route path="*" element={<Unauthorized />} />
+            <Route path="*" element={<LoginPage />} />
           </Route>
           </>
            : 
@@ -248,7 +248,7 @@ function App() {
             <Route path="guest/events/:eventid" element={<EventCardsMain />} />
             <Route path="guest/newsletter" element={<NewsletterLanding />} />
             <Route path="guest/newsletter/:newsletterid" element={<Newsletter />} />
-            <Route path="*" element={<Unauthorized />} />
+            <Route path="*" element={<LoginPage />} />
 
           </Route>
         </>

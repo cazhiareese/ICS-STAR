@@ -13,12 +13,15 @@ import CircularLoading from "../components/LoadingComponents/starloading";
 import star from "../assets/star.png";
 import google from "../assets/google.png"
 import GuestModal from "./guestModal"
+import ModalTemplate from "./modaltemplate"
 
 function LoginPage() {
 
     const baseURL = import.meta.env.VITE_BACKEND_URL;
 
     const [openModal, setOpenModal] = useState(false);
+
+    const [openError, setOpenError] = useState(false);
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -74,10 +77,9 @@ function LoginPage() {
               localStorage.setItem("token", data.access_token);
               // alert("Login Successful!");
               fetchUserData();
-              
+            
           } else {
-              alert(data.detail || "Login failed!");
-              alert(data)
+              setOpenError(true)
           }
       } catch (error) {
           console.error("Error:", error);
@@ -526,6 +528,8 @@ function LoginPage() {
         </div>
         
         }
+
+        {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error"/>}
         
     </div>
     
