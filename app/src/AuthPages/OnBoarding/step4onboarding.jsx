@@ -162,7 +162,7 @@ export default function Step4Onboarding() {
             Authorization: `Bearer ${token}`,
           },
         });
-      
+
         // Accessing the response data
         console.log("Response data:", response.data);
       
@@ -236,6 +236,7 @@ export default function Step4Onboarding() {
       {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
 
       <div className="flex flex-row items-center justify-center md:my-10 my-5 md:space-x-20 w-full">
+        
         <div
           className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl md:text-2xl text-xl "
           onClick={() => {
@@ -258,6 +259,7 @@ export default function Step4Onboarding() {
           className="w-70 md:h-17 h-10 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
           onClick={submitStep4}
           >
+            
             <label className="font-satoshi-bold cursor-pointer">Proceed</label>
           </div>
         )

@@ -20,10 +20,10 @@ const ModalTemplate = ({ onClose, onContinue, choiceclose, choicecontinue, heade
                     }
                     {choicecontinue &&
                         <button
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                        onClick={onContinue}
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            onClick={onContinue}
                         >
-                        {choicecontinue}
+                            {choicecontinue}
                         </button>
                     }
                     

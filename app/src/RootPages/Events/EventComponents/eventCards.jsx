@@ -64,12 +64,14 @@ const EventCards = ({event}) => {
     const truncateDescription = (description, maxLines = 2) => {
         if (description===null) return null;
         const lines = description.split('\n');
+        console.log(lines)
+        console.log(lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : ''))
         return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '');
     };
 
     const truncatedDescription = truncateDescription(event.description, 2);
     return (
-        <div className="w-90 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1"
+        <div className=" w-full min-w-70 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1"
         onClick={() => {openEventDetails(event.event_id)}} 
         >
 <div className="h-40 w-full">
@@ -87,11 +89,11 @@ const EventCards = ({event}) => {
             
             
             <div className="p-4">
-                <h1 className="text-xl font-bold text-blue-900 pt-10">{event.title}</h1>
-                <p className="text-gray-600 pt-2 h-15 flex items-center">{truncatedDescription}</p>
+                <h1 className="text-xl font-bold text-blue-900 mt-3 h-15 w-full">{event.title}</h1>
+                <p className="text-gray-600 pt-2 h-15 flex line-clamp-2 w-full">{truncatedDescription}</p>
                 
                 
-                <div className="flex items-center mt-4 text-gray-600 space-x-3">
+                <div className="flex items-center mt-4 text-gray-600 space-x-3 w-full">
                     <MapPinned/>
                     <label>{event.location}</label>
                 </div>
@@ -104,7 +106,7 @@ const EventCards = ({event}) => {
 
                     </div>
                 </div>
-                <div className="flex flex-row gap-2 mt-4 overflow-x-scroll">
+                <div className="flex flex-row gap-2 mt-4 overflow-x-scroll w-full">
                     {event.tags.map((tag, index) => (
                         <span
                             key={index}
