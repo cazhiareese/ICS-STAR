@@ -3,8 +3,10 @@ import { X, Trash2, Flag } from "lucide-react";
 
 function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
   const [confirmed, setConfirmed] = useState(false);
-  console.log(formData)
+  console.log(formData) //eto form data sa report
 
+
+  //eljohn you know what to do
   useEffect(() => {
     if (confirmed) {
       if (options?.type === "delete") {
