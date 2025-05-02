@@ -43,7 +43,7 @@ function DonationsTable({ data, loading = false }) {
   return (
     <table className="w-full table-fixed">
       <thead>
-        <tr className="text-left text-xs text-primary font-satoshi-regular">
+        <tr className="text-left text-sm text-primary font-satoshi-bold border-b border-gray-200 h-1">
           <th className="py-2 px-4 w-2/10">Donation Title</th>
           <th className="py-2 px-4 w-1/10">Date Created</th>
           <th className="py-2 px-4 w-1/10">Donation Count</th>

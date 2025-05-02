@@ -307,6 +307,12 @@ function Donationform() {
                                 />
 
                                 <PaymentMode/>
+                                <button
+  onClick={submitMayaDonation}
+  className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+>
+  Donate via Maya
+</button>
 
                                 <DonationInstructions donationType={"monetary"} />
                                 <PaymentProof

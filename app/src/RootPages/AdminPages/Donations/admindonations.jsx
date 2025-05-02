@@ -93,14 +93,11 @@ function AdminDonations() {
   return (
     <div className="flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100">
       {/* Header and add donation button */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-primary text-5xl font-satoshi-bold">Donations</h1>
-        <button
-          className="flex bg-primary font-satoshi-regular px-6 py-3 text-white rounded-2xl gap-2 cursor-pointer hover:bg-hover"
-          onClick={() => navigate('/admin/donations/create-donation-drive')}
-        >
-          <Plus />
-          <p>New Donation</p>
+      <div className='flex justify-between items-center mb-4'>
+        <h1 className='text-primary text-5xl font-satoshi-bold'>Donations</h1>
+        <button className='flex bg-primary font-satoshi-regular px-6 py-3 text-white rounded-2xl gap-2 cursor-pointer hover:bg-hover' onClick={() => {navigate("/admin/donations/create-donation-drive")}}> 
+          <Plus/>
+          <p className='font-satoshi-bold'> New Donation</p>
         </button>
       </div>
       {/* HELP ICS */}

@@ -27,7 +27,7 @@ function CareerFilterModal ({filters, setterFunction})
     <div>
         <button 
             onClick={() => setOpen(!open)}
-            className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
+            className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer bg-whitey font-satoshi-bold hover:border-hover duration-150 ease-in'>
             <Filter className='text-primary'/>
             <p className='text-primary fsont-satoshi-medium text-sm'> Filter</p>
         </button>
@@ -35,16 +35,16 @@ function CareerFilterModal ({filters, setterFunction})
         {
         open && 
             (
-                <div className="absolute z-10 mt-2 w-90 origin-top-right rounded-lg bg-white shadow-xl">
-                <div className="py-2 text-sm text-black">
+                <div className="absolute z-10 mt-2 w-90 origin-top-right rounded-2xl border border-gray-200 bg-white shadow-xl p-4">
+                <div className="text-black flex flex-col gap-2">
                     {
                         filters.map(({label,value}, index) => {
                             if (value === 'creator'){
                                 return(
                                     <div key={`filter-${value}-${index}`}>
-                                    <h1>{label}</h1>
+                                    <h1 className='font-satoshi-medium'>{label}</h1>
                                     {
-                                    <div className="px-5 flex items-center justify-center flex-row gap-2">
+                                    <div className="flex items-center justify-center flex-row gap-2 pt-2">
                                     <div className="relative w-full justify-center items-center flex">
                                         <input
                                             type="search"
