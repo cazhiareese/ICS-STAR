@@ -157,7 +157,7 @@ async def create_event_util(
     
     if sendEmail:
         details = []
-        
+        print("entered here emailing")
         if not isAll:
             if visibleList and len(visibleList)>0:
                 for userId in visibleList:
@@ -174,9 +174,7 @@ async def create_event_util(
                     "email": user.email
                 })
         
-            send_email_util(eventId=event.event_id, recipients=details, db=db)
-
-    
+        send_email_util(eventId=event.event_id, recipients=details, db=db)
     return event.event_id
 
 async def edit_event_util (
@@ -420,7 +418,6 @@ def get_event_by_id_util(eventId: UUID, db:Session):
         }
 
 def send_email_util (eventId: UUID, recipients: List[dict], db: Session):
-    print(recipients)
     try:
         event = get_event_by_id_util(eventId=eventId, db=db)
         eventContents = {

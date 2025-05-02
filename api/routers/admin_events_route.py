@@ -147,7 +147,7 @@ async def edit_event(
         tags = clean_input(tags)
         links = clean_input(links)
         job = clean_input(job)
-        affliation = clean_input(affliation)
+        affiliation = clean_input(affiliation)
         event = await edit_event_util(
                 db=db, 
                 event_id=event_id,
