@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserCircle2 } from 'lucide-react';
 
 function PendingUsersTable({ pendingUsers = [], loading = false }) {
   const navigate = useNavigate();
@@ -36,22 +37,42 @@ function PendingUsersTable({ pendingUsers = [], loading = false }) {
         {loading ? (
           // Skeleton Rows (10 rows)
           rowsToRender.map((_, index) => (
-            <tr key={`skeleton-${index}`} className="border-b border-gray-200 h-10">
-              <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col2 }}>
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-full"></div>
+            <tr
+              key={`skeleton-${index}`}
+              className="border-b border-gray-200 h-10"
+            >
+              <td className="py-3 px-4" style={{ width: columnWidths.col1 }}>
+                <div className="rounded-full h-8 w-8 bg-gray-200 animate-pulse"></div>
               </td>
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col3 }}>
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-full"></div>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col2 }}
+              >
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
               </td>
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-full"></div>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col3 }}
+              >
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-5/6"></div>
               </td>
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-full"></div>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col4 }}
+              >
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-1/2"></div>
               </td>
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-full"></div>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col5 }}
+              >
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-2/3"></div>
+              </td>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col6 }}
+              >
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
               </td>
             </tr>
           ))
@@ -61,30 +82,60 @@ function PendingUsersTable({ pendingUsers = [], loading = false }) {
             {rowsToRender.map((user, index) => (
               <tr
                 key={user.user_id || `data-${index}`}
-                className="border-b border-gray-200 h-10 hover:bg-gray-100 cursor-pointer"
+                className="border-b border-gray-200 h-10 hover:bg-secondary cursor-pointer"
                 onClick={() => navigate(`/admin/records/verification-confirmation/${user.user_id}`)}
               >
-                <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
-                <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold whitespace-nowrap" style={{ width: columnWidths.col2 }}>
-                  {user.name}
+                <td className="py-3 px-4" style={{ width: columnWidths.col1 }}>
+                  <div className="h-8 w-8 rounded-full">
+                    {user.image === null ? (
+                      <UserCircle2 className="h-8 w-8 stroke-2" />
+                    ) : (
+                      <img
+                        src={user.image}
+                        alt=""
+                        className="h-8 w-8 object-cover rounded-full"
+                      />
+                    )}
+                  </div>
                 </td>
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col3 }}>
-                  {user.email}
+                <td
+                  className="py-3 px-4 gap-2 font-satoshi-bold whitespace-nowrap"
+                  style={{ width: columnWidths.col2 }}
+                >
+                  {user.name || 'N/A'}
                 </td>
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
-                  {user.student_number}
+                <td
+                  className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ width: columnWidths.col3 }}
+                >
+                  {user.email || 'N/A'}
                 </td>
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
-                  {user.grad_class}
+                <td
+                  className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ width: columnWidths.col4 }}
+                >
+                  {user.student_number || 'N/A'}
                 </td>
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
-                  {user.date_of_reg}
+                <td
+                  className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ width: columnWidths.col5 }}
+                >
+                  {user.grad_class || 'N/A'}
+                </td>
+                <td
+                  className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ width: columnWidths.col6 }}
+                >
+                  {user.date_of_reg || 'N/A'}
                 </td>
               </tr>
             ))}
             {/* Empty Rows to Fill Up to 10 */}
             {Array.from({ length: emptyRows }).map((_, index) => (
-              <tr key={`empty-${index}`} className="border-b border-gray-200 h-10">
+              <tr
+                key={`empty-${index}`}
+                className="border-b border-gray-200 h-14"
+              >
                 <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
                 <td className="py-3 px-4" style={{ width: columnWidths.col2 }}></td>
                 <td className="py-3 px-4" style={{ width: columnWidths.col3 }}></td>

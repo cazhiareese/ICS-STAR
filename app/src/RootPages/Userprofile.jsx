@@ -39,22 +39,31 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const share = false;                                       //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
+  const id = "3729301d-f181-44f7-a4e2-9a793d105653";
 
   //fetch user details from backend
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const cyrus = sessionStorage.getItem("token");
+    console.log("cyrus",cyrus);
     console.log(token);
 const decoded = jwtDecode(token);
 const tokentype = decoded.role;
 console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
+const user_id = share? id : decoded.sub;
+console.log(user_id);
+
+
+ 
 
 
 const fetchUserProfileData = async () => {
   try {
     // Fetch personal information
-    const personalResponse = await axios.get(`${API_BASE_URL}/profile/me/personal-information`, {
+    const personalResponse = await axios.get(`${API_BASE_URL}/profile/${user_id}/personal-information`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -63,7 +72,7 @@ const fetchUserProfileData = async () => {
     const personalData = personalResponse.data.data;
 
     // Fetch work information
-    const workResponse = await axios.get(`${API_BASE_URL}/profile/me/work`, {
+    const workResponse = await axios.get(`${API_BASE_URL}/profile/${user_id}/work`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -117,7 +126,7 @@ const fetchUserProfileData = async () => {
 
     const fetchskills = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/profile/me/skills`, {
+        const response = await axios.get(`${API_BASE_URL}/profile/${user_id}/skills`, {
           headers: {
             'Authorization': `Bearer ${token}`  // replace with actual token logic
           }
@@ -132,7 +141,7 @@ const fetchUserProfileData = async () => {
 
     const fetchaffiliations = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/profile/me/affiliations`, {
+        const response = await axios.get(`${API_BASE_URL}/profile/${user_id}/affiliations`, {
           headers: {
             'Authorization': `Bearer ${token}`  // replace with actual token logic
           }
@@ -148,7 +157,7 @@ const fetchUserProfileData = async () => {
 
     const fetchscholarships = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/profile/me/scholarships`, {
+        const response = await axios.get(`${API_BASE_URL}/profile/${user_id}/scholarships`, {
           headers: {
             'Authorization': `Bearer ${token}`  // replace with actual token logic
           }
