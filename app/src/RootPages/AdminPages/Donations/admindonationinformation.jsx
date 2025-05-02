@@ -111,7 +111,7 @@ function AdminDonationInformation() {
     formData.append("target_cost", parseFloat(newGoal));
   
     try {
-      const response = await axios.put(
+      await axios.put(
         `${API_BASE_URL}/edit-donation-drive/goal/${driveid}`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -128,7 +128,7 @@ function AdminDonationInformation() {
     setCloseDonationLoading(true)
   
     try {
-      await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      await axios.put(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
       // console.log(response)
   
       // Show success message
