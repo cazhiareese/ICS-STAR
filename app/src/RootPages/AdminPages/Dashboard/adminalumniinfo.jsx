@@ -328,7 +328,7 @@ function AdminAlumniInfo() {
         </div>
         {/* Filters and Industry Reports Navigate*/}
         <div className='row-start-2 col-start-2 w-full gap-8 flex justify-end'>
-          <div className=''> 
+          <div className='flex justify-center align-center'> 
             Filters Here
           </div>
           <button className="flex flex-row gap-1 items-center cursor-pointer" onClick={()=> navigate("/admin/dashboard/industry-reports/")}><p className="font-satoshi-light text-sm">View Industry Breakdown</p><MoveRight/></button>
@@ -460,9 +460,11 @@ function AdminAlumniInfo() {
         </div>
         {/* Locations */}
         <div className={`${cardDesign} row-start-4 col-span-2 h-full p-4`}> 
-        {/* Country Reports Navigate */}
-        <button onClick={()=> navigate("/admin/dashboard/country-reports/")}>Navigate to country reports</button>
-          <h3 className='text-2xl font-satoshi-bold'> Locations </h3>
+          {/* Country Reports Navigate */}
+          <div className='w-full flex justify-between pb-4 px-2'>
+            <h3 className='text-2xl font-satoshi-bold'> Locations </h3>
+            <button className="flex flex-row gap-1 items-center cursor-pointer justify-self-end" onClick={()=> navigate("/admin/dashboard/country-reports/")}><p className="font-satoshi-light text-sm">View Country Breakdown</p><MoveRight/></button>
+          </div>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={locationData} layout="vertical" margin={{ left: 20, right: 20, bottom: 40 }}>
               <XAxis type="number"/>
