@@ -111,7 +111,7 @@ function AdminRecords() {
   }, []);
   
   return ( 
-      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100'>
+      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-[#F9F9FB]'>
         {/* Records, search, view pending */}
         <div className='justify-between mt-9 lg:mb-8 flex relative'>
           {/* Records header */}
@@ -136,12 +136,12 @@ function AdminRecords() {
         <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
           <div className='w-full lg:w-auto min-w-xs'>
             {/* Alumni button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alum' ? 'border-primary' : 'border-transparent'}`} onClick={() => setUserType('alum')}>
-              <p className='text-black font-satoshi-medium text-md'> Alumni </p>
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'alum' ? 'border-primary font-medium' : 'border-transparent'}`} onClick={() => setUserType('alum')}>
+              <p className='text-black font-satoshi text-md'> Alumni </p>
             </button>
             {/* Student button */}
-            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'student' ? ' border-primary' : 'border-transparent'}`} onClick={() => setUserType('student')}>
-              <p className='text-black font-satoshi-medium text-md'> Student </p>
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${userType === 'student' ? ' border-primary font-medium' : 'border-transparent'}`} onClick={() => setUserType('student')}>
+              <p className='text-black font-satoshi text-md'> Student </p>
             </button>
           </div>
           {/* Sort by */}

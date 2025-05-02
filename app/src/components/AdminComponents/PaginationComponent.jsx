@@ -27,7 +27,7 @@ const PaginationComponent = ({ page, setPage, totalPages }) => {
         type="text"
         value={page}
         onChange={handleInputChange}
-        className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold bg-white"
+        className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold bg-white focus:bg-whitey"
       />
       <p>of {totalPages}</p>
       <MoveRight 
