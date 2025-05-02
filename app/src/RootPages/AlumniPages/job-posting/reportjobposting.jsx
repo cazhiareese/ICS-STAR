@@ -4,6 +4,7 @@ import BackButton from "../../../components/backbutton";
 import JobSectionHeader from "./jobcomponent/jobsectionheader";
 import JobOverviewCard from "./jobcomponent/joboverview";
 import { Info } from "lucide-react";
+import JobModal from "./jobcomponent/jobmodal";
 
 function ReportJobPosting() {
   const [jobOverview, setJobOverview] = useState(null);
@@ -12,6 +13,7 @@ function ReportJobPosting() {
     files: [],
   });
   const [isDragging, setIsDragging] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const { jobid: id } = useParams();
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -143,10 +145,18 @@ function ReportJobPosting() {
 
       {/* Submit Button */}
       <div className="text-right mt-2">
-        <button className="bg-primary  text-white px-6 py-2 rounded-[20px] font-satoshi-bold hover:bg-hover cursor-pointer transition-colors">
+        <button className="bg-primary  text-white px-6 py-2 rounded-[20px] font-satoshi-bold hover:bg-hover cursor-pointer transition-colors" onClick={() => setShowModal(true)}>
           Submit
         </button>
       </div>
+      {showModal && (
+  <JobModal
+    jobId={id}
+    setShowModal={setShowModal}
+    onCancel={() => setShowModal(false)}
+    options={{ type: "report" }}
+  />
+)}
     </div>
   );
 }

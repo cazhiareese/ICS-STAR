@@ -29,7 +29,7 @@ function JobModal({ jobId, setShowModal, onCancel, options }) {
       <div className="flex flex-col border items-center bg-white p-6 rounded-3xl shadow-lg max-w-md w-full">
         {/* Modal Header */}
         <div className="flex justify-between w-full items-center pb-2">
-          <h2 className="text-2xl font-satoshi-medium">
+          <h2 className="text-2xl font-satoshi-bold">
             {options?.type === "delete" ? "Delete Job Post" : "Report Job Post"}
           </h2>
           <button
@@ -41,7 +41,7 @@ function JobModal({ jobId, setShowModal, onCancel, options }) {
         </div>
 
         {/* Modal Body */}
-        <p className="text-gray-600 mt-4 text-center">
+        <p className="text-gray-600 mt-4 text-center font-satoshi-medium ">
           {options?.type === "delete"
             ? "Are you sure you want to delete this job post? This action cannot be undone."
             : "Are you sure you want to report this job post for review?"}
@@ -50,7 +50,7 @@ function JobModal({ jobId, setShowModal, onCancel, options }) {
         {/* Modal Actions */}
         <div className="flex justify-center gap-4 w-full mt-6">
           <button
-            className="bg-gray-300 text-black px-4 py-2 rounded-3xl hover:bg-gray-400"
+            className="bg-gray-300 text-black px-4 py-2 rounded-3xl font-satoshi-medium hover:bg-gray-400"
             onClick={onCancel}
           >
             Cancel
@@ -58,8 +58,8 @@ function JobModal({ jobId, setShowModal, onCancel, options }) {
           <button
             className={`px-4 py-2 rounded-3xl flex items-center gap-2 ${
               options?.type === "delete"
-                ? "bg-error text-white hover:bg-red-600"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+                ? "bg-error text-white font-satoshi-medium  hover:bg-red-600"
+                : "bg-error text-white font-satoshi-medium  hover:bg-red-600"
             }`}
             onClick={handleConfirm}
           >
