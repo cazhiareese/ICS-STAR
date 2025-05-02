@@ -17,7 +17,7 @@ function AdminAlumniInfo() {
 
   const [loading, setLoading] = useState(true)
 
-  const cardDesign = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
+  const cardDesign = "bg-[#FFFFFF] drop-shadow-sm rounded-2xl p-4 w-full";
   const [alumniStatActivity, setAlumniStatActivity] = useState({
     "total_alumni": 0,
     "active_alumni": 0,
@@ -333,8 +333,8 @@ function AdminAlumniInfo() {
         {/* Industries and employment*/}
         <div className={`${cardDesign} row-start-3 col-span-2 flex flex-col font-satoshi-regular`}> 
           {/* Top half - bar graph */}
-          <div className='h-1/2 p-4'>
-            <h3 className='text-2xl font-satoshi-bold'> Industries</h3>
+          <div className='h-1/2 px-4 pb-4 pt-2'>
+            <h3 className='text-2xl font-satoshi-bold pb-2'> Industries</h3>
             {loading ? (
               <div className='flex items-center justify-center h-full'>
                 <CircularLoading size={90}/>
@@ -348,7 +348,7 @@ function AdminAlumniInfo() {
                     textAnchor="middle" 
                     interval={0} 
                     height={100} 
-                    tick={{ fontSize: 10, wordWrap: "break-word", width: 100 }}
+                    tick={{ fontSize: 12, wordWrap: "break-word", width: 100 }}
                     tickLine={false}
                     axisLine={false}
                     />
@@ -365,9 +365,9 @@ function AdminAlumniInfo() {
               </ResponsiveContainer>
               )}
             </div>
-          <div className='w-full border-t border-gray-300'></div>
+          <div className='w-full border-t border-gray-300 mt-3'></div>
           {/* Bottom half - pie graph */}
-          <div className='h-1/2 flex flex-row p-4'>
+          <div className='h-1/2 flex flex-row p-4 mt-3'>
             {/* Employment Status */}
             <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
               <h3 className='text-2xl font-satoshi-bold'>Employment Status</h3>

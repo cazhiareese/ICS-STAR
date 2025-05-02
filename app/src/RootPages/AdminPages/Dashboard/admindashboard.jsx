@@ -200,7 +200,7 @@ function AdminDashboard() {
           </p>
         </div>
         {/* Grid */}
-        <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 grid-rows-[5em_7em_7em_14em_28em_1em_29em_19em] lg:grid-rows-[5em_7em_7em_14em_1em_18em] gap-4">
+        <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 grid-rows-[5em_7em_7em_14em_28em_1em_29em_19em] lg:grid-rows-[4em_6em_7em_14em_1em_18em] gap-4">
         {/* Dashboard Banner */}
           <div className="col-start-1 col-span-2 lg:col-span-4 row-start-1 rounded-2xl bg-cover bg-center bg-no-repeat bg-[url('/assets/DashboardBanner.svg')] flex items-center justify-between"> 
             <p className="text-white font-satoshi-bold text-2xl ml-5"> Dashboard </p>
@@ -265,14 +265,14 @@ function AdminDashboard() {
         {/* Upcoming Events */}
           <div className={`${dashboardCard} col-start-1 lg:col-start-3 col-span-2 row-start-4 lg:row-start-2 lg:row-span-2`}> 
             <div className="flex flex-row justify-between">
-              <p className="font-satoshi-medium text-2xl"> Upcoming Events </p> 
+              <p className="font-satoshi-medium text-xl"> Upcoming Events </p> 
                 <button className="flex flex-row gap-4 items-center cursor-pointer"> <p className="font-satoshi-light">View All Events</p> <MoveRight/></button>
             </div>
-            <div className="gap-3 flex flex-col flex-1 mt-3">
+            <div className="gap-3 flex flex-col h-7/8 flex-1 pt-5 overflow-auto">
               {events.map((event, index) => (
-                <div key={index} className="flex items-start gap-3">
+                <div key={index} className="flex items-start gap-4">
                   {/* Date Label */}
-                  <div className="bg-secondary text-black font-medium px-4 py-2 rounded-full text-sm whitespace-nowrap min-w-24 flex items-center justify-center">
+                  <div className="bg-secondary text-black font-medium px-2 py-1 rounded-full text-sm whitespace-nowrap min-w-24 flex items-center justify-center">
                     {event.dateLabel}
                   </div>
                   {/* Event Details */}
@@ -280,7 +280,7 @@ function AdminDashboard() {
                     {event.items.map((item, idx) => (
                       <div key={idx} className="flex flex-row justify-between flex-1 text-sm items-center">
                         <div>{item.title}</div>
-                        <div className="font-satoshi-light">{item.time}</div>
+                        <div className="font-satoshi-light text-right">{item.time}</div>
                       </div>
                     ))}
                   </div>

@@ -31,10 +31,10 @@ function Sidebar({ sidebarItems }) {
 
       {/* Sidebar - Sliding Drawer */}
       <div
-        className={`bg-white fixed min-w-3xs z-50 top-0 h-screen w-3/4 lg:w-2/12 shadow-lg lg:static pt-4 
+        className={`bg-[#FFFFFD] fixed min-w-3xs z-50 top-0 h-screen w-3/4 lg:w-2/12 shadow-lg lg:static pt-4 
           ${isOpen ? "translate-x-0 transition-transform duration-300 ease-in-out" : "-translate-x-full transition-transform duration-300 ease-in-out"} lg:translate-x-0 lg:transition-none`}
       >
-        <div className="mb-10 ml-4 lg:block">
+        <div className="mt-6 mb-10 ml-4 lg:block">
           <IcsStarLogo />
         </div>
 

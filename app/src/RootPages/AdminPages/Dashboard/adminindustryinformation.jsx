@@ -148,23 +148,23 @@ function AdminIndustryInformation() {
 
 
     return (
-    <div className='py-6 px-25 overflow-auto max-h-screen'>
+    <div className='bg-[#F9F9FB] flex flex-col py-6 px-25 overflow-auto h-screen max-h-screen'>
       {/* Back */}
-        <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
+      <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
         <MoveLeft className='text-primary'/> 
         <p className='text-primary font-satoshi-medium text-lg'>Back</p>
       </button>
-      <div className='flex flex-col'>
+      <div className='flex flex-1 pt-5 flex-col'>
         <h2 className='font-satoshi-bold text-2xl text-primary'> Industries </h2>
         {/* Batch and count */}
-        <div className='flex flex-row justify-between'>
+        <div className='flex flex-row justify-between py-5'>
           {/* Batch selector */}
           <select
             value={selectedIndustry}
             onChange={(e) => {
               setSelectedIndustry(e.target.value);
             }}
-            className="block w-fit px-4 py-2 text-2xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
+            className="bg-[#FFFFFF] block w-fit px-4 py-2 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
           >
             {industries.map((industry) => (
               <option key={industry.industry} value={industry.industry}>
@@ -199,7 +199,7 @@ function AdminIndustryInformation() {
         </div>
         {/* Statistics */}
         {statsOrUser === 'stats' ? (
-        <div className='flex flex-col gap-2 mt-2'>
+        <div className='flex flex-col gap-4 mt-4'>
           {/* Top Job Titles */}
           {jobTitles && jobTitles.length > 0  ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Job Titles </h2>
@@ -391,7 +391,7 @@ function AdminIndustryInformation() {
         </div>
         ) : (
           <>
-          <div className='flex gap-2'>
+          <div className='flex gap-2 mt-8 mb-4 justify-end'>
             
             <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
           
@@ -401,30 +401,30 @@ function AdminIndustryInformation() {
             {/* View changer */}
             <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
               {/* List View Button */}
-              <button className="px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
+              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
                 <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
               </button>
               <div className="h-6 w-px bg-disabled"></div>
               {/* Grid View Button */}
-              <button className="px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
+              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
                 <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
               </button>
             </div>
             {/* Page */}
-            <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
+            <div className='items-center gap-2 ml-2 text-md font-satoshi-regular hidden lg:flex'>
               <MoveLeft className='cursor-pointer' onClick={() => {}}/>
                 <p> Page </p>
                 <input
                   type="text"
                   value={page}
                   onChange={() => {}}
-                  className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
+                  className="w-9 text-center bg-[#FFFFFF] border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
                 />
               <p>of {totalPages}</p>
               <MoveRight className='cursor-pointer' onClick={() => {}}/>
             </div>
           </div>
-          <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
+          <div className='bg-[#FFFFFF] border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
             <UsersTable data={industryUsers}/>
           </div>
           </>
