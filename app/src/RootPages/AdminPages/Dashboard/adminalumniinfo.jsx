@@ -326,10 +326,13 @@ function AdminAlumniInfo() {
             </table>
           </div>
         </div>
-        {/* Filters */}
-        <div className='row-start-2 col-span-2'> Filters</div>
-        {/* Industry Reports Navigate */}
-        <button onClick={()=> navigate("/admin/dashboard/industry-reports/")}>Navigate to Industry Reports</button>
+        {/* Filters and Industry Reports Navigate*/}
+        <div className='row-start-2 col-start-2 w-full gap-8 flex justify-end'>
+          <div className=''> 
+            Filters Here
+          </div>
+          <button className="flex flex-row gap-1 items-center cursor-pointer" onClick={()=> navigate("/admin/dashboard/industry-reports/")}><p className="font-satoshi-light text-sm">View Industry Breakdown</p><MoveRight/></button>
+        </div>
         {/* Industries and employment*/}
         <div className={`${cardDesign} row-start-3 col-span-2 flex flex-col font-satoshi-regular`}> 
           {/* Top half - bar graph */}
