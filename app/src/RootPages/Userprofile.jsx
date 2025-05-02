@@ -11,6 +11,7 @@ import { Info } from "lucide-react";
 import JobPosted from "./Profile/JobPosting/userjobposting";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
+import { useParams } from "react-router-dom";
 
 
 import {
@@ -31,6 +32,8 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 function UserProfile() {
+  const id = useParams();
+  console.log(id);
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState("About");
   const [skills, setSkills] = useState([]);
@@ -40,7 +43,6 @@ function UserProfile() {
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const share = false;                                       //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
-  const id = "3729301d-f181-44f7-a4e2-9a793d105653";
 
   //fetch user details from backend
   useEffect(() => {
@@ -53,7 +55,7 @@ const tokentype = decoded.role;
 console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
-const user_id = share? id : decoded.sub;
+const user_id = share? id.userid : decoded.sub;
 console.log(user_id);
 
 
@@ -70,6 +72,7 @@ const fetchUserProfileData = async () => {
     });
 
     const personalData = personalResponse.data.data;
+    console.log("Personal Infoss:", personalData);
 
     // Fetch work information
     const workResponse = await axios.get(`${API_BASE_URL}/profile/${user_id}/work`, {
@@ -77,6 +80,13 @@ const fetchUserProfileData = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    // const verifyResponse = await axios.get(`${API_BASE_URL}/${user_id}/status`, {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
+    // console.log("Verify Response:", verifyResponse.data.data);
 
     const workData = workResponse.data.data;
 
@@ -147,8 +157,9 @@ const fetchUserProfileData = async () => {
           }
         });
         const data = response.data.data;
+        console.log("Affiliations Data:", data); // Debugging line
         setAffiliations(data|| []);
-        console.log(affiliations)
+        console.log("hi",affiliations)
       } catch (error) {
         console.error('Error fetching personal information:', error);
         throw error;
@@ -225,7 +236,7 @@ const fetchUserProfileData = async () => {
     fetchskills();
     fetchaffiliations();
     fetchscholarships();
-
+  console.log(userDetails);
     setIsLoading(false);
   }, []);
 
