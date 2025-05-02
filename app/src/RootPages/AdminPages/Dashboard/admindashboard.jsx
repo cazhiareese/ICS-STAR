@@ -61,8 +61,7 @@ function AdminDashboard() {
 
         // Fetch Events
         const eventsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/upcoming-events`);
-        const trimmedEvents = eventsResponse.data.slice(0, eventsResponse.data.length - 1);
-        setEvents(formatEvents(trimmedEvents));
+        setEvents(eventsResponse.data);
 
         // Fetch Stats
         const statsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`);
