@@ -57,7 +57,7 @@ console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
 console.log("unang id",id);
-//needs to fixed si janry ay userId, si redd ay userid
+//needs to fixed si janry ay userId, si redd ay userd
 
 
 const userIdFromURL = id.userId; // id is from useParams()
