@@ -180,7 +180,7 @@ class AdminClosedDonationDriveOut(BaseModel):
     drive_id: UUID
     title: str
     date_closed: str
-    date_created: str
+    created_at: str
     percent_funded: float
     amount_raised: float
     target_cost: float
