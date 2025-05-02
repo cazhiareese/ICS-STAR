@@ -56,6 +56,10 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
         navigate(`/alumni/jobPosting/edit/${jobId}`);
     }
 
+    const handleReport = async () => {
+        navigate(`/alumni/jobPosting/report/${jobId}`);
+    }
+
 
     
 
@@ -285,7 +289,7 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
 ) : (
   <button
     className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
-    onClick={() => handleReport(job.id)} // Implement handleReport
+    onClick={() => handleReport()} // Implement handleReport
   >
     <Flag size={20} />
     Report
