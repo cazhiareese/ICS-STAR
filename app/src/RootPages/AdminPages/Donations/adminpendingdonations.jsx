@@ -57,7 +57,7 @@ function AdminPendingDonations() {
       <h1 className='text-primary text-5xl font-satoshi-bold'>{driveName}</h1>
       <h2 className='text-black text-3xl font-satoshi-medium mb-10'>Pending Verifications</h2>
 
-      <div className='border border-gray-300 rounded-2xl h-full overflow-auto'>
+      <div className='border border-gray-300 rounded-2xl h-full overflow-auto bg-white'>
         <ExpandedPendingDonations
           data={pendingDonations}
           onReview={(donation) => {
@@ -130,7 +130,9 @@ function AdminPendingDonations() {
               <>
                 {/* Proof of Payment */}
                 <div className='bg-primary h-1/3 w-full rounded-xl flex justify-center items-center text-white'>
+                {selectedDonation.type === 'Monetary' &&
                   <img src={selectedDonation.proof} alt="proof of donation" className='h-full w-full object-cover' />
+                }
                 </div>
 
                 {/* Donation Info */}
@@ -141,7 +143,7 @@ function AdminPendingDonations() {
                   </div>
                   <div className='flex justify-between w-full'>
                     <p className='font-satoshi-light'>Donation Type: </p>
-                    <p className='font-satoshi-medium'>{selectedDonation.donation_type}</p>
+                    <p className='font-satoshi-medium'>{selectedDonation.type}</p>
                   </div>
                   <div className='flex justify-between w-full'>
                     <p className='font-satoshi-light'>Donation Description: </p>
@@ -149,11 +151,11 @@ function AdminPendingDonations() {
                   </div>
                   <div className='flex justify-between w-full'>
                     <p className='font-satoshi-light'>Date Donated: </p>
-                    <p className='font-satoshi-medium'>{selectedDonation.date_donated}</p>
+                    <p className='font-satoshi-medium'>{selectedDonation.donation_date}</p>
                   </div>
                   <div className='flex justify-between w-full'>
                     <p className='font-satoshi-light'>Time Donated: </p>
-                    <p className='font-satoshi-medium'>{selectedDonation.time_donated}</p>
+                    <p className='font-satoshi-medium'>{selectedDonation.donation_time}</p>
                   </div>
                 </div>
 
