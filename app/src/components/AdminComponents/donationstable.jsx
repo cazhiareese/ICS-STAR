@@ -11,7 +11,7 @@ function DonationsTable({ data, loading = false }) {
     <table className="w-full">
       {/* Table Header */}
       <thead>
-        <tr className="text-left text-xs text-primary font-satoshi-regular">
+        <tr className="text-left text-sm text-primary font-satoshi-bold border-b border-gray-200 h-10">
           <th className="py-2 px-4">Donation Title</th>
           <th className="py-2 px-4">Date Created</th>
           <th className="py-2 px-4">Donation Count</th>
@@ -48,10 +48,10 @@ function DonationsTable({ data, loading = false }) {
           data.map((donation, index) => (
             <tr
               key={index}
-              className="hover:bg-secondary cursor-pointer"
+              className="hover:bg-secondary cursor-pointer border-b border-gray-200 h-10 text-sm"
               onClick={() => navigate(`/admin/donations/${donation.drive_id}`)}
             >
-              <td className="py-3 px-4 flex items-center gap-2 font-satoshi-bold">{donation.title}</td>
+              <td className="py-3 px-4 flex items-center gap-2 font-satoshi-regular">{donation.title}</td>
               <td className="py-3 px-4">{donation.created_at}</td>
               <td className="py-3 px-4">{donation.donation_count}</td>
               <td className="py-3 px-4">{donation.percent_funded}</td>
