@@ -225,7 +225,7 @@ function ProfileSection({
               className="w-full h-full object-cover"
             />
           </span>
-          {userDetails?.is_verified && (
+          {!share && userDetails?.is_verified && (
             <Camera
               size={32}
               className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black w-8 h-8 rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
