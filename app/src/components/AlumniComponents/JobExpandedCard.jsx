@@ -1,4 +1,4 @@
-import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, SquareArrowOutUpRight, Star, Trash2 } from 'lucide-react'
+import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, SquareArrowOutUpRight, Star, Trash2, StarOff } from 'lucide-react'
 import {React, useState, useEffect, useRef} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
@@ -6,10 +6,11 @@ import axios from 'axios';
 
 function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded, setJob}) {
     const [showOptions, setShowOptions] = useState(false);
+    const [isInterested, setIsInterested] = useState(false);
     const modalRef = useRef(null);
     const ellipsisRef = useRef(null);
 
-    console.log(job);
+    // console.log(job);
     const jobId = job.post_id || job.id; 
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
@@ -17,21 +18,22 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+   
+
     const fetchJobs = async () => {
-        console.log(`${API_BASE_URL}/job-postings/${jobId}`);
         try {
-            const response = await fetch(`${API_BASE_URL}/job-postings/${jobId}`);
-            if (!response.ok) {
-            throw new Error('Failed to fetch job using id');
-            }
-            const data = await response.json();
-            console.log("data", data)
-            // Set selected job
-            setJob(data)
+            // Fetch job details
+            const jobRes = await axios.get(`${API_BASE_URL}/job-postings/${jobId}`);
+            console.log("Job Data:", jobRes.data);
+            setJob(jobRes.data); // Set selected job
+
+            
         } catch (err) {
-            console.log(err.message || 'Something went wrong');
-        } 
+            console.error(err.response?.data?.message || err.message || 'Something went wrong');
+        }
     };
+
+
 
     async function addUserInterested() {
         try {
@@ -52,9 +54,44 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
         }
     }
 
+    async function removeUserInterested() {
+        try {
+          const url = `${API_BASE_URL}/job/remove-user-interested/${jobId}`;
+          
+          const response = await axios.delete(url, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            params: {
+              user_id: currentUserID
+            }
+          });
+      
+          console.log('Success:', response.data);
+          fetchJobs();
+          return response.data;
+        } catch (error) {
+          console.error('Error removing user interest:', error);
+          throw error;
+        }
+    }
+      
 
     
-
+    
+    useEffect(() => {
+        const fetchInterest = async () => {
+            try{
+                const interestRes = await axios.get(`${API_BASE_URL}/job/check-user-interested/${jobId}?user_id=${currentUserID}`);
+                setIsInterested(interestRes.data); 
+                console.log(interestRes.data);
+            }
+            catch (err) {
+                console.error(err.response?.data?.message || err.message || 'Something went wrong');
+            }
+        }
+        fetchInterest();
+    }, [job]);
     
     return (
 
@@ -125,12 +162,22 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
                             </button>
 
                             {/* favorite Button TODO: Add onclick */}
-                            <button 
-                            onClick={addUserInterested} 
-                            className="flex rounded-2xl justify-center items-center bg-primary font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
-                            >
-                                <Star size={24}/>
-                            </button>
+                            {isInterested ? (
+                                <button 
+                                    onClick={removeUserInterested}
+                                    className="flex rounded-2xl justify-center items-center bg-primary font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
+                                >
+                                    <Star fill="white" size={24} />
+                                </button>
+                                ) : (
+                                <button 
+                                    onClick={addUserInterested}
+                                    className="flex rounded-2xl bg-primary justify-center items-center border-2 border-primary text-white font-satoshi-medium text-md w-12 h-12 cursor-pointer"
+                                >
+                                    <Star size={24} />
+                                </button>
+                            )}
+
 
                             {/* Interested count TODO: Add onclick */}
                             <div className="flex items-center gap-1 pt-2 cursor-pointer">
@@ -302,7 +349,7 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
                                 Apply Here
                             </button>
 
-                            {/* favorite Button TODO: Add onclick */}
+                           
                             <button  
                             onClick={addUserInterested}
                             className="flex rounded-2xl justify-center items-center bg-primary font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
@@ -310,7 +357,6 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
                                 <Star size={24}/>
                             </button>
 
-                            {/* Interested count TODO: Add onclick */}
                             <div className="flex items-center gap-1 pt-2 cursor-pointer">
                                 {job.user_id === currentUserID ? (
                                     <button

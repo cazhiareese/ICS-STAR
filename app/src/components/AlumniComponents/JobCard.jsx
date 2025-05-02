@@ -9,15 +9,14 @@ import { useNavigate } from 'react-router-dom';
 function JobCard({job, selectedJobId, setSelectedJobId, setMobileExpanded}) {
 
     const token = localStorage.getItem("token");
-const decoded = jwtDecode(token);
-const currentUserID = decoded.sub;
-const navigate = useNavigate();
+    const decoded = jwtDecode(token);
+    const currentUserID = decoded.sub;
+    const navigate = useNavigate();
     
-    console.log(job);
     const handleJobClick = () => {
         // store the card's post id to selected post_id
         setSelectedJobId(job.post_id || job.id);
-        console.log((job.post_id || job.id) + " selected!");
+        // console.log((job.post_id || job.id) + " selected!");
         setMobileExpanded(true);
     }
     

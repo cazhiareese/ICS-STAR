@@ -43,7 +43,7 @@ function JobPostingLanding() {
             ? prev.filter((type) => type !== workType)
             : [...prev, workType]
         );
-        console.log(selectedWorkTypes);
+        // console.log(selectedWorkTypes);
     };
 
     const toggleRemoteType = (remoteType) => {
@@ -52,7 +52,7 @@ function JobPostingLanding() {
             ? prev.filter((type) => type !== remoteType)
             : [...prev, remoteType]
         );
-        console.log(selectedRemoteOption)
+        // console.log(selectedRemoteOption)
     };
 
     const handleSalaryChange = (e) => {
@@ -61,10 +61,10 @@ function JobPostingLanding() {
             ...prev,
             [name]: value === "" ? "" : Number(value), // Convert to number
         }));
-        console.log({
-            ...salaryRange,
-            [name]: Number(value),
-        });
+        // console.log({
+        //     ...salaryRange,
+        //     [name]: Number(value),
+        // });
     };
     
     
@@ -93,7 +93,7 @@ function JobPostingLanding() {
     useEffect(() => {
         const token = localStorage.getItem('token'); 
         const decoded = jwtDecode(token);
-        console.log("Decoded JWT:", decoded);
+        // console.log("Decoded JWT:", decoded);
         setUserId(decoded.sub); 
         setUserType(decoded.role); //cyrus was here
         // console.log(decoded.sub)
@@ -147,7 +147,7 @@ function JobPostingLanding() {
                 throw new Error('Failed to fetch job using id');
                 }
                 const data = await response.json();
-                console.log("data", data)
+                // console.log("data", data)
                 // Set selected job
                 setSelectedJob(data)
             } catch (err) {
@@ -173,7 +173,7 @@ function JobPostingLanding() {
                 throw new Error('Failed to fetch company');
                 }
                 const data = await response.json();
-                console.log(data)
+                // console.log(data)
                 
             } catch (err) {
                 console.log(err.message || 'Something went wrong');
@@ -216,7 +216,7 @@ function JobPostingLanding() {
             filters.max_salary = salaryRange.max;
         }
         filters.page=currentPage;
-        console.log(filters);
+        // console.log(filters);
         
 
         if (Object.keys(filters).length > 0){
@@ -242,7 +242,7 @@ function JobPostingLanding() {
             }
     
             const response = await axios.get(apiUrl); //API request
-            console.log(response.data);
+            // console.log(response.data);
             setJobList(response.data.result);
             setMaxPage(response.data.total_pages)
             setError(false);
