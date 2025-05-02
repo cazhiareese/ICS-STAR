@@ -201,7 +201,7 @@ function AdminIndustryInformation() {
         {statsOrUser === 'stats' ? (
         <div className='flex flex-col gap-4 mt-4'>
           {/* Top Job Titles */}
-          {jobTitles && jobTitles.length > 0  ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {jobTitles && jobTitles.length > 0  ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Job Titles </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -236,7 +236,7 @@ function AdminIndustryInformation() {
           </div> : null
           }
           
-          {employmentClassificaion && employmentClassificaion.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {employmentClassificaion && employmentClassificaion.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
                       <h2 className='font-satoshi-bold text-xl'> Employer Classification </h2>
                       <div className='flex flex-row h-full'>
                         {/* Pie chart */}
@@ -275,7 +275,7 @@ function AdminIndustryInformation() {
                         </div>
                       </div>
                     </div> : null}
-            <div className={`grid grid-cols-2 gap-8 flex-1`}>
+            <div className={`bg-[#FFFFFF] grid grid-cols-2 gap-8 flex-1`}>
             {tenureStatus &&tenureStatus.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
                 <h2 className='font-satoshi-bold text-xl'> Tenure Status </h2>
                 <div className='flex flex-row h-full'>
@@ -355,7 +355,7 @@ function AdminIndustryInformation() {
                 </div>
             </div> : null}
             </div>
-            { salaryGrade && salaryGrade.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            { salaryGrade && salaryGrade.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Salary Grades</h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
