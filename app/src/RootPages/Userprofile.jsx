@@ -348,6 +348,7 @@ const fetchUserProfileData = async () => {
         userDetails={userDetails}
         setEditMode={setEditMode}
         handleChange={handleChange}
+        share={share} // Pass share prop to ProfileSection
       />
       {userDetails.user_type === "alumni" && (
         <>
