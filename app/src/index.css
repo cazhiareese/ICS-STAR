@@ -48,6 +48,12 @@
 
 /* In your global CSS file */
 @layer utilities {
+
+/* Satoshi as defualt font */
+  html {
+    font-family: 'Satoshi', sans-serif;
+  }
+
   .scrollbar-blue::-webkit-scrollbar {
     width: 8px;
   }
