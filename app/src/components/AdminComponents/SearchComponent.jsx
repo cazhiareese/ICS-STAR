@@ -20,7 +20,6 @@ function SearchComponent({ query, setQuery, focused, setFocused }) {
       >
         <Search className={`absolute text-white`} size={20} />
       </button>
-      
     </div>
   );
 }

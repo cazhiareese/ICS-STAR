@@ -33,17 +33,17 @@ const navigate = useNavigate();
                 <h1 className="font-satoshi-bold md:text-sm text-xs pt-2">{job.user_name || job.posted_by}</h1>
                 <div className="flex items-center gap-1 pt-2">
                 {job.user_id === currentUserID ? (
-  <button
-    onClick={() => navigate(`/alumni/jobPosting/interested/${job.post_id}`)}
-    className="md:text-lg text-sm text-primary font-satoshi-bold  hover:text-hover cursor-pointer"
-  >
-    {job.interested_count} are interested
-  </button>
-) : (
-  <span className="md:text-lg text-sm text-primary font-satoshi-bold">
-    {job.interested_count} are interested
-  </span>
-)}
+                    <button
+                        onClick={() => navigate(`/alumni/jobPosting/interested/${job.post_id}`)}
+                        className="md:text-lg text-sm text-primary font-satoshi-bold  hover:text-hover cursor-pointer"
+                    >
+                        {job.interested_count} are interested
+                    </button>
+                    ) : (
+                    <span className="md:text-lg text-sm text-primary font-satoshi-bold">
+                        {job.interested_count} are interested
+                    </span>
+                )}
 
                     <Star className="w-4 h-4 text-primary" />
                 </div>

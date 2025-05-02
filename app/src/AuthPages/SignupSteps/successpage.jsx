@@ -45,7 +45,8 @@
                 }
         
                 if (userType === "alumni") {
-                    formData.append("graduation_year", userData.academicYear.slice(-4));
+                    console.log(userData.academicYear)
+                    formData.append("graduation_year", String(userData.academicYear).slice(-4));
                     formData.append("graduation_semester", userData.selectedTerm);
                 }
         
@@ -61,13 +62,7 @@
                         alert("Registration Successful!");
         
                         // Redirect based on userType
-                        if (userType === "alumni") {
-                            navigate("/alumni/dashboard");
-                        } else {
-                            navigate("/student/dashboard");
-                        }
-                        alert("Login failed after registration.");
-                        console.error("Login Error:", loginData);
+                        window.location.href = userType === "alumni" ? "/alumni/dashboard" : "/student/dashboard";
                         return
                     
                 } else {

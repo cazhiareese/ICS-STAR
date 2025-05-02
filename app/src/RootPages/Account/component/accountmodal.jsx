@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { a } from "framer-motion/client";
+import { Eye, EyeOff } from "lucide-react";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const token = localStorage.getItem("token");
@@ -12,6 +12,7 @@ export default function ChangeModal({ type, onClose, setEmail, email }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false); // Track success state
+  const [showPassword, setShowPassword] = useState(false);
   console.log(email);
 
   const handleSave = async () => {
@@ -106,9 +107,6 @@ export default function ChangeModal({ type, onClose, setEmail, email }) {
       setLoading(false);
     }
   };
-  
-  
-  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
@@ -131,8 +129,8 @@ export default function ChangeModal({ type, onClose, setEmail, email }) {
           </div>
         ) : (
           <div>
-            <h2 className="text-xl font-semibold mb-4">
-              {type === "email" ? "Change Email" : "Change Password"}
+            <h2 className="text-xl font-semibold mb-5">
+              {type === "email" ? "Edit Email Address" : "Change Password"}
             </h2>
 
             {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
@@ -151,12 +149,12 @@ export default function ChangeModal({ type, onClose, setEmail, email }) {
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   placeholder="Enter new email"
-                  className="w-full border border-gray-300 rounded-lg p-2"
+                  className="w-full border border-gray-300 rounded-2xl pl-4 pr-10 py-2 focus:outline-none focus:ring-0.5 focus:ring-primary focus:border-primary"
                 />
               </div>
             ) : (
               <>
-                <div className="mb-4">
+                <div className="mb-4 relative">
                   <label
                     htmlFor="old-password"
                     className="block text-sm font-medium text-gray-700 mb-1"
@@ -165,12 +163,19 @@ export default function ChangeModal({ type, onClose, setEmail, email }) {
                   </label>
                   <input
                     id="old-password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={oldPassword}
                     onChange={(e) => setOldPassword(e.target.value)}
                     placeholder="Enter old password"
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    className="w-full border border-gray-300 rounded-2xl pl-4 pr-10 py-2 focus:outline-none focus:ring-0.5 focus:ring-primary focus:border-primary"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-9 text-gray-500"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
                 <div className="mb-4">
                   <label
@@ -182,25 +187,25 @@ export default function ChangeModal({ type, onClose, setEmail, email }) {
                   <input
                     id="new-password"
                     type="password"
-                    value={newPassword}
+                    value={newPassword} 
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Enter new password"
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    className="w-full border border-gray-300 rounded-2xl pl-4 pr-10 py-2 focus:outline-none focus:ring-0.5 focus:ring-primary focus:border-primary"
                   />
                 </div>
               </>
             )}
 
-            <div className="flex justify-center mt-6 gap-4">
+            <div className="flex justify-center mt-14 gap-4">
               <button
-                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                className="bg-white text-primary px-4 py-2 rounded-3xl w-25 outline outline-1 outline-primary cursor-pointer"
                 onClick={onClose}
                 disabled={loading}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                className="bg-success text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
                 onClick={handleSave}
                 disabled={loading}
               >

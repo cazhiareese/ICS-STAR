@@ -51,19 +51,19 @@ function Navbar({ tokentype, verified, banned }) {
         {/* Logo + Title */}
         <Link to={`/${tokentype}/dashboard`} className="text-xl font-bold flex items-center">
           <img src={logo} alt="Logo" className="h-6 mr-2" />
-          <span className="font-sans text-primary tracking-wide">ICS - STAR</span>
+          <span className="font-satoshi-black text-primary text-3xl pl-2 tracking-wide">ICS - STAR</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex gap-6 font-medium">
+        <div className="font-satoshi-bold hidden md:flex gap-6 font-medium text-xl">
           <button
-            className={`${isActive(`/${tokentype}/events`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+            className={`${isActive(`/${tokentype}/events`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
             onClick={handleEvents}
           >
             Events
           </button>
           <button
-            className={`${isActive(`/${tokentype}/newsletter`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+            className={`${isActive(`/${tokentype}/newsletter`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
             onClick={handleNewsletter}
           >
             Newsletters
@@ -72,20 +72,20 @@ function Navbar({ tokentype, verified, banned }) {
           {tokentype !== "guest" && (
             <>
               <button
-                className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
                 onClick={handleCareer}
               >
                 Career
               </button>
               <button
-                className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
                 onClick={handleSearch}
               >
                 Alumni Search
               </button>
               {tokentype !== "student" && (
                 <button
-                  className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+                  className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
                   onClick={handleDonation}
                 >
                   Donations
@@ -97,8 +97,13 @@ function Navbar({ tokentype, verified, banned }) {
 
         {/* Icons and Mobile Menu Button */}
         <div className="flex items-center gap-4">
-          <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
-          <Settings className="cursor-pointer hover:text-primary transition" size={20} onClick={handleAccount} />
+        {tokentype !== "guest" && (
+  <>
+    <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
+    <Settings className="cursor-pointer hover:text-primary transition" size={20} onClick={handleAccount} />
+  </>
+)}
+
           <LogOut className="cursor-pointer hover:text-red-500 transition" size={20} onClick={handleLogout} />
           <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}

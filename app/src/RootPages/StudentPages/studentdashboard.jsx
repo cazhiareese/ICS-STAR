@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Newspaper, Calendar, Briefcase, User } from "lucide-react";
 import CardComponent from "../../components/cardcomponent";
 import star from "../../assets/star.png";

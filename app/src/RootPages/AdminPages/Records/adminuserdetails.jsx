@@ -219,44 +219,59 @@ function AdminUserDetails() {
         {/* Modal */}
         {limitAccessLoading && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
-            <div className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-lg min-w-md h-2/5">
+            <div className="flex flex-col border items-center bg-white p-6 rounded-3xl shadow-lg max-w-xl h-2/5">
               {/* Modal Header */}
               <div className="flex justify-between w-full items-center pb-2">
                 <h2 className="text-2xl font-satoshi-medium">Report Logs</h2>
-                <button className='rounded-full h-fit bg-error p-1 cursor-pointer' onClick={() => setLimitAccessLoading(false)}>
-                  <X className="w-5 h-5 text-white" />
+                <button className='rounded-full h-fit p-1 cursor-pointer hover:bg-gray-100' onClick={() => setLimitAccessLoading(false)}>
+                  <X className="w-7 h-7 text-error" />
                 </button>
               </div>
               {/* Report Table */}
-              {reports === null ? (
-                <table className="w-full mt-3 table-fixed overflow-auto">
-                  <thead>
-                    <tr className="text-left text-sm font-satoshi-medium">
-                      <th className='w-1/4'>Date</th>
-                      <th className='w-1/4'>Time</th>
-                      <th className='w-1/2'>Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody className=''>
-                    {reports.map((report, index) => (
-                      <tr key={index} className="font-satoshi-regular">
-                        <td className='py-2'>{report.report_date}</td>
-                        <td>{report.report_time}</td>
-                        <td>{report.reason}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {reports != null && reports.length > 0 ? (
+                <div className="flex flex-col h-full">
+                  {/* Report Table */}
+                  <div className="flex-1 overflow-auto">
+                    <table className="w-full table-fixed">
+                      <thead>
+                        <tr className="text-left text-sm font-satoshi-medium">
+                          <th className="w-1/4 py-2 pr-4">Date</th>
+                          <th className="w-1/4 py-2 pr-4">Time</th>
+                          <th className="w-1/2 py-2 pr-4">Remarks</th>
+                        </tr>
+                      </thead>
+                      <tbody className="overflow-y-auto">
+                        {reports.map((report, index) => (
+                          <tr key={index} className="font-satoshi-regular h-10">
+                            <td className="py-2 pr-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                              {report.report_date || 'N/A'}
+                            </td>
+                            <td className="py-2 pr-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                              {report.report_time || 'N/A'}
+                            </td>
+                            <td className="py-2 pr-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                              {report.reason || 'N/A'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {/* Action Button */}
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      className="font-satoshi-medium bg-error text-white px-4 py-2 rounded-3xl w-52 cursor-pointer hover:bg-red-600"
+                      onClick={limitAccountAccess}
+                    >
+                      Limit Account Access
+                    </button>
+                  </div>
+                </div>
               ) : (
-                <div className='h-full'>
-                  <p className='font-satoshi-regular text-lg text-black'> No reports </p>
+                <div className="flex-1 flex items-center justify-center">
+                  <p className="font-satoshi-regular text-lg text-black">No reports</p>
                 </div>
               )}
-
-              {/* Action Button */}
-              <button className="font-satoshi-medium mt-4 bg-error text-white px-4 py-2 rounded-3xl w-52 cursor-pointer" onClick={() => {limitAccountAccess()}}>
-                Limit Account Access
-              </button>
             </div>
           </div>
         )}
