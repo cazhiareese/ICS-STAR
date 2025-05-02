@@ -372,6 +372,7 @@ const fetchUserProfileData = async () => {
             addSkills={addSkills}
             isLoading={isLoading}
             isVerified={userDetails?.is_verified}
+            share={share} // Pass share prop to SkillsInterestsSection
           />
           <AffiliationsSection
             editMode={editMode}
@@ -380,6 +381,7 @@ const fetchUserProfileData = async () => {
             addAffiliation={addAffiliation}
             isLoading={isLoading}
             isVerified={userDetails?.is_verified}
+            share={share} // Pass share prop to AffiliationsSection
           />
           <ScholarshipsSection
             editMode={editMode}
