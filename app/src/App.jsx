@@ -269,7 +269,7 @@ function App() {
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
-              <Route path=":userid" element={<UserProfile />} />
+              <Route path=":userId" element={<UserProfile />} />
               <Route path="pending-verifications" element={<AdminPendingVerifications />}/>
               <Route path="verification-confirmation/:userid"element={<AdminVerificationConfirmation />}/>
             </Route>
