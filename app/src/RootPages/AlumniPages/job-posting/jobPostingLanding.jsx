@@ -5,7 +5,7 @@ import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
 import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown, Check, ArrowBigLeft, ArrowLeft, ArrowRight } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
-// import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
+ import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import axios from 'axios';
 

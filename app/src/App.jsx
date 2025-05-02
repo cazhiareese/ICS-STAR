@@ -11,6 +11,7 @@ import Unauthorized from "./AuthPages/Unauthorized";
 
 
 
+
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
 import { OnboardingProvider } from "./AuthPages/AuthContext/onboardingcontext";
@@ -270,7 +271,7 @@ function App() {
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
-              <Route path=":userid" element={<AdminUserDetails />} />
+              <Route path=":userid" element={<UserProfile />} />
               <Route path="pending-verifications" element={<AdminPendingVerifications />}/>
               <Route path="verification-confirmation/:userid"element={<AdminVerificationConfirmation />}/>
             </Route>
