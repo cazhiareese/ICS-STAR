@@ -33,7 +33,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function UserProfile() {
   const id = useParams();
-  console.log(id);
+  console.log("naku",id);
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState("About");
   const [skills, setSkills] = useState([]);
@@ -42,7 +42,7 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const share = false;                                       //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
+  const [share, setShare] = useState(null)                                     //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
 
   //fetch user details from backend
   useEffect(() => {
@@ -55,8 +55,18 @@ const tokentype = decoded.role;
 console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
-const user_id = share? id.userid : decoded.sub;
-console.log(user_id);
+const userIdFromURL = id.userid; // id is from useParams()
+const loggedInUserId = decoded.sub;
+
+// Set share based on user match
+if (userIdFromURL && userIdFromURL === loggedInUserId) {
+  setShare(true);
+} else {
+  setShare(false);
+}
+
+const user_id = userIdFromURL && !share ? userIdFromURL : loggedInUserId;
+console.log("Final user ID:", user_id);
 
 
  
@@ -81,17 +91,17 @@ const fetchUserProfileData = async () => {
       },
     });
 
-    // const verifyResponse = await axios.get(`${API_BASE_URL}/${user_id}/status`, {
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
-    // console.log("Verify Response:", verifyResponse.data.data);
+    const verifyResponse = await axios.get(`${API_BASE_URL}/${user_id}/status`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const verifyData = verifyResponse.data.status;
 
     const workData = workResponse.data.data;
 
-    console.log("Personal Info:", personalData);
-    console.log("Work Info:", workData);
+
 
     // Set combined user details
     setUserDetails({
@@ -112,9 +122,9 @@ const fetchUserProfileData = async () => {
       student_number: personalData.student_number,
 
       // Decoded Token Info
-      is_banned: decoded.is_banned,
-      is_verified: decoded.is_verified,
-      user_type: decoded.role,
+      is_banned: verifyData.is_banned,
+      is_verified: verifyData.is_verified,
+      user_type: verifyData.user_type,
 
       // Work Info (example fields, customize as needed)
            employment_status: workData.employment_status,
@@ -127,6 +137,7 @@ const fetchUserProfileData = async () => {
           tenured_status: workData.tenured_status,
            salary_grade: workData.salary_grade,
     });
+    console.log("User Details:", userDetails);
   } catch (error) {
     console.error("Error fetching user profile data:", error);
     throw error;
