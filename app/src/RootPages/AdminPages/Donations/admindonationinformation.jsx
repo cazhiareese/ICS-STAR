@@ -111,7 +111,7 @@ function AdminDonationInformation() {
     formData.append("target_cost", parseFloat(newGoal));
   
     try {
-      const response = await axios.put(
+      await axios.put(
         `${API_BASE_URL}/edit-donation-drive/goal/${driveid}`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -128,7 +128,7 @@ function AdminDonationInformation() {
     setCloseDonationLoading(true)
   
     try {
-      await axios.post(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      await axios.put(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
       // console.log(response)
   
       // Show success message
@@ -178,7 +178,7 @@ function AdminDonationInformation() {
   async function fetchNextPendingPage() {
     setPendingDonationLoading(true)
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page${pendingPage}1&page_size=5`, {headers: { Authorization: `Bearer ${token}` }})
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page=${pendingPage}&page_size=5`, {headers: { Authorization: `Bearer ${token}` }})
       console.log(response)
       setTotalPendingPages(response.data.total_pages)
       setPendingDonations(response.data.data)
