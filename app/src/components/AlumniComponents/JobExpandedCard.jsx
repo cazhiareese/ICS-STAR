@@ -275,7 +275,7 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
         ref={modalRef}
         className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
       >
-        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
+        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer" onClick={() => setShowModal(true)}>
           <Trash2 size={16} />
           Delete Post
         </button>
