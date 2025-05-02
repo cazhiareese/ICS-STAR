@@ -65,7 +65,7 @@ const EventCardsMain = () => {
             console.error("Error fetching event:", error);
           }
         };
-      
+        
         fetchEvent();
         console.log("Event data:", event);
       }, []);
