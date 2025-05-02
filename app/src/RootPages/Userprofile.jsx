@@ -350,7 +350,7 @@ const fetchUserProfileData = async () => {
         handleChange={handleChange}
         share={share} // Pass share prop to ProfileSection
       />
-      {userDetails.user_type === "alumni" && (
+      {userDetails.user_type === "alumni" && !share && (
         <>
           {/* Navigation Tabs */}
           <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
