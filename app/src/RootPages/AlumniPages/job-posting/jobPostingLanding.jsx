@@ -32,7 +32,7 @@ const [loading, setLoading] = useState(false);
 
     const [isError, setError] = useState(false);
     const [isAlumni, setIsAlumni] = useState(false);
-    const [loading, setLoading] = useState(false);
+
 
     const [currentPage, setCurrentPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
