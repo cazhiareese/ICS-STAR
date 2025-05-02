@@ -60,12 +60,12 @@ console.log("User ID from URL:", userIdFromURL);
 const loggedInUserId = decoded.sub;
 console.log("Logged-in User ID:", loggedInUserId);
 
-// Set share based on user match
-if ( userIdFromURL === loggedInUserId) {
+if (!userIdFromURL || userIdFromURL === loggedInUserId) {
   setShare(false);
 } else {
   setShare(true);
 }
+
 
 const user_id = userIdFromURL && !share ? userIdFromURL : loggedInUserId;
 console.log("Final user ID:", user_id);
