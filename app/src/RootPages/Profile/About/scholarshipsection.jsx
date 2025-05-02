@@ -23,6 +23,7 @@ const ScholarshipsSection = ({
         buttonText="Add scholarships"
         onButtonClick={() => setIsModalOpen(true)}
         isVerified={isVerified}
+        share={share} // Pass the share prop to SectionHeader
       />
 
 

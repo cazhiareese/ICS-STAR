@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
 
-function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVerified }) {
+function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVerified, share }) {
   const [selectedDonationType, setSelectedDonationType] = useState("Monetary");
 
   useEffect(() => {
@@ -25,7 +25,7 @@ function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVer
           {title}
         </h2>
 
-        {title === "DONATIONS" ? (
+        {!share && title === "DONATIONS" ? (
           <div className="flex gap-2 bg-gray-200 rounded-full p-1">
             {["Monetary", "In-Kind"].map((type) => (
               <button
@@ -42,7 +42,7 @@ function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVer
             ))}
           </div>
         ) : (
-          onButtonClick && (
+          !share && onButtonClick && (
             <button
               onClick={isVerified ? onButtonClick : undefined}
               disabled={!isVerified}
