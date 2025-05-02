@@ -3,11 +3,14 @@ import {React, useState, useEffect, useRef} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import axios from 'axios';
+import JobModal from '../../RootPages/AlumniPages/job-posting/jobcomponent/jobmodal';
 
 function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded, setJob}) {
     const [showOptions, setShowOptions] = useState(false);
     const modalRef = useRef(null);
     const ellipsisRef = useRef(null);
+    const [showModal, setShowModal] = useState(false);
+
 
     console.log(job);
     const jobId = job.post_id || job.id; 
@@ -83,7 +86,7 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
         ref={modalRef}
         className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
       >
-        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
+        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer" onClick={() => setShowModal(true)}>
           <Trash2 size={16} />
           Delete Post
         </button>
@@ -430,6 +433,14 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
                     
                 </div>
             </motion.div>
+            {showModal && (
+  <JobModal
+    jobId={jobId}
+    setShowModal={setShowModal}
+    onCancel={() => setShowModal(false)}
+    options={{ type: "delete" }}
+  />
+)}
         </div>
     )
 }
