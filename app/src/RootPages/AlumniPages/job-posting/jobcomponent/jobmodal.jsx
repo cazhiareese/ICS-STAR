@@ -1,14 +1,27 @@
-import React from "react";
-import { X, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { X, Trash2, Flag } from "lucide-react";
 
 function JobModal({ jobId, setShowModal, onCancel, options }) {
-    console.log("Job ID:", jobId);
-  const handleConfirm = () => {
-    if (options?.type === "delete") {
-      console.log("Deleting Job ID:", jobId);
-      // TODO: Call your delete function here
+  const [confirmed, setConfirmed] = useState(false);
+
+  useEffect(() => {
+    if (confirmed) {
+      if (options?.type === "delete") {
+        console.log("Deleting Job ID via useEffect:", jobId);
+        // TODO: Replace this with actual delete handler
+        // e.g. await deleteJob(jobId)
+      } else if (options?.type === "report") {
+        console.log("Reporting Job ID via useEffect:", jobId);
+        // TODO: Replace this with actual report handler
+        // e.g. await reportJob(jobId)
+      }
+      setShowModal(false);
+      setConfirmed(false); // reset state
     }
-    setShowModal(false);
+  }, [confirmed, jobId, options?.type, setShowModal]);
+
+  const handleConfirm = () => {
+    setConfirmed(true); // triggers the useEffect
   };
 
   return (
@@ -17,7 +30,7 @@ function JobModal({ jobId, setShowModal, onCancel, options }) {
         {/* Modal Header */}
         <div className="flex justify-between w-full items-center pb-2">
           <h2 className="text-2xl font-satoshi-medium">
-            {options?.type === "delete" ? "Delete Job Post" : "Confirm Action"}
+            {options?.type === "delete" ? "Delete Job Post" : "Report Job Post"}
           </h2>
           <button
             className="rounded-full h-fit p-1 cursor-pointer hover:bg-gray-100"
@@ -31,11 +44,11 @@ function JobModal({ jobId, setShowModal, onCancel, options }) {
         <p className="text-gray-600 mt-4 text-center">
           {options?.type === "delete"
             ? "Are you sure you want to delete this job post? This action cannot be undone."
-            : "Are you sure you want to proceed?"}
+            : "Are you sure you want to report this job post for review?"}
         </p>
 
         {/* Modal Actions */}
-        <div className="flex justify-end gap-4 w-full mt-6">
+        <div className="flex justify-center gap-4 w-full mt-6">
           <button
             className="bg-gray-300 text-black px-4 py-2 rounded-3xl hover:bg-gray-400"
             onClick={onCancel}
@@ -43,11 +56,24 @@ function JobModal({ jobId, setShowModal, onCancel, options }) {
             Cancel
           </button>
           <button
-            className="bg-error text-white px-4 py-2 rounded-3xl hover:bg-red-600 flex items-center gap-2"
+            className={`px-4 py-2 rounded-3xl flex items-center gap-2 ${
+              options?.type === "delete"
+                ? "bg-error text-white hover:bg-red-600"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             onClick={handleConfirm}
           >
-            <Trash2 size={16} />
-            Delete
+            {options?.type === "delete" ? (
+              <>
+                <Trash2 size={16} />
+                Delete
+              </>
+            ) : (
+              <>
+                <Flag size={16} />
+                Confirm Report
+              </>
+            )}
           </button>
         </div>
       </div>
