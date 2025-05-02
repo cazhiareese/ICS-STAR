@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BriefcaseBusiness } from 'lucide-react';
 import JobCard from '../../../components/AlumniComponents/JobCard';
-import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
+// import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import axios from 'axios';
 

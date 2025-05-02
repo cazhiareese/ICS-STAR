@@ -12,7 +12,11 @@ const JobSearchBar =
     selectedWorkTypes,
     selectedRemoteOption,
     salaryRange,
-    setSelectedJob
+    setSelectedJob,
+    currentPage,
+    setCurrentPage,
+    maxPage,
+    setMaxPage
   })=> {
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -35,6 +39,8 @@ const JobSearchBar =
     const search = () => {
         let filters = {};
         setSelectedJob({});
+        setCurrentPage(1);
+        setMaxPage(1);
         if (searchInput != ""){
             filters.title = searchInput;
         }
@@ -53,7 +59,8 @@ const JobSearchBar =
             filters.min_salary = salaryRange.min;
             filters.max_salary = salaryRange.max;
         }
-        console.log(filters);
+        
+        filters.page=currentPage;
         
 
         if (Object.keys(filters).length > 0){
@@ -66,6 +73,7 @@ const JobSearchBar =
 
     const fetchJobs = async () => {
         setLoading(true);
+        
         try {
             const apiUrl = search(); // get the full URL based on current filters
             console.log(apiUrl);
@@ -76,10 +84,12 @@ const JobSearchBar =
     
             const response = await axios.get(apiUrl);
             console.log(response.data);
-            setJobList(response.data);
+            setJobList(response.data.result);
+            setMaxPage(response.data.total_pages);
         } catch (err) {
             console.error(err);
             console.log('Job not found');
+            setMaxPage(1);
         } finally {
             setLoading(false);
         }

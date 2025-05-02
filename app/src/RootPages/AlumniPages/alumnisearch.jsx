@@ -200,6 +200,8 @@ function AlumniSearch() {
     }
   };
 
+ 
+
   useEffect(() => {
     if (!hasMounted.current) {
       hasMounted.current = true;
@@ -643,7 +645,7 @@ function AlumniSearch() {
           </button>
         </div>
       </motion.div>
-      <div className="flex flex-col w-full mt-28 shadow-md pb-8 items-center rounded-full">
+      <div className="flex flex-col w-full mt-8 shadow-md pb-8 items-center rounded-full">
         <div className="flex flex-row gap-5 w-full items-center justify-center">
           <SearchBar
             selectedBatchYear={selectedBatchYear}
@@ -666,8 +668,9 @@ function AlumniSearch() {
           </button>
         </div>
       </div>
-      <div className="flex flex-row pt-10 md:justify-left justify-center">
-        <div className="hidden lg:flex flex-col pr-6 border-r-2 border-gray-300 w-1/4">
+      {/* Desktop */}
+      <div className="flex flex-row md:justify-left justify-center">
+        <div className="hidden lg:flex flex-col pr-6 border-r-2 border-gray-300 w-1/4 pb-16 pt-16">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
             <button
@@ -691,7 +694,7 @@ function AlumniSearch() {
               <X size={24} />
             </button>
           </div>
-          <div className="flex flex-col shadow mt-14 rounded-lg gap-3 items-center h-auto">
+          <div className="flex flex-col shadow-lg mt-14 rounded-lg gap-3 items-center h-auto">
             <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniInfoExpanded(!isALumniInfoExpanded)}>
               <motion.h1
                 className="font-satoshi-medium justify"
@@ -823,7 +826,7 @@ function AlumniSearch() {
               />
             </motion.div>
           </div>
-          <div className="flex flex-col shadow mt-5 rounded-lg gap-3 items-center h-auto">
+          <div className="flex flex-col shadow-lg mt-5 rounded-lg gap-3 items-center h-auto">
             <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniProfessionExpanded(!isAlumniProfessionExpanded)}>
               <motion.h1
                 className="font-satoshi-medium justify"

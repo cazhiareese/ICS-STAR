@@ -14,7 +14,7 @@ const YearPicker = ({ selectedYear, setSelectedYear}) => {
     <div className="flex items-center justify-center">
       {/* DatePicker Component */}
       <DatePicker
-        selected={selectedYear}
+        selected={selectedYear === "" ? new Date().getFullYear().toString() : selectedYear}
         onChange={handleYearChange}  // Use the handleYearChange function
         showYearPicker
         dateFormat="yyyy"

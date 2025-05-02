@@ -13,12 +13,15 @@ import CircularLoading from "../components/LoadingComponents/starloading";
 import star from "../assets/star.png";
 import google from "../assets/google.png"
 import GuestModal from "./guestModal"
+import ModalTemplate from "./modaltemplate"
 
 function LoginPage() {
 
     const baseURL = import.meta.env.VITE_BACKEND_URL;
 
     const [openModal, setOpenModal] = useState(false);
+
+    const [openError, setOpenError] = useState(false);
 
     const [activeEmail, setActiveEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -74,10 +77,9 @@ function LoginPage() {
               localStorage.setItem("token", data.access_token);
               // alert("Login Successful!");
               fetchUserData();
-              
+            
           } else {
-              alert(data.detail || "Login failed!");
-              alert(data)
+              setOpenError(true)
           }
       } catch (error) {
           console.error("Error:", error);
@@ -243,8 +245,8 @@ function LoginPage() {
             <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-175 lg:min-h-155 pt-10">
                 
                 {/* Login Signup */}
-                <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl lg:min-w-lg md:min-w-lg lg:bg-[#F5F5F5] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] lg:rounded-4xl">
-                        <h1 className="hidden lg:block text-8xl font-satoshi-regular mb-0 text-[#102E46]">Login</h1> 
+                <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl lg:min-w-lg md:min-w-lg lg:bg-[#f9f9fb] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] lg:rounded-4xl">
+                        <h1 className="hidden lg:block text-8xl pt-4 font-satoshi-regular mb-0 text-[#102E46]">Login</h1> 
                         
                         
                         {/* Email Input */}
@@ -526,6 +528,8 @@ function LoginPage() {
         </div>
         
         }
+
+        {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error"/>}
         
     </div>
     

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MoveLeft, Plus, Upload, X, ChevronDown, CheckCircle } from 'lucide-react';
+import { MoveLeft, Plus, Upload, X, ChevronDown, CheckCircle, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
@@ -87,6 +87,15 @@ function AdminEditNewsletter() {
     fetchTags();
   }, []);
 
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0] || e.dataTransfer?.files[0]; // Support both input and drag-and-drop
     setFileError(''); // Reset error
@@ -124,12 +133,14 @@ function AdminEditNewsletter() {
   };
 
   const handleLinkAdd = () => {
-    if (link.trim() !== '') {
+    if (link.trim() !== '' && isValidUrl(link.trim())) {
       setLinkList((prev) => {
         const updatedList = [...prev, link.trim()];
         setLink(''); // Clear the input field after adding the link
         return updatedList;
       });
+    } else {
+      alert('Please enter a valid URL.');
     }
   };
 
@@ -298,24 +309,24 @@ function AdminEditNewsletter() {
               />
               <button
                 type="button"
-                className="bg-primary text-white rounded-full p-2"
+                className="bg-primary text-white p-2 rounded-full h-10 w-10 text-xl font-bold flex items-center justify-center cursor-pointer hover:bg-hover"
                 onClick={handleLinkAdd}
               >
-                <Plus size={18} />
+                <Plus size={24} className='stroke-2' />
               </button>
             </div>
 
             {/* List of added links */}
-            <div className="mt-4 flex flex-col gap-2">
+            <div className="mt-2 flex flex-col gap-2">
               {linklist.map((item, index) => {
                 const shortItem = item.length > 200 ? item.slice(0, 200) + '...' : item;
                 return (
                   <div
                     key={index}
-                    className="flex items-center justify-between border border-gray-200 rounded-lg p-2"
+                    className="flex gap-2 items-center"
                   >
                     <span
-                      className="text-primary font-satoshi-regular text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[calc(100%-2rem)]"
+                      className="text-black font-satoshi-regular border border-gray-300 rounded-2xl px-3 py-2 w-full overflow-hidden text-ellipsis whitespace-nowrap"
                       title={item} // Full link on hover
                     >
                       {shortItem}
@@ -325,9 +336,9 @@ function AdminEditNewsletter() {
                       onClick={() => {
                         setLinkList((prev) => prev.filter((_, i) => i !== index));
                       }}
-                      className="text-red-500 hover:text-red-700 ml-2"
+                      className="text-primary border border-gray-300 p-2 rounded-full h-10 w-10 text-xl font-bold flex items-center justify-center cursor-pointer hover:bg-gray-300"
                     >
-                      <X size={18} />
+                      <Trash2 size={24} className="stroke-2" />
                     </button>
                   </div>
                 );
