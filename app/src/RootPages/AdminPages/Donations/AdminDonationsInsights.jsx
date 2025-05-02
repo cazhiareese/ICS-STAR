@@ -121,12 +121,12 @@ function AdminDonationsInsights() {
       </div>
     ) : (
       <div className='flex flex-col p-6 h-screen w-full overflow-auto'>
+      <div className="flex flex-row relative justify-between">
           {/* header */}
-        <h1 className='text-primary text-5xl font-satoshi-bold'>General Insights</h1>
+        <h1 className='text-primary text-5xl font-satoshi-bold mb-3'>General Insights</h1>
         {/* Filter */}
-        <div className="flex flex-row relative justify-end">
           <button
-            className="flex flex-row items-center border border-gray-300 w-fit px-3 py-1 rounded-md bg-white cursor-pointer"
+            className="flex flex-row items-center border border-gray-300 w-fit h-fit place-self-end px-3 py-1 rounded-md bg-white cursor-pointer"
             onClick={() => setFilterOpen(!filterOpen)}
           >
             <p className="mr-2">{formatFilter(timeFilter)}</p>
