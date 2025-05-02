@@ -23,21 +23,28 @@ function ProfileSection({
   userDetails,
   setEditMode,
   handleChange,
-  share
+  share,
+  userId,
 }) {
+  
+
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSocialModal, setShowSocialModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);  // New state to control cancel modal visibility
+  console.log("ProfileSection userId:", userId);
+
 
   // Fetch user profile picture
   useEffect(() => {
-    console.log("Fetching profile picture...");
-    fetchProfilePicture();
-    setProfilePicture(userDetails.profile_picture);
-  }, []);
+    if (userId) {
+      console.log("Fetching profile picture for:", userId);
+      fetchProfilePicture();
+    }
+  }, [userId]); // ← re-run when userId is available
+  
 
   const handleSocialLinksSave = async (links) => {
     console.log("Saving social links:", links);
@@ -50,6 +57,7 @@ function ProfileSection({
   };
 
   const fetchProfilePicture = async () => {
+    if (!userId) return;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -59,7 +67,7 @@ function ProfileSection({
 
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-      const response = await fetch(`${API_BASE_URL}/profile-picture`, {
+      const response = await fetch(`${API_BASE_URL}/profile-picture/${userId}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -67,6 +75,7 @@ function ProfileSection({
       });
 
       if (response.ok) {
+        console.log(response);
         const result = await response.json();
         setProfilePicture(result.profile_picture || defaultimage);
       } else {
@@ -166,7 +175,7 @@ function ProfileSection({
     {share ? (
       // New button shown only when viewing shared profile
       <button
-        onClick={() => alert("This is a shared profile. Actions are limited.")}
+        onClick={() => alert("This is a shared profile. Actions are limited.")} //dito red report things, replace mo na lang
         className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-gray-300 text-black cursor-not-allowed"
       >
         <Pencil size={18} />

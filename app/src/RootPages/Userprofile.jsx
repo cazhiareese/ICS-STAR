@@ -42,8 +42,9 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [share, setShare] = useState(null)                                     //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
-
+  const [share, setShare] = useState(null)  
+  const [userId, setUserId] = useState(null);
+                                  //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
   //fetch user details from backend
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -68,6 +69,7 @@ if (!userIdFromURL || userIdFromURL === loggedInUserId) {
 
 
 const user_id = userIdFromURL && !share ? userIdFromURL : loggedInUserId;
+setUserId(user_id); // Set the user ID in state
 console.log("Final user ID:", user_id);
 
 
@@ -139,7 +141,7 @@ const fetchUserProfileData = async () => {
           tenured_status: workData.tenured_status,
            salary_grade: workData.salary_grade,
     });
-    console.log("User Details:", userDetails);
+
   } catch (error) {
     console.error("Error fetching user profile data:", error);
     throw error;
@@ -327,7 +329,8 @@ const fetchUserProfileData = async () => {
   const handleChange = (e, field) => {
     setUserDetails({ ...userDetails, [field]: e.target.value });
   };
-
+  console.log("User Details:", userDetails);
+  console.log("iddddd",userId);
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       
@@ -349,6 +352,7 @@ const fetchUserProfileData = async () => {
         setEditMode={setEditMode}
         handleChange={handleChange}
         share={share} // Pass share prop to ProfileSection
+        userId={userId} // Pass userId to ProfileSection
       />
       {userDetails.user_type === "alumni" && !share && (
         <>
