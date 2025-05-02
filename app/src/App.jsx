@@ -218,7 +218,6 @@ function App() {
             <Route path="student/events" element={<EventsLanding />} />
             <Route path="students/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
-            <Route path="students/donations" element={<DonationLanding />} />
             <Route path="student/newsletter" element={<NewsletterLanding />} />
             <Route path="student/newsletter/:newsletterid" element={<Newsletter />} />
             <Route path="student/jobPosting/interested/:jobid" element={<InterestedUsers />} />
