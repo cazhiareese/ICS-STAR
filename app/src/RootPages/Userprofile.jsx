@@ -56,7 +56,11 @@ const tokentype = decoded.role;
 console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
-const userIdFromURL = id.userid; // id is from useParams()
+console.log("unang id",id);
+//neds to fixed si janry ay userid, si redd ay userId
+
+
+const userIdFromURL = id.userId; // id is from useParams()
 console.log("User ID from URL:", userIdFromURL);
 const loggedInUserId = decoded.sub;
 console.log("Logged-in User ID:", loggedInUserId);
