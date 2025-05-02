@@ -352,7 +352,7 @@ const fetchUserProfileData = async () => {
       {userDetails.user_type === "alumni" && (
         <>
           {/* Navigation Tabs */}
-          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
 
           {/* Information Sections */}
         </>
