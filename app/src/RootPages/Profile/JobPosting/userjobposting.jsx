@@ -20,6 +20,7 @@ export default function JobPosted() {
         const [mobileExpanded, setMobileExpanded] = useState(false);
         const [currentPage, setCurrentPage] = useState(1);
         const [maxPage, setMaxPage] = useState(1);
+        const [joblength, setJobLength] = useState(0);
 const [isError, setError] = useState(false);
 
         //For Dummy testing only
@@ -53,7 +54,10 @@ const [isError, setError] = useState(false);
               
               console.log("Job List Response:", response.data);
 
+
               const jobs = response.data.data;
+              console.log("Number of jobs:", jobs.length); // ✅ Get job count here
+              setJobLength(jobs.length); // Set job length here
               setLoading(false);
               setError(false);
       
@@ -92,7 +96,7 @@ const [isError, setError] = useState(false);
         {/* Moved SectionHeader here */}
         <div className="w-full flex justify-center">
           <div className="w-full max-w-[1100px] mt-6">
-            <SectionHeader title="JOBS POSTED" />
+            <SectionHeader title="JOBS POSTED" joblength={joblength} />
           </div>
         </div>
     

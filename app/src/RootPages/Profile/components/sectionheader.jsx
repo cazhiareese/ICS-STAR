@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
 
-function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVerified, share }) {
+function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVerified, share, joblength }) {
   const [selectedDonationType, setSelectedDonationType] = useState("Monetary");
+  console.log("cyyyy",joblength)
 
   useEffect(() => {
     if (title === "DONATIONS" && onToggleChange) {
