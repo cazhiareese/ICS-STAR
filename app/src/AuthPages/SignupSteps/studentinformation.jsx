@@ -94,20 +94,20 @@ function StudentInformation(){
             <label className="font-satoshi-bold text-center text-3xl text-black pt-10 pb-8">Student Information</label>
             
             <div class="grid grid-cols-2 gap-4 p-4 lg:w-150 md:w-120">
-                <div className="font-satoshi-regular">
+                <div className="font-satoshi-medium">
                     Student Number <label className="text-red-700">*</label>
                 </div>
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
                     <div className="relative w-[45%]">
                         <button
                             onClick={() => setYearDropdownOpen(!yearDropdownOpen)}
-                            className={`flex items-center justify-between border rounded-lg h-10 w-full px-4 text-left ${userData.selectedYear ? 'text-black' : 'text-gray-400'} ${studentNumberError == false ? 'border-black' : 'border-red-600'}`}
+                            className={`flex items-center justify-between border focus:outline outline-primary rounded-2xl h-10 w-full px-4 text-left ${userData.selectedYear ? 'text-black' : 'text-gray-400'} ${studentNumberError == false ? 'border-[#D9D9D9]' : 'border-red-600'}`}
                         >
                             <span className="mx-auto">{userData.selectedYear || "Select a year"}</span>
                             <ChevronDown className="w-4 h-4 text-gray-600" />
                         </button>
                             {yearDropdownOpen && (
-                                <ul className="absolute z-10 w-full mt-1 max-h-60 text-center overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
+                                <ul className="absolute z-10 w-full mt-1 max-h-60 text-center overflow-y-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
                                     {years.map((year) => (
                                         <li
                                             key={year}
@@ -127,18 +127,18 @@ function StudentInformation(){
                     <input type="number" 
                            value={userData.value} 
                            onChange={handleSNChange} 
-                           placeholder="Enter up to 5 digits" className={`w-[45%] border-1 rounded-lg h-10 text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
+                           placeholder="Enter up to 5 digits" className={`pl-4 w-[45%] border-1 focus:outline outline-primary rounded-2xl h-10 text-center pr-4 ${studentNumberError==false ? 'border-[#D9D9D9]':'border-red-600'}`}
                     />
 
                 </div>
                 
 
-                <div class="col-span-2">
+                <div class="font-satoshi-medium col-span-2">
                     Upload your Form 5 
                 </div>
                 
                     {!userData.image ? (
-                        <div className="col-span-2 flex flex-col items-center justify-center space-y-4 py-4 rounded-2xl bg-gray-200 h-50"
+                        <div className="col-span-2 flex flex-col items-center justify-center space-y-1 py-4 rounded-2xl bg-[#F4F3F6] h-50 border-2 border-dashed border-[#D9D9D9]"
                             onDragOver={(event) => event.preventDefault()}
                             onDrop={handleDrop}
                         >
@@ -154,10 +154,10 @@ function StudentInformation(){
                                 <CloudUpload className="h-10 w-10"/>
                             </div>
                             
-                            <label>Drag and drop file here or</label>
+                            <label className="font-satoshi-regular text-lg text-[#5D5D5D]">Drag and drop file here or</label>
                             <label 
                                 htmlFor="fileInput"
-                                className="flex flex-col items-center  pb-2 px-4 rounded-lg cursor-pointer font-satoshi-bold underline text-primary transition"
+                                className="flex flex-col items-center pb-2 px-4 rounded-2xl cursor-pointer font-satoshi-bold underline text-primary transition"
                             >
                                 
                                 Choose File
@@ -182,9 +182,9 @@ function StudentInformation(){
                             {/* X Button */}
                             <button 
                                     onClick={handleRemoveFile} 
-                                    className="text-primary hover:text-red-700 flex justify-center w-20 h-15"
+                                    className="text-primary hover:text-red-700 flex justify-center w-20 h-15 cursor-pointer"
                                 >
-                                    <X className="w-5 h-5"/>
+                                    <X className="w-5 h-5 ml-8"/>
                             </button>
 
                         </div>
@@ -200,14 +200,14 @@ function StudentInformation(){
                     </label>
                 </div>
 
-                <div className={`col-span-2 items-center flex mt-0 -pb-10 text-red-400 ${error ? 'block': 'hidden'}`}>
-                    <label>Please answer all required fields above</label>
+                <div className={`font-satoshi-medium-italic col-span-2 items-center flex mt-0 -pb-10 text-[#C80808] ${error ? 'block': 'hidden'}`}>
+                    <label>Please answer all required fields above!</label>
 
                 </div>
 
                 <div class=" text-black flex flex-col items-start">
                         <button
-                            className="bg-primary text-white py-3 rounded-2xl text-lg w-4/6 font-bold hover:bg-blue-700 transition mt-0"
+                            className="bg-white text-primary py-3 border border-primary rounded-3xl text-base w-4/6 font-bold cursor-pointer"
                             onClick = {()=>{setCurrentSection("1")}}
                         >
                             Back
@@ -216,7 +216,7 @@ function StudentInformation(){
                     </div>
                 <div class=" text-black flex flex-col items-end">
                         <button
-                            className="bg-primary text-white py-3 rounded-2xl text-lg w-4/6 font-bold hover:bg-blue-700 transition mt-0"
+                            className="bg-primary text-white py-3 rounded-3xl text-base w-4/6 font-bold hover:bg-blue-700 transition mt-0 cursor-pointer"
                             onClick = {checkRequirements}
                         >
                             Next
