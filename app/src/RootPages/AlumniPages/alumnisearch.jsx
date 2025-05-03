@@ -671,8 +671,8 @@ function AlumniSearch() {
         </div>
       </div>
       {/* Desktop */}
-      <div className="flex flex-row md:justify-left justify-center h-screen">
-        <div className="hidden lg:flex flex-col pr-6 border-r-2 border-gray-300 w-1/4 pt-16 h-screen">
+      <div className="flex flex-row md:justify-left justify-center">
+        <div className={`hidden lg:flex flex-col pr-6 border-r-1 border-gray-300 xl:w-1/4 w-1/2 pt-16 xl:pl-0 pl-14 ${isSkillsExpanded ? 'pb-16' : ''}`}>
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
             <button
@@ -902,20 +902,20 @@ function AlumniSearch() {
             </div>
           )}
           {!loading && Array.isArray(alumniList) && (
-            <h1 className="md:text-3xl text-xl font-satoshi-medium text-gray-500 pl-10 py-6 lg:text-left text-center">
+            <h1 className="md:text-xl text-lg font-satoshi-medium text-gray-500 md:pl-10 py-10 lg:text-left text-center">
               {alumniList.length} Search Results
             </h1>
           )}
           {loading && (
-            <h1 className="md:text-3xl text-xl font-satoshi-medium text-gray-400 pl-10 py-6 lg:text-left text-center">
+            <h1 className="md:text-xl text-lg font-satoshi-medium text-gray-400 pl-10 py-6 lg:text-left text-center">
               Searching...
             </h1>
           )}
-          <div className="flex flex-row flex-wrap gap-24 items-center justify-center h-screen overflow-y-auto scrollbar-left">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 items-start justify-start overflow-y-auto py-10 px-4 xl:pr-0 md:pr-10 w-full">
             {Array.isArray(alumniList) &&
-              alumniList.map((alumnus, index) => (
+              alumniList.map((alumnus) => (
                 <AlumniSearchCard
-                  key={index}
+                  key={alumnus.user_id}
                   full_name={alumnus.full_name}
                   graduation_year={alumnus.graduation_year}
                   job_title={alumnus.job_title}
