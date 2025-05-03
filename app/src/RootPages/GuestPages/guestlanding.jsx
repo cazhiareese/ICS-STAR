@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Newspaper, Calendar, Briefcase, User } from "lucide-react";
 import CardComponent from "../../components/cardcomponent";
 import star from "../../assets/star.png";
@@ -125,8 +125,9 @@ function GuestLanding() {
 
         {/* Cards Section */}
         <div className="flex flex-wrap justify-center gap-4 mt-6">
-          <CardComponent icon={Calendar} text="Look for events to attend" />
-          <CardComponent icon={Newspaper} text="Catch up with ICS"  />
+        <Link to="/guest/events"><CardComponent icon={Calendar} text="Look for events to attend" /></Link>
+        <Link to="/guest/newsletter"><CardComponent icon={Newspaper} text="Catch up with ICS" /></Link>
+  
         </div>
       </div>
 

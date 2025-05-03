@@ -5,7 +5,7 @@ import star from "../../assets/star.png";
 import wave from "../../assets/wave.png";
 // import OnBoarding from "../../AuthPages/OnBoarding/onboardinglanding";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {fetchPublicProfileById as apiFetchPublicProfile} from "../Profile/UserProfileAPI/userProfileApi"
 import { jwtDecode } from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 
@@ -157,18 +157,18 @@ function AlumniLanding() {
         <div className="flex flex-wrap flex-row gap-5 font-satoshi-regular mt-10 items-center justify-center">
   {(banned || !verified) && (
     <>
-      <CardComponent icon={Calendar} text="Look for events to attend " />
-      <CardComponent icon={BookOpen} text="Catch up with ICS" />
+      <Link to="/alumni/events"><CardComponent icon={Calendar} text="Look for events to attend " /></Link>
+      <Link to="/alumni/events"><CardComponent icon={BookOpen} text="Catch up with ICS" /></Link>
     </>
   )}
 
   {!banned && verified && (
     <>
-      <CardComponent icon={Calendar} text="Look for events to attend " />
-      <CardComponent icon={BookOpen} text="Catch up with ICS" />
-      <CardComponent icon={Briefcase} text="Browse job opportunities" />
-      <CardComponent icon={Users} text="Connect with Alumni" />
-      <CardComponent icon={HelpingHand} text="Give ICS a helping hand" />
+      <Link to="/alumni/events"><CardComponent icon={Calendar} text="Look for events to attend " /></Link>
+      <Link to="/alumni/newsletter"><CardComponent icon={BookOpen} text="Catch up with ICS" /></Link>
+      <Link to="/alumni/jobPosting"><CardComponent icon={Briefcase} text="Browse job opportunities" /></Link>
+      <Link to="/alumni/alumnisearch"><CardComponent icon={Users} text="Connect with Alumni" /></Link>
+      <Link to="/alumni/donations"><CardComponent icon={HelpingHand} text="Give ICS a helping hand" /></Link>
     </>
   )}
 </div>
