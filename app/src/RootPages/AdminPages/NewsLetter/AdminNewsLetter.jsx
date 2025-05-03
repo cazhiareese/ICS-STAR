@@ -119,7 +119,7 @@ function AdminNewsletter() {
       <div className="flex flex-col items-center w-full mt-4">
         <div className="flex flex-col w-full max-w-full px-5">
           {loading ? (
-            <div className="flex justify-center items-center py-10">
+            <div className='flex justify-center items-center min-h-screen w-full'>
               <CircularLoading />
             </div>
           ) : error ? (
