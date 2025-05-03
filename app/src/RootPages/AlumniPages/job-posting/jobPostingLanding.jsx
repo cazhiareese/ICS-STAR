@@ -23,7 +23,7 @@ function JobPostingLanding() {
 
     const [showRemoteOptionDropdown, setShowRemoteDropdown] = useState(false);
     const [selectedRemoteOption, setSelectedRemoteOption] = useState([]); 
-const [loading, setLoading] = useState(false);
+
 
     const [showSalaryRangeDropdown, setShowSalaryRangeDropdown] = useState(false);
     const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 });
@@ -469,8 +469,8 @@ const [loading, setLoading] = useState(false);
 
             </div>
 
-            <div className='flex flex-row mt-10 gap-2 justify-center'>
-                <div className='flex flex-col'>
+            <div className='flex flex-row mt-10 gap-2 justify-center '>
+                <div className='flex flex-col md:w-2/6 sm:w-full'>
                     <div className='flex flex-col items-center mb-6'>
                         {/* Pagination */}
                         <div className='flex flex-row gap-5 font-satoshi-medium text-lg'>
@@ -485,7 +485,7 @@ const [loading, setLoading] = useState(false);
                         </div>
                     </div>
                     {/* Scrollable wrapper */}
-                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
+                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full outline-0'>
                         
                         {!loading ? (
                             <div className='flex flex-col gap-5 items-center '>
