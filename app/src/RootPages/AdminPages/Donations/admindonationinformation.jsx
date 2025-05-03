@@ -258,14 +258,14 @@ function AdminDonationInformation() {
                 <>
                   {/* View Statistics */}
                   <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer hover:bg-hover' onClick={() => {navigate(`/admin/donations/donation-drive-demographics/${driveid}`)}}>
-                    <p className='font-satoshi-light'>View Statistics</p>
+                    <p className='font-satoshi-regular'>View Statistics</p>
                   </button>
                   {/* Close Drive */}
                   <button
                     className='bg-error hover:bg-red-400 text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'
                     onClick={() => {setCloseDonation(true)}}
                   >
-                    <p className='font-satoshi-light'>Close Drive</p>
+                    <p className='font-satoshi-regular'>Close Drive</p>
                   </button>
                 </>
               )}
