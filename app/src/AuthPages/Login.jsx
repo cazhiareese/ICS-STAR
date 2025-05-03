@@ -76,12 +76,12 @@ function LoginPage() {
               fetchUserData();
               
           } else {
-              alert(data.detail || "Login failed!");
-              alert(data)
+            //   alert(data.detail || "Login failed!");
+            //   alert(data)
           }
       } catch (error) {
           console.error("Error:", error);
-          alert("Something went wrong!");
+        //   alert("Something went wrong!");
       } finally {
           setIsLoading(false); 
       }

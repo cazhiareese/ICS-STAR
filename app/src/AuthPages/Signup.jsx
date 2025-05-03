@@ -24,7 +24,7 @@ function SignupPage() {
         <Start/>
         {/* </div> */}
         
-        <div className="fixed top-[25%] right-4 -translate-y-1/2 sm:top-7 sm:translate-y-0 sm:right-7 z-70 px-4 py-2">
+        <div className="fixed top-[23%] right-4 -translate-y-1/2 sm:top-7 sm:translate-y-0 sm:right-7 z-70 px-4 py-2">
             <span className="font-satoshi-regular text-sm sm:text-base">
                 Already have an account?{' '}
                 <button 
