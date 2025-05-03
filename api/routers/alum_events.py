@@ -72,6 +72,7 @@ def get_visible_events(
         description='Filter events by date: "today", "tomorrow", "this_weekend", or a date in YYYY-MM-DD format'
     )
 ):
-    user_id = user.user_id if user else None
+    if not user:
+        user = None
     # print(user.user_id)
-    return get_visible_events_for_user(db, user_id, date_filter)
+    return get_visible_events_for_user(db, user, date_filter)
