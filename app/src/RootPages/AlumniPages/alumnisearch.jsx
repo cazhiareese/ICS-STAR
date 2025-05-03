@@ -407,6 +407,7 @@ function AlumniSearch() {
                   >
                     Batch of Alumni
                   </motion.h1>
+                  <span className="text-sm font-satoshi-medium text-gray-400 pt-2 pr-2">{selectedBatchYear}</span>
                   <motion.button
                     className="cursor-pointer hover:text-primary"
                     animate={{ rotate: isBatchExpanded ? 180 : 0 }}
@@ -475,6 +476,7 @@ function AlumniSearch() {
                   >
                     Year Alumni Graduated
                   </motion.h1>
+                  <span className="text-sm font-satoshi-medium text-gray-400 pt-5 pr-2">{selectedGraduationYear}</span>
                   <motion.button
                     className="cursor-pointer hover:text-primary"
                     animate={{ rotate: isGraduateExpanded ? 180 : 0 }}
@@ -669,8 +671,8 @@ function AlumniSearch() {
         </div>
       </div>
       {/* Desktop */}
-      <div className="flex flex-row md:justify-left justify-center">
-        <div className="hidden lg:flex flex-col pr-6 border-r-2 border-gray-300 w-1/4 pb-16 pt-16">
+      <div className="flex flex-row md:justify-left justify-center h-screen">
+        <div className="hidden lg:flex flex-col pr-6 border-r-2 border-gray-300 w-1/4 pt-16 h-screen">
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
             <button
@@ -734,6 +736,7 @@ function AlumniSearch() {
                   >
                     Batch of Alumni
                   </motion.h1>
+                  <span className="text-sm font-satoshi-medium text-gray-400 pt-2 pr-2">{selectedBatchYear}</span>
                   <motion.button
                     className="cursor-pointer hover:text-primary"
                     animate={{ rotate: isBatchExpanded ? 180 : 0 }}
@@ -776,6 +779,7 @@ function AlumniSearch() {
                   >
                     Year Alumni Graduated
                   </motion.h1>
+                  <span className="text-sm font-satoshi-medium text-gray-400 pt-5 pr-2">{selectedGraduationYear}</span>
                   <motion.button
                     className="cursor-pointer hover:text-primary"
                     animate={{ rotate: isGraduateExpanded ? 180 : 0 }}
@@ -907,7 +911,7 @@ function AlumniSearch() {
               Searching...
             </h1>
           )}
-          <div className="flex flex-row flex-wrap gap-24 items-center justify-center">
+          <div className="flex flex-row flex-wrap gap-24 items-center justify-center h-screen overflow-y-auto scrollbar-left">
             {Array.isArray(alumniList) &&
               alumniList.map((alumnus, index) => (
                 <AlumniSearchCard

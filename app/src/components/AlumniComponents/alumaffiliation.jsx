@@ -99,7 +99,13 @@ const AlumniAffiliationFilter = ({
         >
           Alumni Affiliation
         </motion.h1>
-
+        {affiliationList.length > 0 && !isAffiliationExpanded && (
+          <span className="text-sm font-satoshi-medium text-gray-400 pt-2 pr-2">
+            {affiliationList.slice(0, 2).join(", ").length > 10
+              ? affiliationList.slice(0, 2).join(", ").substring(0, 7) + "..."
+              : affiliationList.slice(0, 2).join(", ")}
+          </span>
+        )}
         <motion.button
           className="cursor-pointer hover:text-primary"
           animate={{ rotate: isAffiliationExpanded ? 180 : 0 }}

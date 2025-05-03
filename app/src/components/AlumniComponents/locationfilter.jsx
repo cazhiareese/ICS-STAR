@@ -99,7 +99,13 @@ const AlumniLocationFilter = ({
         >
           Alumni Location
         </motion.h1>
-
+        {location.length > 0 && !isLocationExpanded && (
+          <span className="text-sm font-satoshi-medium text-gray-400 pt-2 pr-2">
+            {location.slice(0, 2).join(", ").length > 10
+              ? location.slice(0, 2).join(", ").substring(0, 7) + "..."
+              : location.slice(0, 2).join(", ")}
+          </span>
+        )}
         <motion.button
           className="cursor-pointer hover:text-primary"
           animate={{ rotate: isLocationExpanded ? 180 : 0 }}
