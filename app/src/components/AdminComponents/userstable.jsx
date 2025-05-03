@@ -35,7 +35,7 @@ function UsersTable({ data, loading = null, userType }) {
       </thead>
 
       {/* Table Body */}
-      <tbody className="font-satoshi-regular text-md">
+      <tbody className="font-satoshi-regular text-md font-satoshi-regular text-black">
         {loading ? (
           // Skeleton Rows (10 rows for pagination)
           rowsToRender.map((_, index) => (
@@ -78,7 +78,7 @@ function UsersTable({ data, loading = null, userType }) {
             {rowsToRender.map((user) => (
               <tr
                 key={user.user_id}
-                className="border-b border-gray-200 h-10 hover:bg-secondary cursor-pointer"
+                className="border-b border-gray-200 h-10 hover:bg-secondary cursor-pointer text-black duration-200"
                 onClick={() => navigate(`/admin/records/${user.user_id}`)}
               >
                 {/* Image */}

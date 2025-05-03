@@ -246,12 +246,12 @@ useEffect(() => {
 )}
 
                     {userType === "alumni" && (
-                        <div className="flex flex-row mt-5 sm:mr-10  sm:ml-0 sm:mx-0 mx-auto gap-5 overflow-scroll sm:w-full">
+                        <div className="flex flex-row mt-5 sm:mr-10  sm:ml-0 sm:mx-0 mx-auto gap-5 overflow-x-scroll sm:w-full w-[90%] px-2 py-5">
                         {reservations != null ? (
                             reservations.length > 0 ? (
                                 reservations.map((reservation, index) => (
                                     <div key={index} className="flex relative ">
-                                        <EventCards event={reservation} />
+                                        <EventCards event={reservation} reservationExclusiveWidth={true}/>
                                         
                                         <button
                                             className="z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer bg-green-500 text-whitey"
@@ -411,7 +411,7 @@ useEffect(() => {
 
                     
 
-                    <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto justify-center sm:justify-start">
+                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-center sm:justify-start sm:mx-0 mx-10">
                         
                         {suggestions!= "none" ? (
                             
@@ -420,10 +420,10 @@ useEffect(() => {
                             const isGoing = reservations && reservations.some(reservation => reservation.event_id === event.event_id);
                             return !isGoing && (
                                 <div key={index} className="flex relative">
-                                <EventCards event={event} />
+                                <EventCards event={event} reservationExclusiveWidth={true}/>
                                 {userType === "alumni" && (
                                     <button
-                                    className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
+                                    className={`z-10 flex flex-row space-x-3 absolute right-25 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                                         isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                                     }`}
                                     onClick={() => handleRSVPClick(event.event_id, event)}
@@ -441,10 +441,10 @@ useEffect(() => {
                         allEvents.map((event, index) => {
                             const isGoing = reservations && reservations.some(reservation => reservation.event_id === event.event_id);
                             return !isGoing && (
-                            <div key={index} className="flex relative">
+                            <div key={index} className="flex relative ">
                                 <EventCards event={event} />
                                 {userType === "alumni" && (
-                                    <button
+                                    event.rsvp_closed == false && <button
                                     className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer  ${
                                         isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                                     }`}
