@@ -15,7 +15,7 @@ function AdminCareer() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
   const [index, setIndex] = useState(0);
-  const [viewStyle, setViewStyle] = useState('List')
+
   const [jobType, setJobType] = useState('open')
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -225,18 +225,6 @@ function AdminCareer() {
               filters = {filters}
               setterFunction = {setCreatorValue}
           />
-          {/* View changer */}
-          <div className="flex items-center border border-disabled rounded-3xl overflow-hidden h-9.5">
-            {/* List View Button */}
-            <button className="px-3 py-1 flex items-center gap-1 cursor-pointer text-primary text-xs" onClick={() => {setViewStyle('List')}}>
-              <List size={18} className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
-            </button>
-            <div className="h-6 w-px bg-disabled"></div>
-            {/* Grid View Button */}
-            <button className="px-3 py-1 flex items-center gap-1 cursor-pointer text-disabled text-xs" onClick={() => {setViewStyle('Grid')}}>
-              <LayoutGrid size={18} className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
-            </button>
-          </div>
           {/* Page */}
           <PaginationComponent
             page={page}
