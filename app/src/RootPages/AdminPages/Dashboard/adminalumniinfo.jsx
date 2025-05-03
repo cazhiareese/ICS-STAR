@@ -340,7 +340,7 @@ function AdminAlumniInfo() {
             <h3 className='text-2xl font-satoshi-bold pb-2'> Industries</h3>
             {loading ? (
               <div className='flex items-center justify-center h-full'>
-                <CircularLoading size={90}/>
+                <CircularLoading/>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height='100%'>
@@ -376,7 +376,7 @@ function AdminAlumniInfo() {
               <h3 className='text-2xl font-satoshi-bold'>Employment Status</h3>
               {loading ? (
                 <div className='flex items-center justify-center h-full'>
-                  <CircularLoading size={90}/>
+                  <CircularLoading/>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -407,7 +407,7 @@ function AdminAlumniInfo() {
               <h3 className='text-2xl font-satoshi-bold'>Employer Classification</h3>
               {loading ? (
                 <div className='flex items-center justify-center h-full'>
-                  <CircularLoading size={90}/>
+                  <CircularLoading/>
                 </div>
               ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -438,7 +438,7 @@ function AdminAlumniInfo() {
               <h3 className='text-2xl font-satoshi-bold'>Salary Grade</h3>
               {loading ? (
                 <div className='flex items-center justify-center h-full'>
-                  <CircularLoading size={90}/>
+                  <CircularLoading/>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
