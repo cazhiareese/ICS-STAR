@@ -64,35 +64,48 @@ function AdminEngagementReports() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFullEngagementReport = async () => {
       setFullEngagementReportLoading(true);
-  
       try {
-        // First request: Engagement Statistics
-        let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
+        const response = await axios.get(
+          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`
+        );
         console.log(response.data);
         setFullEngagementReport(response.data);
+      } catch (err) {
+        console.log(err.message || 'Error fetching engagement report');
+      } finally {
+        setFullEngagementReportLoading(false);
+      }
+    };
   
-        // Second request: Most Donations
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
+    fetchFullEngagementReport();
+  }, [daysFilter, batchFilter]);
+  
+
+  useEffect(() => {
+    const fetchOtherReports = async () => {
+      try {
+        // Most Donations
+        let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
         console.log(response.data);
         setMostDonations(response.data);
   
-        // Third request: Most Interested (Jobs)
+        // Most Interested
         setMostInterestedLoading(true);
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`);
         console.log(response.data);
         setMostInterested(response.data);
         setMostInterestedLoading(false);
   
-        // Fourth request: Recent Newsletters
+        // Recent Newsletters
         setNewsLoading(true);
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/newsletters/top-3?time_range=${daysFilter}`);
         console.log(response.data);
         setRecentLetters(response.data);
         setNewsLoading(false);
   
-        // Fifth request: Donation Highlights
+        // Donation Highlights
         setDonationLoading(true);
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`);
         if (response.status !== 404) {
@@ -101,7 +114,7 @@ function AdminEngagementReports() {
         }
         setDonationLoading(false);
   
-        // Sixth request: Donor Highlights
+        // Donor Highlights
         setDonorLoading(true);
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`);
         if (response.status !== 404) {
@@ -110,10 +123,8 @@ function AdminEngagementReports() {
         }
         setDonorLoading(false);
   
-        setFullEngagementReportLoading(false);
       } catch (err) {
-        console.log(err.message || 'Something went wrong');
-        setFullEngagementReportLoading(false);
+        console.log(err.message || 'Error fetching other reports');
         setMostInterestedLoading(false);
         setNewsLoading(false);
         setDonationLoading(false);
@@ -121,8 +132,9 @@ function AdminEngagementReports() {
       }
     };
   
-    fetchData();
-  }, [daysFilter, batchFilter]);
+    fetchOtherReports();
+  }, [daysFilter]);
+  
   
 
   // Filtered chart data
