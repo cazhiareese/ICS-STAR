@@ -65,7 +65,7 @@ function AdminNewsletter() {
     <div className='h-screen w-full p-6 flex flex-col'>
       {/* Header */}
       <div className='flex flex-row justify-between mb-10'>
-        <h1 className='font-satoshi-bold text-5xl text-black'>Newsletter</h1>
+        <h1 className='font-satoshi-bold text-5xl text-primary'>Newsletter</h1>
         <button
           className='flex flex-row items-center justify-center gap-2 font-satoshi-bold text-white bg-primary px-6 py-3 rounded-2xl hover:bg-hover cursor-pointer'
           onClick={() => { navigate("/admin/newsletter/create-newsletter") }}
