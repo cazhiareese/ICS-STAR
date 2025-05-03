@@ -11,8 +11,10 @@ const ScholarshipsSection = ({
   addScholarship,
   isLoading, // <-- added this prop
   isVerified, // <-- added this prop
+  share
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log("naku",share);
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
@@ -21,6 +23,7 @@ const ScholarshipsSection = ({
         buttonText="Add scholarships"
         onButtonClick={() => setIsModalOpen(true)}
         isVerified={isVerified}
+        share={share} // Pass the share prop to SectionHeader
       />
 
 
