@@ -4,6 +4,7 @@ import AdminNewsletterCard from '../../../components/AdminComponents/AdminNewsle
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import { useNavigate } from 'react-router-dom';
+import SearchComponent from '../../../components//AdminComponents/SearchComponent'
 
 function AdminNewsletter() {
   const navigate = useNavigate();
@@ -81,16 +82,12 @@ function AdminNewsletter() {
           
         </div>
         <div className='relative flex items-center justify-end flex-1 pr-3'>
-            <input
-              type="text"
-              placeholder="Search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => (setFocused(false))}
-              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
-            />
-            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
+          <SearchComponent
+            query={query}
+            setQuery={setQuery}
+            focused={focused}
+            setFocused={setFocused}
+          />
           </div>
         <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
           <MoveLeft

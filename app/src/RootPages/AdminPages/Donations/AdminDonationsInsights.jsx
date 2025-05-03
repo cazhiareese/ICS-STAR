@@ -116,7 +116,7 @@ function AdminDonationsInsights() {
 
   return (
     loading ? (
-      <div className='flex flex-row items-center justify-center h-full w-full'>
+      <div className="flex justify-center items-center min-h-screen w-full">
         <CircularLoading/>
       </div>
     ) : (

@@ -80,8 +80,8 @@ function AdminVerificationConfirmation() {
 
   return (
     loading ? (
-      <div className='flex items-center justify-center h-screen'>
-        <CircularLoading size={90}/>
+      <div className="flex justify-center items-center min-h-screen w-full">
+        <CircularLoading />
       </div>
     ) : (
     <div className='p-6 flex flex-col h-screen w-full'>
