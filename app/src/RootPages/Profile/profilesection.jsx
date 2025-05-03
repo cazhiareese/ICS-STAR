@@ -20,6 +20,7 @@ import CircularLoading from "../../components/LoadingComponents/circularloading"
 import SocialLinksEditModal from "./components/sociallinksmoda";
 import axios from "axios";
 import ReportModal from "../../components/AdminComponents/ReportModal";
+import AlumniTransitionModal from "../../components/AdminComponents/AlumniTransitionModal";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
@@ -448,6 +449,18 @@ function ProfileSection({
         isLoading={limitAccessLoading}
         isComplete={limitAccessComplete}
       />
+    <AlumniTransitionModal
+        isOpen={showAlumniModal}
+        onClose={() => {
+          setShowAlumniModal(false);
+          setTransitionComplete(false);
+          if (transitionComplete) window.location.reload();
+        }}
+        onConfirm={makeAlumni}
+        isLoading={makeAlumniLoading}
+        isComplete={transitionComplete}
+/> 
+
     </div>
   );
 }
