@@ -103,7 +103,7 @@ function StudentInformation(){
                             onClick={() => setYearDropdownOpen(!yearDropdownOpen)}
                             className={`flex items-center justify-between border focus:outline outline-primary rounded-2xl h-10 w-full px-4 text-left ${userData.selectedYear ? 'text-black' : 'text-gray-400'} ${studentNumberError == false ? 'border-[#D9D9D9]' : 'border-red-600'}`}
                         >
-                            <span className="mx-auto">{userData.selectedYear || "Select a year"}</span>
+                            <span className="mx-auto">{userData.selectedYear || "Select a Year"}</span>
                             <ChevronDown className="w-4 h-4 text-gray-600" />
                         </button>
                             {yearDropdownOpen && (
@@ -195,12 +195,12 @@ function StudentInformation(){
                  
 
                 <div className="col-span-2">
-                    <label className="font-satoshi-light text-gray-500">
+                    <label className="font-satoshi-light-italic text-gray-500">
                         Uploading your Form 5 is optional, but it can greatly help the admin in validating your information
                     </label>
                 </div>
 
-                <div className={`font-satoshi-medium-italic col-span-2 items-center flex mt-0 -pb-10 text-[#C80808] ${error ? 'block': 'hidden'}`}>
+                <div className={`font-satoshi-sm-italic col-span-2 items-center flex mt-0 -pb-10 text-[#C80808] ${error ? 'block': 'hidden'}`}>
                     <label>Please answer all required fields above!</label>
 
                 </div>
