@@ -7,6 +7,7 @@ import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCar
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import SectionHeader from '../components/sectionheader';
 
 export default function JobPosted() {
         const [selectedJobId, setSelectedJobId] = useState(""); //the job id will be stored here
@@ -86,59 +87,71 @@ const [isError, setError] = useState(false);
     }, [selectedJobId]);
 
 
-  return (
-    <div className="w-full  mt-6">
+    return (
+      <>
+        {/* Moved SectionHeader here */}
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-[1100px] mt-6">
+            <SectionHeader title="JOBS POSTED" />
+          </div>
+        </div>
+    
+        <div className="w-full">
+          <div className='w-full max-w-[1100px] mx-auto'>
             <div className='flex flex-row mt-10 gap-2 justify-center'>
-                <div className='flex flex-col'>
-
-                    {/* Scrollable wrapper */}
-                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
-                        
-                        {!loading ? (
-                            <div className='flex flex-col gap-5 items-center '>
-                                
-                                {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
-                                    jobList.map((job, index) => (
-                                        <JobCard
-                                        key={index} // Consider using job.id if available instead of index
-                                        job={job}
-                                        selectedJobId={selectedJobId}
-                                        setSelectedJobId={setSelectedJobId}
-                                        setMobileExpanded={setMobileExpanded}
-                                        
-                                        />
-                                    ))
-                                    ) : (
-                                    <p className="text-gray-500 text-center mt-4">
-                                        {isError ? 'No jobs found.' : 'No jobs available.'}
-                                    </p>
-                                )}
-                            </div>
-                        ) : (
-                            <div className='flex flex-row justify-center h-full gap-5 pt-10'>
-                                <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
-                                <CircularLoading />
-                            </div>
-                        )}
+              <div className='flex flex-col'>
+    
+                {/* Scrollable wrapper */}
+                <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
+    
+                  {!loading ? (
+                    <div className='flex flex-col gap-5 items-center '>
+    
+                      {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
+                        jobList.map((job, index) => (
+                          <JobCard
+                            key={index} // Prefer job.id if possible
+                            job={job}
+                            selectedJobId={selectedJobId}
+                            setSelectedJobId={setSelectedJobId}
+                            setMobileExpanded={setMobileExpanded}
+                          />
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center mt-4">
+                          {isError ? 'No jobs found.' : 'No jobs available.'}
+                        </p>
+                      )}
                     </div>
+                  ) : (
+                    <div className='flex flex-row justify-center h-full gap-5 pt-10'>
+                      <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
+                      <CircularLoading />
+                    </div>
+                  )}
                 </div>
-
-
-
-                {/* Job Preview */} 
-                
-                {!selectedJob || !selectedJob.tags ? (
-                    <div className="md:flex flex-col items-center justify-center w-[800px] outline-0  hidden">
-                        <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200}/></h1>
-                        <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
-                    </div>
-                ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} />
-                )}
-                
+              </div>
+    
+              {/* Job Preview */}
+              {!selectedJob || !selectedJob.tags ? (
+                <div className="md:flex flex-col items-center justify-center w-[800px] outline-0 hidden">
+                  <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200} /></h1>
+                  <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
+                </div>
+              ) : (
+                <JobExpandedCard
+                  job={selectedJob}
+                  currentUserID={userId}
+                  mobileExpanded={mobileExpanded}
+                  setMobileExpanded={setMobileExpanded}
+                  setJob={setSelectedJob}
+                />
+              )}
+    
             </div>
-
-
-    </div>
-  );
+          </div>
+        </div>
+      </>
+    );
+    
 }
