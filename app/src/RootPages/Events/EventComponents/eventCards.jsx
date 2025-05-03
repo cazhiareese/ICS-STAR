@@ -88,7 +88,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
       </div>
     
       {/* Main Content */}
-      <div className="flex flex-col flex-grow px-4 pt-3 pb-4">
+      <div className="flex flex-col flex-grow px-5 pt-3 pb-4">
         <div>
           <RsvpStatus event={event} />
           <h1 className="text-2xl font-bold text-black mt-3">{event.title}</h1>
@@ -97,7 +97,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
     
         <div className="mt-auto">
           {/* Location */}
-          <div className="flex items-center text-gray-600 space-x-3">
+          <div className="flex items-center mt-3 text-gray-600 space-x-3">
             <MapPinned />
             <div className="">
               <label className="whitespace-nowrap">{event.location}</label>
@@ -129,7 +129,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
           </div>
     
           {/* Going Count */}
-          <div className="flex justify-end items-center text-primary mt-2 font-extrabold space-x-2">
+          <div className="flex justify-end items-center text-primary font-extrabold pr-2">
             <img src={PersonOutline} alt="Going" className='h-5 mr-2'/>
             <label>{event.going_count} are going</label>
           </div>

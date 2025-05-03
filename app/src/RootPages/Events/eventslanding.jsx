@@ -267,7 +267,7 @@ useEffect(() => {
                                 <div className="font-satoshi-light text-primary">You do not have any reservations yet.</div>
                             )
                         ) : (
-                            <div className="flex gap-5">
+                            <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5">
                                 <EventCardsSkeleton />
                                 <EventCardsSkeleton />
                                 <EventCardsSkeleton />
@@ -290,7 +290,7 @@ useEffect(() => {
                         </label>
                         <div className="flex flex-row  space-x-3 md:ml-auto md:pt-0 pt-5">
                         <button
-                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Today" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
+                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Today" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-whitey'} `}
                             onClick={() => {
                                 
                                 // console.log("Today: ", filteredEvents)
@@ -314,7 +314,7 @@ useEffect(() => {
                             Today
                         </button>
                         <button
-                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Tomorrow" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
+                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Tomorrow" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-whitey'} `}
                             onClick={() => {
                                 
 
@@ -337,7 +337,7 @@ useEffect(() => {
                             Tomorrow
                         </button>
                         <button
-                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "This Weekend" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
+                            className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "This Weekend" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-whitey'} `}
                             onClick={() => {
                                 
                                 
@@ -366,7 +366,7 @@ useEffect(() => {
                         className={`px-2 lg:px-4 py-2 rounded-full border ${
                             filterPress === "Choose Date"
                             ? "border-gray-300 text-white bg-primary"
-                            : "border-gray-300 text-gray-700 hover:bg-gray-100 bg-white"
+                            : "border-gray-300 text-gray-700 hover:bg-gray-100 bg-whitey"
                         }`}
                         onClick={() => {
                             if (filterPress === "Choose Date") {
