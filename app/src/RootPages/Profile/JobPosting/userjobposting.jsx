@@ -6,6 +6,7 @@ import JobCard from '../../../components/AlumniComponents/JobCard';
 import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 export default function JobPosted() {
         const [selectedJobId, setSelectedJobId] = useState(""); //the job id will be stored here
@@ -21,6 +22,24 @@ export default function JobPosted() {
 const [isError, setError] = useState(false);
 
         //For Dummy testing only
+
+            const [usertype, setUserType] = useState(null);
+            
+            useEffect(() => {
+                const token = localStorage.getItem('token'); 
+                const decoded = jwtDecode(token);
+                console.log("Decoded JWT:", decoded);
+                setUserId(decoded.sub); 
+                setUserType(decoded.role); //cyrus was here
+                // console.log(decoded.sub)
+                if (decoded.role == "alumni"){
+                    setUserType("alumni");
+                }
+                else{
+                    setUserType("student");
+                }
+                
+            }, []);
         useEffect(() => {
           const fetchJobs = async () => {
             setLoading(true);
@@ -68,7 +87,7 @@ const [isError, setError] = useState(false);
 
 
   return (
-    <div className="w-full max-w-[1100px] mt-6">
+    <div className="w-full  mt-6">
             <div className='flex flex-row mt-10 gap-2 justify-center'>
                 <div className='flex flex-col'>
 
