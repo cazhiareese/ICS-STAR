@@ -225,9 +225,11 @@ const EventCardsMain = () => {
     }
     return (
         <div className='mx-auto sm:max-w-250 sm:w-[80%] h-full pt-0 flex flex-col items-center justify-center space-y-5'>
-            
+            {/* Back Button */}
             <label className="flex flex-row cursor-pointer sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label className='cursor-pointer'>Go Back</label></label>
+            
             {user?.role !== "student" && event.rsvp_closed==false && (
+                // Going/RSVP Button
                 <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                     isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
@@ -235,10 +237,13 @@ const EventCardsMain = () => {
                     onClick={event.rsvp_closed ? () => handleRSVPClick(event.event_id): ""}
                 >
                     <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                    <label>{isGoing ? 'Going' : 'RSVP'}</label>
+                    <label>{isGoing ? 'Going' : 'Reserve My Spot'}</label>
                 </button>
             )}
+
+            {/* Event Card */}
             <div className=" min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
+                {/* Image */}
                 <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl overflow-hidden">
                     {event.image && (
                         <img
@@ -248,9 +253,13 @@ const EventCardsMain = () => {
                         />
                     )}
                 </div>
+
+                {/* RSVP Status */}
                 <div className='pt-5 mx-10'>
                   <RsvpStatus event={event} />
                 </div>
+
+                {/* Going/RSVP Button */}
                 {user?.role !== "student" && event.rsvp_closed ==false && (
                     <button
                         className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
@@ -259,33 +268,38 @@ const EventCardsMain = () => {
                         onClick={() => handleRSVPClick(event.event_id)}
                     >
                         <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                        <label>{isGoing ? 'Going' : 'RSVP'}</label>
+                        <label>{isGoing ? 'Going' : 'Reserve My Spot'}</label>
                     </button>
                 )}
+
+                {/* Main Content */}
                 <div className="p-4 mx-5 flex flex-col">
+
                     <h1 className="sm:text-3xl text-2xl font-satoshi-bold text-blue-900">{event.title}</h1>
-                    
                     <label className='text-gray-400 pt-8'>Event Details</label>
-                    
+
+                    {/*Location  */}
                     <div className="flex items-center mt-2 text-gray-600 space-x-3">
                         <MapPinned/>
                         <label>{event.location}</label>
                     </div>
+                    {/* Date */}
                     <div className="flex w-full overflow-x-auto items-center mt-2 text-gray-600 space-x-3">
                         <Calendar />
-                        
                             {event.datetimes.map((datetime, index) => (
                                 <div className="flex flex-row overflow-x-scroll max-h-32 flex-shrink-0">
                                 <label key={index} className='pr-5'>{parseTime(datetime)}</label>
                                 </div>
                             ))}
-                        
                     </div>
+
+                    {/* Description */}
                     <div className='flex flex-col mt-5 '>
                         <label className='text-gray-400'>Event Description</label>
                         <label className="text-gray-600 pt-2">{event.description} 
                         </label>
-
+                        
+                        {/* Relevant Links */}
                         <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
                         {event.links.map((link, index) => (
                                 <li key={index}>
@@ -296,28 +310,27 @@ const EventCardsMain = () => {
                         ))}
                     </div>
                     
+                    {/* Tags */}
                     <div className="flex flex-row gap-2 mt-5 overflow-x-scroll">
                         {event.tags.map((tag, index) => (
                             <span
                                 key={index}
                                 className="bg-blue-100 text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg"
                             >
-                                {tag}asdfsd
+                                {tag}
                             </span>
-                        ))}
-                        
-                        
+                        ))}                
                     </div>
 
                     <div className='flex flex-row w-full mt-2'>
-                                      <div className='flex flex-row ml-auto space-x-5'>
+                                      <div className='flex flex-row ml-auto space-x-5 "flex items-center text-primary mt-2 font-extrabold space-x-2"'>
                                         <img 
                                                 src= {PersonOutline}
                                                 alt="Sample Image" 
                                                 className='mt-auto ml-auto'
                                         /> 
                                         <label className='flex flex-row text-primary ml-auto '>
-                                        {event.going_count} Going</label>
+                                        {event.going_count} are going</label>
                                       </div>
                                         
                                     </div>

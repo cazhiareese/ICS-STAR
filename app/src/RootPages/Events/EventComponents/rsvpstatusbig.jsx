@@ -8,8 +8,8 @@ function RsvpStatusBig({ event }) {
   const color = isClosed ? "red" : "green";
 
   const colorClasses = {
-    green: "bg-green-100 text-green-800",
-    red: "bg-red-100 text-red-800",
+    green: "bg-[#27AE60]/12 text-success",
+    red: "bg-[#FF0004]/10 text-error",
   };
 
   return (
