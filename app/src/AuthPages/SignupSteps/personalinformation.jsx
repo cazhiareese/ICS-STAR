@@ -29,9 +29,9 @@ function PersonalInformation(){
         const checker = await checkEmailAvailability(userData.email)
         console.log(checker)
         if (checker.detail==="Email already registered") {
-            alert("Email already Registered, please register a new email address")
+            // alert("Email already Registered, please register a new email address")
             userData.email=""
-            console.log("HELJDKFDSF", checker)
+            // console.log("HELJDKFDSF", checker)
             setLoading(false)
             return
         }
@@ -103,53 +103,53 @@ function PersonalInformation(){
                 <div className="grid md:grid-cols-2 grid-cols-1 md:h-18 h-42 ">
                     <div className=" text-black flex flex-col">
                         {/* First Name */}
-                        <label className="2xl font-satoshi-regular pb-2">First Name<label className="text-red-700">*</label></label>
+                        <label className="2xl font-satoshi-medium pb-2">First Name <label className="text-red-700">*</label></label>
                         <input type="text" 
                                 value={userData.firstName} 
-                                className={`pl-3 w-[100%] md:w-[95%] mb-5 md:mb-0 border-1 rounded-lg h-full ${firstNameError==false ? 'border-black':'border-red-600'}`}
+                                className={`font-satoshi-medium pl-3 w-[100%] md:w-[95%] mb-5 md:mb-0 border-1 rounded-2xl h-full outline-none focus:outline-primary focus:border focus:border-primary ${firstNameError==false ? 'border-[#D9D9D9]':'border-red-600'}`}
                                 onChange={(e) => updateUserData("firstName", e.target.value)}
                         />
 
                     </div>
                     <div className=" text-black flex flex-col">
-                        <label className="2xl font-satoshi-regular pb-2">Last Name <label className="text-red-700">*</label></label>
+                        <label className="2xl font-satoshi-medium pb-2">Last Name <label className="text-red-700">*</label></label>
                         <input type="text" 
                                 value={userData.lastName} 
-                                className={`pl-3 w-[100%] border-1 rounded-lg h-full ${lastNameError==false ? 'border-black':'border-red-600'}`}
+                                className={`font-satoshi-medium pl-3 w-[100%] border-1 rounded-2xl h-full outline-none focus:outline-primary focus:border focus:border-primary ${lastNameError==false ? 'border-[#D9D9D9]':'border-red-600'}`}
                                 onChange={(e) => updateUserData("lastName", e.target.value)}
                         />
                     
                     </div>
                 </div>
-                <div className="flex flex-col font-satoshi-regular ">
-                        <label className="2xl font-satoshi-regular pb-2 ">Email <label className="text-red-700">*</label></label>
+                <div className="flex flex-col font-satoshi-medium ">
+                        <label className="2xl font-satoshi-medium pb-2 ">Email <label className="text-red-700">*</label></label>
                         <input type="name" 
                                value={userData.email} 
                                onChange={(e) => updateUserData("email", e.target.value)}
-                               className={`pl-3 w-[100%] border-1 rounded-lg h-10 ${emailError==false ? 'border-black':'border-red-600'}`}
+                               className={`font-satoshi-medium pl-3 w-[100%] border-1 rounded-2xl h-10 outline-none focus:outline-primary focus:border focus:border-primary ${emailError==false ? 'border-[#D9D9D9]':'border-red-600'}`}
                         />
                 </div>
-                <div className="flex flex-col font-satoshi-regular ">
-                        <label className="2xl font-satoshi-regular pb-2 ">Password <label className="text-red-700">*</label></label>
+                <div className="flex flex-col font-satoshi-medium ">
+                        <label className="2xl font-satoshi-medium pb-2 ">Password <label className="text-red-700">*</label></label>
                         <input type="password" 
                                value={userData.password} 
                                onChange={(e) => {updateUserData("password", e.target.value)}}
-                               className={`pl-3 w-[100%] border-1 rounded-lg h-10 ${passwordError==false ? 'border-black':'border-red-600'}`}
+                               className={`font-satoshi-medium pl-3 w-[100%] border-1 rounded-2xl h-10 outline-none focus:outline-primary focus:border focus:border-primary ${passwordError==false ? 'border-[#D9D9D9]':'border-red-600'}`}
                         />
                 </div>
-                <div className="flex flex-col font-satoshi-regular ">
-                        <label className="2xl font-satoshi-regular pb-2 ">Confirm Password <label className="text-red-700">*</label></label>
-                        <input type="password" value = {confirmPassword} onChange={updateConfirmPassword} className="pl-3 w-[100%] border-1 rounded-lg h-10"/>
-                        <label className={`text-red-600 text-sm font-satoshi-light-italic ${passMismatch ? '': 'hidden'}`} >Passwords do not match</label>
+                <div className="flex flex-col font-satoshi-medium ">
+                        <label className="2xl font-satoshi-medium pb-2 ">Confirm Password <label className="text-red-700">*</label></label>
+                        <input type="password" value = {confirmPassword} onChange={updateConfirmPassword} className="pl-3 w-[100%] border-1 border-[#D9D9D9] rounded-2xl h-10 outline-none focus:outline-primary focus:border focus:border-primary"/>
+                        <label className={`font-satoshi-medium text-[#C80808] text-sm font-satoshi-medium-italic mt-4 ${passMismatch ? '': 'hidden'}`} >Passwords do not match!</label>
                 </div>
-                <div className={`row-span-2 items-center flex mt-0 -pb-10 text-red-400 ${error ? 'hidden': 'block'}`}>
-                    <label>Please answer all fields above correctly</label>
+                <div className={`row-span-2 items-center flex mt-0 -pb-10 text-sm text-[#C80808] font-satoshi-medium-italic ${error ? 'hidden': 'block'}`}>
+                    <label>Please answer all fields above correctly! </label>
 
                 </div>
-                <div className="grid grid-cols-2 h-18 items-center justify-center sm:pb-0 mb-10">
+                <div className="grid grid-cols-2 h-18 items-center justify-center sm:pb-0 mb-10 font-satoshi-regular">
                     <div className=" text-black items-start">
                         <button
-                            className="bg-primary text-white py-3 rounded-2xl text-lg w-4/6 font-bold hover:bg-blue-700 transition mt-0"
+                            className="bg-white text-primary py-3 border border-primary rounded-3xl text-base w-4/6 font-bold cursor-pointer"
                             onClick={()=>{setCurrentSection("0"); setUserType("Undefined")}}
                         >
                             Back
@@ -161,10 +161,10 @@ function PersonalInformation(){
                             <Loading/>
                         ):
                         <button
-                            className="bg-primary text-white py-3 rounded-2xl text-lg w-4/6 font-bold hover:bg-blue-700 transition mt-0"
+                            className="bg-primary text-white py-3 rounded-3xl text-base w-4/6 font-bold hover:bg-blue-700 transition mt-0 cursor-pointer"
                             onClick={checkFields}
                         >
-                            Next
+                            Proceed
 
                         </button>
 

@@ -79,11 +79,13 @@ function LoginPage() {
               fetchUserData();
             
           } else {
+
               setOpenError(true)
+
           }
       } catch (error) {
           console.error("Error:", error);
-          alert("Something went wrong!");
+        //   alert("Something went wrong!");
       } finally {
           setIsLoading(false); 
       }
@@ -226,7 +228,7 @@ function LoginPage() {
                     className="lg:absolute lg:left-15 lg:top-0 lg:w-[30%] md:w-50 md:h-10 w-50"
                 />
                 <div className=" hidden md:flex flex-row ">
-                <div className="w-1 h-11 bg-black ml-11">`</div>
+                <div className="w-0.75 h-10 bg-black ml-11">`</div>
                 <div className="flex flex-col -mt-1 text-xl font-satoshi-bold ml-3 leading-6">
                     <label><label className="text-primary">S</label>ystem for <label className="text-primary">T</label>racking</label>
                     <label><label className="text-primary">A</label>lumni <label className="text-primary">R</label>elations</label>
@@ -237,24 +239,24 @@ function LoginPage() {
             </div>
             
 
-            <div className="lg:hidden flex flex-col w-full mt-5 s">
-                        <h1 className="text-4xl md:text-4xl font-satoshi-light text-center">Bridging Alumni</h1>
+            <div className="lg:hidden flex flex-col w-full mt-5">
+                        <h1 className="text-4xl md:text-4xl font-satoshi-bold text-center">Bridging Alumni</h1>
                         <h1 className="text-4xl md:text-4xl font-satoshi-bold text-primary text-center">Across the Cosmos</h1>
             </div>
 
-            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-175 lg:min-h-155 pt-10">
+            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-175 lg:min-h-155 pt-10 ">
                 
                 {/* Login Signup */}
                 <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl lg:min-w-lg md:min-w-lg lg:bg-[#f9f9fb] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] lg:rounded-4xl">
-                        <h1 className="hidden lg:block text-8xl pt-4 font-satoshi-regular mb-0 text-[#102E46]">Login</h1> 
+                        <h1 className="hidden lg:block text-8xl pt-4 font-satoshi-regular mb-0 text-[#102E46] cursor-default">Login</h1> 
                         
                         
                         {/* Email Input */}
                         
-                        <div className=" flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 -mt-3 cursor-pointer w-[60%] sm:w-[70%]">
+                        <div className=" flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 -mt-3 w-[60%] sm:w-[70%]">
 
                        
-                            <label className= "block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
+                            <label className= "block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg font-satoshi-regular" onClick={() => {
                                     setActiveEmail(true);
                                     setTimeout(() => {
                                         emailRef.current?.focus();
@@ -263,19 +265,19 @@ function LoginPage() {
                                 }
                                 }>
                                 {!activeEmail ? (
-                                    email ? `Email: ${email}` : <span className="text-gray-600">Email</span>
+                                    email ? `Email: ${email}` : <span className="font-satoshi-regular text-black">Email</span>
                                 ) : (
                                     "Email"
                                 )}
                             </label>
                             
                                 
-                            <div className="relative overflow-x-clip">
+                            <div className="relative overflow-x-clip font-satoshi-regular">
 
                             
                                 {/* Diamond swing */}
                                 <span
-                                    className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activeEmail ? 'translate-x-full right-0 pt-7 mr-3 ' : 'translate-x-0  '}`}
+                                    className={`input Diamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activeEmail ? 'translate-x-full right-0 pt-7 mr-3 ' : 'translate-x-0 '}`}
                                     onClick={() => setActiveEmail(!activeEmail)}
                                 >◆</span>
 
@@ -289,8 +291,8 @@ function LoginPage() {
                                     ref={emailRef}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="inputLine w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-variable"
-                                    placeholder="Enter Email Here"
+                                    className="inputLine w-full py-2 border-b-2 border-gray-400 focus:border-blue-500 outline-none  text-lg font-satoshi-regular"
+                                    placeholder="Enter email here"
                                     /> }
                                 
                             </div>
@@ -300,7 +302,7 @@ function LoginPage() {
                         <div className="flex flex-col justify-end  h-[15%] -passwordButton mb-15 cursor-pointer w-[60%] sm:w-[70%]">
 
                             
-                            <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg " onClick={() => {
+                            <label className="block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg font-satoshi-regular" onClick={() => {
                                 setActivePassword(true); // only set to true, don't toggle
                                 setTimeout(() => {
                                     passwordRef.current?.focus();
@@ -308,7 +310,7 @@ function LoginPage() {
                                 
                                 }}>
                                 {!activePassword ? (
-                                    password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="text-gray-600">Password</span>
+                                    password ? `Password:  ${showPassword ? password : "*".repeat(password.length)}` : <span className="font-satoshi-regular text-black">Password</span>
                                 ) : (
                                     "Password"
                                 )}
@@ -320,7 +322,7 @@ function LoginPage() {
                             
                                 {/* Diamond swing */}
                                 <span
-                                    className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-3 pt-6.5' : 'translate-x-0'} z-10`}
+                                    className={`inputDiamond absolute cursor-pointer w-full top-1 transition-transform duration-400 transform text-primary ${activePassword ? 'translate-x-full right-0 mr-3 pt-7' : 'translate-x-0'} z-10`}
                                     onClick={() => setActivePassword(!activePassword)}
                                 >◆</span>
 
@@ -351,8 +353,8 @@ function LoginPage() {
                                             value={password}
                                             ref={passwordRef}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="inputLine  w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-variable pr-10"
-                                            placeholder="Enter Password Here"
+                                            className="inputLine  w-full border-b-2 mt-2 pb-2 border-gray-400 focus:border-blue-500 outline-none text-lg font-satoshi-regular pr-10"
+                                            placeholder="Enter password here"
                                         /> 
 
                                         <span 
@@ -390,16 +392,16 @@ function LoginPage() {
                         ) : (
                             <>
                             <button
-                            className="bg-primary text-white py-3 rounded-3xl text-lg w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 transition mt-0"
+                            className="bg-primary text-white py-3 rounded-3xl text-lg w-[60%] sm:w-[70%] font-satoshi-medium hover:bg-blue-700 transition mt-0 cursor-pointer"
                             onClick={()=>(loginClick())}
                             >
                             Login
                             </button>
                             <button
-                                className=" relative bg-white border-2   py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular hover:bg-blue-700 hover:text-white transition mt-3"
+                                className="relative bg-white border-1 py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular transition mt-3 cursor-pointer hover:shadow-md hover:scale-[1.001]"
                                 // onClick={loginClick}
                                 >
-                                <label className="hover:text-white">Sign In with Google</label>
+                                <label className="cursor-pointer">Sign In with Google</label>
                                 
                                     <img 
                                         src={google} 
@@ -415,75 +417,20 @@ function LoginPage() {
                         
 
                         {/* Signup Link */}
-                        <p className="text-center text-gray-600 mt-7">
+                        <p className="font-satoshi-regular text-center text-gray-600 mt-7 cursor-default">
                             Don't have an account? 
                         </p>
                         <p className="mb-3 space-x-1    ">
-                        <a href="/signup" className="text-primary font-satoshi-regular underline">Signup here</a> <label>or</label> <a className="text-primary font-satoshi-regular underline" onClick={handleModal}>Continue as guest</a>
+                        <a href="/signup" className="text-primary font-satoshi-regular underline">Signup here</a> <label className="font-satoshi-regular">or</label> <a className="text-primary font-satoshi-regular underline cursor cursor-pointer" onClick={handleModal}>Continue as guest</a>
                         </p>
                         
                 </div>
 
                 {/* Description */}
                 <div className="my-auto lg:flex hidden  2xl:w-180 xl:w-150 lg:w-100 md:w-100 w-80 xl:h-50  bg-secondary ml-auto relative items-center rounded-l-2xl shadow-lg group">
-                    
-                    <div
-                        className={`absolute -top-5 h-[2px] bg-primary z-20 lg:block hidden left-0`}
-                        style={{
-                        right: `${0}px`,
-                        width: `${position + 15}px`, // Width grows as star moves
-                        transition: "width 50ms linear", // smooth width expansion
-                        }}
-                    />
-                    
-                    <div
-                        className="absolute -top-9 right-1 animate-spin z-20 lg:block hidden -left-5"
-                        style={{
-                        right: `${position}px`,
-                        width: "30px",
-                        height: "30px",
-                        fontSize: "24px",
-                        transformOrigin: "center",
-                        animation: `rotateStar 10s linear infinite`,
-                        }}
-                    >
-                        <img
-                        src={star}
-                        alt="Rotating Star"
-                        className="w-full h-full object-contain lg:block hidden"
-                        />
-                    </div>
-                    {/* The trail */}
-                    <div
-                        className={`absolute -bottom-5 h-[2px] bg-primary z-20 lg:block hidden left-0`}
-                        style={{
-                        right: `${0}px`,
-                        width: `${position + 15}px`, // Width grows as star moves
-                        transition: "width 50ms linear", // smooth width expansion
-                        }}
-                    />
-                    
-                    <div
-                        className="absolute -bottom-8 right-1 animate-spin z-20 lg:block hidden -left-5"
-                        style={{
-                        right: `${position}px`,
-                        width: "30px",
-                        height: "30px",
-                        fontSize: "24px",
-                        transformOrigin: "center",
-                        animation: `rotateStar 10s linear infinite`,
-                        }}
-                    >
-                        <img
-                        src={star}
-                        alt="Rotating Star"
-                        className="w-full h-full object-contain lg:block hidden"
-                        />
-                    </div>
-                    
                     <label className="2xl:text-2xl xl:text-xl sm:text-md font-satoshi-regular 2xl:mx-20 xl:mx-10 md:mx-2 mx-10 my-5 space-y-5 leading-11 text-justify">
                         Built to connect alumni, students, and the institute.
-                        <label className="font-satoshi-black text-primary">
+                        <label className="font-satoshi-bold text-primary">
                         &nbsp;ICS-STAR
                         </label> makes it easy to track alumni, share updates, and bring everyone together.
                     </label>
@@ -495,26 +442,26 @@ function LoginPage() {
             
             {/* Caption below */}
             <div className="absolute hidden lg:flex flex-col w-full pt-10 bottom-10 -left-10 ">
-                <h1 className="text-5xl font-satoshi-light text-right ">Bridging Alumni</h1>
+                <h1 className="text-5xl font-satoshi-regular text-right ">Bridging Alumni</h1>
                 <h1 className="text-5xl font-satoshi-bold  text-primary text-right">Across the Cosmos</h1>
             </div>
         </div>
         {openModal &&
             <div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">
             <div className="bg-white rounded-3xl shadow-lg p-6 w-[25rem]">
-                <h2 className="text-xl font-satoshi-bold mb-4 text-center">Continue as guest?</h2>
+                <h2 className="text-xl font-satoshi-bold mb-4 text-center mt-4 ">Continue as guest?</h2>
                 <p className="text-black font-satoshi-regular text-center mb-6">
                     You may only access the newsletters and events page. To access more features, log in or sign up with your account.
                 </p>
-                <div className="flex flex-row items-center space-x-5 justify-center">
+                <div className="flex flex-row items-center space-x-5 justify-center mt-8 mb-2">
                     <button
-                        className="px-4 py-2 border border-primary text-primary font-satoshi-regular rounded-3xl hover:bg-primary/10"
+                        className="px-4 py-2 border border-primary text-primary font-satoshi-regular rounded-3xl w-25 hover:bg-primary/10 cursor-pointer"
                         onClick={() => setOpenModal(false)}
                     >
                         Cancel
                     </button>
                     <button
-                        className="px-4 py-2 bg-green-500 text-white font-satoshi-regular rounded-3xl hover:bg-green-600"
+                        className="px-4 py-2 bg-green-500 text-white font-satoshi-medium rounded-3xl w-25 hover:bg-green-600 cursor-pointer"
                         onClick={() => {
                             setOpenModal(false);
                             localStorage.removeItem("token");

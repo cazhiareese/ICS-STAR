@@ -51,45 +51,42 @@ function SignupMain() {
             
             (
                 <div className="flex flex-col items-center sm:justify-start justify-center sm:mt-20 flex-1 bg-white z-10 ">
-                    
-                    <div className="flex flex-col items-start w-[70%] pt-10 mt-10">
-                        <label className="text-3xl font-satoshi-bold">Register As</label>
-                        <label className="text-md font-satoshi-light text-gray-600">Select your status to get started.</label>
-                    
-                    </div>
-                    <div className="flex flex-col items-start w-[70%]">
-                        <div className="flex flex-col w-[100%] max-w-2xl pt-10">
-                            {/* ALumni */}
-                            <div className="border border-gray-300 cursor-pointer shadow-xl flex items-center h-25 rounded-2xl mt-10" onClick={SetAlumni}>
-                                <div className="grid grid-cols-2 w-[60%]">
-                                    
-                                    <div 
-                                        className="row-span-2 text-primary flex items-center justify-center">
-                                        <img src={Alumni}/> 
-                                    </div>
-                                    <label className="text-black font-satoshi-bold text-2xl">Alumni</label>
-                                    <label className="text-gray-600 font-satoshi-light text-md w-50">Join the alumni network</label>
-                                    
-                                </div>
-                            </div>
+                    <div className="flex flex-col items-start w-[70%] pt-10 mt-8">
+                        <label className="text-3xl font-satoshi-bold">Register as</label>
+                        <label className="text-md font-satoshi-regular text-gray-600">Select your status to get started.</label>
+
+                        <div className="flex flex-col w-full max-w-2xl pt-10">
                             
-                            {/* Student */}
-                            <div className="border border-gray-300 cursor-pointer shadow-xl flex items-center h-25 rounded-2xl mt-7" onClick={SetStudent}>
-                                <div className="grid grid-cols-2 w-[60%]">
-                                    
-                                <div 
-                                        className="row-span-2 text-primary flex items-center justify-center">
-                                        <img src={Student}/>
-                                        
-                                    </div>
-                                    <label className="text-black font-satoshi-bold text-2xl">Student</label>
-                                    <label className="text-gray-600 font-satoshi-light text-md w-50">Join as a current ICS student</label>
-                                    
+                            {/* Alumni */}
+                            <div
+                            className="border border-gray-300 cursor-pointer shadow-xl flex items-center rounded-2xl mt-10 p-5 hover:shadow-2xl transition w-full p-6"
+                            onClick={SetAlumni}
+                            >
+                            <div className="flex items-center space-x-4 w-full">
+                                <img src={Alumni} alt="Alumni" className="w-14 h-14 min-w-14" />
+                                <div className="flex flex-col pl-2">
+                                <span className="text-black font-satoshi-bold text-lg sm:text-xl">Alumni</span>
+                                <span className="text-gray-600 font-satoshi-regular text-sm sm:text-md">Join the alumni network</span>
                                 </div>
                             </div>
+                            </div>
+
+                            {/* Student */}
+                            <div
+                            className="border border-gray-300 cursor-pointer shadow-xl flex items-center rounded-2xl mt-7 p-5 hover:shadow-2xl transition w-full p-6"
+                            onClick={SetStudent}
+                            >
+                            <div className="flex items-center space-x-4 w-full">
+                                <img src={Student} alt="Student" className="w-14 h-14 min-w-14" />
+                                <div className="flex flex-col pl-2">
+                                <span className="text-black font-satoshi-bold text-lg sm:text-xl">Student</span>
+                                <span className="text-gray-600 font-satoshi-regular text-sm sm:text-md">Join as a current ICS student</span>
+                                </div>
+                            </div>
+                            </div>
+
                         </div>
-                    </div>
-                
+                        </div>
                 </div>
             ):
             (
