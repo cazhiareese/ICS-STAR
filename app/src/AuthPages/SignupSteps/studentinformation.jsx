@@ -200,7 +200,7 @@ function StudentInformation(){
                     </label>
                 </div>
 
-                <div className={`font-satoshi-sm-italic col-span-2 items-center flex mt-0 -pb-10 text-[#C80808] ${error ? 'block': 'hidden'}`}>
+                <div className={`font-satoshi-medium-italic text-sm col-span-2 items-center flex mt-0 -pb-10 text-[#C80808] ${error ? 'block': 'hidden'}`}>
                     <label>Please answer all required fields above!</label>
 
                 </div>
