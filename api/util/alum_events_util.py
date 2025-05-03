@@ -7,6 +7,7 @@ from uuid import UUID
 from datetime import datetime, timezone, date, timedelta
 from schemas.events_schema import OneEventOut, EventOut
 from util.admin_events_util import add_user_clicks
+from schemas.user import CurrentUser
 
 
 def fetch_event_suggestions(db: Session, query_text: str, limit: int = 5) -> List[str]:
@@ -155,17 +156,17 @@ def get_event_by_id(event_id: UUID, db: Session, user_id: Optional[UUID] = None)
 
 def get_visible_events_for_user(
     db: Session,
-    user_id: Optional[UUID],
+    user: Optional[CurrentUser],
     date_filter: Optional[str] = None
 ) -> List[EventOut]:
     
     now = datetime.now(timezone.utc).date()
     
     visible_event_ids = set()
-    if user_id:
+    if user:
         visible_event_ids = set(
             event_id for (event_id,) in db.query(EventVisibleTo.event_id)
-            .filter(EventVisibleTo.user_id == user_id)
+            .filter(EventVisibleTo.user_id == user.user_id)
             .all()
         )
 
@@ -203,13 +204,14 @@ def get_visible_events_for_user(
             continue
 
         tags = [tag.tag for tag in event.tags]
-        if user_id:
+        if not user or user.is_verified is False:
+            rsvp_closed = True
+        else:
             if event.is_all:
                 rsvp_closed = False
             else:
                 rsvp_closed = event.event_id not in visible_event_ids
-        else:
-            rsvp_closed = True
+            
         
 
         going_count = len(event.confirmed_by)
