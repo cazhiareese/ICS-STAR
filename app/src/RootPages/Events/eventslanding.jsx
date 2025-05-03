@@ -5,6 +5,7 @@ import { MapPinned, Calendar, Star, Search, Filter } from 'lucide-react';
 import axios from 'axios';
 import EventCards from './EventComponents/eventCards';
 import EventCardsSkeleton from './EventComponents/eventCardsSkeleton'
+import "../../index.css";
 import { samp } from 'framer-motion/client';
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";

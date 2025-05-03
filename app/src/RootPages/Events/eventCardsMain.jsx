@@ -219,13 +219,14 @@ const EventCardsMain = () => {
         }
     }
 
+    {/*Show a loading state while fetching the event*/}
     if (!event && isGoing===null) {
-        return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
+        return <div><EventCardsMainSkeleton/></div>;
     }
     return (
-        <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
+        <div className='mx-auto sm:max-w-250 sm:w-[80%] h-full pt-0 flex flex-col items-center justify-center space-y-5'>
             
-            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
+            <label className="flex flex-row cursor-pointer sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label className='cursor-pointer'>Go Back</label></label>
             {user?.role !== "student" && event.rsvp_closed==false && (
                 <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
@@ -237,7 +238,7 @@ const EventCardsMain = () => {
                     <label>{isGoing ? 'Going' : 'RSVP'}</label>
                 </button>
             )}
-            <div className="sm:max-w-180 sm:w-[80%] w-[90%] min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
+            <div className=" min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
                 <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl overflow-hidden">
                     {event.image && (
                         <img
@@ -283,10 +284,6 @@ const EventCardsMain = () => {
                     <div className='flex flex-col mt-5 '>
                         <label className='text-gray-400'>Event Description</label>
                         <label className="text-gray-600 pt-2">{event.description} 
-
-
-
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                         </label>
 
                         <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
