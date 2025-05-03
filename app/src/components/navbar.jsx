@@ -97,8 +97,13 @@ function Navbar({ tokentype, verified, banned }) {
 
         {/* Icons and Mobile Menu Button */}
         <div className="flex items-center gap-4">
-          <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
-          <Settings className="cursor-pointer hover:text-primary transition" size={20} onClick={handleAccount} />
+        {tokentype !== "guest" && (
+  <>
+    <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
+    <Settings className="cursor-pointer hover:text-primary transition" size={20} onClick={handleAccount} />
+  </>
+)}
+
           <LogOut className="cursor-pointer hover:text-red-500 transition" size={20} onClick={handleLogout} />
           <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}

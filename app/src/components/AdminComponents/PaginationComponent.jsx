@@ -22,14 +22,14 @@ const PaginationComponent = ({ page, setPage, totalPages }) => {
           if (page > 1) setPage(page - 1);
         }}
       />
-      <p>Page</p>
+      <p className='text-sm'>Page</p>
       <input
         type="text"
         value={page}
         onChange={handleInputChange}
         className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold bg-white focus:bg-whitey"
       />
-      <p>of {totalPages}</p>
+      <p className='text-sm'>of {totalPages}</p>
       <MoveRight 
         className={`cursor-pointer ${page === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => {

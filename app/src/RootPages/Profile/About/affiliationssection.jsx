@@ -11,6 +11,7 @@ const AffiliationsSection = ({
   addAffiliation,
   isLoading, 
   isVerified,
+  share
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -21,6 +22,7 @@ const AffiliationsSection = ({
         buttonText="Add affiliations"
         onButtonClick={() => setIsModalOpen(true)}
         isVerified={isVerified}
+        share={share} // Pass the share prop to SectionHeader
       />
 
 
