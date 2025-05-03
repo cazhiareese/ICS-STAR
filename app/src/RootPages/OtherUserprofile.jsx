@@ -20,7 +20,7 @@ import {
   fetchPublicProfileById as apiFetchPublicProfile
 } from "./Profile/UserProfileAPI/userProfileApi";
 
-import OtherProfileSection from "./Profile/otherprofilesection";
+import OtherProfileSection from "./Profile/janryprofilesection";
 import OtherSkillsInterestsSection from "./Profile/About/othersskillsandinterestsection";
 import OtherAffiliationsSection from "./Profile/About/otheraffiliationsection";
 import OtherScholarshipsSection from "./Profile/About/otherscholarshipsection";
