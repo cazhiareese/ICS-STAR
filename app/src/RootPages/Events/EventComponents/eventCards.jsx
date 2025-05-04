@@ -72,7 +72,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
     const truncatedDescription = truncateDescription(event.description, 2);
     return (
-        <div className={`max-w-130  ${reservationExclusiveWidth==true? "min-w-95 w-100":"min-w-70 w-full"}} h-130 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1`}
+        <div className={`max-w-130  ${reservationExclusiveWidth==true? "md:min-w-110  w-80 sm:w-full" :"xl:min-w-70 lg:min-w-120 md:min-w-70 sm:w-full  w-90 "}} h-130 rounded-3xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1`}
         onClick={() => {openEventDetails(event.event_id)}} 
         >
 <div className="h-40 w-full">
@@ -93,19 +93,19 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
                 <div>
                   <RsvpStatus event={event} />
                 </div>
-                <h1 className="text-xl font-bold text-blue-900 mt-3 h-15 w-full">{event.title}</h1>
+                <h1 className="text-xl font-bold text-blue-900 mt-3 h-15 w-full line-clamp-2">{event.title}</h1>
                 <p className="text-gray-600 pt-2 h-15 flex line-clamp-2 w-full">{truncatedDescription}</p>
                 
                 
                 <div className="flex items-center mt-4 text-gray-600 space-x-3 w-full">
                     <MapPinned />
-                    <div className="w-full  overflow-x-auto">
+                    <div className="w-full  overflow-x-auto thin-scrollbar">
                         <label className="flex-shrink-0 whitespace-nowrap">{event.location}</label>
                     </div>
                 </div>
                 <div className="flex items-center mt-2 text-gray-600 space-x-3">
                     <Calendar />
-                    <div className="flex w-full overflow-x-scroll max-h-8 space-x-5">
+                    <div className="flex w-full overflow-x-scroll max-h-8 space-x-5 thin-scrollbar">
                             {event.dates.map((datetime, index) => (
                               <div className='flex-shrink-0'>
 
@@ -115,11 +115,11 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
                     </div>
                 </div>
-                <div className="flex flex-row gap-2 mt-4 overflow-x-scroll w-full h-10 items-center">
+                <div className="flex flex-row gap-2 mt-4 overflow-x-scroll w-full h-10 items-center thin-scrollbar">
                     {event.tags.map((tag, index) => (
                         <span
                             key={index}
-                            className="bg-secondary text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg h-8"
+                            className="bg-secondary text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg h-8 whitespace-nowrap"
                         >
                             {tag}
                         </span>

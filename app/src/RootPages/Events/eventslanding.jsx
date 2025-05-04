@@ -212,12 +212,6 @@ useEffect(() => {
             .slice(0, 5); // limit to 5
 
           setSuggestions(matches || []);
-
-          if (exploreRef.current) {
-            const yOffset = -130;
-            const y = exploreRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: "smooth" });
-          }
         }}
         value={searchInput}
       />
@@ -411,7 +405,7 @@ useEffect(() => {
 
                     
 
-                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-center sm:justify-start sm:mx-0 mx-10">
+                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start">
                         
                         {suggestions!= "none" ? (
                             
@@ -419,11 +413,11 @@ useEffect(() => {
                             suggestions.map((event, index) => {
                             const isGoing = reservations && reservations.some(reservation => reservation.event_id === event.event_id);
                             return !isGoing && (
-                                <div key={index} className="flex relative">
+                                <div key={index} className="flex relative ">
                                 <EventCards event={event} reservationExclusiveWidth={true}/>
                                 {userType === "alumni" && (
-                                    <button
-                                    className={`z-10 flex flex-row space-x-3 absolute right-25 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
+                                    event.rsvp_closed == false && <button
+                                    className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer  ${
                                         isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                                     }`}
                                     onClick={() => handleRSVPClick(event.event_id, event)}
