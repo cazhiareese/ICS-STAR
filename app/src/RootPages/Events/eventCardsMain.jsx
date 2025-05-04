@@ -244,6 +244,7 @@ const EventCardsMain = () => {
 
             {/* Event Card */}
             <div className=" min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-whitey w-full sm:border-gray-200 p-10">
+           
                 {/* Image */}
                 <div className="h-80 bg-primary rounded-2xl overflow-hidden">
                     {event.image && (
@@ -255,37 +256,13 @@ const EventCardsMain = () => {
                     )}
                 </div>
                
-                {/* RSVP Status */}
-                <div className='pt-5'>
-                  <RsvpStatus event={event} />
-                </div>
-
-                <div className='absolute left-290 top-140 g-secondary'>
-                    {/* Going/RSVP Button */}
-                    {user?.role !== "student" && event.rsvp_closed ==false && (
-                        <button
-                            className={`hidden items-center px-6 py-3 sm:flex z-10 flex-row space-x-3 rounded-full shadow-md hover:cursor-pointer ${
-                            isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white font-bold'
-                            } hover:scale-115 transform transition-transform duration-200`}
-                            onClick={() => handleRSVPClick(event.event_id)} 
-                        >
-                            <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                            <label className='text-l font-extrabold'>{isGoing ? 'Going' : 'Reserve My Spot'}</label>
-                        </button>
-                    )}
-
-                    {/* RSVP Count */}
-                    <div className='flex flex-row w-full'>
-                        <div className='flex flex-row ml-auto text-lg flex items-center text-primary mt-2 font-extrabold'>
-                            <img src= {PersonOutline} className='ml-auto mr-3'/> 
-                            <label>{event.going_count} are going</label>
-                        </div>                 
-                    </div>
-                </div>
-
+                <div className="flex flex-col sm:flex-row justify-between items-start mt-4 gap-4">
                 {/* Main Content */}
-                <div className="block py-4 flex flex-col">
-                    <h1 className="sm:text-3xl text-2xl font-satoshi-black text-blue-900">{event.title}</h1>
+                    <div className="flex-1 py-4">
+
+                    {/* RSVP Status */}
+                    <RsvpStatus event={event} />
+                    <h1 className="sm:text-3xl text-3xl font-satoshi-black text-blue-900 my-6">{event.title}</h1>
                     <label className='text-gray-400 pt-8'>Event Details</label>
 
                     {/*Location  */}
@@ -293,11 +270,12 @@ const EventCardsMain = () => {
                         <MapPinned/>
                         <label>{event.location}</label>
                     </div>
+
                     {/* Date */}
                     <div className="flex w-full items-center mt-2 text-gray-600 space-x-3">
                         <Calendar />
                             {event.datetimes.map((datetime, index) => (
-                                <div className="flex flex-row overflow-x-scroll max-h-32 flex-shrink-0">
+                                <div className="flex flex-row max-h-32 flex-shrink-0">
                                 <label key={index} className='pr-5'>{parseTime(datetime)}</label>
                                 </div>
                             ))}
@@ -312,11 +290,11 @@ const EventCardsMain = () => {
                         {/* Relevant Links */}
                         <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
                         {event.links.map((link, index) => (
-                                <li key={index}>
-                                    <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                        {link}
-                                    </a>
-                                </li>
+                            <li key={index}>
+                                <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                    {link}
+                                </a>
+                            </li>
                         ))}
                     </div>
                     
@@ -331,6 +309,31 @@ const EventCardsMain = () => {
                             </span>
                         ))}                
                     </div>
+                    </div>
+                    
+
+                    {/* Going/RSVP Button */}
+                    <div className=" sm:flex flex-col items-end ml-4">
+                    {user?.role !== "student" && event.rsvp_closed ==false && (
+                        <button
+                            className={`hidden items-center px-6 py-3 sm:flex z-10 flex-row space-x-3 rounded-full shadow-md hover:cursor-pointer ${
+                            isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white font-bold'
+                            } hover:scale-115 transform transition-transform duration-200`}
+                            onClick={() => handleRSVPClick(event.event_id)} 
+                        >
+                            <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
+                            <label className='text-l font-extrabold'>{isGoing ? 'Going' : 'Reserve My Spot'}</label>
+                        </button>
+                    )}
+
+                    {/* RSVP Count */}
+                    <div className='flex flex-row w-full'>
+                        <div className='flex flex-row ml-auto text-lg flex items-center text-primary mt-2 font-bold'>
+                            <img src= {PersonOutline} className='ml-auto mr-3'/> 
+                            <label>{event.going_count} are going</label>
+                        </div> 
+                        </div>              
+                    </div>   
                 </div>    
             </div>
         </div>  
