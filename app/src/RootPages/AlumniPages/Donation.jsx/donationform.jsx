@@ -41,6 +41,8 @@ function Donationform() {
     const success = searchParams.get("success");
     const [summaryheader,setSummaryHeader] = useState("Your donation will be reflected once it has been reviewed and verified by our admin team.")
 
+    const [error, setError] = useState(false);
+    const [paymentError, setPaymentError] = useState(false);
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -88,10 +90,11 @@ function Donationform() {
     const submitMonetaryDonation = async () => {
         // Ensure that all required fields are not empty
         if (monetaryAmountInput <= 0 || file == null) {
-            alert("Please enter a valid amount and upload a proof of payment.");
+            setError(true);
             return;
         }
         setSubmitting(true);
+        setError(false)
         const formData = new FormData();
         const token = localStorage.getItem("token");
 
@@ -131,10 +134,10 @@ function Donationform() {
 
     const submitMayaDonation = async () => {
         if (monetaryAmountInput <= 0) {
-            alert("Please enter a valid amount.");
+            setPaymentError(true);
             return;
         }
-    
+        setPaymentError(false);
         setSubmitting(true);
         const formData = new FormData();
         const token = localStorage.getItem("token");
@@ -306,6 +309,7 @@ function Donationform() {
                                 <MonetaryAmountInput
                                     monetaryAmountInput={monetaryAmountInput}
                                     setMonetaryAmountInput={setMonetaryAmountInput}
+                                    paymentError={paymentError}
                                 />
 
                                 <PaymentMode submitMayaDonation={submitMayaDonation}/>
@@ -332,6 +336,8 @@ function Donationform() {
                                     )}
                                     
                                 </div>
+
+                                {error && (<h1 className='text-error font-satoshi-regular justify-center w-full flex'>Please fill out all the required fields</h1>)}
                                 
                                 {/* Submit Button */}
                                 {submitting ? (
