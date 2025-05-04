@@ -4,6 +4,7 @@ import AdminNewsletterCard from '../../../components/AdminComponents/AdminNewsle
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import { useNavigate } from 'react-router-dom';
+import SearchComponent from '../../../components//AdminComponents/SearchComponent'
 
 function AdminNewsletter() {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ function AdminNewsletter() {
     <div className='h-screen w-full p-6 flex flex-col'>
       {/* Header */}
       <div className='flex flex-row justify-between mb-10'>
-        <h1 className='font-satoshi-bold text-5xl text-black'>Newsletter</h1>
+        <h1 className='font-satoshi-bold text-5xl text-primary'>Newsletter</h1>
         <button
           className='flex flex-row items-center justify-center gap-2 font-satoshi-bold text-white bg-primary px-6 py-3 rounded-2xl hover:bg-hover cursor-pointer'
           onClick={() => { navigate("/admin/newsletter/create-newsletter") }}
@@ -81,16 +82,12 @@ function AdminNewsletter() {
           
         </div>
         <div className='relative flex items-center justify-end flex-1 pr-3'>
-            <input
-              type="text"
-              placeholder="Search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => (setFocused(false))}
-              className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2': 'border-gray-400'}`}
-            />
-            <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
+          <SearchComponent
+            query={query}
+            setQuery={setQuery}
+            focused={focused}
+            setFocused={setFocused}
+          />
           </div>
         <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
           <MoveLeft
@@ -119,7 +116,7 @@ function AdminNewsletter() {
       <div className="flex flex-col items-center w-full mt-4">
         <div className="flex flex-col w-full max-w-full px-5">
           {loading ? (
-            <div className="flex justify-center items-center py-10">
+            <div className='flex justify-center items-center min-h-screen w-full'>
               <CircularLoading />
             </div>
           ) : error ? (
