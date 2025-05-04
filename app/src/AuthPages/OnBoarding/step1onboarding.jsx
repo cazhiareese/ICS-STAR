@@ -255,7 +255,7 @@ function Step1Onboarding() {
               }
             }}
           >
-            {!isSubmitting ? (Proceed) : (<CircularLoading />)}
+            {!isSubmitting ? <span>Proceed</span> : (<CircularLoading />)}
           </button>
           <button
             type="button"
