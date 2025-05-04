@@ -130,24 +130,6 @@ function AdminPendingDonations() {
                   Close
                 </button>
               </div>
-            ) : actionType ? (
-              <div className="flex flex-col flex-1 justify-center items-center w-full text-center">
-                <p className="text-xl font-satoshi-medium mt-4">Confirm {actionType}?</p>
-                <div className="flex gap-3 mt-6 w-full justify-center">
-                  <button
-                    className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
-                    onClick={() => setActionType(null)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
-                    onClick={verifyDonation}
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
             ) : (
               <>
                 {/* Proof of Payment */}
@@ -207,43 +189,67 @@ function AdminPendingDonations() {
                         transition={{ type: 'tween', duration: 0.4 }}
                         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl rounded-3xl w-[180%] max-w-lg -z-50 p-6 h-full"
                       >
-                        <div className="flex justify-between items-center border-b pb-3">
-                          <h2 className="text-xl font-satoshi-bold text-primary">Proof of Payment</h2>
-                          <button
-                            className='rounded-full h-fit bg-error p-1 cursor-pointer'
-                            onClick={() => {
-                              setShowProofModal(false)
-                            }}
-                          >
-                            <X className="w-5 h-5 text-white" />
-                        </button>
-                        </div>
-                        
-                        {/* Donation proof photo */}
-                        <div className='flex w-full justify-center h-3/4'>
-                          <div className='bg-primary h-full w-full rounded-xl flex justify-center items-center text-white mt-5'>
-                            {selectedDonation.type === 'Monetary' &&
-                              <img src={selectedDonation.proof} alt="proof of donation" className='h-full w-full object-cover rounded-xl' />
-                            }
+                        {actionType ? (
+                          <div className="flex flex-col flex-1 justify-center items-center w-full text-center h-full">
+                            <p className="text-xl font-satoshi-medium mt-4">Confirm {actionType}?</p>
+                            <div className="flex gap-3 mt-6 w-full justify-center">
+                              <button
+                                className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
+                                onClick={() => setActionType(null)}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                                onClick={verifyDonation}
+                              >
+                                Confirm
+                              </button>
+                            </div>
                           </div>
+                        ) : (
+                          <div className="w-full h-full flex flex-col">
+                            <div className="flex justify-between items-center border-b pb-3">
+                              <h2 className="text-xl font-satoshi-bold text-primary">Proof of Payment</h2>
+                              <button
+                                className="rounded-full h-fit bg-error p-1 cursor-pointer"
+                                onClick={() => setShowProofModal(false)}
+                              >
+                                <X className="w-5 h-5 text-white" />
+                              </button>
+                            </div>
 
-                          
-                        </div>
-                        {/* Action Buttons TODO: Use later for next modal */}
-                        <div className='flex flex-row w-full gap-2 text-white font-satoshi-regular mt-10'>
-                          <button
-                            className='bg-error rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-red-400'
-                            onClick={() => setActionType("disapprove")}
-                          >
-                            <p>Disapprove</p>
-                          </button>
-                          <button
-                            className='bg-primary rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-hover'
-                            onClick={() => setActionType("approve")}
-                          >
-                            <p>Approve</p>
-                          </button>
-                        </div>
+                            {/* Donation proof photo */}
+                            <div className="flex w-full justify-center h-3/4">
+                              <div className="bg-primary h-full w-full rounded-xl flex justify-center items-center text-white mt-5">
+                                {selectedDonation.type === "Monetary" && (
+                                  <img
+                                    src={selectedDonation.proof}
+                                    alt="proof of donation"
+                                    className="h-full w-full object-cover rounded-xl"
+                                  />
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-row w-full gap-2 text-white font-satoshi-regular mt-10">
+                              <button
+                                className="bg-error rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-red-400"
+                                onClick={() => setActionType("disapprove")}
+                              >
+                                <p>Disapprove</p>
+                              </button>
+                              <button
+                                className="bg-primary rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-hover"
+                                onClick={() => setActionType("approve")}
+                              >
+                                <p>Approve</p>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
                         
                       </motion.div>
                     </motion.div>
