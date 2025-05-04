@@ -11,9 +11,37 @@ function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
   useEffect(() => {
     if (confirmed) {
       if (options?.type === "delete") {
-        console.log("Deleting Job ID via useEffect:", jobId);
-        // TODO: Replace this with actual delete handler
-        // e.g. await deleteJob(jobId)
+        const deleteJob = async () => {
+          setLoading(true);
+          try {
+            const response = await fetch(
+              `${import.meta.env.VITE_BACKEND_URL}/delete-job-postings/${jobId}`,
+              {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to delete job posting");
+            }
+
+            console.log("Deleting Job ID via useEffect:", jobId);
+            setSuccess(true);
+            setTimeout(() => {
+              navigate("/alumni/jobPosting");
+              setShowModal(false);
+            }, 2000); // Redirect after 2 seconds
+          } catch (err) {
+            console.error("Delete Job Error:", err);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        deleteJob();
       } else if (options?.type === "report") {
         const reportJob = async () => {
           setLoading(true);
@@ -27,13 +55,16 @@ function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
           }
 
           try {
-            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/reports/report-job-post", {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-              body: formDataToSend,
-            });
+            const response = await fetch(
+              `${import.meta.env.VITE_BACKEND_URL}/reports/report-job-post`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: formDataToSend,
+              }
+            );
 
             if (!response.ok) {
               throw new Error("Failed to submit report");
@@ -53,10 +84,6 @@ function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
         };
 
         reportJob();
-      }
-      if (options?.type !== "report") {
-        setShowModal(false);
-        setConfirmed(false); // reset state
       }
     }
   }, [confirmed, jobId, options?.type, setShowModal, formData, navigate]);
@@ -88,7 +115,9 @@ function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
           </div>
         ) : success ? (
           <p className="text-green-600 mt-4 text-center font-satoshi-medium">
-            Report submitted successfully! Redirecting...
+            {options?.type === "delete"
+              ? "Job post deleted successfully! Redirecting..."
+              : "Report submitted successfully! Redirecting..."}
           </p>
         ) : (
           <>
@@ -109,8 +138,8 @@ function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
               <button
                 className={`px-4 py-2 rounded-3xl flex items-center gap-2 ${
                   options?.type === "delete"
-                    ? "bg-error text-white font-satoshi-medium  hover:bg-red-600"
-                    : "bg-error text-white font-satoshi-medium  hover:bg-red-600"
+                    ? "bg-error text-white font-satoshi-medium hover:bg-red-600"
+                    : "bg-error text-white font-satoshi-medium hover:bg-red-600"
                 }`}
                 onClick={handleConfirm}
               >
