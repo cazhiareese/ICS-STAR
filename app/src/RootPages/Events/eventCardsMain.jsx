@@ -4,7 +4,8 @@ import { MapPinned, Calendar, Star } from 'lucide-react';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import EventCardsMainSkeleton from './eventCardsMainSkeleton';
-
+import RsvpStatus from './EventComponents/rsvpstatusbig';
+import PersonOutline from "../../assets/personoutline.png"
 
 const EventCardsMain = () => {
     const [isSticky, setIsSticky] = useState(false);
@@ -14,11 +15,13 @@ const EventCardsMain = () => {
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const token = localStorage.getItem("token");
     const [reservationSignal, setReservationSignal] = useState(false);
+
+
     const [userId, setUserId] = useState(null);
     const [event, setEvent] = useState(null);
     
     const navigate = useNavigate();
-    const [isGoing, setIsGoing] = useState(false);
+    const [isGoing, setIsGoing] = useState(null);
     const [user, setUser] = useState(null);
     const id = useParams(); // Get the drive_id from the URL params
     const event_id = id.eventid; // Extract the drive_id from the params
@@ -75,6 +78,15 @@ const EventCardsMain = () => {
             console.log("Event data:", event);     
         },[])
 
+    
+    useEffect(() => {
+        if (event && reservations.length > 0) {
+            const going = reservations.some(reservation => reservation.event_id === event.event_id);
+            setIsGoing(going);
+            console.log("isGoing computed:", going);
+        }
+    }, [event, reservations]);
+
     useEffect(() => {
 
         const fetchReservations = async () => {
@@ -86,16 +98,18 @@ const EventCardsMain = () => {
                     }
                   });
                   setReservations(response.data);
-                  console.log(reservations.length)
-                
+                  console.log(reservations.length);
+                  console.log(reservations);
+                  
             } catch (error) {
                 
                 console.error('Error fetching reservations:', error);
             }
+            
         };
 
-        // fetchReservations();
-        // setReservationSignal(false);
+
+        
         console.log("RESERVATION SIGNAL")
         
 
@@ -108,6 +122,7 @@ const EventCardsMain = () => {
                 });
                 setAllEvents(response.data);
                 console.log(allEvents)
+                fetchReservations();
 
             } catch (error) {
                 console.error('Error fetching all events:', error);
@@ -134,7 +149,7 @@ const EventCardsMain = () => {
             "https://example.com/event-details",
             "https://example.com/registration-form"
         ],
-        is_closed: false,
+        rsvp_closed: false,
     };
 
     const parseTime = (isoTimestamp) => {
@@ -165,8 +180,8 @@ const EventCardsMain = () => {
         // setReservations([])
         
         
-        if (!isGoing) {  
-            setIsGoing (true)
+        if (isGoing) {  
+            setIsGoing (false)
             console.log(event)
             console.log("Event ID here:", eventId)
             console.log("User ID here: ", userId)
@@ -188,7 +203,7 @@ const EventCardsMain = () => {
                 console.error("Error canceling RSVP:", error);
             });
         } else {
-            setIsGoing (false)
+            setIsGoing (true)
             console.log("User ID being sent:", userId);
             axios.post(`${API_BASE_URL}/events/${eventId}/confirm-rsvp`, {
                 user_id: userId
@@ -204,25 +219,25 @@ const EventCardsMain = () => {
         }
     }
 
-    if (!event) {
+    if (!event && isGoing===null) {
         return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
     }
     return (
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
-
+            
             <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
-            {user?.role !== "student" && (
+            {user?.role !== "student" && event.rsvp_closed==false && (
                 <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                    !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                    }`}
-                    onClick={() => handleRSVPClick(event.event_id)}
+                    isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
+                    } hover:scale-115 transform transition-transform duration-200`}
+                    onClick={event.rsvp_closed ? () => handleRSVPClick(event.event_id): ""}
                 >
-                    <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                    <label>{!isGoing ? 'Going' : 'RSVP'}</label>
+                    <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
+                    <label>{isGoing ? 'Going' : 'RSVP'}</label>
                 </button>
             )}
-            <div className="sm:max-w-180 sm:w-[80%] w-[90%] h-185 rounded-4xl overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
+            <div className="sm:max-w-180 sm:w-[80%] w-[90%] min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
                 <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl overflow-hidden">
                     {event.image && (
                         <img
@@ -232,15 +247,18 @@ const EventCardsMain = () => {
                         />
                     )}
                 </div>
-                {user?.role !== "student" && (
+                <div className='pt-5 mx-10'>
+                  <RsvpStatus event={event} />
+                </div>
+                {user?.role !== "student" && event.rsvp_closed ==false && (
                     <button
                         className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                        !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                        }`}
+                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
+                        } hover:scale-115 transform transition-transform duration-200`}
                         onClick={() => handleRSVPClick(event.event_id)}
                     >
-                        <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                        <label>{!isGoing ? 'Going' : 'RSVP'}</label>
+                        <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
+                        <label>{isGoing ? 'Going' : 'RSVP'}</label>
                     </button>
                 )}
                 <div className="p-4 mx-5 flex flex-col">
@@ -252,17 +270,24 @@ const EventCardsMain = () => {
                         <MapPinned/>
                         <label>{event.location}</label>
                     </div>
-                    <div className="flex items-center mt-2 text-gray-600 space-x-3">
+                    <div className="flex w-full overflow-x-auto items-center mt-2 text-gray-600 space-x-3">
                         <Calendar />
-                        <div className="flex flex-row w-2/3 overflow-y-scroll max-h-32">
+                        
                             {event.datetimes.map((datetime, index) => (
-                                <label key={index} className='pr-5'>{parseTime(datetime)}/</label>
+                                <div className="flex flex-row overflow-x-scroll max-h-32 flex-shrink-0">
+                                <label key={index} className='pr-5'>{parseTime(datetime)}</label>
+                                </div>
                             ))}
-                        </div>
+                        
                     </div>
-                    <div className='flex flex-col mt-5 h-50 overflow-y-scroll'>
+                    <div className='flex flex-col mt-5 '>
                         <label className='text-gray-400'>Event Description</label>
-                        <label className="text-gray-600 pt-2">{event.description}</label>
+                        <label className="text-gray-600 pt-2">{event.description} 
+
+
+
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                        </label>
 
                         <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
                         {event.links.map((link, index) => (
@@ -280,12 +305,25 @@ const EventCardsMain = () => {
                                 key={index}
                                 className="bg-blue-100 text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg"
                             >
-                                {tag}
+                                {tag}asdfsd
                             </span>
                         ))}
                         
                         
                     </div>
+
+                    <div className='flex flex-row w-full mt-2'>
+                                      <div className='flex flex-row ml-auto space-x-5'>
+                                        <img 
+                                                src= {PersonOutline}
+                                                alt="Sample Image" 
+                                                className='mt-auto ml-auto'
+                                        /> 
+                                        <label className='flex flex-row text-primary ml-auto '>
+                                        {event.going_count} Going</label>
+                                      </div>
+                                        
+                                    </div>
                 </div>
                 
             </div>

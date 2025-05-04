@@ -45,7 +45,6 @@ async def create_news(
     links=clean_input(links)
 
     try:
-        print("befire")
         created_news = create_util(
             db = db, 
             title = title,
@@ -127,7 +126,7 @@ async def get_news(
         )
         
         # Get total count separately
-        total_count = db.query(Newsletter).count()
+        total_count = db.query(Newsletter).filter(Newsletter.is_deleted == False).count()
         
         return {
             "message": "success",

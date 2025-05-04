@@ -1,11 +1,38 @@
 import {useState} from 'react';
 import { MapPinned, Calendar, Star } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-const EventCards = ({event}) => {
+import {jwtDecode} from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
+import PersonOutline from "../../../assets/personoutline.png"
+
+import RsvpStatus from './rsvpstatus';
+const EventCards = ({event, reservationExclusiveWidth}) => {
+
+        //cyrus was here
+    console.log("SDFSD", reservationExclusiveWidth)
+    const User = localStorage.getItem("token");
+    let tokentype = "guest";
+    let userid = true;
+    
+    
+    if (User) {
+      try {
+        const decoded = jwtDecode(User);
+        tokentype = decoded.role;
+        userid = decoded.sub;
+        console.log("Decoded token:", decoded);
+        console.log("User ID:", userid);
+        console.log("Token type:", tokentype);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    } else {
+      console.log("No token found, defaulting to guest.");
+    }
 
     const [status, setStatus] = useState()
     const navigate = useNavigate();
     const parseTime = (isoTimestamp) => {
+      // console.log("SDFSD",{reservationExclusiveWidth})
         // Parse the timestamp into a Date object (in UTC)
         const date = new Date(isoTimestamp);
 
@@ -26,66 +53,91 @@ const EventCards = ({event}) => {
         const formatted = `${day} ${month} ${hours}:${minutes} ${ampm}`;
 
         return formatted
+
     }
 
     
     const openEventDetails = (eventId) => {
-        // if (reservations && reservations.some(reservation => reservation.id === eventId)) {
-        //     alert("You have already RSVP'd for this event.");
-        // } else {
-        //     alert("You have not RSVP'd for this event yet.");
-        // }
+
         console.log("RSVP clicked for event ID:", eventId);
-        navigate(`/alumni/events/${eventId}`);
+        navigate(`/${tokentype}/events/${eventId}`);
     }
+    
     const truncateDescription = (description, maxLines = 2) => {
+        if (description===null) return null;
         const lines = description.split('\n');
-        return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '');
+        console.log(event)
+        return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '...');
     };
 
     const truncatedDescription = truncateDescription(event.description, 2);
     return (
-        <div className="w-90 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1"
+        <div className={`max-w-130  ${reservationExclusiveWidth==true? "min-w-95 w-100":"min-w-70 w-full"}} h-130 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1`}
         onClick={() => {openEventDetails(event.event_id)}} 
         >
-            <div className="h-40 bg-gray-300">
-                {event.image && (
-                        <img
-                            src={event.image}
-                            alt="Event"
-                            className="w-full h-full object-cover"
-                        />
-                )}
-            </div>
+<div className="h-40 w-full">
+  {event.image ? (
+    <img
+      src={event.image}
+      alt="Event"
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <div className="w-full h-full bg-primary" />
+  )}
+</div>
+
             
             
-            <div className="p-4">
-                <h1 className="text-xl font-bold text-blue-900 pt-10">{event.title}</h1>
-                <p className="text-gray-600 pt-2 h-15 flex items-center">{truncatedDescription}</p>
+            <div className="p-4  h-full relative">
+                <div>
+                  <RsvpStatus event={event} />
+                </div>
+                <h1 className="text-xl font-bold text-blue-900 mt-3 h-15 w-full">{event.title}</h1>
+                <p className="text-gray-600 pt-2 h-15 flex line-clamp-2 w-full">{truncatedDescription}</p>
                 
                 
-                <div className="flex items-center mt-4 text-gray-600 space-x-3">
-                    <MapPinned/>
-                    <label>{event.location}</label>
+                <div className="flex items-center mt-4 text-gray-600 space-x-3 w-full">
+                    <MapPinned />
+                    <div className="w-full  overflow-x-auto">
+                        <label className="flex-shrink-0 whitespace-nowrap">{event.location}</label>
+                    </div>
                 </div>
                 <div className="flex items-center mt-2 text-gray-600 space-x-3">
                     <Calendar />
-                    <div className="flex flex-col w-1/2 overflow-y-scroll max-h-32">
+                    <div className="flex w-full overflow-x-scroll max-h-8 space-x-5">
                             {event.dates.map((datetime, index) => (
-                                <label key={index}>{parseTime(datetime)}</label>
+                              <div className='flex-shrink-0'>
+
+                                  <label key={index}>{parseTime(datetime)}</label>
+                              </div>
                             ))}
+
                     </div>
                 </div>
-                <div className="flex flex-row gap-2 mt-4 overflow-x-scroll">
+                <div className="flex flex-row gap-2 mt-4 overflow-x-scroll w-full h-10 items-center">
                     {event.tags.map((tag, index) => (
                         <span
                             key={index}
-                            className="bg-blue-100 text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg"
+                            className="bg-secondary text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg h-8"
                         >
                             {tag}
                         </span>
                     ))}
                     
+                    
+                </div>
+
+                <div className='flex flex-row w-full mt-2'>
+                  <div className='flex flex-row ml-auto space-x-5'>
+                    <img 
+                            src= {PersonOutline}
+                            alt="Sample Image" 
+                            className='mt-auto ml-auto'
+                    /> 
+                    <label className='flex flex-row text-primary ml-auto '>
+                    {event.going_count} Going</label>
+                  </div>
                     
                 </div>
             </div>

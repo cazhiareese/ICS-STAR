@@ -1,15 +1,20 @@
 
 from datetime import date, datetime
 from typing import List, Optional, Literal
-
+import brevo_python
+from brevo_python.rest import ApiException
 from sqlalchemy import UUID, func, or_
-from models.usermodel import User, UserAffiliation
-from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET
+from util.emailing.invitation import invitation
+from models.usermodel import User, UserAffiliation, UserTypeEnum
+from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET, brevo_configuration, email_sender
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from schemas.events_schema import DemographicsOut
 from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, EventTag, EventVisibleTo
+
+
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png"}
+
 MAX_FILE_SIZE = 10 * 1024 * 1024
 async def create_event_util(
     title: str ,
@@ -150,7 +155,27 @@ async def create_event_util(
             db.add(available_rsvp)
         db.commit()
     
-    return event
+    if sendEmail:
+        details = []
+        print("entered here emailing")
+        if not isAll:
+            if visibleList and len(visibleList)>0:
+                for userId in visibleList:
+                    recipients = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == userId).first()
+                    details.append({
+                        "name": f"{recipients.first_name} {recipients.last_name}",
+                        "email": recipients.email
+                    })
+        else:
+            users = db.query(User.first_name, User.last_name, User.email).filter(User.user_type == UserTypeEnum.alumni, User.is_verified == True).all()
+            for user in users:
+                details.append({
+                    "name": f"{user.first_name} {user.last_name}",
+                    "email": user.email
+                })
+        
+        # send_email_util(eventId=event.event_id, recipients=details, db=db)
+    return event.event_id
 
 async def edit_event_util (
     event_id: UUID,
@@ -345,3 +370,80 @@ def add_user_clicks(
     except Exception as e:
         db.rollback()
         raise e
+
+
+def get_event_by_id_util(eventId: UUID, db:Session):
+        try:
+            event = db.query(Event.event_id, Event.title, Event.image, Event.location, Event.description, Event.is_closed, Event.is_concluded).filter(Event.event_id==eventId).first()
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=f"Event not found: {e}")
+        
+        try:
+            event_dates = db.query(EventDate.date).filter(EventDate.event_id == event.event_id).all()
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=f"Event date not found: {e}")
+        
+        try: 
+            event_links= db.query(EventLink.link).filter(EventLink.event_id == event.event_id).all()
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=f"Event link not found: {e}")
+        
+        try: 
+            event_tags = db.query(EventTag.tag).filter(EventTag.event_id == event.event_id).all()
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=f"Event link not found: {e}")
+
+        dates_list = []
+        for date in event_dates:
+            # print(date[0])
+            dt = datetime.fromisoformat(str(date[0]))
+            formatted = dt.strftime("%Y-%m-%d %H:%M")
+            dates_list.append(formatted)
+
+        links_list= [link[0] for link in event_links]
+        tags_list = [tag[0] for tag in event_tags]
+
+
+        return {
+            "event_id": event.event_id, 
+            "title": event.title, 
+            "image": event.image,
+            "location": event.location, 
+            "description": event.description, 
+            "datetime": dates_list,
+            "links": links_list,
+            "tags": tags_list,
+            "is_closed": event.is_closed,
+            "is_concluded": event.is_concluded
+        }
+
+def send_email_util (eventId: UUID, recipients: List[dict], db: Session):
+    try:
+        event = get_event_by_id_util(eventId=eventId, db=db)
+        eventContents = {
+            "title": event["title"],
+            "image": event["image"],
+            "description": event["description"],
+            "location": event["location"],
+            "datetime": event["datetime"]
+        }
+        print(recipients)
+        finalImage = eventContents['image'] if eventContents.get('image') else 'https://rtyworjvisvjmixvxwmc.supabase.co/storage/v1/object/public/128storage/emailing_assets/default.jpg'
+        api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
+        subject = f"ICS-STAR invites you to: {eventContents['title']}"
+        sender = email_sender
+        html_content = invitation(eventId=eventId, title=eventContents['title'], datetime=event['datetime'][0],location=eventContents['location'], image=finalImage, description= eventContents['description'], )
+        to = [email_sender]
+        bcc=recipients
+        send_smtp_email = brevo_python.SendSmtpEmail(to=to, bcc=bcc, html_content=html_content, sender=sender, subject=subject)
+
+        try:
+            print("before execute")
+            api_response = api_instance.send_transac_email(send_smtp_email)
+            return {"message": api_response}
+        except ApiException as e:
+            print(f"Error: {e}")
+
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {e}")

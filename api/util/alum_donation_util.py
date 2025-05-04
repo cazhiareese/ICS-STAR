@@ -10,9 +10,40 @@ from datetime import datetime, timezone
 from typing import Optional, List
 import uuid
 import math
+from config.config import MAYA_PUBLIC_KEY, MAYA_CANCEL, MAYA_FAIL, MAYA_SUCCESS, MAYA_URL
+import random
+import string
+import httpx
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
+
+async def maya_donation(drive_id: uuid, value: float):
+    url = MAYA_URL
+    ref_num = ''.join(random.choices(string.ascii_letters + string.digits, k=12)).upper()
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": MAYA_PUBLIC_KEY
+    }
+
+    payload = {
+        "totalAmount": {
+            "value": value,
+            "currency": "PHP"
+        },
+        "redirectUrl": {
+            "success": f"{MAYA_SUCCESS}{drive_id}?success=true",
+            "failure": f"{MAYA_FAIL}{drive_id}",
+            "cancel": f"{MAYA_CANCEL}{drive_id}",
+        },
+        "requestReferenceNumber": f'ICS-{ref_num}'
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        return response.json()
 
 def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[DonationDriveOut]:
     drives = (
@@ -184,6 +215,7 @@ async def make_donation(
     drive: DonationDrive,
     monetary_donation: bool = False,
     in_kind_donation: bool = False,
+    direct_maya: Optional[bool] = None,
     amount: Optional[float] = None,
     description: Optional[str] = None,
     proof: Optional[UploadFile] = File(None),
@@ -207,35 +239,37 @@ async def make_donation(
     
     if monetary_donation:
         if amount is None or amount <= 0:
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid amount"
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid amount"
+                )
+        if not direct_maya:
+            proof_of_payment = await upload_proof(db, proof)
+            
+            monetary = MonetaryDonation(
+                date_donated = datetime.now(timezone.utc),
+                amount = amount,
+                drive_id = drive.drive_id,
+                user_id = user.user_id,
+                is_anonymous = is_anonymous if is_anonymous else False,
+                proof = proof_of_payment,
             )
-        
-        proof_of_payment = await upload_proof(db, proof)
-        
-        monetary = MonetaryDonation(
-            date_donated = datetime.now(timezone.utc),
-            amount = amount,
-            drive_id = drive.drive_id,
-            user_id = user.user_id,
-            is_anonymous = is_anonymous if is_anonymous else False,
-            proof = proof_of_payment,
-        )
-        try:
-            db.add(monetary)
-            db.commit()
-            db.refresh(monetary)
-        except Exception as e:
-            raise HTTPException(status_code=500, details=e)
-        
-        return {
-            "donation_drive": drive.title,
-            "date": monetary.date_donated,
-            "user": f"{name.first_name} {name.last_name}" if not is_anonymous else "Anonymous",
-            "status": "Pending Acknowledgement",
-            "amount": monetary.amount
-        }
+            try:
+                db.add(monetary)
+                db.commit()
+                db.refresh(monetary)
+            except Exception as e:
+                raise HTTPException(status_code=500, details=e)
+            
+            return {
+                "donation_drive": drive.title,
+                "date": monetary.date_donated,
+                "user": f"{name.first_name} {name.last_name}" if not is_anonymous else "Anonymous",
+                "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
+                "amount": monetary.amount
+            }
+        else:
+            return await maya_donation(drive.drive_id, amount)
     
     if in_kind_donation:
         if not description:
@@ -261,3 +295,26 @@ async def make_donation(
             "status": "Pending Acknowledgement",
             "details": in_kind.description
         }
+
+def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session):
+    name = db.query(User.first_name, User.last_name).filter(User.user_id == user_id).first()
+    monetary = MonetaryDonation(
+                date_donated = datetime.now(timezone.utc),
+                amount = amount,
+                drive_id = drive.drive_id,
+                user_id = user_id,
+                is_acknowledged = True
+            )
+    try:
+        db.add(monetary)
+        db.commit()
+        db.refresh(monetary)
+    except Exception as e:
+        raise HTTPException(status_code=500, details=e)
+    return {
+        "donation_drive": drive.title,
+        "date": monetary.date_donated,
+        "user": f"{name.first_name} {name.last_name}",
+        "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
+        "amount": monetary.amount
+    }

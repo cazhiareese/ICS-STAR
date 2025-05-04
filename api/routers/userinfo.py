@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships, get_user_job_post_history, get_user_job_posting, get_user_work
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 from models.job_posting_model import JobPosting
@@ -116,7 +116,7 @@ async def onboarding_student(
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(get_current_user)
 ):
-    process_student_onboarding(
+    data = process_student_onboarding(
         user=user,
         db=db,
         standing=standing,
@@ -126,8 +126,7 @@ async def onboarding_student(
         skills=skills,
     )
 
-    return {"message": "onboarding details updated successfully"}
-
+    return data
 
 @router.post("/onboarding-info-alum")
 async def onboarding_info(
@@ -150,7 +149,7 @@ async def onboarding_info(
     user: CurrentUser = Depends(get_current_user)
 ):
 
-    process_alumni_onboarding(
+    data = process_alumni_onboarding(
         user=user,
         db=db,
         scholarships=scholarships,
@@ -170,7 +169,7 @@ async def onboarding_info(
         skills=skills
     )
     
-    return {"message": "onboarding details updated successfully"}
+    return data
 
 @router.put("/update-employment")
 async def update_employment(
@@ -220,57 +219,218 @@ async def update_employment(
 
 # Get user profile details
 # Arguments: db - SQLAlchemy session, user - current user
-@router.get("/profile")
+@router.get("/profile/me/personal-information")
 async def get_profile(
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(get_current_user)
 ):
-    profile_user = db.query(User).filter(User.user_id==user.user_id).first()
     
-    profile_details = {
-        "user_id": profile_user.user_id,
-        "first_name": profile_user.first_name,
-        "last_name": profile_user.last_name,
-        "email": profile_user.email,
-        "mobile_number": profile_user.mobile_number,
-        "age": profile_user.age,
-        "gender": profile_user.gender.value if profile_user.gender else None,
-        "city": profile_user.city,
-        "state": profile_user.state,
-        "country": profile_user.country,
-        "marital_status": profile_user.marital_status,
-        "image": profile_user.image,
-        "user_type": profile_user.user_type.value,
-        "position": profile_user.position,
-        "is_banned": profile_user.is_banned,
-        "student_number": profile_user.student_number,
-        "standing": profile_user.standing.value if profile_user.standing else None,
-        "graduation_year": profile_user.graduation_year,
-        "graduation_semester": profile_user.graduation_semester,
-        "employment_status": profile_user.employment_status,
-        "industry": profile_user.industry,
-        "company_name": profile_user.company_name,
-        "job_title": profile_user.job_title,
-        "work_location": profile_user.work_location,
-        "work_mode": profile_user.work_mode,
-        "employer_class": profile_user.employer_class,
-        "tenured_status": profile_user.tenured_status,
-        "salary_grade": profile_user.salary_grade,
-        "facebook": profile_user.facebook,
-        "linkedin": profile_user.linkedin,
-        "github": profile_user.github,
-        "is_verified": profile_user.is_verified,
-        "verification_file": profile_user.verification_file,
-        "created_at": profile_user.created_at,
-        "updated_at": profile_user.updated_at,
-        "skills": [skill.skill for skill in profile_user.skills],
-        "scholarships": [scholarship.scholarship for scholarship in profile_user.scholarships],
-        "affiliations": [
-            {"affiliation": aff.affiliation, "role": aff.role} for aff in profile_user.affiliations
-        ],
+    personal_info = get_personal_info(user.user_id, db)
+
+    if not personal_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "user_id": personal_info.user_id,
+        "first_name": personal_info.first_name,
+        "last_name": personal_info.last_name,
+        "email": personal_info.email,
+        "image": personal_info.image,
+        "mobile_number": personal_info.mobile_number,
+        "city": personal_info.city,
+        "state": personal_info.state,
+        "country": personal_info.country,
+        "marital_status": personal_info.marital_status,
+        "student_number": personal_info.student_number,
+        "graduation_semester": personal_info.graduation_semester,
+        "graduation_year": personal_info.graduation_year,
+        "facebook": personal_info.facebook,
+        "linkedin": personal_info.linkedin,
+        "github": personal_info.github
     }
+
+    return {"message": "success", "data": result}
+
+@router.get("/profile/me/skills")
+async def get_skills(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
     
-    return {"message": "success", "data": profile_details}
+    skills = get_user_skills(user.user_id, db)
+
+    return {"message": "success", "data": skills}
+
+@router.get("/profile/me/affiliations")
+async def get_affiliations(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    affiliations = get_user_affiliations(user.user_id, db)
+
+    return {"message": "success", "data": affiliations}
+
+@router.get("/profile/me/scholarships")
+async def get_scholarships(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    scholarships = get_user_scholarships(user.user_id, db)
+
+    return {"message": "success", "data": scholarships}
+
+@router.get("/profile/me/job-post-history")
+async def get_post_history(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+        
+    job_post_history = get_user_job_post_history(user.user_id, db)
+
+    return {"message": "success", "data": job_post_history}
+
+@router.get("/profile/me/job-post/{post_id}")
+async def get_user_post(
+    post_id: UUID,
+    db: Session = Depends(get_db)
+):
+    job_post = get_user_job_posting(post_id, db)
+
+    return {"message": "success", "data": job_post}
+
+@router.get("/profile/me/work")
+async def get_work(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    work_info = get_user_work(user.user_id, db)
+
+    if not work_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "employment_status": work_info.employment_status,
+        "industry": work_info.industry,
+        "company_name": work_info.company_name,
+        "job_title": work_info.job_title,
+        "work_location": work_info.work_location,
+        "work_mode": work_info.work_mode,
+        "employer_class": work_info.employer_class,
+        "tenured_status": work_info.tenured_status,
+        "salary_grade": work_info.salary_grade
+    }
+
+    return {"message": "success", "data": result}
+
+
+@router.get("/profile/{user_id}/personal-information")
+async def get_profile(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    
+    personal_info = get_personal_info(user_id, db)
+
+    if not personal_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "user_id": personal_info.user_id,
+        "first_name": personal_info.first_name,
+        "last_name": personal_info.last_name,
+        "email": personal_info.email,
+        "image": personal_info.image,
+        "mobile_number": personal_info.mobile_number,
+        "city": personal_info.city,
+        "state": personal_info.state,
+        "country": personal_info.country,
+        "marital_status": personal_info.marital_status,
+        "student_number": personal_info.student_number,
+        "graduation_semester": personal_info.graduation_semester,
+        "graduation_year": personal_info.graduation_year,
+        "facebook": personal_info.facebook,
+        "linkedin": personal_info.linkedin,
+        "github": personal_info.github
+    }
+
+    return {"message": "success", "data": result}
+
+@router.get("/profile/{user_id}/skills")
+async def get_skills(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    skills = get_user_skills(user_id, db)
+
+    return {"message": "success", "data": skills}
+
+@router.get("/profile/{user_id}/affiliations")
+async def get_affiliations(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    affiliations = get_user_affiliations(user_id, db)
+
+    return {"message": "success", "data": affiliations}
+
+@router.get("/profile/{user_id}/scholarships")
+async def get_scholarships(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    scholarships = get_user_scholarships(user_id, db)
+
+    return {"message": "success", "data": scholarships}
+
+@router.get("/profile/{user_id}/job-post-history")
+async def get_post_history(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+        
+    job_post_history = get_user_job_post_history(user_id, db)
+
+    return {"message": "success", "data": job_post_history}
+
+@router.get("/profile/{user_id}/job-post/{post_id}")
+async def get_user_post(
+    post_id: UUID,
+    db: Session = Depends(get_db)
+):
+    job_post = get_user_job_posting(post_id, db)
+
+    return {"message": "success", "data": job_post}
+
+@router.get("/profile/{user_id}/work")
+async def get_work(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    
+    work_info = get_user_work(user_id, db)
+
+    if not work_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "employment_status": work_info.employment_status,
+        "industry": work_info.industry,
+        "company_name": work_info.company_name,
+        "job_title": work_info.job_title,
+        "work_location": work_info.work_location,
+        "work_mode": work_info.work_mode,
+        "employer_class": work_info.employer_class,
+        "tenured_status": work_info.tenured_status,
+        "salary_grade": work_info.salary_grade
+    }
+
+    return {"message": "success", "data": result}
 
 # Get user profile details by user ID
 # Arguments: db - SQLAlchemy session, user_id - the user ID
@@ -593,3 +753,98 @@ async def get_job_posts(
     job_posts = db.query(JobPosting).filter(JobPosting.user_id == user.user_id).all()
 
     return {"message": "success", "data": job_posts}
+
+@router.get("/email-name/me")
+async def get_email_name(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    email_name = db.query(User.email, User.first_name, User.last_name).filter(User.user_id == user.user_id).first()
+
+    email, first_name, last_name = email_name
+    return {
+        "message": "success",
+        "data": {
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name
+        }
+    }
+
+@router.put("/update-email")
+async def update_email(
+    email: str = Form(...),
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    db.query(User).filter(User.user_id==user.user_id).update({User.email: email})
+    db.commit()
+    
+    return {"message": "Email updated successfully"}
+
+@router.get("/email-name/{user_id}")
+async def get_email_name_by_id(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    email_name = db.query(User.email, User.first_name, User.last_name).filter(User.user_id == user_id).first()
+
+    email, first_name, last_name = email_name
+    return {
+        "message": "success",
+        "data": {
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name
+        }
+    }
+
+@router.get("/profile-picture/{userid}")
+async def get_profile_picture_by_id(
+    userid: UUID,
+    db: Session = Depends(get_db),
+):
+    img = db.query(User.image).filter(User.user_id==userid).first()
+    return {"profile_picture": img.image}
+
+@router.get("/me/status")
+async def get_user_status(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    status = db.query(
+        User.is_banned,
+        User.is_verified,
+        User.user_type
+    ).filter(User.user_id==user.user_id).first()
+    
+    return {
+        "status": {
+            "is_banned": status[0],
+            "is_verified": status[1],
+            "user_type": status[2]
+        }
+    }
+
+@router.get("/{user_id}/status")
+async def get_user_status_by_id(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    status = db.query(
+        User.is_banned,
+        User.is_verified,
+        User.user_type
+    ).filter(User.user_id == user_id).first()
+
+
+    return {
+        "status": {
+            "is_banned": status[0],
+            "is_verified": status[1],
+            "user_type": status[2]
+        }
+    }

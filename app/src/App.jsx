@@ -50,7 +50,6 @@ import OtherUserProfile from "./RootPages/OtherUserprofile";
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
-import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
 import EditJobPostAlum from "./RootPages/AlumniPages/job-posting/editJobPostings";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
@@ -84,6 +83,8 @@ import AdminUserReports from "./RootPages/AdminPages/Layouts/adminuserreports";
 import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 
 
+import GuestLanding from "./RootPages/GuestPages/guestlanding";
+import AccountSettings from "./RootPages/Account/accountsettings";
 //const isSignedIn = !!localStorage.getItem("token");
 
 
@@ -105,13 +106,42 @@ function App() {
     }
   }
 
+  function isOnboarded() {
+    const User = localStorage.getItem("token");
+    //const User = true;
+    let tokenType = null;
+    if (User) {
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      //tokenType = "admin";
+      //tokenType = "alumni";
+      const onBoarding = decoded.is_onboarded; // Adjust this based on your token structure
+      const verified = decoded.is_verified
+      console.log("Decoded token type:", tokenType);
+
+      console.log
+      if (onBoarding && verified){    
+        return true
+      } else if (!verified){
+        return true
+      }
+        return false
+    } else {
+      console.warn("⚠️ No token found in sessionStorage");
+    }
+  }
+
+
   console.log(isSignedIn);
 
   return (
     <Routes>
+      <Route path="/" element={<Navigate to={isSignedIn ? "/login" : "login"} />} />
+
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="login" element={<LoginPage />} />
           <Route
             path="signup"
@@ -135,11 +165,14 @@ function App() {
       
       {isSignedIn && checkType() === "alumni" && (
         <>
+          {isOnboarded()?
+           <>
           <Route path="/" element={<Root />}>
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
+            <Route path="alumni/account/settings" element={<AccountSettings />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
-            <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
+            <Route path="alumni/profile/:userId" element={<UserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/events" element={<EventsLanding />} />
             <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
@@ -156,29 +189,66 @@ function App() {
             <Route path="alumni/newsletter" element={<NewsletterLanding />} />
             <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
-            <Route path="*" element={<Unauthorized />} />
+            <Route path="*" element={<LoginPage />} />
 
-            <Route
-            path="setup"
-            element={
-              <OnboardingProvider>
-                <OnBoarding />
-              </OnboardingProvider>
-            }
-            />
+
           </Route>
+          </>
+          :
+          <Route
+              path="*"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+            
+            />
+         } 
         </>
       )} 
 
       {isSignedIn && checkType() === "student" && (
         <>
-          <Route path="/" element={<Root />}>
+          {isOnboarded() ?
+          <>
+            <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/account/settings" element={<AccountSettings />} />
             <Route path="student/events" element={<EventsLanding />} />
-            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
+            <Route path="students/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
-            <Route path="alumni/donations" element={<DonationLanding />} />
-            <Route path="*" element={<UserProfile />} />
+            <Route path="student/newsletter" element={<NewsletterLanding />} />
+            <Route path="student/newsletter/:newsletterid" element={<Newsletter />} />
+            <Route path="student/jobPosting/interested/:jobid" element={<InterestedUsers />} />
+            <Route path="student/jobPosting/report/:jobid" element={<ReportJobPosting />} />
+            <Route path="student/jobPosting" element={<JobPostingLanding />} />
+            <Route path="*" element={<LoginPage />} />
+          </Route>
+          </>
+           : 
+            <Route
+              path="*"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+              />
+         }
+        </>
+      )}
+
+      {!isSignedIn  && (
+        <>
+          <Route path="/" element={<Root />}>
+            <Route path="guest/dashboard" element={<GuestLanding />} />
+            <Route path="guest/events" element={<EventsLanding />} />
+            <Route path="guest/events/:eventid" element={<EventCardsMain />} />
+            <Route path="guest/newsletter" element={<NewsletterLanding />} />
+            <Route path="guest/newsletter/:newsletterid" element={<Newsletter />} />
+            <Route path="*" element={<LoginPage />} />
+
           </Route>
         </>
       )}
@@ -199,7 +269,7 @@ function App() {
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
-              <Route path=":userid" element={<AdminUserDetails />} />
+              <Route path=":userId" element={<UserProfile />} />
               <Route path="pending-verifications" element={<AdminPendingVerifications />}/>
               <Route path="verification-confirmation/:userid"element={<AdminVerificationConfirmation />}/>
             </Route>
@@ -213,8 +283,8 @@ function App() {
             <Route path="newsletter" element={<AdminNewsletterLayout />} >
               <Route index element={<AdminNewsLetter/>}/>
               <Route path="create-newsletter" element={<AdminCreateNewsletter/>}/>
-              <Route path="newsletter-details" element={<AdminNewsletterDetails/>}/>
-              <Route path="newsletter-details/edit-newsletter" element={<AdminEditNewsletter/>}/>  
+              <Route path="newsletter-details/:id" element={<AdminNewsletterDetails/>}/>
+              <Route path="newsletter-details/:newsletter_id/edit-newsletter" element={<AdminEditNewsletter/>}/>  
             </Route>
             <Route path="career" element={<AdminCareerLayout />}>
               <Route index element ={<AdminCareer/>}/>

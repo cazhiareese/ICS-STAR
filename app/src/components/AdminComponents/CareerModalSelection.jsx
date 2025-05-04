@@ -72,6 +72,7 @@ const CareerModal = ({ setCareerList, setIsCareerModalOpen }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
       <div className="bg-white border border-disabled p-6 relative z-10 flex flex-col w-full max-w-[650px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen overflow-auto">
         <div className="flex justify-between items-center pb-2">
           <h2 className="text-lg font-satoshi-bold sm:text-[24px]">Alumni Career</h2>

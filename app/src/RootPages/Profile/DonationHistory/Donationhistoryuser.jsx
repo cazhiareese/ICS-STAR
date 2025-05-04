@@ -45,11 +45,14 @@ function DonationHistoryUser({ userDetails }) {
         const [monetaryRes, inKindRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
             headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }),
           axios.get(`${API_BASE_URL}/donation-history/in-kind-donations`, {
             headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }),
         ]);
+        
 
         const monetary = monetaryRes.data.data.map((d) => ({
           ...d,
@@ -224,7 +227,7 @@ function DonationHistoryUser({ userDetails }) {
               <div
                 key={donation.donation_id}
                 onClick={() => openModal(donation)}
-                className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
+                className="border-b border-disabled py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
               >
                 <div
                   className={selectedType === "Monetary" ? "w-1/4" : "w-1/4"}

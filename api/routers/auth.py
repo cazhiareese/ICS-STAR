@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated, Optional
 from config.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
-from schemas.user import CurrentUser, UserOut
+from schemas.user import CurrentUser, EmailRequest, UserOut
 
 from util.userutil import register_user, get_current_active_user, require_student, require_alum, require_admin, authenticate_user, create_access_token, get_email, get_studno, register_with_google
 from util.reports_logic import logic_login_log, logic_logout_log
@@ -23,6 +23,11 @@ async def check_email(email: str, db: Session = Depends(get_db)):
 @router.get("/get-studno")
 async def check_student_number(student_number: str, db: Session = Depends(get_db)):
     return await get_studno(student_number, db)
+
+@router.post("/get-email")
+async def check_email(request: EmailRequest, db: Session = Depends(get_db)):
+    return await get_email(request.email, db)
+
 
 @router.post("/register")
 async def register(

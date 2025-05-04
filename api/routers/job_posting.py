@@ -3,11 +3,11 @@ import math
 from uuid import UUID
 from fastapi import Depends, HTTPException, APIRouter, Form, Query, UploadFile, File
 from typing import Optional, List
-from sqlalchemy import distinct, func
+from sqlalchemy import asc, desc, distinct, func
 from sqlalchemy.orm import Session
 from util.userutil import get_current_user
 from models.usermodel import User
-from schemas.job_posting_schema import JobPostingOut, PaginatedJobPostingResponse
+from schemas.job_posting_schema import JobPostingOut, PaginatedJobPostingResponse, PaginatedJobPostingsOut
 from schemas.report_schema import PostReportDetailOut, PaginatedReportedResponse
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn
@@ -128,8 +128,21 @@ def close_job_posting_endpoint(
     return {"detail": "Job posting closed successfully"}
 
 # Get all job postings
-@router.get("/job-postings/", response_model=List[JobPostingOut])
-def get_job_postings(db: Session = Depends(get_db)):
+@router.get("/job-postings/", response_model=PaginatedJobPostingsOut)
+def get_job_postings(
+    page: int = Query(1, ge=1, description="Page number, starting from 1"),
+    db: Session = Depends(get_db),
+):
+    
+    page_size: int = 10
+    
+    # Calculate total number of job postings
+    total_items = db.query(JobPosting).count()
+    total_pages = (total_items + page_size - 1) // page_size  # Ceiling division
+
+    # Calculate offset
+    offset = (page - 1) * page_size
+
     # Query to get job postings with required information
     query_result = db.query(
         JobPosting.post_id,
@@ -138,10 +151,10 @@ def get_job_postings(db: Session = Depends(get_db)):
         JobPosting.description,
         JobPosting.employment_type,
         JobPosting.mode,
-        User.user_id,
         JobPosting.salary,
         JobPosting.link,
         JobPosting.image,
+        User.user_id,
         func.concat(User.first_name, ' ', User.last_name).label('user_name'),
         func.count(func.distinct(JobPostingInterestedIn.user_id)).label('interested_count')
     ).join(
@@ -153,11 +166,16 @@ def get_job_postings(db: Session = Depends(get_db)):
         JobPosting.title,
         JobPosting.company,
         JobPosting.description,
+        JobPosting.employment_type,
+        JobPosting.mode,
+        JobPosting.salary,
+        JobPosting.link,
+        JobPosting.image,
         User.user_id,
         func.concat(User.first_name, ' ', User.last_name)
-    ).all()
+    ).offset(offset).limit(page_size).all()
     
-    # Now we need to get tags for each job posting
+    # Process results and get tags for each job posting
     result = []
     for row in query_result:
         job_id = row.post_id
@@ -180,7 +198,13 @@ def get_job_postings(db: Session = Depends(get_db)):
             "interested_count": row.interested_count
         })
     
-    return result
+    # Return structured response
+    return {
+        "success": "Job postings retrieved successfully",
+        "page": page,
+        "total_pages": total_pages,
+        "result": result
+    }
 
 # Get job posting by ID
 @router.get("/job-postings/{job_id}", response_model=JobPostingOut)
@@ -252,23 +276,25 @@ def get_job_posting(
 @router.get("/admin/job-postings/open", response_model=PaginatedJobPostingResponse)
 def get_open_job_postings(
     page: int = Query(1, ge=1, description="Page number"),
+    creator: Optional[str] = "",
+    order_by: Optional[str] = "",
     db: Session = Depends(get_db)
 ):
     
     per_page = 10  # Number of items per page
 
     # Get total count for pagination
-    total_count = db.query(func.count(JobPosting.post_id))\
-        .filter(
-            JobPosting.is_closed == False,
-            JobPosting.is_deleted == False
-        ).scalar()
+    # total_count = db.query(func.count(JobPosting.post_id))\
+    #     .filter(
+    #         JobPosting.is_closed == False,
+    #         JobPosting.is_deleted == False
+    #     ).scalar()
     
     # Calculate offset
     offset = (page - 1) * per_page
     
     # Main query with pagination
-    query_result = db.query(
+    query = db.query(
         JobPosting.post_id,
         JobPosting.title,
         JobPosting.date_posted, 
@@ -289,10 +315,33 @@ def get_open_job_postings(
     ).group_by(
         JobPosting.post_id, JobPosting.title, JobPosting.date_posted, JobPosting.company,
         JobPosting.description, JobPosting.employment_type, JobPosting.mode, JobPosting.salary, 'user_name'
-    ).order_by(
-        JobPosting.date_posted.desc()  # Order by most recent first
-    ).offset(offset).limit(per_page).all()
+    )
+
+    if creator:
+        query = query.filter(func.concat(User.first_name, ' ', User.last_name).ilike(f"%{creator}%"))
     
+    subq = query.subquery()
+    total_count= db.query(func.count()).select_from(subq).scalar()
+    
+    if order_by:
+        order_parts = order_by.lower().split('_')
+        order_field = order_parts[0]
+        order_direction = order_parts[1] if len(order_parts) > 1 else 'asc'
+
+        if order_field == 'date':
+            order_column = JobPosting.date_posted 
+        
+        if order_field == 'count':
+            order_column = 'interested_count'
+
+        if order_direction == 'desc':
+            query = query.order_by(desc(order_column))
+        else:
+            query = query.order_by(asc(order_column))
+    else: 
+        query = query.order_by(desc(JobPosting.date_posted))
+    
+    query_result = query.offset(offset).limit(per_page).all()
     # Format results
     result = []
     for row in query_result:
@@ -340,23 +389,25 @@ def get_open_job_postings_count(
 @router.get("/admin/job-postings/closed", response_model=PaginatedJobPostingResponse)
 def get_closed_job_postings(
     page: int = Query(1, ge=1, description="Page number"),
+    creator: Optional[str] = "",
+    order_by: Optional[str] = "",
     db: Session = Depends(get_db)
 ):
     
     per_page = 10  # Number of items per page
 
     # Get total count for pagination
-    total_count = db.query(func.count(JobPosting.post_id))\
-        .filter(
-            JobPosting.is_closed == True,
-            JobPosting.is_deleted == False
-        ).scalar()
+    # total_count = db.query(func.count(JobPosting.post_id))\
+    #     .filter(
+    #         JobPosting.is_closed == True,
+    #         JobPosting.is_deleted == False
+    #     ).scalar()
     
     # Calculate offset
     offset = (page - 1) * per_page
     
     # Main query with pagination
-    query_result = db.query(
+    query = db.query(
         JobPosting.post_id,
         JobPosting.title,
         JobPosting.date_posted,
@@ -377,9 +428,33 @@ def get_closed_job_postings(
     ).group_by(
         JobPosting.post_id, JobPosting.title, JobPosting.date_posted, JobPosting.company,
         JobPosting.description, JobPosting.employment_type, JobPosting.mode, JobPosting.salary, 'user_name'
-    ).order_by(
-        JobPosting.date_posted.desc()  # Order by most recent first
-    ).offset(offset).limit(per_page).all()
+    )
+
+    if creator:
+        query = query.filter(func.concat(User.first_name, ' ', User.last_name).ilike(f"%{creator}%"))
+    
+    subq = query.subquery()
+    total_count= db.query(func.count()).select_from(subq).scalar()
+    
+    if order_by:
+        order_parts = order_by.lower().split('_')
+        order_field = order_parts[0]
+        order_direction = order_parts[1] if len(order_parts) > 1 else 'asc'
+
+        if order_field == 'date':
+            order_column = JobPosting.date_posted 
+        
+        if order_field == 'count':
+            order_column = 'interested_count'
+
+        if order_direction == 'desc':
+            query = query.order_by(desc(order_column))
+        else:
+            query = query.order_by(asc(order_column))
+    else: 
+        query = query.order_by(desc(JobPosting.date_posted))
+    
+    query_result = query.offset(offset).limit(per_page).all()
     
     # Format results
     result = []
@@ -427,6 +502,8 @@ def get_closed_job_postings_count(
 @router.get("/admin/job-postings/reported", response_model=PaginatedReportedResponse)
 def get_reported_job_postings(
     page: int = Query(1, ge=1, description="Page number"),
+    creator: Optional[str] = "",
+    order_by: Optional[str] = "",
     db: Session = Depends(get_db),
 ):
     
@@ -443,7 +520,7 @@ def get_reported_job_postings(
     offset = (page - 1) * per_page
     
     # Main query with pagination
-    query_result = db.query(
+    query = db.query(
         JobPosting.post_id,
         JobPosting.title,
         JobPosting.date_posted, 
@@ -460,9 +537,33 @@ def get_reported_job_postings(
         JobPosting.is_deleted == False
     ).group_by(
         JobPosting.post_id, JobPosting.title, JobPosting.date_posted, 'user_name' 
-    ).order_by(
-        func.count(func.distinct(Report.report_id)).desc()  # Order by most reported
-    ).offset(offset).limit(per_page).all()
+    )
+
+    if creator:
+        query = query.filter(func.concat(User.first_name, ' ', User.last_name).ilike(f"%{creator}%"))
+    
+    subq = query.subquery()
+    total_count= db.query(func.count()).select_from(subq).scalar()
+    
+    if order_by:
+        order_parts = order_by.lower().split('_')
+        order_field = order_parts[0]
+        order_direction = order_parts[1] if len(order_parts) > 1 else 'asc'
+
+        if order_field == 'date':
+            order_column = JobPosting.date_posted 
+        
+        if order_field == 'count':
+            order_column = 'interested_count'
+
+        if order_direction == 'desc':
+            query = query.order_by(desc(order_column))
+        else:
+            query = query.order_by(asc(order_column))
+    else: 
+        query = query.order_by(desc(JobPosting.date_posted))
+    
+    query_result = query.offset(offset).limit(per_page).all()
     
     result = []
     for row in query_result:

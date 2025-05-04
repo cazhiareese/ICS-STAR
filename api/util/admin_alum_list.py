@@ -27,7 +27,7 @@ def get_all_alumni(db: Session):
         ).label('is_inactive')
     ).filter(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
     ).all()
 
     count_alumni = (
@@ -35,12 +35,12 @@ def get_all_alumni(db: Session):
             func.count()
         ).where(
             User.is_verified == True,
-            User.user_type == 'alumni',
+            User.user_type == UserTypeEnum.alumni,
         ).scalar()
     )
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return []
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -73,6 +73,7 @@ def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None,
     ITEMS_PER_PAGE = 10
     query = db.query(
         User.user_id,
+        User.image,
         User.first_name, 
         User.last_name,
         func.split_part(User.student_number, '-', 1).label("batch"),
@@ -87,7 +88,7 @@ def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None,
         ).label('is_inactive')
     ).filter(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
     )
 
     if batch:
@@ -152,7 +153,7 @@ def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None,
     alumni = query.all()
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return[]
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -166,6 +167,7 @@ def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None,
             check = False
         al = {
             "user_id": alum["user_id"],
+            "image": alum["image"],
             "name": f"{alum['first_name']} {alum['last_name']}",
             "batch": alum["batch"],
             "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
@@ -199,6 +201,7 @@ def get_alumni_filter(
     query = db.query(
         User.user_id,
         User.first_name, 
+        User.image,
         User.last_name,
         func.split_part(User.student_number, '-', 1).label("batch"),
         User.city,
@@ -220,12 +223,12 @@ def get_alumni_filter(
     if not needs_verified:
         query = query.filter(
         User.is_verified == False,
-        User.user_type == 'alumni'
+        User.user_type == UserTypeEnum.alumni
         )
     else:
         query = query.filter(
         User.is_verified == True,
-        User.user_type == 'alumni'
+        User.user_type == UserTypeEnum.alumni
         )
     if name:
         name_parts = name.split()
@@ -324,7 +327,7 @@ def get_alumni_filter(
     alumni = query.all()
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return []
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -340,6 +343,7 @@ def get_alumni_filter(
         if needs_verified:
             al = {
                 "user_id": alum["user_id"],
+                "image": alum["image"],
                 "name": f"{alum['first_name']} {alum['last_name']}",
                 "batch": alum["batch"],
                 "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
@@ -351,6 +355,7 @@ def get_alumni_filter(
         else:
             al = {
                  "user_id": alum["user_id"],
+                 "image": alum["image"],
                 "name": f"{alum['first_name']} {alum['last_name']}",
                 "email": alum["email"],
                 "student_number": alum["student_number"],
@@ -379,6 +384,8 @@ def get_student_filter(
         User.user_id,
         User.first_name, 
         User.last_name,
+        User.image,
+        User.student_number,
         func.split_part(User.student_number, '-', 1).label("batch"),
         User.standing,
         func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_updated'), 
@@ -463,7 +470,7 @@ def get_student_filter(
     students = query.all()
 
     if not students:
-        raise HTTPException(status_code=404, detail="No students found")
+        return []
 
     students_dict = [row._asdict() for row in students]
     student_list = []
@@ -475,8 +482,10 @@ def get_student_filter(
         if needs_verified:
             student_data = {
                 "user_id": student["user_id"],
+                "image": student["image"],
                 "name": f"{student['first_name']} {student['last_name']}",
                 "batch": student["batch"],
+                "student_number": student["student_number"],
                 "standing": student["standing"],
                 "last_updated": student["last_updated"],
                 "is_reported": check,
@@ -485,6 +494,7 @@ def get_student_filter(
         else:
             student_data = {
                 "user_id": student["user_id"],
+                "image": student["image"],
                 "name": f"{student['first_name']} {student['last_name']}",
                 "email": student["email"],
                 "student_number": student["student_number"],

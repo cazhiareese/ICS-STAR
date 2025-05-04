@@ -10,8 +10,9 @@ import check from "../../../assets/check.png";
 import axios from "axios";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
 import Curve from "../../../assets/curve.png";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
+import PaymentMode from "../../../components/AlumniComponents/DonationComponents/paymentmode";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
@@ -36,6 +37,8 @@ function Donationform() {
     const [summary, setSummary] = useState({});
     const [summaryLoading, setSummaryLoading] = useState(true);
     const [driveDetails, setDriveDetails] = useState(null);
+    const [searchParams] = useSearchParams();
+    const success = searchParams.get("success");
 
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -94,6 +97,7 @@ function Donationform() {
         formData.append('monetary_donation', true);
         formData.append('in_kind_donation', false);
         formData.append('amount', monetaryAmountInput);
+        formData.append('direct_maya', false); 
         formData.append('is_anonymous', isAnonymous);
 
         if (file != null) {
@@ -124,6 +128,98 @@ function Donationform() {
         }
     };
 
+    const submitMayaDonation = async () => {
+        if (monetaryAmountInput <= 0) {
+            alert("Please enter a valid amount.");
+            return;
+        }
+    
+        setSubmitting(true);
+        const formData = new FormData();
+        const token = localStorage.getItem("token");
+    
+        formData.append('monetary_donation', 'true'); // Use strings
+        formData.append('in_kind_donation', 'false');
+        formData.append('direct_maya', 'true'); 
+        formData.append('amount', String(monetaryAmountInput));
+    
+        try {
+            for (let pair of formData.entries()) {
+                console.log(`${pair[0]}: ${pair[1]}`);
+            }
+    
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+    
+            if (response.status === 200 && response.data.redirectUrl) {
+                // ✅ Automatically redirect
+                localStorage.setItem("maya_donation_amount", String(monetaryAmountInput));
+
+                window.location.href = response.data.redirectUrl;
+            } else {
+                console.warn("No redirect URL found in response");
+            }
+        } catch (error) {
+            console.error("Error submitting donation:", error);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    useEffect(() => {
+        if (success === "true") {
+          console.log("Payment successful");
+          callMayaCallback();
+        }
+      }, [success]);
+    
+
+
+
+      const callMayaCallback = async () => {
+        const token = localStorage.getItem("token");
+        const amount = localStorage.getItem("maya_donation_amount");
+    
+        console.log("Maya Callback triggered with amount:", amount);
+    
+        const formData = new FormData();
+        formData.append("amount", amount);  // Append the amount as form data
+    
+        try {
+            const response = await axios.post(`${API_BASE_URL}/maya-callback?drive_id=${drive_id}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'  
+                }
+            });
+    
+            if (response.status === 200) {
+                console.log("Donation acknowledged:", response.data);
+                setDonationSuccess(true);
+                setSummaryLoading(true); // Start loading for the summary
+                setSummary(response.data); // Set summary after successful donation
+                setMonetaryAmountInput(amount)
+                setIsMonetaryTypeOpen(false);
+                setIsInKindTypeOpen(false);
+                setSubmitting(false);
+                localStorage.removeItem("amount");
+
+            } else {
+                console.warn("Callback response issue:", response);
+            }
+        } catch (error) {
+            console.error("Error in Maya callback:", error);
+        }
+    };
+    
+    
+
+
+
     const submitInKindDonation = async () => {
         // Ensure that all required fields are not empty
         if (donationDetailsInput == null) {
@@ -136,6 +232,7 @@ function Donationform() {
 
         formData.append('monetary_donation', false);
         formData.append('in_kind_donation', true);
+        formData.append('direct_maya', 'false'); 
         formData.append('description', donationDetailsInput);
 
         try {
@@ -208,6 +305,15 @@ function Donationform() {
                                     monetaryAmountInput={monetaryAmountInput}
                                     setMonetaryAmountInput={setMonetaryAmountInput}
                                 />
+
+                                <PaymentMode/>
+                                <button
+  onClick={submitMayaDonation}
+  className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+>
+  Donate via Maya
+</button>
+
                                 <DonationInstructions donationType={"monetary"} />
                                 <PaymentProof
                                     fileInputRef={fileInputRef}
@@ -258,11 +364,11 @@ function Donationform() {
                                 <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:hidden block">
                                     {/* <DonationDeets/> */}
                                     {isMonetaryType && (
-                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary"/>
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary" landing={null}/>
                                     )}
 
                                     {!isMonetaryType && (
-                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id}/>
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} landing={null}/>
                                     )}
                                     
                                 </div>

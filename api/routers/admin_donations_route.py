@@ -1,7 +1,7 @@
 import math
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from schemas.donation_schema import (
     AdminDonationDriveOut, 
     AdminOneDonationDriveOut, 
@@ -69,7 +69,10 @@ from util.admin_donations_logic import (search_donation_drives,
                                         update_generic_drive_stats_this_week,
                                         update_generic_drive_stats_this_year,
                                         get_top_drives_with_goals_reached,
-                                        get_top_performing_drives
+                                        get_top_performing_drives,
+                                        get_all_verified_donations_all_drive,
+                                        get_all_pending_donations,
+                                        get_all_verified_donations
                                         )
 from datetime import datetime
 from uuid import UUID
@@ -100,10 +103,12 @@ def paginate_results_donation(results: list, page: int, page_size: int):
 @router.get("/admin/donations/search", response_model=List[AdminDonationDriveOut])
 def search_drives(
     title: str = "",
+    sort_by: str = "",
+    is_closed: bool = False,
     db: Session = Depends(get_db)
 ):
     
-    results = search_donation_drives(db, title)
+    results = search_donation_drives(db, title, sort_by, is_closed)
 
     return results
 
@@ -196,9 +201,10 @@ def update_generic_drive_this_year(
 @router.get("/admin/donations/closed-drives", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives(db)
+    results = get_all_closed_drives(db=db, title=title)
 
     page_size = 10
 
@@ -217,9 +223,10 @@ def closed_drives(
 @router.get("/admin/donations/closed-drives-by-amount-raised-descending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_amount_raised(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_amount_raised_descending(db)
+    results = get_all_closed_drives_by_amount_raised_descending(db=db, title=title)
 
     page_size = 10
 
@@ -238,9 +245,10 @@ def closed_drives_by_amount_raised(
 @router.get("/admin/donations/closed-drives-by-amount-raised-ascending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_amount_raised_ascending(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_amount_raised_ascending(db)
+    results = get_all_closed_drives_by_amount_raised_ascending(db=db, title=title)
 
     page_size = 10
 
@@ -259,9 +267,10 @@ def closed_drives_by_amount_raised_ascending(
 @router.get("/admin/donations/closed-drives-by-date-closed-newest", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_date_closed_newest(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_date_closed_newest(db)
+    results = get_all_closed_drives_by_date_closed_newest(db=db, title=title)
     page_size = 10
 
     if not results:
@@ -279,9 +288,10 @@ def closed_drives_by_date_closed_newest(
 @router.get("/admin/donations/closed-drives-by-date-closed-oldest", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_date_closed_oldest(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_date_closed_oldest(db)
+    results = get_all_closed_drives_by_date_closed_oldest(db=db, title=title)
 
     page_size = 10
 
@@ -300,9 +310,10 @@ def closed_drives_by_date_closed_oldest(
 @router.get("/admin/donations/closed-drives-by-date-created-newest", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_date_created_newest(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_date_created_newest(db)
+    results = get_all_closed_drives_by_date_created_newest(db=db, title=title)
 
     page_size = 10
 
@@ -321,9 +332,10 @@ def closed_drives_by_date_created_newest(
 @router.get("/admin/donations/closed-drives-by-date-created-oldest", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_date_created_oldest(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_date_created_oldest(db)
+    results = get_all_closed_drives_by_date_created_oldest(db=db, title=title)
 
     page_size = 10
 
@@ -342,9 +354,10 @@ def closed_drives_by_date_created_oldest(
 @router.get("/admin/donations/closed-drives-by-donation-count-descending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_donation_count_descending(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_donation_count_descending(db)
+    results = get_all_closed_drives_by_donation_count_descending(db=db, title=title)
 
     page_size = 10
 
@@ -363,9 +376,10 @@ def closed_drives_by_donation_count_descending(
 @router.get("/admin/donations/closed-drives-by-donation-count-ascending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_donation_count_ascending(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_donation_count_ascending(db)
+    results = get_all_closed_drives_by_donation_count_ascending(db=db, title=title)
 
     page_size = 10
 
@@ -384,9 +398,10 @@ def closed_drives_by_donation_count_ascending(
 @router.get("/admin/donations/closed-drives-by-percent-funded-descending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_percent_funded_descending(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_percent_funded_descending(db)
+    results = get_all_closed_drives_by_percent_funded_descending(db=db, title=title)
 
     page_size = 10
 
@@ -405,9 +420,10 @@ def closed_drives_by_percent_funded_descending(
 @router.get("/admin/donations/closed-drives-by-percent-funded-ascending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_percent_funded_ascending(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_percent_funded_ascending(db)
+    results = get_all_closed_drives_by_percent_funded_ascending(db=db, title=title)
 
     page_size = 10
 
@@ -426,9 +442,10 @@ def closed_drives_by_percent_funded_ascending(
 @router.get("/admin/donations/closed-drives-by-target-cost-ascending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_target_cost_ascending(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_target_cost_ascending(db)
+    results = get_all_closed_drives_by_target_cost_ascending(db=db, title=title)
 
     page_size = 10
 
@@ -447,9 +464,10 @@ def closed_drives_by_target_cost_ascending(
 @router.get("/admin/donations/closed-drives-by-target-cost-descending", response_model=PaginatedClosedDonationDrivesResponse)
 def closed_drives_by_target_cost_descending(
     db: Session = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number")
+    page: int = Query(1, ge=1, description="Page number"),
+    title: Optional[str] = ""
 ):
-    results = get_all_closed_drives_by_target_cost_descending(db)
+    results = get_all_closed_drives_by_target_cost_descending(db=db, title=title)
 
     page_size = 10
 
@@ -494,8 +512,9 @@ def open_drives(
 def open_drives_by_amount_raised(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
+    title: Optional[str] = ""
 ):
-    results = get_all_open_drives_by_amount_raised_descending(db)
+    results = get_all_open_drives_by_amount_raised_descending(db=db, title=title)
 
     page_size = 10
 
@@ -515,8 +534,9 @@ def open_drives_by_amount_raised(
 def open_drives_by_amount_raised_ascending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
+    title: Optional[str] = ""
 ):
-    results = get_all_open_drives_by_amount_raised_ascending(db)
+    results = get_all_open_drives_by_amount_raised_ascending(db=db, title=title)
 
     page_size = 10
 
@@ -536,8 +556,9 @@ def open_drives_by_amount_raised_ascending(
 def open_drives_by_percent_funded_descending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
+    title: Optional[str] = ""
 ):
-    results = get_all_open_drives_by_percent_funded_descending(db)
+    results = get_all_open_drives_by_percent_funded_descending(db=db, title=title)
     
     page_size = 10
 
@@ -557,8 +578,9 @@ def open_drives_by_percent_funded_descending(
 def open_drives_by_percent_funded_ascending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
+    title: Optional[str] = ""
 ):
-    results = get_all_open_drives_by_percent_funded_ascending(db)
+    results = get_all_open_drives_by_percent_funded_ascending(db=db, title=title)
     
     page_size = 10
 
@@ -578,8 +600,9 @@ def open_drives_by_percent_funded_ascending(
 def open_drives_by_donation_count_descending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
+    title: Optional[str] = ""
 ):
-    results = get_all_open_drives_by_donation_count_descending(db)
+    results = get_all_open_drives_by_donation_count_descending(db=db, title=title)
 
     page_size = 10
 
@@ -599,8 +622,9 @@ def open_drives_by_donation_count_descending(
 def open_drives_by_donation_count_ascending(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
+    title: Optional[str] = ""
 ):
-    results = get_all_open_drives_by_donation_count_ascending(db)
+    results = get_all_open_drives_by_donation_count_ascending(db=db, title=title)
 
     page_size = 10
 
@@ -620,8 +644,9 @@ def open_drives_by_donation_count_ascending(
 def open_drives_by_date_created_newest(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
+    title: Optional[str] = ""
 ):
-    results = get_all_open_drives_by_date_created_newest(db)
+    results = get_all_open_drives_by_date_created_newest(db=db, title=title)
 
     page_size = 10
 
@@ -641,8 +666,9 @@ def open_drives_by_date_created_newest(
 def open_drives_by_date_created_oldest(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
+    title: Optional[str] = ""
 ):
-    results = get_all_open_drives_by_date_created_oldest(db)
+    results = get_all_open_drives_by_date_created_oldest(db=db, title=title)
 
     page_size = 10
 
@@ -742,6 +768,35 @@ def verified_monetary(
         data=paginated_results
     )
 
+@router.get("/admin/donations/")
+def donations(
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+    time_filter: str = Query(..., description="Filter type: 'last_7_days', 'last_30_days', or 'monthly'"),
+    isAcknowledged: bool = Query(..., description="True for verified donations, False for unverified donations"),
+):
+    
+    # Get paginated data and total records
+    data, total_records = get_all_verified_donations_all_drive(
+        db,
+        time_filter=time_filter,
+        page=page,
+        items_per_page=10,
+        is_acknowledged=isAcknowledged
+    )
+    
+    # Calculate total pages
+    total_pages = math.ceil(total_records / 10)
+    
+    # Return structured response
+    return {
+        "success": True,
+        "message": "Verified donations retrieved successfully",
+        "page": page,
+        "total_pages": total_pages,
+        "data": data
+    }
+
 @router.get("/admin/donations/generic-drive-view", response_model=AdminGenericDriveView)
 def view_generic_donation_drive(
     db: Session = Depends(get_db)
@@ -758,7 +813,8 @@ def view_generic_donation_drive(
 @router.get("/admin/donations/view/{drive_id}", response_model=AdminOneDonationDriveOut)
 def view_drive(
     drive_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+
 ):
     results = view_donation_drive(db, drive_id)
 
@@ -766,6 +822,64 @@ def view_drive(
         raise HTTPException(status_code=200, detail="Drive not found")
 
     return results
+
+@router.get("/admin/donations/get-all-pending-donations/{drive_id}", response_model=dict)
+def all_pending_donations(
+    drive_id: UUID,
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(10, ge=1, le=100, description="Items per page"),
+    db: Session = Depends(get_db)
+):
+    results, stats = get_all_pending_donations(db, drive_id)
+
+    if not results:
+        return {
+            "message": "No pending donations found",
+            "page": page,
+            "total_pages": 0,
+            "data": [],
+            "monetary_total": 0,
+            "inkind_total": 0
+        }
+
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "data": paginated_results,
+        "monetary_total": stats["monetary_stats"].get("total_amount", 0),
+        "inkind_total": stats["inkind_stats"].get("total_count", 0)
+    }
+
+@router.get("/admin/donations/get-all-verified-donations/{drive_id}", response_model=dict)
+def all_verified_donations(
+    drive_id: UUID,
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(10, ge=1, le=100, description="Items per page"),
+    db: Session = Depends(get_db)
+):
+    results = get_all_verified_donations(db, drive_id)
+
+    if not results:
+        return {
+            "message": "No verified donations found",
+            "page": page,
+            "total_pages": 0,
+            "data": [],
+            "monetary_total": 0,
+            "inkind_total": 0
+        }
+
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "message": "success",
+        "page": page,
+        "total_pages": total_pages,
+        "data": paginated_results
+    }
 
 @router.get("/admin/donations/percent-funded/{drive_id}", response_model=PercentOut)
 def percent_funded(

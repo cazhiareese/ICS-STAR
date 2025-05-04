@@ -77,7 +77,16 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
               <span className="text-primary font-satoshi-bold">
                 {userDetails.city && userDetails.state && userDetails.country
                   ? `${userDetails.city}, ${userDetails.state}, ${userDetails.country}`
-                  : ""}
+                  :               <span className="text-primary font-satoshi-bold">
+                  {userDetails.marital_status === null ||
+                  userDetails.marital_status === "" ? (
+                    <span className="text-gray-500 italic">Not Available</span>
+                  ) : userDetails.marital_status ? (
+                    userDetails.marital_status
+                  ) : (
+                    <CircularLoading />
+                  )}
+                </span>}
               </span>
             )}
           </div>
@@ -112,88 +121,53 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
           </div>
         )}
 
-        {/* Student Number */}
-        <div className="flex flex-col items-start text-left">
-          <div className="flex items-center gap-2">
-            <IdCard size={20} className="text-black" />
-            <span>Student Number</span>
-          </div>
-          {editMode ? (
-            <div className="flex flex-row flex-wrap gap-2 w-full">
-              <select
-                value={userDetails.student_number_year || ""}
-                onChange={(e) => handleStudentNumberChange(e, "student_number_year")}
-                className="text-primary text-sm font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-[80px] h-[32px]"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={userDetails.student_number_suffix || ""}
-                onChange={(e) => handleStudentNumberChange(e, "student_number_suffix")}
-                placeholder="0000-9999"
-                maxLength={4}
-                pattern="[0-9]{5}"
-                className="text-primary text-sm font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-[80px] h-[32px]"
-              />
-            </div>
-          ) : (
-            <span className="text-primary font-satoshi-bold">
-              {userDetails.student_number || <div className="text-primary text-sm font-satoshi-bold bg-disabled border animate-pulse border-disabled rounded-[12px] px-2 py-1 w-[140px] h-[30px]"></div>}
-            </span>
-          )}
-        </div>
+{/* Student Number */}
+<div className="flex flex-col items-start text-left">
+  <div className="flex items-center gap-2">
+    <IdCard size={20} className="text-black" />
+    <span>Student Number</span>
+  </div>
+  <span className="text-primary font-satoshi-bold">
+    {userDetails.student_number || (
+      <div className="text-primary text-sm font-satoshi-bold bg-disabled border animate-pulse border-disabled rounded-[12px] px-2 py-1 w-[140px] h-[30px]"></div>
+    )}
+  </span>
+</div>
+
 
         {/* Graduating Class */}
         {userDetails.user_type === "alumni" && (
-          <div className="flex flex-col items-start text-left">
-            <div className="flex items-center gap-2">
-              <GraduationCap size={20} className="text-black" />
-              <span>Graduating Class</span>
-            </div>
-            <div className="flex flex-row flex-wrap gap-2 w-full sm:w-[300px]">
-              {editMode ? (
-                <>
-                  <select
-                    value={userDetails.graduation_year}
-                    onChange={(e) => handleChange(e, "graduation_year")}
-                    className="text-primary text-sm font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-[80px] sm:w-[50x] h-[32px]"
-                  >
-                    {years.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={userDetails.graduation_semester}
-                    onChange={(e) => handleChange(e, "graduation_semester")}
-                    className="text-primary text-sm font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 min-w-[128px] sm:w-[80px] h-[32px]"
-                  >
-                    {semester.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              ) : (
-                <span className="text-primary font-satoshi-bold">
-                  {userDetails?.graduation_year &&
-                  userDetails?.graduation_semester ? (
-                    `${userDetails.graduation_year} - ${userDetails.graduation_semester}`
-                  ) : (
-                    <CircularLoading />
-                  )}
-                </span>
-              )}
-            </div>
-          </div>
-        )}
+  <div className="flex flex-col items-start text-left">
+    <div className="flex items-center gap-2">
+      <GraduationCap size={20} className="text-black" />
+      <span>Graduating Class</span>
+    </div>
+    <div className="flex flex-row flex-wrap gap-2 w-full sm:w-[300px]">
+      {editMode ? (
+        // No input fields anymore, just remove them.
+        <span className="text-primary font-satoshi-bold">
+          {userDetails?.graduation_year &&
+          userDetails?.graduation_semester ? (
+            `${userDetails.graduation_year} - ${userDetails.graduation_semester}`
+          ) : (
+            <CircularLoading />
+          )}
+        </span>
+      ) : (
+        // Display the graduation year and semester as plain text
+        <span className="text-primary font-satoshi-bold">
+          {userDetails?.graduation_year &&
+          userDetails?.graduation_semester ? (
+            `${userDetails.graduation_year} - ${userDetails.graduation_semester}`
+          ) : (
+            <CircularLoading />
+          )}
+        </span>
+      )}
+    </div>
+  </div>
+)}
+
 
         {/* Marital Status */}
         {userDetails.is_verified && (

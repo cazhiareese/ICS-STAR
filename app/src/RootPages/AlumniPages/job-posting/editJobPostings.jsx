@@ -317,23 +317,21 @@ function EditJobPostAlum() {
         fetchJob();
     },[]);
     return (
-        <div className='flex flex-col mx-48 mt-16 mb-30'>
-            {/* Modal For successful post */}
-            <JobPostSummary isOpen={isSubmitted} setIsOpen={setIsSubmitted} job={summary} 
-            />
-
-            {/* Back button */}
-            <button onClick={navToJobPostLanding} className='text-primary flex gap-5 cursor-pointer'>
-                <ArrowLeft size={25} />
-                <span className='font-satoshi-medium text-primary text-xl'>Back</span>
-            </button>
-
-            {/* Create Job Posting title */}
-            <h1 className='font-satoshi-bold text-black text-4xl py-10'>Edit Current Job</h1>
-            
-
-            {/* JOB TITLE & COMPANY */}
-            <div className='flex md:flex-row flex-col gap-3'>
+        <div className="flex flex-col px-4 md:px-0 md:mx-48 mt-16 mb-30">
+          {/* Modal For successful post */}
+          <JobPostSummary isOpen={isSubmitted} setIsOpen={setIsSubmitted} job={summary} />
+      
+          {/* Back button */}
+          <button onClick={navToJobPostLanding} className="text-primary flex gap-5 cursor-pointer">
+            <ArrowLeft size={25} />
+            <span className="font-satoshi-medium text-primary text-xl">Back</span>
+          </button>
+      
+          {/* Title */}
+          <h1 className="font-satoshi-bold text-black text-3xl md:text-4xl py-10">Edit Current Job</h1>
+      
+          {/* Job Title & Company */}
+          <div className='flex md:flex-row flex-col md:gap-3 gap-5'>
                 {/* Job Title */}
                 <div className='outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 px-8 w-full'>
                     <h1 className='text-lg font-satoshi-medium pb-3'>
@@ -343,9 +341,9 @@ function EditJobPostAlum() {
                     <div className="relative w-full h-6">
                         <input
                             type="text"
+                            value={jobTitleInput}
                             className="bg-white font-satoshi-medium text-md w-full md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0"
                             onChange={handleJobTitleChange}
-                            value={jobTitleInput}
                         />
                     </div>
                 </div>
@@ -367,17 +365,16 @@ function EditJobPostAlum() {
                     </div>
 
                     <label className="flex items-center gap-2 ml-auto pt-7">
-                        {/* TODO: modify checkbox */}
                         <input
                         onChange={(e) => setCurrentCompany(e.target.checked)}
-                        type="checkbox" className="bg-primary w-4 h-4"/> 
+                        type="checkbox" className="bg-primary accent-primary w-4 h-4"/> 
                         <span className='font-satoshi-regular'>Same as current company</span>
                     </label>
                 </div>
             </div>
 
             {/* SALARY & TAGS */}
-            <div className='flex md:flex-row flex-col gap-3 mt-6'>
+            <div className='flex md:flex-row flex-col md:gap-3 gap-5 mt-6'>
                 {/* Salary */}
                 <div className='outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 px-8 md:w-5/6 w-full'>
                     <h1 className='text-lg font-satoshi-medium pb-3'>
@@ -407,7 +404,12 @@ function EditJobPostAlum() {
                         className="flex flex-row items-center cursor-pointer py-2 outline outline-1 rounded-xl h-10 outline-neutral-400 px-5"
                         onClick={() => setIsTagsModalOpen(true)}
                     >
-                        <span className="text-neutral-500 font-satoshi-regular">Select tags</span>
+                        <span className="text-neutral-500 font-satoshi-regular truncate">
+                            {tagss.length > 0
+                                ? tagss.slice(0, 5).join(", ") + (tagss.length > 2 ? "..." : "")
+                                : "Select tags"}
+                        </span>
+
                         <motion.button
                         className="cursor-pointer hover:text-primary ml-auto"
                         animate={{ rotate: isTagsModalOpen ? 180 : 0 }}
@@ -479,17 +481,17 @@ function EditJobPostAlum() {
                         {/* Suggestion buttons */}
                         <h1 className='text-md font-satoshi-medium w-full py-3'>Suggestions</h1>
                         <div className="flex flex-wrap gap-2">
-                        {tagsSuggestions
-                            .filter(tag => !tagss.includes(tag)) // Only show tags not yet added
-                            .map((tag, index) => (
-                                <button
-                                key={index}
-                                onClick={() => handleAddSuggestionTag(tag)}
-                                className="rounded-full border-2 border-primary text-primary px-4 py-1 font-satoshi-medium text-sm transition cursor-pointer"
-                                >
-                                {tag}
-                                </button>
-                        ))}
+                            {tagsSuggestions
+                                .filter(tag => !tagss.includes(tag)) // Only show tags not yet added
+                                .map((tag, index) => (
+                                    <button
+                                    key={index}
+                                    onClick={() => handleAddSuggestionTag(tag)}
+                                    className="rounded-full border-2 border-primary text-primary px-4 py-1 font-satoshi-medium text-sm transition cursor-pointer"
+                                    >
+                                    {tag}
+                                    </button>
+                            ))}
 
 
                         </div>
@@ -521,16 +523,16 @@ function EditJobPostAlum() {
                         type="text"
                         className="bg-white font-satoshi-medium text-md w-full md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0"
                         onChange={handleLinkInput}
-                        value={linkInput}
+                        value={linkInput}   
                     />
                 </div>
             </div>
 
             {/* Job Description and Hiring Process */}
-            <div className='flex flex-row outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 mt-6 px-8 w-full gap-5'>
+            <div className='flex md:flex-row flex-col outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 mt-6 px-8 w-full gap-5'>
                 
                 {/* Input Box */}
-                <div className="relative w-4/6">
+                <div className="relative md:w-4/6 w-full">
                     <h1 className='text-lg font-satoshi-medium pb-3'>
                         Job Description and Hiring Process <span className='text-error'>*</span>
                     </h1>
@@ -538,13 +540,13 @@ function EditJobPostAlum() {
                         type="text"
                         className="bg-white font-satoshi-medium text-md w-full md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0 h-40"
                         onChange={handleJobDescriptionChange}
-                        value={description}
                         placeholder='Describe job posting'
+                        value={description}
                     />
                 </div>
 
                 
-                <div className='w-2/6'>
+                <div className='md:w-2/6 w-full'>
                     <h1 className='text-lg font-satoshi-medium pb-3'>
                         Image (Optional)
                     </h1>
@@ -586,7 +588,7 @@ function EditJobPostAlum() {
                 </div>
             </div>
             {/* Emplyment type and mode */}
-            <div className='flex flex-row gap-3 mt-6'>
+            <div className='flex md:flex-row flex-col md:gap-3 gap-5 mt-6'>
                 {/* Employment type */}
                 <div className='outline-1 rounded-3xl outline-neutral-400 pb-6 pt-5 px-8 w-full'>
                     <h1 className='text-lg font-satoshi-medium pb-3'>
@@ -651,14 +653,14 @@ function EditJobPostAlum() {
             ) : (
                 <button 
                 onClick={handleSubmitJob} 
-                className="mt-6 rounded-full justify-center bg-primary font-satoshi-medium text-white text-xl w-1/6 h-12 ml-auto cursor-pointer"
+                className="mt-6 rounded-full justify-center bg-primary font-satoshi-medium text-white text-xl md:w-1/6 sm:w-2/6 w-3/6  h-12 ml-auto cursor-pointer"
                 >
                     Submit
                 </button>
             )}
-            
         </div>
-    )
+      );
+      
 }
 
 export default EditJobPostAlum
