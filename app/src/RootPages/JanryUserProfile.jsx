@@ -335,7 +335,7 @@ const fetchUserProfileData = async () => {
     <div className="w-full max-w-[1100px]">
       <AdminBack label={'Back'} />
       <div className="flex justify-start items-center mb-5">
-        <h1 className="text-primary font-satoshi-bold text-5xl">Alumni Information</h1>
+        <h1 className="text-primary font-satoshi-bold text-3xl sm:text-5xl">Alumni Information</h1>
       </div>
     </div>
 
