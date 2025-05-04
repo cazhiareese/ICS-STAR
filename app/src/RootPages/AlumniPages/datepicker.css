@@ -45,14 +45,14 @@
 
 /* Hover effect */
 .react-datepicker__year-text:hover {
-    background-color: #1D2939 !important;
+    background-color: #00369C !important;
     color: white !important;
 }
 
 
 /* Selected year styles */
 .react-datepicker__year-text--selected {
-    background-color: #1D2939 !important;
+    background-color: #00369C !important;
     color: white !important;
 }
 

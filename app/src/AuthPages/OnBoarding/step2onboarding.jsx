@@ -6,6 +6,7 @@ import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import Unathorized from "../Unauthorized";
 import Loading from "../../components/LoadingComponents/circularloading"
 import { CustomDropdownStanding } from "./dropdown";
+import ModalTemplate from "../modaltemplate";
 function Step2Onboarding() {
     const baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -120,7 +121,18 @@ function Step2Onboarding() {
 
     
     const [standingStep, setStandingStep] = useState(true);
-    
+    const standingOptions = [
+        { label: "Freshman", value: "freshman" },
+        { label: "Old Freshman", value: "old freshman" },
+        { label: "Sophomore", value: "sophomore" },
+        { label: "Junior", value: "junior" },
+        { label: "Senior", value: "senior" },
+        { label: "Graduating", value: "graduating" },
+      ];
+      
+      // Find the selected option object from userData.standing
+      const selectedStanding = standingOptions.find(opt => opt.value === userData.standing);
+
     return (
         <>
             {!secondStep && userType === "student" && standingStep === true ? (
@@ -130,15 +142,11 @@ function Step2Onboarding() {
                         What’s your current standing?
                 </label>
                 <CustomDropdownStanding
-                    options={[
-                        { label: "Freshman", value: "freshman" },
-                        { label: "Sophomore", value: "sophomore" },
-                        { label: "Junior", value: "junior" },
-                        { label: "Senior", value: "senior" },
-                    ]}
-                    value={userData.standing}
-                    onChange={(value) => updateUserData("standing", value)}
+                    options={standingOptions}
+                    value="Freshman"  // Not just "freshman" — the whole object
+                    onChange={(selectedOption) => updateUserData("standing", selectedOption.value)}
                 />
+                
                 <div className="flex flex-row items-center justify-center my-20 md:space-x-20 sm:space-x-10 w-full sm:text-2xl text-xl">
                     <div
                         className="md:w-70 h-20 text-primary flex items-center justify-center rounded-3xl"

@@ -16,21 +16,15 @@ function AlumnInfo(){
     const [academicYearDropdownOpen, setAcademicYearDropdownOpen] = useState(false);
     // const years = ["AY 2024–2025", "AY 2023–2024", "AY 2022–2023", "AY 2021–2022"];
     const {setUserData, userData, updateUserData} = useAppContext();
-
     const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
     const { setCurrentSection} = useAppContext();
-
-
     const [studentNumberError, setStudentNumberError] = useState(false)
     const [termGraduated, setTermGraduated] = useState(false)
-
-
     const [error, setError]= useState(false)
-
-
     const [loading, setLoading] = useState(false)
-
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    const [termDropdownOpen, setTermDropdownOpen] = useState(false);
+    const terms = ["First Semester", "Second Semester", "Midyear"];
 
 
     // For Year
@@ -121,7 +115,7 @@ function AlumnInfo(){
         );
     
         if (!isAvailable) {
-            alert("Student Number already taken")
+            // alert("Student Number already taken")
             setError(true);
         } else {
             setStudentNumberError(false);
@@ -157,24 +151,24 @@ function AlumnInfo(){
                         <button className = "w-15 h-15 "/> 
             </div>
             <img src={Step2} className="-mt-12"/>
-            <label className="font-satoshi-bold text-center text-3xl text-black pt-10 pb-8">Alumni Information</label>
+            <label className="font-satoshi-bold text-center text-3xl text-black pt-10 pb-8 ">Alumni Information</label>
             
             <div class="grid grid-cols-2 gap-4 p-4 lg:w-150 md:w-120">
-                <div className="font-satoshi-regular">
+                <div className="font-satoshi-medium">
                     Student Number <label className="text-red-700">*</label>
                 </div>
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
                 <div className="relative w-[45%]">
                     <button
                         onClick={() => setYearDropdownOpen(!yearDropdownOpen)}
-                        className={`flex items-center justify-between border rounded-lg h-10 w-full px-4 text-left ${userData.selectedYear ? 'text-black' : 'text-gray-400'} ${studentNumberError == false ? 'border-black' : 'border-red-600'}`}
+                        className={`flex items-center justify-between border rounded-2xl h-10 w-full px-4 text-left focus:outline outline-primary ${userData.selectedYear ? 'text-black' : 'text-gray-400'} ${studentNumberError == false ? 'border-[#D9D9D9]' : 'border-red-600'}`}
                     >
-                        <span className="mx-auto">{userData.selectedYear || "Select a year"}</span>
+                        <span className="mx-auto">{userData.selectedYear || "Select a Year"}</span>
                         <ChevronDown className="w-4 h-4 text-gray-600" />
                     </button>
 
                     {yearDropdownOpen && (
-                        <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
+                        <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
                         {years.map((year) => (
                             <li
                             key={year}
@@ -182,7 +176,7 @@ function AlumnInfo(){
                                 updateUserData("selectedYear", year);
                                 setYearDropdownOpen(false);
                             }}
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                             >
                             {year}
                             </li>
@@ -194,44 +188,60 @@ function AlumnInfo(){
                     <input type="number" 
                            value={userData.value} 
                            onChange={handleSNChange} 
-                           placeholder={"Enter up to 5 digits"} className={`w-[45%] border-1 rounded-lg h-10 text-center ${studentNumberError==false ? 'border-black':'border-red-600'}`}
+                           placeholder={"Enter up to 5 digits"} className={`pl-4 w-[45%] border-1 focus:outline outline-primary rounded-2xl h-10 text-center pr-4 ${studentNumberError==false ? 'border-[#D9D9D9]':'border-red-600'}`}
                     />
 
                 </div>
-                <div className="col-span-2 font-satoshi-regulars">
+                <div className="col-span-2 font-satoshi-medium">
                     Year and Term Graduated <label className="text-red-700">*</label>
                 </div>
                 <div class="flex space-x-5 col-span-2 justify-center items-center">
-                    <div className="relative w-[45%]">
-                    <select
-                        value={userData.selectedTerm}
-                        onChange={(e) => updateUserData("selectedTerm", e.target.value)}
-                        className={`pl-10 appearance-none border rounded-lg h-10 w-full text-center ${userData.selectedTerm==""? "text-gray-400": ""} pr-12 ${termGraduated==false ? 'border-black':'border-red-600'}`}
+                <div className="relative w-[45%]">
+                <button
+                    onClick={() => setTermDropdownOpen(!termDropdownOpen)}
+                    className={`flex items-center justify-between border rounded-2xl h-10 w-full px-4 text-left focus:outline outline-primary ${
+                        userData.selectedTerm ? "text-black" : "text-gray-400"
+                    } ${
+                        termGraduated === false ? "border-[#D9D9D9]" : "border-red-600"
+                    }`}
                     >
-                        <option value="" disabled>Select a Term</option>
-                        <option value="1st Semester">First Semester</option>
-                        <option value="2nd Semester">Second Semester</option>
-                    </select>
+                    <span className="mx-auto">
+                        {userData.selectedTerm || "Select a Term"}
+                    </span>
+                    <ChevronDown className="w-4 h-4 text-gray-600" />
+                    </button>
+                    {termDropdownOpen && (
+                    <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
+                        {terms.map((term) => (
+                        <li
+                            key={term}
+                            onClick={() => {
+                            updateUserData("selectedTerm", term);
+                            setTermDropdownOpen(false);
+                            }}
+                            className="px-4 py-2 hover:bg-gray-200 cursor-pointer text-center"
+                        >
+                            {term}
+                        </li>
+                        ))}
+                    </ul>
+                    )}
+                    </div>
 
-                    {/* Custom Arrow Icon — shifted LEFT slightly */}
-                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-600">
-                        <ChevronDown className="w-4 h-4" />
-                    </div>
-                    </div>
 
                     <label>-</label>
-                    <div className={`justify-center flex items-center border rounded-lg px-4 py-0 w-[45%] shadow-sm ${termGraduated == false ? 'border-black' : 'border-red-600'}`}>
+                    <div className={`justify-center flex items-center border rounded-2xl py-0 w-[45%] ${termGraduated == false ? 'border-[#D9D9D9]' : 'border-red-600'}`}>
                         <div className="relative w-full">
                             <button
                             onClick={() => setAcademicYearDropdownOpen(!academicYearDropdownOpen)}
-                            className={`flex items-center justify-between w-full h-10 px-4 text-left rounded-lg ${userData.academicYear ? 'text-black' : 'text-gray-400'} `}
+                            className={`flex items-center justify-between w-full h-10 px-4 text-left rounded-2xl focus:outline outline-primary ${userData.academicYear ? 'text-black' : 'text-gray-400'} `}
                             >
                             <span className="mx-auto">{userData.academicYear ? (userData.academicYear+"-"+ (userData.academicYear+1)) :"Select AY YYYY"}</span>
                             <ChevronDown className="w-4 h-4 text-gray-600" />
                             </button>
 
                             {academicYearDropdownOpen && (
-                            <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
+                            <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
                                 {years.map((year) => (
                                 <li
                                     key={year}
@@ -239,7 +249,7 @@ function AlumnInfo(){
                                     updateUserData("academicYear", year);
                                     setAcademicYearDropdownOpen(false);
                                     }}
-                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                    className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                                 >
                                     {year}
                                 </li>
@@ -250,12 +260,12 @@ function AlumnInfo(){
                     </div>
                 </div>
 
-                <div class="col-span-2">
+                <div class="font-satoshi-medium col-span-2">
                     Upload your Diploma 
                 </div>
                 
                     {!userData.image ? (
-                        <div className="col-span-2 flex flex-col items-center justify-center space-y-4 py-4 rounded-2xl bg-gray-200 h-50"
+                        <div className="col-span-2 flex flex-col items-center justify-center space-y-1 py-4 rounded-2xl bg-[#F4F3F6] h-50 border-2 border-dashed border-[#D9D9D9]"
                             onDragOver={(event) => event.preventDefault()}
                             onDrop={handleDrop}
                         >
@@ -271,10 +281,10 @@ function AlumnInfo(){
                                 <CloudUpload className="h-10 w-10"/>
                             </div>
                             
-                            <label>Drag and drop file here or</label>
+                            <label className="font-satoshi-regular text-lg text-[#5D5D5D]">Drag and drop file here or</label>
                             <label 
                                 htmlFor="fileInput"
-                                className="flex flex-col items-center  pb-2 px-4 rounded-lg cursor-pointer font-satoshi-bold underline text-primary transition"
+                                className="flex flex-col items-center pb-2 px-4 rounded-2xl cursor-pointer font-satoshi-bold underline text-primary transition"
                             >
                                 
                                 Choose File
@@ -299,9 +309,9 @@ function AlumnInfo(){
                             {/* X Button */}
                             <button 
                                     onClick={handleRemoveFile} 
-                                    className="text-primary hover:text-red-700 flex justify-center w-20 h-15"
+                                    className="text-primary hover:text-red-700 flex justify-center w-20 h-15 cursor-pointer"
                                 >
-                                    <X className="w-5 h-5"/>
+                                    <X className="w-5 h-5 ml-8"/>
                             </button>
 
                         </div>
@@ -312,19 +322,19 @@ function AlumnInfo(){
                  
 
                 <div className="col-span-2">
-                    <label className="font-satoshi-light text-gray-500">
+                    <label className="font-satoshi-light-italic text-gray-500">
                         Uploading your Diploma is optional, but it can greatly help the admin in validating your information
                     </label>
                 </div>
 
-                <div className={`col-span-2 items-center flex mt-0 -pb-10 text-red-400 ${error ? 'block': 'hidden'}`}>
-                    <label>Please answer all required fields above</label>
+                <div className={`font-satoshi-medium-italic col-span-2 items-center flex mt-0 -pb-10 text-[#C80808] ${error ? 'block': 'hidden'}`}>
+                    <label className="text-sm">Please answer all required fields above!</label>
 
                 </div>
 
                 <div class=" text-black flex flex-col items-start">
                         <button
-                            className="bg-primary text-white py-3 rounded-2xl text-lg w-4/6 font-bold hover:bg-blue-700 transition mt-0"
+                            className="bg-white text-primary py-3 border border-primary rounded-3xl text-base w-4/6 font-bold cursor-pointer"
                             onClick = {()=>{setCurrentSection("1")}}
                         >
                             Back
@@ -335,7 +345,7 @@ function AlumnInfo(){
                 {loading ? (<Loading/>):
                     
                         <button
-                            className="bg-primary text-white py-3 rounded-2xl text-lg w-4/6 font-bold hover:bg-blue-700 transition mt-0"
+                            className="bg-primary text-white py-3 rounded-3xl text-base w-4/6 font-bold hover:bg-blue-700 transition mt-0 cursor-pointer"
                             onClick = {checkRequirements}
                         >
                             Next

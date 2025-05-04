@@ -98,7 +98,13 @@ const AlumniCareerFilter = ({
         >
           Alumni Career
         </motion.h1>
-
+        {careerList.length > 0 && !isCareerExpanded && (
+          <span className="text-sm font-satoshi-medium text-gray-400 pt-2 pr-2">
+            {careerList.slice(0, 2).join(", ").length > 10
+              ? careerList.slice(0, 2).join(", ").substring(0, 7) + "..."
+              : locatcareerListion.slice(0, 2).join(", ")}
+          </span>
+        )}
         <motion.button
           className="cursor-pointer hover:text-primary"
           animate={{ rotate: isCareerExpanded ? 180 : 0 }}

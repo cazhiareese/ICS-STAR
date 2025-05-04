@@ -59,14 +59,14 @@
         
                 if (response.ok) {
                     localStorage.setItem("token", data.access_token);
-                        alert("Registration Successful!");
+                        // alert("Registration Successful!");
         
                         // Redirect based on userType
                         window.location.href = userType === "alumni" ? "/alumni/dashboard" : "/student/dashboard";
                         return
                     
                 } else {
-                    alert(data.detail || "Registration failed!");
+                    // alert(data.detail || "Registration failed!");
                     console.error("Response Status:", response.status);
                     console.error("Response OK:", response.ok);
                     console.error(data);
@@ -90,10 +90,10 @@
                 </div>
                 <img src={Step3} className="-mt-12"/>
 
-                <label className="font-satoshi-bold text-center text-3xl text-black pt-20 pb-8 w-80">Account Created Successfully!</label>
+                <label className="font-satoshi-bold text-center text-3xl text-black pt-20 pb-6 w-80">Account Created Successfully!</label>
                 
                 <div className = "flex flex-col lg:w-150 md:w-100 w-70 h-full text-xl text-justify pt-15">
-                        <label className="font-satoshi-regular text-primary inline">
+                        <label className="font-satoshi-medium text-primary inline">
                                 Your account is currently awaiting verification by our admin team,&nbsp;
                                 <label className="font-satoshi-regular text-black inline ">
                                     but in the meantime, feel free to explore the website. We'll let you know as soon as your 
@@ -101,18 +101,18 @@
                                 </label>
                         </label>
 
-                        <label className="font-satoshi-italic text-gray-600 pt-15">
+                        <label className="font-satoshi-italic text-gray-600 pt-10">
                                     Please note: Some features may be temporarily unavailable until your account is fully verified.
                         </label>
                         
                 </div>
 
-                <div class=" flex flex-col items-end lg:w-150 md:w-100 w-70">
+                <div class=" flex flex-col items-end lg:w-150 md:w-100 w-70 mt-6 mb-57 cursor-pointer">
                 {loading ? (
                     <Loading /> // Show loading component while registration is in progress
                 ) : (
                     <button
-                        className="bg-primary text-white py-3 rounded-2xl text-lg w-40 font-bold hover:bg-blue-700 transition my-10 "
+                        className="bg-primary text-white py-3 rounded-3xl text-lg w-40 font-bold hover:bg-blue-700 transition mt-6 mb-50 cursor-pointer"
                         onClick = {()=>(handleNextPage())}
                     >
                         Continue

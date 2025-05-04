@@ -161,7 +161,7 @@ function AdminAlumniInfo() {
 
         // Get employer classification
         const employerCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_class`)
-        // console.log(employmentCount.data.data)
+        console.log(employerCount.data.data)
         setEmployerClassificationData(employerCount.data.data)
         
         // Get salary grade 
@@ -340,7 +340,7 @@ function AdminAlumniInfo() {
             <h3 className='text-2xl font-satoshi-bold pb-2'> Industries</h3>
             {loading ? (
               <div className='flex items-center justify-center h-full'>
-                <CircularLoading size={90}/>
+                <CircularLoading/>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height='100%'>
@@ -372,14 +372,15 @@ function AdminAlumniInfo() {
           {/* Bottom half - pie graph */}
           <div className='h-1/2 flex flex-row p-4 mt-3'>
             {/* Employment Status */}
-            <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
+            <div className='h-full flex-1 text-center flex flex-col items-center justify-start'>
               <h3 className='text-2xl font-satoshi-bold'>Employment Status</h3>
               {loading ? (
                 <div className='flex items-center justify-center h-full'>
-                  <CircularLoading size={90}/>
+                  <CircularLoading/>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height="100%">
+                <>
+                <ResponsiveContainer width="80%" height="80%">
                 <PieChart>
                   <Pie
                     data={employmentStatusData}
@@ -400,17 +401,30 @@ function AdminAlumniInfo() {
                   />
                 </PieChart>
               </ResponsiveContainer>
+               <div className='flex gap-2 justify-center flex-wrap'>
+               {employmentStatusData.map((entry, index) => (
+                   <div key={index} className="flex items-center gap-2 text-gray-800">
+                     <span
+                       className="inline-block min-w-3 min-h-3 rounded-full"
+                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                     ></span>
+                     <span className="text-sm">{entry.status}</span>
+                   </div>
+                 ))}
+               </div>
+               </>
               )}
             </div>
             {/* Employer Classification */}
-            <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
+            <div className='h-full flex-1 text-center flex flex-col items-center justify-start'>
               <h3 className='text-2xl font-satoshi-bold'>Employer Classification</h3>
               {loading ? (
                 <div className='flex items-center justify-center h-full'>
-                  <CircularLoading size={90}/>
+                  <CircularLoading/>
                 </div>
               ) : (
-              <ResponsiveContainer width="100%" height="100%">
+              <>
+              <ResponsiveContainer width="80%" height="80%">
                 <PieChart>
                   <Pie
                     data={employerClassificationData}
@@ -431,17 +445,29 @@ function AdminAlumniInfo() {
                   />
                 </PieChart>
               </ResponsiveContainer>
+              <div className='flex gap-2 justify-center flex-wrap'>
+              {employerClassificationData.map((entry, index) => (
+                  <div key={index} className="flex items-center gap-2 text-gray-800">
+                    <span
+                      className="inline-block min-w-3 min-h-3 rounded-full"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    ></span>
+                    <span className="text-sm">{entry.class}</span>
+                  </div>
+                ))}
+              </div>
+              </>
               )}
             </div>
             {/* Salary grade */}
-            <div className="h-full w-full flex-1 text-center flex flex-col items-center justify-center">
+            <div className="h-full w-full flex-1 text-center flex flex-col items-center justify-start">
               <h3 className='text-2xl font-satoshi-bold'>Salary Grade</h3>
               {loading ? (
                 <div className='flex items-center justify-center h-full'>
-                  <CircularLoading size={90}/>
+                  <CircularLoading/>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="125%" height="100%">
                   <BarChart
                     data={salaryGradeData}
                     layout="vertical"
