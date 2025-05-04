@@ -91,7 +91,7 @@ function OnBoarding() {
                 </label>
             </div>
 
-            <div className="w-80 h-20 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl my-30 hover:bg-hover cursor-pointer"
+            <div className="w-80 h-15 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl my-30 hover:bg-hover cursor-pointer"
                 onClick={()=>setCurrentSection(1)}>
                 <label className="font-satoshi-bold cursor-pointer">Let's Get Started!</label>
             </div>

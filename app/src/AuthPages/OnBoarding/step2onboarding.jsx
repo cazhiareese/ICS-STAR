@@ -146,28 +146,27 @@ function Step2Onboarding() {
                     value="Freshman"  // Not just "freshman" — the whole object
                     onChange={(selectedOption) => updateUserData("standing", selectedOption.value)}
                 />
-                
-                <div className="flex flex-row items-center justify-center my-20 md:space-x-20 sm:space-x-10 w-full sm:text-2xl text-xl">
-                    <div
-                        className="md:w-70 h-20 text-primary flex items-center justify-center rounded-3xl"
-                        onClick={() => setCurrentSection(1)}
-                    >
-                        <label className="font-satoshi-italic w-40">
-                            &lt; Previous
-                        </label>
-                    </div>
-                    <div className="md:w-[70%]"></div>
-                    <div
-                        className="md:w-70 sm:h-17 w-40 h-14 bg-primary text-white flex items-center justify-center rounded-3xl cursor-pointer"
-                        onClick={() => {
-                            setStandingStep(false);
-                        }}
-                    >
-                        <label className="font-satoshi-bold cursor-pointer">
+
+                <div className="flex flex-row items-center justify-between mt-10 w-full sticky bottom-0 mb-10">
+                        <button
+                            type="button"
+                            className="flex flex-row items-center justify-center hover:text-hover cursor-pointer group"
+                            onClick={() => setCurrentSection(1)}
+                        >
+                            <ChevronLeft className="text-primary group-hover:text-hover"/>
+                            <span className="font-satoshi-bold text-primary flex items-center w-20 p-2 text-md group-hover:text-hover">
+                                Previous
+                            </span>
+                        </ button>
+
+                        <button
+                            type="button"
+                            className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-20 md:w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
+                            onClick={() => setStandingStep(false)}
+                        >
                             Proceed
-                        </label>
+                        </button>
                     </div>
-                </div>
             </div>
             ) : (
                 !secondStep ? (
@@ -229,8 +228,6 @@ function Step2Onboarding() {
                                 Previous
                             </span>
                         </ button>
-
-                        {/* <div className="md:w-[70%] md:block hidden"></div> */}
 
                         <button
                             type="button"
