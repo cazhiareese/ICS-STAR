@@ -115,38 +115,38 @@ function JobPostingLanding() {
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     // Get all jobs
-    useEffect(() => {
-        const fetchJobs = async () => {
-        // console.log(`${API_BASE_URL}/job-postings/?page=${currentPage}`)
-        setLoading(true);
-            try {
-                const response = await fetch(`${API_BASE_URL}/job-postings/?page=${currentPage}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch jobs');    
-                }
-                const data = await response.json();
-                setMaxPage(data.total_pages);
-                setJobList(data.result);
+    // useEffect(() => {
+    //     const fetchJobs = async () => {
+    //     // console.log(`${API_BASE_URL}/job-postings/?page=${currentPage}`)
+    //     setLoading(true);
+    //         try {
+    //             const response = await fetch(`${API_BASE_URL}/job-postings/?page=${currentPage}`);
+    //             if (!response.ok) {
+    //                 throw new Error('Failed to fetch jobs');    
+    //             }
+    //             const data = await response.json();
+    //             setMaxPage(data.total_pages);
+    //             setJobList(data.result);
             
-                setLoading(false);
-                setError(false);
-            } catch (err) {
-                console.log(err.message || 'Something went wrong');
-                setLoading(false);
-                setError(true);
-            } 
+    //             setLoading(false);
+    //             setError(false);
+    //         } catch (err) {
+    //             console.log(err.message || 'Something went wrong');
+    //             setLoading(false);
+    //             setError(true);
+    //         } 
 
-        };
+    //     };
 
-        fetchJobs();
-    }, [currentPage, dependencyTrigger]);
+    //     fetchJobs();
+    // }, [currentPage, dependencyTrigger]);
 
     
 
     // Get job by id
     useEffect(() => {
         const fetchJobs = async () => {
-            // console.log(`${API_BASE_URL}/job-postings/${selectedJobId}`);
+            console.log(`${API_BASE_URL}/job-postings/${selectedJobId}`);
             try {
                 const response = await fetch(`${API_BASE_URL}/job-postings/${selectedJobId}`);
                 if (!response.ok) {
