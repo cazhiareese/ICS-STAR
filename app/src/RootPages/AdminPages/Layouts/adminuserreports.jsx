@@ -26,6 +26,7 @@ function AdminEngagementReports() {
   async function fetchEngagementStatistics(){
     setVisitsLoading(true)
     try {
+      const token= localStorage.getItem('token');
       let response = await axios.get(
         `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`, {headers: {Authorization: `Bearer ${token}`}}
       );

@@ -224,7 +224,7 @@ async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=
 
 @event_router.get("/all-open-events", dependencies=[Depends(require_admin)])
 async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db), page:int=1):
-    ITEMS_PER_PAGE = 10
+    ITEMS_PER_PAGE = 8
 
     try:
         query = db.query(

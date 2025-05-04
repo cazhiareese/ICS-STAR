@@ -174,7 +174,7 @@ async def create_event_util(
                     "email": user.email
                 })
         
-        # send_email_util(eventId=event.event_id, recipients=details, db=db)
+        send_email_util(eventId=event.event_id, recipients=details, db=db)
     return event.event_id
 
 async def edit_event_util (

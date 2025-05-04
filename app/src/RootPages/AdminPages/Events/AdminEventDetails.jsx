@@ -8,6 +8,7 @@ import RsvpListTable from '../../../components/AdminComponents/RsvpListTable'
 
 function AdminEventDetails() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
+  const token = localStorage.getItem('token');
   const navigate = useNavigate()
   const {eventid} = useParams()
   const [eventDetails, setEventDetails] = useState()
@@ -38,7 +39,8 @@ function AdminEventDetails() {
   }
 
   async function deleteEvent(token){
-      const response = await axios.put(`${API_BASE_URL}/api/admin/events/delete/${eventid}`, {headers: {Authorization: `Bearer ${token}`}})
+    console.log(token)
+      const response = await axios.put(`${API_BASE_URL}/api/admin/events/delete/${eventid}`, {}, {headers: {Authorization: `Bearer ${token}`}})
       console.log(response)
       navigate(-1)
   }
@@ -269,7 +271,7 @@ function AdminEventDetails() {
                   </button>
                   <button
                     className="bg-error text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
-                    onClick={() => deleteEvent()}
+                    onClick={() => deleteEvent(token)}
                   >
                     Delete
                   </button>
