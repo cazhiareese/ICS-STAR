@@ -5,6 +5,7 @@ import { MapPinned, Calendar, Star, Search, Filter } from 'lucide-react';
 import axios from 'axios';
 import EventCards from './EventComponents/eventCards';
 import EventCardsSkeleton from './EventComponents/eventCardsSkeleton'
+import "../../index.css";
 import { samp } from 'framer-motion/client';
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -175,8 +176,6 @@ useEffect(() => {
         }
     }
 
-
-
     if (user === null) {
         return (
             <div className="flex flex-col items-center justify-center h-screen">
@@ -186,10 +185,10 @@ useEffect(() => {
     }
     return (
         <>
-            <div className="flex flex-col items-center ">
-            <div className="flex flex-col w-full shadow-md pb-4 items-center rounded-b-[35px] bg-white">
-            <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
-  <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
+        <div className="flex flex-col items-center bg-[#F8F9FB]">
+        <div className="flex flex-col w-full bg-whitey shadow-md  items-center rounded-b-[35px] bg-white">
+        <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 shadow-md' : 'relative'}`}>
+        <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
     <div className="relative flex w-full max-w-[350px] sm:max-w-[600px]">
       {/* Search Input */}
       <input
@@ -217,7 +216,7 @@ useEffect(() => {
       />
 
       {/* Search Button */}
-      <div className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+      <div className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-20 cursor-pointer">
         <Search size={20} />
       </div>
     </div>
@@ -457,7 +456,6 @@ useEffect(() => {
                             <EventCardsSkeleton />
                             <EventCardsSkeleton />
                             <EventCardsSkeleton />
-                            {/* <EventCards event={sampleEvent}/> */}
                             
                         </div>
                         )}
