@@ -61,7 +61,7 @@ function Step1Onboarding() {
   return (
     <>
       <div className="flex flex-col space-y-3 items-center pt-15 sm:mx-30 mx-10 bg-white">
-        <label className="font-satoshi-bold md:text-5xl text-3xl text-center md:text-left w-full">Update your profile</label>
+        <label className="font-satoshi-bold md:text-4xl text-2xl text-center md:text-left w-full">Update your profile</label>
         <label className="font-satoshi-light md:text-2xl text-xl text-center md:text-left w-full">Add a profile picture</label>
         <div className="relative flex flex-row items-center justify-center md:h-45 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-120 w-90 h-30 bg-neutral-100">
           <div className="absolute -left-1 md:-left-8 flex items-center justify-center rounded-full md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0 bg-white drop-shadow-lg">

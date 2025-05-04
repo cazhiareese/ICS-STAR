@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../index.css";
 import peersIcon from "../../assets/onBoardingAssets/peersIcon.png";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, ChevronLeft } from "lucide-react";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import Unathorized from "../Unauthorized";
 import Loading from "../../components/LoadingComponents/circularloading"
@@ -163,70 +163,70 @@ function Step2Onboarding() {
             </div>
             ) : (
                 !secondStep ? (
-                    <div className="flex flex-col justify-center md:mx-30 mx-10">
+                <div className="flex flex-col md:mx-30 mx-10 min-h-screen">
                     <img src={peersIcon} className="lg:h-12 lg:w-12 h-10 w-10 sm:mt-10 mb-5" alt="Peers Icon" />
-                    <label className="font-satoshi-black lg:text-4xl sm:text-3xl text-2xl ">Did you have Affiliations or Scholarships?</label>
-                    <label className="font-satoshi-light lg:text-2xl text-xl">
+                    <label className="font-satoshi-bold lg:text-4xl sm:text-3xl text-2xl ">Did you have Affiliations or Scholarships?</label>
+                    <label className="font-satoshi-light lg:text-2xl text-md">
                         Please select if you had any of the following during your time at college
                     </label>
 
-                    <div className="flex flex-row flex-wrap lg:space-x-10 items-center justify-center">
-                        <div
-                            className={`flex flex-col mt-10 lg:w-70 w-[100%] border lg:h-70 h-30 justify-center rounded-2xl px-10 ${
-                                affiliations ? "bg-secondary" : "bg-white"
+                    <div className="flex flex-col md:flex-row mt-10 gap-3 md:gap-5 items-center justify-center">
+                        <button
+                            type="button"
+                            className={`flex flex-col md:w-70 w-full border h-30 md:h-60 pt-5 md:pt-10 rounded-2xl px-5 hover:bg-secondary cursor-pointer ${
+                                affiliations ? "bg-secondary" : "bg-neutral-100"
                             }`}
-                            onClick={() => {
-                                if (affiliations == true){
-                                    setAffiliations(false)
-                                } else{
-                                    setAffiliations(true)
-                                }
-                                
-                            }}
-                        >
-                            <label className="font-satoshi-black md:text-2xl text:xl">Affiliations</label>
-                            <label className="font-satoshi-light md:text-xl text-md">
+                            onClick={() => setAffiliations(!affiliations)}
+                            >
+                            <span className="font-satoshi-black md:text-xl text-lg text-left">Affiliations</span>
+                            <span className="font-satoshi-light md:text-lg text-sm text-left pt-3">
                                 If you were part of any organizations, societies, or associations.
-                            </label>
-                        </div>
+                            </span>
+                        </button>
 
                         <div className="xl:flex flex-col lg:w-[10%] text-justify justify-center rounded-2xl px-10 hidden"></div>
 
-                        <div
-                            className={`flex flex-col mt-10 lg:w-70 w-[100%] border lg:h-70 h-30 justify-center rounded-2xl px-10 ${
-                                scholarships ? "bg-secondary" : "bg-white"
+                        <button
+                            type="button"
+                            className={`flex flex-col md:w-70 w-full border h-30 md:h-60 pt-5 md:pt-10 rounded-2xl px-5 hover:bg-secondary cursor-pointer ${
+                                scholarships ? "bg-secondary" : "bg-neutral-100"
                             }`}
-                            onClick={() => {
-                                if (scholarships == true){
-                                    setScholarships(false)
-                                } else{
-                                    setScholarships(true)
-                                }
-                            }}
-                        >
-                            <label className="font-satoshi-black md:text-2xl text:xl">Scholarships</label>
-                            <label className="font-satoshi-light md:text-xl text-md">If you were granted any scholarships.</label>
-                        </div>
+                            onClick={() => setScholarships(!scholarships)}
+                            >
+                            <span className="font-satoshi-black md:text-xl text-lg text-left">Scholarships</span>
+                            <span className="font-satoshi-light md:text-lg text-sm text-left pt-3">
+                                If you were granted any scholarships.
+                            </span>
+                        </button>
                     </div>
-
-                    <div className="flex flex-row items-center justify-center my-10 lg:space-x-20 space-x-5 w-full">
-                        <div className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl text-2xl" onClick={() => {
-                            if (userType=="student"){
-                                setStandingStep(true)
-                            } else {
-                                setCurrentSection(1)
+                    
+                    {/* Bottom Previous and Proceed Buttons */}
+                    <div className="flex flex-row items-center justify-between mt-10 w-full sticky bottom-0 mb-10">
+                        <button
+                            type="button"
+                            className="flex flex-row items-center justify-center hover:text-hover cursor-pointer group"
+                            onClick={() => {
+                                if (userType=="student"){
+                                    setStandingStep(true)
+                                } else {
+                                    setCurrentSection(1)
+                                }
+                                
+                                confirmData()
+                                }
                             }
-                            
-                            confirmData()
-                        }
-                            }>
-                            <label className="font-satoshi-italic md:text-2xl text-lg">&lt; Previous</label>
-                        </div>
+                        >
+                            <ChevronLeft className="text-primary group-hover:text-hover"/>
+                            <span className="font-satoshi-bold text-primary flex items-center w-20 p-2 text-md group-hover:text-hover">
+                                Previous
+                            </span>
+                        </ button>
 
-                        <div className="md:w-[70%] md:block hidden"></div>
+                        {/* <div className="md:w-[70%] md:block hidden"></div> */}
 
-                        <div
-                            className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl text-2xl cursor-pointer"
+                        <button
+                            type="button"
+                            className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-20 md:w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
                             onClick={() => {if (scholarships == false && affiliations == false) {
                                 if (userType == "student"){
                                     console.log(userType)
@@ -249,8 +249,8 @@ function Step2Onboarding() {
                         
                             }}
                         >
-                            <label className="font-satoshi-bold cursor-pointer md:text-2xl text-lg">Proceed</label>
-                        </div>
+                            Proceed
+                        </button>
                     </div>
                 </div>
                     
