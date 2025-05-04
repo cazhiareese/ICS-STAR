@@ -45,14 +45,8 @@ function AdminEngagementReports() {
     const fetchData = async () => {
       setFullEngagementReportLoading(true);
       try {
-        // First request: Engagement Statistics
-        const token = localStorage.getItem('token');
-        let response = await axios.get(
-          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`, {headers: {Authorization: `Bearer ${token}`}}
-        );
-        console.log(response.data);
-        setFullEngagementReport(response.data);
-
+        let response;
+        fetchEngagementStatistics()
         // Second request: Most Donations
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(response.data);
