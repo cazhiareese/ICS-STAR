@@ -452,6 +452,7 @@ function JobPostingLanding() {
                         setCurrentPage={setCurrentPage}
                         maxPage={maxPage}
                         setMaxPage={setMaxPage}
+                        setSelectedJobId={setSelectedJobId}
                     />
                 </div>
 
@@ -469,8 +470,8 @@ function JobPostingLanding() {
 
             </div>
 
-            <div className='flex flex-row mt-10 gap-2 justify-center '>
-                <div className='flex flex-col md:w-2/6 sm:w-full'>
+            <div className='flex flex-row mt-10 xl:gap-2 lg:gap-5 gap-10 justify-center  '>
+                <div className='flex flex-col md:w-2/6 w-full'>
                     <div className='flex flex-col items-center mb-6'>
                         {/* Pagination */}
                         <div className='flex flex-row gap-5 font-satoshi-medium text-lg'>
@@ -489,7 +490,6 @@ function JobPostingLanding() {
                         
                         {!loading ? (
                             <div className='flex flex-col gap-5 items-center '>
-                                
                                 {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
                                     jobList.map((job, index) => (
                                         <JobCard

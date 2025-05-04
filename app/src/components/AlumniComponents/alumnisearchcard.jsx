@@ -1,6 +1,7 @@
 import React from 'react'
 import { Briefcase, GraduationCap, MapIcon, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import defaultimage from "../../assets/defaultimage.jpg";
 
 function AlumniSearchCard({
     full_name,
@@ -21,7 +22,9 @@ function AlumniSearchCard({
 
   return (
     <div onClick={handleClick} className='flex flex-col shadow-md w-full items-center rounded-lg py-6'>
-      <img src={picture} alt="Avatar" className="w-24 h-24 rounded-full border border-gray-300 shadow-sm" />
+      {picture ? (<img src={picture} alt="Avatar" className="w-24 h-24 rounded-full border border-gray-300 shadow-sm" />)
+      :(<img src={defaultimage} alt="Avatar" className="w-24 h-24 rounded-full border border-gray-300 shadow-sm" />)
+      }
       
       <h1 className='text-xl font-satoshi-bold pt-3'>{full_name}</h1>
       <h2 className='text-sm font-satoshi-medium pt-1'>{email}</h2>
