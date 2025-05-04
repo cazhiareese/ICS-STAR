@@ -57,7 +57,6 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
     }
 
-    
     const openEventDetails = (eventId) => {
 
         console.log("RSVP clicked for event ID:", eventId);
@@ -117,7 +116,8 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
           </div>
     
           {/* Tags */}
-          <div className="flex gap-2 overflow-x-scroll mt-4 items-center scrollbar-hidden">
+          {event.tags && event.tags.length > 0 && (
+            <div className="flex gap-2 overflow-x-scroll mt-4 items-center scrollbar-hidden">
             {event.tags.map((tag, index) => (
               <span
                 key={index}
@@ -126,10 +126,11 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
                 {tag}
               </span>
             ))}
-          </div>
-    
+            </div>
+           )}
+
           {/* Going Count */}
-          <div className="flex justify-end items-center text-primary font-extrabold pr-2">
+          <div className="flex justify-end items-center text-primary font-extrabold mt-1 pr-2">
             <img src={PersonOutline} alt="Going" className='h-5 mr-2'/>
             <label>{event.going_count} are going</label>
           </div>
