@@ -3,7 +3,6 @@ import { MapPinned, Calendar, Star } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import {jwtDecode} from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 import PersonOutline from "../../../assets/personoutline.png"
-import "../../../index.css";
 
 import RsvpStatus from './rsvpstatus';
 const EventCards = ({event, reservationExclusiveWidth}) => {
@@ -144,6 +143,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
                 </div>
             </div>
             
+        </div>
         </div>
     );
 };

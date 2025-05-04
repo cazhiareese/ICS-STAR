@@ -239,6 +239,7 @@ const EventCardsMain = () => {
 
     if (!event && isGoing===null) {
         return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
+        return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
     }
     return (
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
