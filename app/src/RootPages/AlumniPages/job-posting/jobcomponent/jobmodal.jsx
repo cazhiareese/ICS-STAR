@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { X, Trash2, Flag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
   const [confirmed, setConfirmed] = useState(false);
-  console.log(formData) //eto form data sa report
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
-
-  //eljohn you know what to do
   useEffect(() => {
     if (confirmed) {
       if (options?.type === "delete") {
@@ -14,14 +15,51 @@ function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
         // TODO: Replace this with actual delete handler
         // e.g. await deleteJob(jobId)
       } else if (options?.type === "report") {
-        console.log("Reporting Job ID via useEffect:", jobId);
-        // TODO: Replace this with actual report handler
-        // e.g. await reportJob(jobId)
+        const reportJob = async () => {
+          setLoading(true);
+          const formDataToSend = new FormData();
+          formDataToSend.append("post_id", jobId);
+          formDataToSend.append("reason", formData.details);
+          if (formData.files.length > 0) {
+            formData.files.forEach((file) => {
+              formDataToSend.append("attachment", file);
+            });
+          }
+
+          try {
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/reports/report-job-post", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: formDataToSend,
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to submit report");
+            }
+
+            console.log("Reporting Job ID via useEffect:", jobId);
+            setSuccess(true);
+            setTimeout(() => {
+              navigate("/alumni/jobPosting");
+              setShowModal(false);
+            }, 2000); // Redirect after 2 seconds
+          } catch (err) {
+            console.error("Report Submission Error:", err);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        reportJob();
       }
-      setShowModal(false);
-      setConfirmed(false); // reset state
+      if (options?.type !== "report") {
+        setShowModal(false);
+        setConfirmed(false); // reset state
+      }
     }
-  }, [confirmed, jobId, options?.type, setShowModal]);
+  }, [confirmed, jobId, options?.type, setShowModal, formData, navigate]);
 
   const handleConfirm = () => {
     setConfirmed(true); // triggers the useEffect
@@ -44,41 +82,53 @@ function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
         </div>
 
         {/* Modal Body */}
-        <p className="text-gray-600 mt-4 text-center font-satoshi-medium ">
-          {options?.type === "delete"
-            ? "Are you sure you want to delete this job post? This action cannot be undone."
-            : "Are you sure you want to report this job post for review?"}
-        </p>
+        {loading ? (
+          <div className="flex items-center justify-center h-32">
+            <div className="w-8 h-8 border-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+          </div>
+        ) : success ? (
+          <p className="text-green-600 mt-4 text-center font-satoshi-medium">
+            Report submitted successfully! Redirecting...
+          </p>
+        ) : (
+          <>
+            <p className="text-gray-600 mt-4 text-center font-satoshi-medium ">
+              {options?.type === "delete"
+                ? "Are you sure you want to delete this job post? This action cannot be undone."
+                : "Are you sure you want to report this job post for review?"}
+            </p>
 
-        {/* Modal Actions */}
-        <div className="flex justify-center gap-4 w-full mt-6">
-          <button
-            className="bg-gray-300 text-black px-4 py-2 rounded-3xl font-satoshi-medium hover:bg-gray-400"
-            onClick={onCancel}
-          >
-            Cancel
-          </button>
-          <button
-            className={`px-4 py-2 rounded-3xl flex items-center gap-2 ${
-              options?.type === "delete"
-                ? "bg-error text-white font-satoshi-medium  hover:bg-red-600"
-                : "bg-error text-white font-satoshi-medium  hover:bg-red-600"
-            }`}
-            onClick={handleConfirm}
-          >
-            {options?.type === "delete" ? (
-              <>
-                <Trash2 size={16} />
-                Delete
-              </>
-            ) : (
-              <>
-                <Flag size={16} />
-                Confirm Report
-              </>
-            )}
-          </button>
-        </div>
+            {/* Modal Actions */}
+            <div className="flex justify-center gap-4 w-full mt-6">
+              <button
+                className="bg-gray-300 text-black px-4 py-2 rounded-3xl font-satoshi-medium hover:bg-gray-400"
+                onClick={onCancel}
+              >
+                Cancel
+              </button>
+              <button
+                className={`px-4 py-2 rounded-3xl flex items-center gap-2 ${
+                  options?.type === "delete"
+                    ? "bg-error text-white font-satoshi-medium  hover:bg-red-600"
+                    : "bg-error text-white font-satoshi-medium  hover:bg-red-600"
+                }`}
+                onClick={handleConfirm}
+              >
+                {options?.type === "delete" ? (
+                  <>
+                    <Trash2 size={16} />
+                    Delete
+                  </>
+                ) : (
+                  <>
+                    <Flag size={16} />
+                    Confirm Report
+                  </>
+                )}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
