@@ -15,7 +15,7 @@ function JobCard({job, selectedJobId, setSelectedJobId, setMobileExpanded}) {
     
     const handleJobClick = () => {
         // store the card's post id to selected post_id
-        setSelectedJobId(job.post_id || job.id);
+        setSelectedJobId(job.post_id ?? job.id);
         // console.log((job.post_id || job.id) + " selected!");
         setMobileExpanded(true);
     }

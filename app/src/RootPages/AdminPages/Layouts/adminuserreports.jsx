@@ -66,9 +66,10 @@ function AdminEngagementReports() {
   useEffect(() => {
     const fetchFullEngagementReport = async () => {
       setFullEngagementReportLoading(true);
+      // console.log(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`)
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`
+          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`
         );
         console.log(response.data);
         setFullEngagementReport(response.data);
@@ -279,7 +280,8 @@ function AdminEngagementReports() {
                 mostInterested.map((item, idx) => (
                     <div key={item.id} className="flex gap-4 items-center">
                     <p className="text-primary font-satoshi-medium text-lg">#{idx+1}</p>
-                    <img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />
+                    {item.image ? (<img src={item.image} className="w-14 h-14 rounded-md bg-gray-300" />)
+                    : (<div className="w-14 h-14 rounded-md bg-primary" />)}
                     <div className="flex flex-col">
                         <h1 className="text-black font-satoshi-bold text-lg">{item.title}</h1>
                         <h1 className="text-black font-satoshi-regular text-md">{item.company}</h1>
@@ -358,7 +360,7 @@ function AdminEngagementReports() {
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className='flex flex-col items-center'>
-                <span className="text-lg font-satoshi-bold">{Math.ceil(donationHighlights.percentage_progress)} %</span>
+                <span className="text-lg font-satoshi-bold">{Math.ceil(Math.min(donationHighlights.percentage_progress, 100))} %</span>
                 <h1 className='font-satoshi-regular text-xs'>Reached</h1>
               </div>
             </div>
@@ -407,7 +409,7 @@ function AdminEngagementReports() {
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className='flex flex-col items-center'>
-                <span className="text-lg font-satoshi-bold">{Math.ceil(donorHighlights.percentage_progress)} %</span>
+                <span className="text-lg font-satoshi-bold">{Math.ceil(Math.min(donorHighlights.percentage_progress, 100))} %</span>
                 <h1 className='font-satoshi-regular text-xs'>Reached</h1>
               </div>
             </div>

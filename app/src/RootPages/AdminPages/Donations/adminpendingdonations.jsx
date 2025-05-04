@@ -4,6 +4,8 @@ import { MoveLeft, X } from 'lucide-react'
 import ExpandedPendingDonations from '../../../components/AdminComponents/expandedpendingdonations'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
+import { motion, AnimatePresence } from 'framer-motion'
+
 
 function AdminPendingDonations() {
   const navigate = useNavigate()
@@ -19,6 +21,8 @@ function AdminPendingDonations() {
   const [verificationLoading, setVerificationLoading] = useState(false)
   const [verifyTransition, setVerifyTransition] = useState(false)
   const [actionType, setActionType] = useState(null) // "approve" or "disapprove"
+  
+  const [showProofModal, setShowProofModal] = useState(false);
 
   async function verifyDonation() {
     if (!selectedDonation) return
@@ -71,8 +75,23 @@ function AdminPendingDonations() {
 
       {/* Unified Modal */}
       {reviewDetailsModal && selectedDonation && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
-          <div className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-lg min-w-md max-w-lg h-4/5 w-full">
+        <motion.div
+          className="fixed inset-0 flex items-center justify-center bg-black/70 z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {/* Main modal slides left when proof is open */}
+          <motion.div
+            initial={{ x: 0, opacity: 1 }}
+            animate={{
+              x: showProofModal ? '-40%' : 0,
+              opacity: 1
+            }}
+            exit={{ x: 0, opacity: 0 }}
+            transition={{ type: 'tween', duration: 0.4 }}
+            className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-lg min-w-md max-w-lg h-4/5 w-full"
+          >
             {/* Header */}
             <div className="flex justify-between w-full items-center pb-2">
               <h2 className="text-2xl font-satoshi-medium text-primary">
@@ -84,6 +103,7 @@ function AdminPendingDonations() {
                   setReviewDetailsModal(false)
                   setVerifyTransition(false)
                   setVerificationLoading(false)
+                  setShowProofModal(false)
                 }}
               >
                 <X className="w-5 h-5 text-white" />
@@ -161,25 +181,81 @@ function AdminPendingDonations() {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className='flex flex-row w-full gap-2 text-white font-satoshi-regular'>
-                  <button
-                    className='bg-error rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-red-400'
-                    onClick={() => setActionType("disapprove")}
+                
+
+                <button
+                    className='bg-primary text-white rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-red-400'
+                    onClick={() => setShowProofModal(true)} //Add sliding modal here
                   >
-                    <p>Disapprove</p>
-                  </button>
-                  <button
-                    className='bg-primary rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-hover'
-                    onClick={() => setActionType("approve")}
-                  >
-                    <p>Approve</p>
-                  </button>
-                </div>
+                    <p>Proof of Payment</p>
+                </button>
+                  
+                
+                <AnimatePresence>
+                  {showProofModal && selectedDonation && (
+                    <motion.div
+                      className="fixed inset-0 -z-50 flex items-center justify-center "
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      {/* Sliding card */}
+                      <motion.div
+                        initial={{ x: 0 }}
+                        animate={{ x: 520 }}
+                        exit={{ x: 0 }}
+                        transition={{ type: 'tween', duration: 0.4 }}
+                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl rounded-3xl w-[180%] max-w-lg -z-50 p-6 h-full"
+                      >
+                        <div className="flex justify-between items-center border-b pb-3">
+                          <h2 className="text-xl font-satoshi-bold text-primary">Proof of Payment</h2>
+                          <button
+                            className='rounded-full h-fit bg-error p-1 cursor-pointer'
+                            onClick={() => {
+                              setShowProofModal(false)
+                            }}
+                          >
+                            <X className="w-5 h-5 text-white" />
+                        </button>
+                        </div>
+                        
+                        {/* Donation proof photo */}
+                        <div className='flex w-full justify-center h-3/4'>
+                          <div className='bg-primary h-full w-full rounded-xl flex justify-center items-center text-white mt-5'>
+                            {selectedDonation.type === 'Monetary' &&
+                              <img src={selectedDonation.proof} alt="proof of donation" className='h-full w-full object-cover rounded-xl' />
+                            }
+                          </div>
+
+                          
+                        </div>
+                        {/* Action Buttons TODO: Use later for next modal */}
+                        <div className='flex flex-row w-full gap-2 text-white font-satoshi-regular mt-10'>
+                          <button
+                            className='bg-error rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-red-400'
+                            onClick={() => setActionType("disapprove")}
+                          >
+                            <p>Disapprove</p>
+                          </button>
+                          <button
+                            className='bg-primary rounded-3xl w-1/2 py-3 cursor-pointer hover:bg-hover'
+                            onClick={() => setActionType("approve")}
+                          >
+                            <p>Approve</p>
+                          </button>
+                        </div>
+                        
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
               </>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
+
+        
       )}
     </div>
   )
