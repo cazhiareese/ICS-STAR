@@ -133,13 +133,13 @@ def get_event_by_id(event_id: UUID, db: Session, user_id: Optional[UUID] = None)
             .all()
         }
         
-    if user_id:
+    if not user or user.is_verified is False or user.is_banned is True or user.user_type.value == "student":
+            rsvp_closed = True
+    else:
         if event.is_all:
             rsvp_closed = False
         else:
             rsvp_closed = event.event_id not in visible_event_ids
-    else:
-        rsvp_closed = True
 
     return OneEventOut(
         event_id=event.event_id,
@@ -204,7 +204,7 @@ def get_visible_events_for_user(
             continue
 
         tags = [tag.tag for tag in event.tags]
-        if not user or user.is_verified is False or user.is_banned is True:
+        if not user or user.is_verified is False or user.is_banned is True or user.user_type.value == "student":
             rsvp_closed = True
         else:
             if event.is_all:
