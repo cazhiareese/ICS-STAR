@@ -13,7 +13,7 @@ import SortModal from '../../../components/AdminComponents/sortmodal'
 function AdminHelpIcs() {
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-  const [token, setToken] = useState(null)
+  // const [token, setToken] = useState(null)
 
   const [pendingDonations, setPendingDonations] = useState(null);
   const [verifiedDonations, setVerifiedDonations] = useState(null);
@@ -27,7 +27,7 @@ function AdminHelpIcs() {
   const [totalVerifiedPages, setTotalVerifiedPages] = useState(1)
   const [sortDirection, setSortDirection] = useState('asc')
 
-  async function fetchDriveDetails() {
+  async function fetchDriveDetails(token) {
     try {
       const genDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/generic-drive-view`, {headers: {Authorization: `Bearer ${token}`}});
       setDriveData(genDriveRes.data);
@@ -41,7 +41,7 @@ function AdminHelpIcs() {
     }
   }
 
-  async function fetchPendingDonations(driveId) {
+  async function fetchPendingDonations(driveId, token) {
     try {
       const pendingDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveId}`, {headers: {Authorization: `Bearer ${token}`}});
       setPendingDonations(pendingDriveRes.data.data);
@@ -55,7 +55,7 @@ function AdminHelpIcs() {
     }
   }
 
-  async function fetchVerifiedDonations(driveId) {
+  async function fetchVerifiedDonations(driveId, token) {
     try {
       const verifiedDriveRes = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveId}`, {headers: {Authorization: `Bearer ${token}`}});
       setVerifiedDonations(verifiedDriveRes.data.data);
@@ -67,15 +67,17 @@ function AdminHelpIcs() {
   }
 
   useEffect(() => {
-    setToken(localStorage.getItem('token'))
+    const token= localStorage.getItem('token');
+
+  
     async function loadData() {
       setLoading(true);
       try {
-        const driveId = await fetchDriveDetails();
+        const driveId = await fetchDriveDetails(token);
         if (driveId) {
           await Promise.all([
-            fetchPendingDonations(driveId),
-            fetchVerifiedDonations(driveId),
+            fetchPendingDonations(driveId, token),
+            fetchVerifiedDonations(driveId, token),
           ]);
         }
       } catch (error) {

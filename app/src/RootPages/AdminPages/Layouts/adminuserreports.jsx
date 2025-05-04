@@ -18,61 +18,62 @@ function AdminEngagementReports() {
   const [donorHighlights, setDonorHighlights] = useState({});
   const [recentNewsLetters, setRecentLetters] = useState([]);
   const [visitsLoading, setVisitsLoading] = useState(true)
+  const [token, setToken] = useState(null)
 
   // BASE URL ENV
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+  async function fetchEngagementStatistics(){
+    setVisitsLoading(true)
+    try {
+      const token= localStorage.getItem('token');
+      let response = await axios.get(
+        `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`, {headers: {Authorization: `Bearer ${token}`}}
+      );
+      console.log(response.data);
+      setFullEngagementReport(response.data);
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setVisitsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const fetchFullEngagementReport = async () => {
-      setFullEngagementReportLoading(true);
-      console.log(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`)
-      try {
-        const response = await axios.get(
-          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`
-        );
-        console.log(response.data);
-        setFullEngagementReport(response.data);
-      } catch (err) {
-        console.log(err.message || 'Error fetching engagement report');
-      } finally {
-        setFullEngagementReportLoading(false);
-      }
-    };
-  
-    fetchFullEngagementReport();
-  }, [daysFilter, batchFilter]);
+    fetchEngagementStatistics()
+  }, [batchFilter])
 
   useEffect(() => {
     const fetchData = async () => {
       setFullEngagementReportLoading(true);
       try {
+        // First request: Engagement Statistics
         let response;
         fetchEngagementStatistics()
         // Second request: Most Donations
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(response.data);
         setMostDonations(response.data);
 
         // Third request: Most Interested (Jobs)
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(response.data);
         setMostInterested(response.data);
 
         // Fourth request: Recent Newsletters
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/newsletters/top-3?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/newsletters/top-3?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(response.data);
         setRecentLetters(response.data);
 
         // Fifth request: Donation Highlights
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         if (response.status !== 404) {
           console.log("donation", response.data);
           setDonationHighlights(response.data);
         }
 
         // Sixth request: Donor Highlights
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         if (response.status !== 404) {
           console.log(response.data);
           setDonorHighlights(response.data);
@@ -83,7 +84,7 @@ function AdminEngagementReports() {
         setFullEngagementReportLoading(false);
       }
     };
-
+    setToken(localStorage.getItem('token'))
     fetchData();
   }, [daysFilter]);
 
@@ -269,7 +270,7 @@ function AdminEngagementReports() {
           {/* Chart Card */}
           <div className="bg-white rounded-2xl shadow p-6 mb-8">
             {visitsLoading ? (
-                <div className="bg-white rounded-2xl shadow p-6 mb-8">
+                <>
                 <div className="flex flex-row">
                   <div className="flex flex-col pb-5">
                     <div className="h-8 w-48 bg-gray-300 rounded mb-2"></div>
@@ -281,7 +282,7 @@ function AdminEngagementReports() {
                   </div>
                 </div>
                 <div className="w-full h-56 bg-gray-200 rounded-lg mt-4"></div>
-              </div>
+                </>
             ) : (
               <>
               <div className="flex flex-row">

@@ -80,3 +80,16 @@ class UserOut(BaseModel):
 
     class Config:
         from_attributes = True
+        
+class CurrentUser(BaseModel):
+    user_id: UUID
+    is_verified: bool
+    user_type: UserTypeEnum
+    is_onboarded: bool
+    is_banned: bool
+    class Config:
+        from_attributes = True
+
+
+class EmailRequest(BaseModel):
+    email: str

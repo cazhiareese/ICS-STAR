@@ -35,7 +35,7 @@ async def create_job_posting(
             raise HTTPException(status_code=400, detail="File type not allowed.")
         
         file_extension = image.filename.split(".")[-1].lower()
-        file_name = f"job_posting/{job_title.replace(' ', '_')}.{file_extension}"
+        file_name = f"job_posting/{company.replace(' ', '_')}{job_title.replace(' ', '_')}.{file_extension}"
 
         try:
             supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
@@ -211,3 +211,15 @@ async def handle_attachment_upload(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload attachment. Error: {str(e)}")
+    
+
+def get_top_4_job_tags(db: Session):
+    tags = (
+        db.query(JobPostingTag.tag, func.count(JobPostingTag.tag).label("count"))
+        .group_by(JobPostingTag.tag)
+        .order_by(func.count(JobPostingTag.tag).desc())
+        .limit(4)
+        .all()
+    )
+    
+    return [tag[0] for tag in tags]

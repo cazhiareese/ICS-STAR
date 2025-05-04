@@ -1,8 +1,10 @@
 from math import ceil
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse, generate_interested_users_csv
-from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut, PaginatedUserInterestedResponse
+from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse, generate_interested_users_csv, remove_user_interested, check_user_interested
+from util.userutil import get_current_user
+from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut, PaginatedUserInterestedResponse, PaginatedJobSearchResponse
+from schemas.user import CurrentUser
 from typing import Optional, List
 from config.database import get_db
 from uuid import UUID
@@ -18,34 +20,52 @@ def paginate_results(results: List, page: int, page_size: int):
     
     return total_pages, paginated_results
 
-@router.get("/admin/job/search", response_model=List[JobSearchOut])
+@router.get("/admin/job/search", response_model=PaginatedJobSearchResponse)
 def job_search(
-    creator_name : Optional[str] = "",
+    title: Optional[str] = "",
+    creator_name: Optional[str] = "",
     tag: Optional[str] = "",
     company: Optional[str] = "",
     employment_type: Optional[str] = "",
+    mode_options: Optional[str] = "",
+    min_salary: Optional[int] = 0,
+    max_salary: Optional[int] = 0,
     sort_by: Optional[str] = "date_desc",
-    db: Session = Depends(get_db)
+    page: int = Query(1, ge=1, description="Page number, starting from 1"),
+    db: Session = Depends(get_db),
 ):
     
-    results = admin_search_job(db, creator_name=creator_name, employment_type=employment_type, company=company, tag=tag, sort_by=sort_by)
-
-    if not results:
-        raise HTTPException(status_code=404, detail="No job postings found matching the search criteria.")
+    page_size: int = 10
+    result = admin_search_job(
+        db=db,
+        title=title,
+        creator_name=creator_name,
+        tag=tag,
+        company=company,
+        employment_type=employment_type,
+        mode_options=mode_options,
+        min_salary=min_salary,
+        max_salary=max_salary,
+        sort_by=sort_by,
+        page=page,
+        page_size=page_size
+    )
     
-    return results
+    return result
 
-@router.put("/job/add-user-interested/{post_id}", response_model=dict)
+@router.post("/job/add-user-interested/{post_id}", response_model=dict)
 def add_user_interested_route(
     post_id: UUID,
-    user_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     
+    user_id = user.user_id
+
     result = add_user_interested(db, post_id=post_id, user_id=user_id)
 
     if not result:
-        raise HTTPException(status_code=404, detail="Failed to add user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
+        raise HTTPException(status_code=200, detail="Failed to add user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
     
     return result
 
@@ -60,7 +80,7 @@ def interested_in(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -82,7 +102,7 @@ def interested_in_batch_ascending(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -104,7 +124,7 @@ def interested_in_batch_descending(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -126,7 +146,7 @@ def interested_in_date_of_interest_newest(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -148,7 +168,7 @@ def interested_in_date_of_interest_oldest(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -170,7 +190,7 @@ def interested_in_name_alphabetical(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -192,7 +212,7 @@ def interested_in_name_reverse(
     page_size = 10  
 
     if not results:
-        raise HTTPException(status_code=404, detail="No users found who are interested in this job posting.")
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
     
     total_pages, paginated_results = paginate_results(results, page, page_size)
     
@@ -214,7 +234,7 @@ def job_overview_route(
     results = job_overview(db, post_id=post_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="Job posting not found.")
+        raise HTTPException(status_code=200, detail="Job posting not found.")
     
     return results
 
@@ -226,7 +246,7 @@ def view_new_interested(
     results = get_current_interested(db, post_id=post_id)
 
     if not results:
-        raise HTTPException(status_code=404, detail="No new interested users found.")
+        raise HTTPException(status_code=200, detail="No new interested users found.")
     
     return results
 
@@ -236,3 +256,29 @@ def admin_get_interested_users(
     db: Session = Depends(get_db),
 ):
     return generate_interested_users_csv(db, post_id)
+
+@router.delete("/job/remove-user-interested/{post_id}", response_model=dict)
+def remove_user_interested_route(
+    post_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    
+    user_id = user.user_id
+
+    result = remove_user_interested(db, user_id=user_id, post_id=post_id)
+
+    if not result:
+        raise HTTPException(status_code=200, detail="Failed to remove user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
+    
+    return result
+
+@router.get("/job/check-user-interested/{post_id}", response_model=bool)
+def check_user_interested_route(
+    post_id: UUID,
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    result = check_user_interested(db, user_id=user_id, post_id=post_id)
+    
+    return result

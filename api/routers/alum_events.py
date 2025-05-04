@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi import APIRouter, Depends, Query, HTTPException, status, Form
 from sqlalchemy.orm import Session
 from typing import Optional, List, Literal
 from config.database import get_db
 from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, get_confirmed_events_by_user, cancel_event_rsvp, get_event_by_id, get_visible_events_for_user
 from uuid import UUID
-from models.usermodel import User
-from util.userutil import get_current_user
+from util.admin_events_util import add_user_clicks
+#from models.usermodel import User
+from schemas.user import CurrentUser
+from util.userutil import get_current_user, get_current_user_optional
 from schemas.events_schema import EventOut, OneEventOut
 from datetime import date
 
@@ -21,7 +23,7 @@ def get_event_suggestions(
     return fetch_event_suggestions(db, q, limit)
 
 @router.post("/events/{event_id}/confirm-rsvp", status_code=status.HTTP_201_CREATED)
-def rsvp_to_event(event_id: UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def rsvp_to_event(event_id: UUID, user: CurrentUser = Depends(get_current_user), db: Session = Depends(get_db)):
     
     if user.user_type != user.user_type.alumni:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -33,7 +35,7 @@ def rsvp_to_event(event_id: UUID, user: User = Depends(get_current_user), db: Se
         raise HTTPException(status_code=400, detail=str(e))
     
 @router.delete("/events/{event_id}/cancel-rsvp", status_code=200)
-def cancel_rsvp(event_id: UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def cancel_rsvp(event_id: UUID, user: CurrentUser = Depends(get_current_user), db: Session = Depends(get_db)):
 
     if user.user_type != user.user_type.alumni:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -45,7 +47,7 @@ def cancel_rsvp(event_id: UUID, user: User = Depends(get_current_user), db: Sess
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/events/confirmed", response_model=List[EventOut])
-def get_user_confirmed_events(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_user_confirmed_events(user: CurrentUser = Depends(get_current_user), db: Session = Depends(get_db)):
     
     if user.user_type != user.user_type.alumni:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -54,17 +56,36 @@ def get_user_confirmed_events(user: User = Depends(get_current_user), db: Sessio
     return events
 
 @router.get("/one-event/{event_id}", response_model=OneEventOut)
-def get_event(event_id: UUID, db: Session = Depends(get_db)):
-    return get_event_by_id(event_id, db)
+def get_event(
+    event_id: UUID, 
+    db: Session = Depends(get_db), 
+    user: Optional[CurrentUser] = Depends(get_current_user_optional)
+):
+    if not user:
+        user = None
+    return get_event_by_id(event_id, db, user)
 
 @router.get("/events-visible-to", response_model=List[EventOut])
 def get_visible_events(
-    user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user_optional),
     date_filter: Optional[str] = Query(
         default=None,
         description='Filter events by date: "today", "tomorrow", "this_weekend", or a date in YYYY-MM-DD format'
     )
 ):
-    
-    return get_visible_events_for_user(user.user_id, db, date_filter)
+    if not user:
+        user = None
+    # print(user.user_id)
+    return get_visible_events_for_user(db, user, date_filter)
+
+@router.post("/track-userclicks")
+def userclicks(
+    event_id: UUID = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        add_user_clicks(event_id, db)
+        return {"success": True}
+    except Exception as e:
+        raise e

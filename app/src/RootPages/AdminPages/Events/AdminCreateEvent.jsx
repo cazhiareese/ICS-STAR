@@ -97,8 +97,13 @@ function AdminCreateEvent({ purpose }) {
 
   async function fetchTags() {
     try {
+      const storedToken = localStorage.getItem('token');
+      setToken(storedToken);
+      if (!storedToken) {
+        throw new Error('No authentication token found');
+      }
       const response = await axios.get(`${API_BASE_URL}/api/admin/events/get-tags`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${storedToken}` },
       });
       setTags(response.data.data);
     } catch (error) {

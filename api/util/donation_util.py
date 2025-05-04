@@ -59,18 +59,41 @@ def get_user_donations(db: Session, user_id: str) -> list[MonetaryDonationOut | 
     return donations
 
 # Function to get the monetary donations of a user
-def get_user_monetary_donations(db: Session, user_id: str) -> list[MonetaryDonationOut]:
-    monetary_donations = db.query(
-        MonetaryDonation
-        ).filter(
-            MonetaryDonation.user_id == user_id
-            ).all()
+def get_user_monetary_donations(db: Session, user_id: str, isIncreasing: Optional[bool] = None, isNewest: Optional[bool] = None) -> list[MonetaryDonationOut]:
+
+    query = db.query(
+        MonetaryDonation.donation_id,
+        MonetaryDonation.date_donated,
+        MonetaryDonation.amount,
+        MonetaryDonation.drive_id,
+        MonetaryDonation.user_id,
+        MonetaryDonation.is_acknowledged,
+        MonetaryDonation.proof,
+        MonetaryDonation.is_anonymous,
+        ).filter(MonetaryDonation.user_id == user_id)
+    
+    if isIncreasing is not None:
+        if isIncreasing:
+            query = query.order_by(MonetaryDonation.amount.asc())
+        else:
+            query = query.order_by(MonetaryDonation.amount.desc())
+    
+    if isNewest is not None:
+        if isNewest:
+            query = query.order_by(MonetaryDonation.date_donated.desc())
+        else:
+            query = query.order_by(MonetaryDonation.date_donated.asc())
+    
+    monetary_donations = query.all()
     
     MonetaryDonationOutList = []
 
     for donation in monetary_donations:
+        drive = db.query(
+            DonationDrive.drive_id,
+            DonationDrive.title
+        ).filter(DonationDrive.drive_id == donation.drive_id).first()
 
-        drive = db.query(DonationDrive).filter(DonationDrive.drive_id == donation.drive_id).first()
         mon_donation = MonetaryDonationOut(
             donation_id=donation.donation_id,
             date_donated=donation.date_donated,
@@ -89,17 +112,31 @@ def get_user_monetary_donations(db: Session, user_id: str) -> list[MonetaryDonat
     return MonetaryDonationOutList
 
 # Function to get the in-kind donations of a user
-def get_user_in_kind_donations(db: Session, user_id: str) -> list[InKindDonationOut]:
-    in_kind_donations = db.query(
-        InKindDonation
-        ).filter(
-            InKindDonation.user_id == user_id
-            ).all()
+def get_user_in_kind_donations(db: Session, user_id: str, isNewest: Optional[bool] = None) -> list[InKindDonationOut]:
+    query = db.query(
+        InKindDonation.donation_id,
+        InKindDonation.date_donated,
+        InKindDonation.description,
+        InKindDonation.drive_id,
+        InKindDonation.user_id,
+        InKindDonation.is_acknowledged,
+        ).filter(InKindDonation.user_id == user_id)
+    
+    if isNewest is not None:
+        if isNewest:
+            query = query.order_by(InKindDonation.date_donated.desc())  # Newest first
+        else:
+            query = query.order_by(InKindDonation.date_donated.asc())   # Oldest first
+    
+    in_kind_donations = query.all()
     
     InKindDonationOutList = []
 
     for donation in in_kind_donations:
-        drive = db.query(DonationDrive).filter(DonationDrive.drive_id == donation.drive_id).first()
+        drive = db.query(
+            DonationDrive.drive_id,
+            DonationDrive.title
+            ).filter(DonationDrive.drive_id == donation.drive_id).first()
         in_kind_donation = InKindDonationOut(
             donation_id=donation.donation_id,
             date_donated=donation.date_donated,
@@ -116,18 +153,41 @@ def get_user_in_kind_donations(db: Session, user_id: str) -> list[InKindDonation
     return InKindDonationOutList
 
 # Function to get the monetary donations of a user with acknowledgment status
-def get_user_monetary_donations_acknowledged(db: Session, user_id: str) -> list[MonetaryDonationOut]:
-    monetary_donations = db.query(
-        MonetaryDonation
-        ).filter(
-            MonetaryDonation.user_id == user_id,
-            MonetaryDonation.is_acknowledged == True
-            ).all()
+def get_user_monetary_donations_acknowledged(db: Session, user_id: str, isIncreasing: Optional[bool] = None, isNewest: Optional[bool] = None) -> list[MonetaryDonationOut]:
+    query = db.query(
+        MonetaryDonation.donation_id,
+        MonetaryDonation.date_donated,
+        MonetaryDonation.amount,
+        MonetaryDonation.drive_id,
+        MonetaryDonation.user_id,
+        MonetaryDonation.is_acknowledged,
+        MonetaryDonation.proof,
+        MonetaryDonation.is_anonymous,
+        ).filter(MonetaryDonation.user_id == user_id,
+                 MonetaryDonation.is_acknowledged == True)
+    
+    if isIncreasing is not None:
+        if isIncreasing:
+            query = query.order_by(MonetaryDonation.amount.asc())
+        else:
+            query = query.order_by(MonetaryDonation.amount.desc())
+    
+    if isNewest is not None:
+        if isNewest:
+            query = query.order_by(MonetaryDonation.date_donated.desc())
+        else:
+            query = query.order_by(MonetaryDonation.date_donated.asc())
+    
+    monetary_donations = query.all()
     
     MonetaryDonationOutList = []
 
     for donation in monetary_donations:
-        drive = db.query(DonationDrive).filter(DonationDrive.drive_id == donation.drive_id).first()
+        drive = db.query(
+            DonationDrive.drive_id,
+            DonationDrive.title
+        ).filter(DonationDrive.drive_id == donation.drive_id).first()
+
         mon_donation = MonetaryDonationOut(
             donation_id=donation.donation_id,
             date_donated=donation.date_donated,
@@ -146,18 +206,32 @@ def get_user_monetary_donations_acknowledged(db: Session, user_id: str) -> list[
     return MonetaryDonationOutList
 
 # Function to get the in-kind donations of a user with acknowledgment status
-def get_user_in_kind_donations_acknowledged(db: Session, user_id: str) -> list[InKindDonationOut]:
-    in_kind_donations = db.query(
-        InKindDonation
-        ).filter(
-            InKindDonation.user_id == user_id,
-            InKindDonation.is_acknowledged == True
-            ).all()
+def get_user_in_kind_donations_acknowledged(db: Session, user_id: str, isNewest: Optional[bool] = None) -> list[InKindDonationOut]:
+    query = db.query(
+        InKindDonation.donation_id,
+        InKindDonation.date_donated,
+        InKindDonation.description,
+        InKindDonation.drive_id,
+        InKindDonation.user_id,
+        InKindDonation.is_acknowledged,
+        ).filter(InKindDonation.user_id == user_id,
+                 InKindDonation.is_acknowledged == True)
+    
+    if isNewest is not None:
+        if isNewest:
+            query = query.order_by(InKindDonation.date_donated.desc())  # Newest first
+        else:
+            query = query.order_by(InKindDonation.date_donated.asc())   # Oldest first
+    
+    in_kind_donations = query.all()
     
     InKindDonationOutList = []
 
     for donation in in_kind_donations:
-        drive = db.query(DonationDrive).filter(DonationDrive.drive_id == donation.drive_id).first()
+        drive = db.query(
+            DonationDrive.drive_id,
+            DonationDrive.title
+            ).filter(DonationDrive.drive_id == donation.drive_id).first()
         in_kind_donation = InKindDonationOut(
             donation_id=donation.donation_id,
             date_donated=donation.date_donated,

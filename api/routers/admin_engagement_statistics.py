@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
+from math import ceil
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import Date, and_, cast, desc, distinct, extract, func
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from config.database import get_db
+from util.userutil import require_admin
 from models.log import Log
 from models.usermodel import User
 from models.job_posting_model import JobPosting, JobPostingInterestedIn
@@ -28,7 +30,7 @@ router = APIRouter(
     }
 )
 
-@router.get("/visits", response_model=List[VisitResponse])
+@router.get("/visits", dependencies=[Depends(require_admin)], response_model=List[VisitResponse])
 def get_visits(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for visit data"),
     batch: Optional[str] = Query(None, description="Filter by batch year (e.g., '2002'). Default is all batches."),
@@ -150,7 +152,7 @@ def get_visits(
         
     return result
 
-@router.get("/jobs/top-3-interested", response_model=List[TopJobResponse])
+@router.get("/jobs/top-3-interested", dependencies=[Depends(require_admin)], response_model=List[TopJobResponse])
 def get_top_interested_jobs(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for job posting data"),
     db: Session = Depends(get_db)
@@ -206,7 +208,7 @@ def get_top_interested_jobs(
     
     return result
 
-@router.get("/donation-drives/top-3-donors", response_model=List[TopDriveResponse])
+@router.get("/donation-drives/top-3-donors", dependencies=[Depends(require_admin)], response_model=List[TopDriveResponse])
 def get_top_donation_drives(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -304,7 +306,7 @@ def get_top_donation_drives(
     
     return result
 
-@router.get("/donation-drives/most-donations", response_model=TopDonationDriveResponse)
+@router.get("/donation-drives/most-donations", dependencies=[Depends(require_admin)], response_model=TopDonationDriveResponse)
 def get_top_donation_drive(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -352,7 +354,7 @@ def get_top_donation_drive(
         percentage_progress=float(drive.percentage_progress)
     )
 
-@router.get("/donation-drives/most-donors", response_model=TopDonationDriveResponse)
+@router.get("/donation-drives/most-donors", dependencies=[Depends(require_admin)], response_model=TopDonationDriveResponse)
 def get_top_donation_drive_by_donors(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for donation drive data"),
     db: Session = Depends(get_db)
@@ -464,12 +466,12 @@ def get_top_donation_drive_by_donors(
         percentage_progress=float(drive.percentage_progress)
     )
 
-@router.get("/jobs/top-interested", response_model=List[JobsResponse])
+@router.get("/jobs/top-interested", dependencies=[Depends(require_admin)])
 def get_top_interested_jobs(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for job posting data"),
     db: Session = Depends(get_db),
-    skip: int = Query(0, description="Number of records to skip"),
-    limit: int = Query(10, description="Number of records to return")
+    page: int = Query(1, ge=1, description="Page number (starts at 1)"),
+    page_size: int = Query(10, ge=1, le=100, description="Number of records per page")
 ):
     today = datetime.utcnow()
 
@@ -480,9 +482,8 @@ def get_top_interested_jobs(
         start_date = today - timedelta(days=30)
     else:  # time_range == TimeRange.YEAR
         start_date = datetime(today.year - 1, today.month, today.day)
-    
-    # Query to get top 3 job postings with most interest
-    top_jobs = (
+
+    base_query = (
         db.query(
             JobPosting.title,
             JobPosting.company,
@@ -505,15 +506,16 @@ def get_top_interested_jobs(
             JobPosting.date_posted
         )
         .order_by(desc('interested_count'))
-        .all()
     )
 
-    # Apply pagination
-    top_jobs = top_jobs[skip: skip + limit]
-    
-    # Format the results
+    total_results = base_query.count()
+    total_pages = ceil(total_results / page_size)
+    offset = (page - 1) * page_size
+
+    paginated_jobs = base_query.offset(offset).limit(page_size).all()
+
     result = []
-    for job in top_jobs:
+    for job in paginated_jobs:
         result.append({
             "title": job.title,
             "company": job.company,
@@ -521,11 +523,16 @@ def get_top_interested_jobs(
             "link": job.link,
             "interested_count": job.interested_count
         })
-    
-    return result
+
+    return {
+        "page": page,
+        "page_size": page_size,
+        "total_pages": total_pages,
+        "results": result
+    }
 
 # Fetch the top 3 most recent newsletter posts
-@router.get("/newsletters/top-3")
+@router.get("/newsletters/top-3", dependencies=[Depends(require_admin)],)
 def get_top_newsletters(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for newsletter data"),
     db: Session = Depends(get_db)

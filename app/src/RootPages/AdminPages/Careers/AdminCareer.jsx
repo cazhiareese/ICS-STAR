@@ -58,7 +58,7 @@ function AdminCareer() {
     setOrderBy(newParam);
   };
 
-  async function fetchJobs(type) {
+  async function fetchJobs(type, token) {
     let endpoint = '';
 
     const params = new URLSearchParams();
@@ -83,7 +83,7 @@ function AdminCareer() {
     
     console.log(endpoint)
     try {
-      const response = await axios.get(endpoint);
+      const response = await axios.get(endpoint, {headers: {Authorization: `Bearer ${token}`}});
       console.log(response)
       setTotalPages(response.data.meta.total_pages)
       setJobs(response.data.items);
@@ -93,25 +93,25 @@ function AdminCareer() {
   }
 ``
 
-  async function fetchJobCounts() {
-    const openResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/open/count`)
+  async function fetchJobCounts(token) {
+    const openResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/open/count`, {headers: {Authorization: `Bearer ${token}`}})
     console.log(openResponse.data)
     setOpenCount(openResponse.data.open_job_postings_count)
 
-    const closedResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/closed/count`)
+    const closedResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/closed/count`, {headers: {Authorization: `Bearer ${token}`}})
     console.log(closedResponse.data)
     setClosedCount(closedResponse.data.closed_job_postings_count)
 
-    const reportedResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/reported/count`)
+    const reportedResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/reported/count`, {headers: {Authorization: `Bearer ${token}`}})
     console.log(reportedResponse.data)
     setReportedCount(reportedResponse.data.reported_job_postings_count)
   }
 
   useEffect(() => {
-    async function fetchTopJobs() {
+    async function fetchTopJobs(token) {
       setTopLoading(true)
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/job-postings/top-4-interested`)
+        const response = await axios.get(`${API_BASE_URL}/admin/job-postings/top-4-interested`, {headers: {Authorization: `Bearer ${token}`}})
         console.log(response)
         setTopJobs(response.data)
       } catch (error) {
@@ -120,23 +120,36 @@ function AdminCareer() {
         setTopLoading(false)
       }
     }
-    fetchTopJobs()
+    const token = localStorage.getItem('token');
+    fetchTopJobs(token)
   }, [])
   
   useEffect(() => {
     async function fetchAllJobs () {
       setLoading(true);
       try {
-        await fetchJobCounts()
-        await fetchJobs(jobType);
+        await fetchJobCounts(token)
+        await fetchJobs(jobType, token);
       } catch (error) {
         console.error('Error fetching jobs:', error);
       } finally {
         setLoading(false);
       }
     };
-  
-    fetchAllJobs();
+    const token = localStorage.getItem('token');
+
+    if (token)
+    {
+      fetchAllJobs(token);
+    }else{
+      setTopJobs([])
+      setOpenCount(0)
+      setClosedCount(0)
+      setReportedCount(0)
+      setTotalPages(0)
+      setJobs([])
+    }
+    
   }, [jobType, page, sortBy, sortDirection, creatorValue]);
   
 
