@@ -9,6 +9,7 @@ import PersonOutline from "../../assets/personoutline.png"
 import { Paperclip } from 'lucide-react';
 import CircularLoading from '../../components/LoadingComponents/circularloading';
 import ModalTemplate from '../../AuthPages/modaltemplate';
+
 const EventCardsMain = () => {
     const [isSticky, setIsSticky] = useState(false);
     

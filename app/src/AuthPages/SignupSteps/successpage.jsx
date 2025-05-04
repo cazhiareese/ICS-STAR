@@ -72,9 +72,11 @@
                     console.error("Response Status:", response.status);
                     console.error("Response OK:", response.ok);
                     console.error(data);
+                    console.log(formData)
                 }
             } catch (error) {
                 console.error("Error:", error);
+                console.log(formData)
                 // alert("Something went wrong!");
             }
         };
