@@ -3,6 +3,7 @@ import { MoveLeft, CalendarDays, Users, User } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from 'recharts'
+import AdminBack from '../../../components/AdminComponents/AdminBack'
 
 function AdminEngagementReports() {
   const navigate = useNavigate();
@@ -241,11 +242,7 @@ function AdminEngagementReports() {
  
   return (
     <div className="bg-[rgb(243,241,244)] p-6 min-h-screen">
-      {/* Back Link - Always Visible */}
-      <div className="flex items-center mb-6 cursor-pointer" onClick={() => navigate(-1)}>
-        <MoveLeft className="text-primary" />
-        <p className="text-primary font-satoshi-medium text-lg ml-2">Back to Dashboard</p>
-      </div>
+      <AdminBack label={'Back to dashboard'}/>
 
       {fullEngagementReportLoading ? (
         <LoadingSkeleton />
