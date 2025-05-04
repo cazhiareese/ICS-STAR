@@ -23,7 +23,9 @@ function JobPostingLanding() {
 
     const [showRemoteOptionDropdown, setShowRemoteDropdown] = useState(false);
     const [selectedRemoteOption, setSelectedRemoteOption] = useState([]); 
+
     const [loading, setLoading] = useState(false);
+
 
     const [showSalaryRangeDropdown, setShowSalaryRangeDropdown] = useState(false);
     const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 });
@@ -44,7 +46,7 @@ function JobPostingLanding() {
             ? prev.filter((type) => type !== workType)
             : [...prev, workType]
         );
-        console.log(selectedWorkTypes);
+        // console.log(selectedWorkTypes);
     };
 
     const toggleRemoteType = (remoteType) => {
@@ -53,7 +55,7 @@ function JobPostingLanding() {
             ? prev.filter((type) => type !== remoteType)
             : [...prev, remoteType]
         );
-        console.log(selectedRemoteOption)
+        // console.log(selectedRemoteOption)
     };
 
     const handleSalaryChange = (e) => {
@@ -62,10 +64,10 @@ function JobPostingLanding() {
             ...prev,
             [name]: value === "" ? "" : Number(value), // Convert to number
         }));
-        console.log({
-            ...salaryRange,
-            [name]: Number(value),
-        });
+        // console.log({
+        //     ...salaryRange,
+        //     [name]: Number(value),
+        // });
     };
     
     
@@ -94,7 +96,7 @@ function JobPostingLanding() {
     useEffect(() => {
         const token = localStorage.getItem('token'); 
         const decoded = jwtDecode(token);
-        console.log("Decoded JWT:", decoded);
+        // console.log("Decoded JWT:", decoded);
         setUserId(decoded.sub); 
         setUserType(decoded.role); //cyrus was here
         // console.log(decoded.sub)
@@ -149,7 +151,7 @@ function JobPostingLanding() {
                 throw new Error('Failed to fetch job using id');
                 }
                 const data = await response.json();
-                console.log("data", data)
+                // console.log("data", data)
                 // Set selected job
                 setSelectedJob(data)
             } catch (err) {
@@ -175,7 +177,7 @@ function JobPostingLanding() {
                 throw new Error('Failed to fetch company');
                 }
                 const data = await response.json();
-                console.log(data)
+                // console.log(data)
                 
             } catch (err) {
                 console.log(err.message || 'Something went wrong');
@@ -218,7 +220,7 @@ function JobPostingLanding() {
             filters.max_salary = salaryRange.max;
         }
         filters.page=currentPage;
-        console.log(filters);
+        // console.log(filters);
         
 
         if (Object.keys(filters).length > 0){
@@ -244,7 +246,7 @@ function JobPostingLanding() {
             }
     
             const response = await axios.get(apiUrl); //API request
-            console.log(response.data);
+            // console.log(response.data);
             setJobList(response.data.result);
             setMaxPage(response.data.total_pages)
             setError(false);
@@ -452,6 +454,7 @@ function JobPostingLanding() {
                         setCurrentPage={setCurrentPage}
                         maxPage={maxPage}
                         setMaxPage={setMaxPage}
+                        setSelectedJobId={setSelectedJobId}
                     />
                 </div>
 
@@ -469,8 +472,8 @@ function JobPostingLanding() {
 
             </div>
 
-            <div className='flex flex-row mt-10 gap-2 justify-center'>
-                <div className='flex flex-col'>
+            <div className='flex flex-row mt-10 xl:gap-2 lg:gap-5 gap-10 justify-center  '>
+                <div className='flex flex-col md:w-2/6 w-full'>
                     <div className='flex flex-col items-center mb-6'>
                         {/* Pagination */}
                         <div className='flex flex-row gap-5 font-satoshi-medium text-lg'>
@@ -485,11 +488,10 @@ function JobPostingLanding() {
                         </div>
                     </div>
                     {/* Scrollable wrapper */}
-                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
+                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full outline-0'>
                         
                         {!loading ? (
                             <div className='flex flex-col gap-5 items-center '>
-                                
                                 {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
                                     jobList.map((job, index) => (
                                         <JobCard

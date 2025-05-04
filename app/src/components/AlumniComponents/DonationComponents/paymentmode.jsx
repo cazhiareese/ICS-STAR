@@ -3,7 +3,7 @@ import maya from "../../../assets/maya_logo.png";
 
 function PaymentMode({}) {
   return (
-    <div className='outline outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-full'>
+    <div className='outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-full'>
       <h1 className='text-lg font-satoshi-medium pb-3'>Choose a Payment Method</h1>
       <div className='flex gap-4'>
         {/* Pay via QR Button */}
