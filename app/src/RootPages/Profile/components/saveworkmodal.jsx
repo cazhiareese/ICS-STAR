@@ -43,7 +43,7 @@ const SaveWorkModal = ({ isOpen, isSuccess, onClose }) => {
                 Cancel
               </button>
               <button
-                className="bg-primary text-white px-4 py-2 rounded-3xl font-satoshi-medium hover:bg-blue-700"
+                className="bg-error text-white px-4 py-2 rounded-3xl font-satoshi-medium hover:bg-red-700"
                 onClick={() => onClose("confirm")}
               >
                 Yes, Save
