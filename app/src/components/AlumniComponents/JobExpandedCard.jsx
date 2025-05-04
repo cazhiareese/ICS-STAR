@@ -1,9 +1,12 @@
-import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, SquareArrowOutUpRight, Star, Trash2, StarOff } from 'lucide-react'
+import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, SquareArrowOutUpRight, Star, Trash2, StarOff, Flag } from 'lucide-react'
 import { React, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import axios from 'axios';
 import CircularLoading from '../LoadingComponents/circularloading';
+import JobModal from '../../RootPages/AlumniPages/job-posting/jobcomponent/jobmodal';
+import { jwtDecode } from 'jwt-decode';
+
 
 
 function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded, setJob, setSelectedJobId }) {
@@ -13,11 +16,30 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
     const modalRef = useRef(null);
     const ellipsisRef = useRef(null);
 
+//cy
+const [showModal, setShowModal] = useState(false);//
+
     const jobId = job.post_id || job.id;
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    //cy
+    const handleNavigate = () => {
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        const tokentype = decoded.role;
+        const userId = decoded.sub;
+        
+        // Check if the user is navigating to their own profile
+        if (userId === job.user_id) {
+            navigate(`/${tokentype}/profile`);
+        } else {
+            // Navigate to the other user's profile
+            navigate(`/${tokentype}/profile/${job.user_id}`);
+        }
+        };//
 
     const fetchJobs = async () => {
         try {
@@ -90,7 +112,12 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
 
     const navToEditJobPost = () => {
         navigate(`/alumni/jobPosting/edit/${jobId}`);
-    };
+    }
+
+    const handleReport = async () => {
+        navigate(`/alumni/jobPosting/report/${jobId}`);
+    }
+
 
     const handleModalBack = () => {
         setMobileExpanded(false)
@@ -104,38 +131,51 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                 <div className='flex xl:flex-row flex-col gap-2'>
                     {/* Main Card */}
                     <div className='flex flex-col outline-1 outline-neutral-300 xl:w-7/12 w-full rounded-2xl px-8 pt-4 pb-8 cursor'>
-                        {job.user_id === currentUserID && (
-                            <div className="relative ml-auto" ref={ellipsisRef}>
-                                <button className='cursor-pointer' onClick={() => setShowOptions(!showOptions)}>
-                                    <Ellipsis size={30} />
-                                </button>
-                                {showOptions && (
-                                    <div
-                                        ref={modalRef}
-                                        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
-                                    >
-                                        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
-                                            <Trash2 size={16} />
-                                            Delete Post
-                                        </button>
-                                        <button
-                                            className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
-                                            onClick={navToEditJobPost}
-                                        >
-                                            <Pencil size={16} />
-                                            Edit Post
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                        {job.user_id === currentUserID ? (
+  <div className="relative ml-auto" ref={ellipsisRef}>
+    <button className='cursor-pointer' onClick={() => setShowOptions(!showOptions)}>
+      <Ellipsis size={30} />
+    </button>
+    {showOptions && (
+      <div
+        ref={modalRef}
+        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+      >
+        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer" onClick={() => setShowModal(true)}>
+          <Trash2 size={16} />
+          Delete Post
+        </button>
+        <button
+          className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
+          onClick={() => navToEditJobPost()}
+        >
+          <Pencil size={16} />
+          Edit Post
+        </button>
+      </div>
+    )}
+  </div>
+) : (
+  <button
+    className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
+    onClick={() => handleReport(job.id)} // create this function as needed
+  >
+    <Flag size={20} />
+    Report
+  </button>
+)}
                         <h1 className='font-satoshi-bold text-3xl pt-5 break-words'>{job.title}</h1>
                         <div className="flex items-center gap-2 pt-2">
                             <h1 className='font-satoshi-bold text-lg break-words'>{job.company}</h1>
                         </div>
                         <div className="flex items-center gap-2 pt-1">
                             <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
-                            <h1 className='cursor-pointer font-satoshi-bold'>{job.user_name}</h1>
+                            <button 
+      onClick={handleNavigate} 
+      className="cursor-pointer font-satoshi-bold text-left text-primary underline"
+    >
+      {job.user_name}
+    </button>
                         </div>
                         {job.image ? (
                             <img src={job.image} className='w-full rounded-4xl my-3 h-39 object-cover' />
@@ -262,39 +302,39 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                                     <MoveLeft className="text-primary" size={24} />
                                     <p className="text-primary font-satoshi-medium text-base ml-2">Back</p>
                                 </div>
-                                {job.user_id === currentUserID && (
-                                    <div className="relative ml-auto" ref={ellipsisRef}>
-                                        <button
-                                            className="cursor-pointer p-2"
-                                            onClick={() => setShowOptions(!showOptions)}
-                                            aria-label="Post options"
-                                        >
-                                            <Ellipsis size={28} />
-                                        </button>
-                                        {showOptions && (
-                                            <div
-                                                ref={modalRef}
-                                                className="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-200 z-50"
-                                            >
-                                                <button
-                                                    className="flex items-center gap-2 text-red-600 px-3 py-2 w-full hover:bg-red-50 cursor-pointer text-sm"
-                                                    aria-label="Delete post"
-                                                >
-                                                    <Trash2 size={14} />
-                                                    Delete Post
-                                                </button>
-                                                <button
-                                                    className="flex items-center gap-2 text-black px-3 py-2 w-full hover:bg-gray-100 cursor-pointer text-sm"
-                                                    onClick={navToEditJobPost}
-                                                    aria-label="Edit post"
-                                                >
-                                                    <Pencil size={14} />
-                                                    Edit Post
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                        {job.user_id === currentUserID ? (
+  <div className="relative ml-auto" ref={ellipsisRef}>
+    <button className="cursor-pointer" onClick={() => setShowOptions(!showOptions)}>
+      <Ellipsis size={30} />
+    </button>
+    {showOptions && (
+      <div
+        ref={modalRef}
+        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+      >
+        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer" onClick={() => setShowModal(true)}>
+          <Trash2 size={16} />
+          Delete Post
+        </button>
+        <button
+          className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
+          onClick={() => navToEditJobPost()}
+        >
+          <Pencil size={16} />
+          Edit Post
+        </button>
+      </div>
+    )}
+  </div>
+) : (
+  <button
+    className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
+    onClick={() => handleReport()} // Implement handleReport
+  >
+    <Flag size={20} />
+    Report
+  </button>
+)}
                                 <h1 className="font-satoshi-bold text-2xl pt-3">{job.title}</h1>
                                 <div className="flex items-center gap-2 pt-2">
                                     <h1 className="font-satoshi-bold text-base">{job.company}</h1>
@@ -311,7 +351,12 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                                 </div>
                                 <div className="flex items-center gap-2 pt-1">
                                     <h1 className="font-satoshi-medium text-xs">Posted by</h1>
-                                    <h1 className="cursor-pointer font-satoshi-bold text-xs">{job.user_name}</h1>
+                                    <h1 
+      className="cursor-pointer font-satoshi-bold text-primary underline" 
+      onClick={handleNavigate}
+    >
+      {job.user_name}
+    </h1> 
                                 </div>
                                 {job.image ? (
                                     <img src={job.image} className="w-full rounded-2xl my-3 h-32 object-cover" alt="Job image" />
@@ -421,6 +466,14 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                     </motion.div>
                 </div>
             )}
+            {showModal && (
+  <JobModal
+    jobId={jobId}
+    setShowModal={setShowModal}
+    onCancel={() => setShowModal(false)}
+    options={{ type: "delete" }}
+  />
+)}
         </div>
     );
 }
