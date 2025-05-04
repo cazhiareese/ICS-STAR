@@ -26,36 +26,37 @@ function AdminEngagementReports() {
       setFullEngagementReportLoading(true);
       try {
         // First request: Engagement Statistics
+        const token = localStorage.getItem('token');
         let response = await axios.get(
-          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`
+          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`, {headers: {Authorization: `Bearer ${token}`}}
         );
         console.log(response.data);
         setFullEngagementReport(response.data);
 
         // Second request: Most Donations
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(response.data);
         setMostDonations(response.data);
 
         // Third request: Most Interested (Jobs)
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(response.data);
         setMostInterested(response.data);
 
         // Fourth request: Recent Newsletters
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/newsletters/top-3?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/newsletters/top-3?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(response.data);
         setRecentLetters(response.data);
 
         // Fifth request: Donation Highlights
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         if (response.status !== 404) {
           console.log("donation", response.data);
           setDonationHighlights(response.data);
         }
 
         // Sixth request: Donor Highlights
-        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`);
+        response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         if (response.status !== 404) {
           console.log(response.data);
           setDonorHighlights(response.data);

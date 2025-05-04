@@ -39,7 +39,6 @@ function AdminDonations() {
       if (donationType === 'closed') {
         endpointBase = '/admin/donations/closed-drives';
       }
-
       let endpoint = endpointBase;
       if (sortBy && sortDirection) {
         let sortSuffix = sortDirection === 'asc' ? 'ascending' : 'descending';
@@ -47,7 +46,7 @@ function AdminDonations() {
           sortSuffix = sortDirection === 'asc' ? 'newest' : 'oldest';
         }
         endpoint = `${endpointBase}-${sortBy}${sortSuffix ? `-${sortSuffix}` : ''}`;
-      }
+      } 
 
       let pageUrl = `${endpoint}?page=${page}`;
       if (query) {

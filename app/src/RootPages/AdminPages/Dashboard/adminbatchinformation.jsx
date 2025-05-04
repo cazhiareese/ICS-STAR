@@ -208,12 +208,12 @@ function AdminBatchInformation() {
     };
 
     useEffect(()=>{
-      const fetchData = async () =>{
-      const allYears = await axios.get(`${API_BASE_URL}/admin/stats/getAllYears`);
+      const fetchData = async (token) =>{
+      const allYears = await axios.get(`${API_BASE_URL}/admin/stats/getAllYears`, {headers: {Authorization: `Bearer ${token}`}});
       setYears(allYears.data.data);
       
-
-      const getActivityCount = await axios.get(`${API_BASE_URL}/admin/stats/get_active/${selectedYear}`);
+      
+      const getActivityCount = await axios.get(`${API_BASE_URL}/admin/stats/get_active/${selectedYear}`, {headers: {Authorization: `Bearer ${token}`}});
       setBatchTotalCount(getActivityCount.data.data.total_users)
       setBatchActiveCount(getActivityCount.data.data.active_users)
       setBatchActivePercentage(getActivityCount.data.data.active_percentage)
@@ -221,7 +221,7 @@ function AdminBatchInformation() {
       setBatchInactiveCount(getActivityCount.data.data.inactive_percentage)
       
       try {
-        const getemploymentData = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_employment?batch=${selectedYear}`);
+        const getemploymentData = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_employment?batch=${selectedYear}`, {headers: {Authorization: `Bearer ${token}`}});
         setEmploymentData(getemploymentData.data?.data || []);
       } catch (error) {
           console.warn("No data found for this batch.");
@@ -229,7 +229,7 @@ function AdminBatchInformation() {
       }
 
       try{
-      const getunemploymentData = await axios.get(`${API_BASE_URL}/admin/stats/batch/unemployment?batch=${selectedYear}`);
+      const getunemploymentData = await axios.get(`${API_BASE_URL}/admin/stats/batch/unemployment?batch=${selectedYear}`, {headers: {Authorization: `Bearer ${token}`}});
       setUnemploymentData(getunemploymentData.data.data)
       }catch (error){
         console.warn("No data found for this batch.");
@@ -237,21 +237,21 @@ function AdminBatchInformation() {
       }
      
       try{
-      const getJobTitles = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_jobs?batch=${selectedYear}`)
+      const getJobTitles = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_jobs?batch=${selectedYear}`, {headers: {Authorization: `Bearer ${token}`}})
       setJobTitles(getJobTitles.data.data)
       }catch (error){
         setJobTitles([])
       }
 
       try{
-        const getTopIndustries = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_industries?batch=${selectedYear}`)
+        const getTopIndustries = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_industries?batch=${selectedYear}`, {headers: {Authorization: `Bearer ${token}`}})
         setTopIndustries(getTopIndustries.data.data)
         }catch (error){
           setTopIndustries([])
         }
       
         try{
-          const getTopCountries = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_countries?batch=${selectedYear}`)
+          const getTopCountries = await axios.get(`${API_BASE_URL}/admin/stats/get_batch_top_countries?batch=${selectedYear}`, {headers: {Authorization: `Bearer ${token}`}})
           setTopCountries(getTopCountries.data.data)
           }catch (error){
             setTopCountries([])
@@ -260,7 +260,7 @@ function AdminBatchInformation() {
           const batchParams = new URLSearchParams();
           batchParams.append('order_by', orderBy);
           const queryString = batchParams.toString();
-          const getBatchUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_batch_filter?batch=${selectedYear}&${queryString}`)
+          const getBatchUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_batch_filter?batch=${selectedYear}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
           setBatchUsers(getBatchUsers.data.data)
         }catch (error) {
           setBatchUsers([])
@@ -268,7 +268,8 @@ function AdminBatchInformation() {
 
     }
       if (selectedYear){
-        fetchData();
+        const token = localStorage.getItem('token');
+        fetchData(token);
       }
       
     }, [batch])
@@ -281,10 +282,11 @@ function AdminBatchInformation() {
 
       const fetchUsers = async () => {
         try {
+          const token = localStorage.getItem('token');
           const batchParams = new URLSearchParams();
           batchParams.append('order_by', orderBy);
           const queryString = batchParams.toString();
-          const getBatchUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_batch_filter?batch=${selectedYear}&${queryString}`)
+          const getBatchUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_batch_filter?batch=${selectedYear}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
           setBatchUsers(getBatchUsers.data.data)
         }catch (error) {
           setBatchUsers([])
@@ -587,7 +589,7 @@ function AdminBatchInformation() {
             </div>
           </div>
           <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
-            <UsersTable data={batchUsers}/>
+            <UsersTable data={batchUsers} userType='alum'/>
           </div>
           </>
         )}

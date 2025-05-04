@@ -118,8 +118,10 @@ function AdminCreateDonationDrive() {
     console.log(formToSubmit)
 
     try {
+      const token = localStorage.getItem('token');
       const response = await axios.post(`${API_BASE_URL}/create-donation-drives`, formToSubmit, {
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         }
       });

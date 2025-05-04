@@ -67,8 +67,8 @@ function AdminAlumniInfo() {
       const batchParams = new URLSearchParams();
       batchParams.append('order', orderBy);
       const queryString = batchParams.toString();
-      
-      const batchActivity = await axios.get(`${API_BASE_URL}/admin/stats/get_active_by_batch?page=${batchPage}&${queryString}`);
+      const token = localStorage.getItem('token');
+      const batchActivity = await axios.get(`${API_BASE_URL}/admin/stats/get_active_by_batch?page=${batchPage}&${queryString}` , {headers: {Authorization: `Bearer ${token}`}});
       setTotalBatchPages(batchActivity.data.total_pages);
       setBatchData(batchActivity.data.data);
     } catch (error) {
@@ -87,7 +87,8 @@ function AdminAlumniInfo() {
       setLoading(true);
       try {
         // Get alumni count
-        const alumniStatActivity = await axios.get(`${API_BASE_URL}/admin/stats/activity`);
+        const token = localStorage.getItem('token');
+        const alumniStatActivity = await axios.get(`${API_BASE_URL}/admin/stats/activity`, {headers: {Authorization: `Bearer ${token}`}});
         setAlumniStatActivity(alumniStatActivity.data.data);
         
         // Destructure response
@@ -100,24 +101,24 @@ function AdminAlumniInfo() {
         fetchBatches();
 
         // Get industry count
-        const industryCount = await axios.get(`${API_BASE_URL}/admin/stats/industry/count`);
+        const industryCount = await axios.get(`${API_BASE_URL}/admin/stats/industry/count`, {headers: {Authorization: `Bearer ${token}`}});
         setIndustries(industryCount.data.data);
 
         // Get employment count
-        const employmentCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_status`);
+        const employmentCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_status`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(employmentCount.data.data);
         setEmploymentStatusData(employmentCount.data.data);
 
         // Get employer classification
-        const employerCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_class`);
+        const employerCount = await axios.get(`${API_BASE_URL}/admin/stats/employment_class`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(employerCount.data.data);
         setEmployerClassificationData(employerCount.data.data);
         
         // Get salary grade 
-        const salaryGradeCount = await axios.get(`${API_BASE_URL}/admin/stats/salary_grade`);
+        const salaryGradeCount = await axios.get(`${API_BASE_URL}/admin/stats/salary_grade`, {headers: {Authorization: `Bearer ${token}`}});
         setSalaryGradeData(salaryGradeCount.data.data);
 
-        const locationCount = await axios.get(`${API_BASE_URL}/admin/stats/countries`);
+        const locationCount = await axios.get(`${API_BASE_URL}/admin/stats/countries`, {headers: {Authorization: `Bearer ${token}`}});
         setLocationData(locationCount.data.data);
       } catch (error) {
         console.log(error);
@@ -129,20 +130,20 @@ function AdminAlumniInfo() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchBatchActivity = async () => {
-      try {
-        const batchParams = new URLSearchParams();
-        batchParams.append('order', orderBy);
-        const queryString = batchParams.toString();
-        const batchActivity = await axios.get(`${API_BASE_URL}/admin/stats/get_active_by_batch?${queryString}`);
-        setBatchData(batchActivity.data.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchBatchActivity();
-  }, [sortBy, sortDirection]);
+  // useEffect(() => {
+  //   const fetchBatchActivity = async () => {
+  //     try {
+  //       const batchParams = new URLSearchParams();
+  //       batchParams.append('order', orderBy);
+  //       const queryString = batchParams.toString();
+  //       const batchActivity = await axios.get(`${API_BASE_URL}/admin/stats/get_active_by_batch?${queryString}`);
+  //       setBatchData(batchActivity.data.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchBatchActivity();
+  // }, [sortBy, sortDirection]);
 
   const COLORS = ["#00369C", "#618FE9", "#A3BFF4", "#CEDEFD"];
   const activeInactiveColors = ["#00369C", "#F7F7FB"];

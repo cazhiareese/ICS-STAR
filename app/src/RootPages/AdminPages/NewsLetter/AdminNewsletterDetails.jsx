@@ -21,9 +21,10 @@ function AdminNewsletterDetails() {
   useEffect(() => {
     const fetchNewsletter = async () => {
       try {
+        const token = localStorage.getItem('token');
         setLoading(true)
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/newsletter/${id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/newsletter/${id}`, {headers: {Authorization: `Bearer ${token}`}}
         )
         setNewsletter(response.data)
         setLoading(false)

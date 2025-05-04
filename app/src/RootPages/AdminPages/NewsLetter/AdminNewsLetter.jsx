@@ -24,13 +24,13 @@ function AdminNewsletter() {
       try {
         setLoading(true);
         setError(null);
-
+        const token = localStorage.getItem('token');
         let response;
 
         if (query.trim() !== '') {
           // Use search endpoint when query is present
           const searchUrl = `${import.meta.env.VITE_BACKEND_URL}/search-newsletters?title=${encodeURIComponent(query)}&limit=20`;
-          response = await axios.get(searchUrl);
+          response = await axios.get(searchUrl,{headers: {Authorization: `Bearer ${token}`}});
           const news = response.data;
 
           setNewsletters(news);
@@ -39,7 +39,7 @@ function AdminNewsletter() {
           // Default paginated fetch
           const skip = (page - 1) * limit;
           const url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/get?skip=${skip}&limit=${limit}`;
-          const result = await axios.get(url);
+          const result = await axios.get(url, {headers: {Authorization: `Bearer ${token}`}});
           const { news, total_count } = result.data;
 
           setNewsletters(news);
