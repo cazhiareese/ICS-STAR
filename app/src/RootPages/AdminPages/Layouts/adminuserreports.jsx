@@ -8,7 +8,7 @@ import AdminBack from '../../../components/AdminComponents/AdminBack';
 function AdminEngagementReports() {
   const navigate = useNavigate();
   const [daysFilter, setDaysFilter] = useState("30days");
-  const [batchFilter, setBatchFilter] = useState("2022");
+  const [batchFilter, setBatchFilter] = useState(0);
   const [selectedTab, setSelectedTab] = useState(null);
   const [fullEngagementReport, setFullEngagementReport] = useState(null);
   const [fullEngagementReportLoading, setFullEngagementReportLoading] = useState(false);
@@ -17,21 +17,36 @@ function AdminEngagementReports() {
   const [donationHighlights, setDonationHighlights] = useState({});
   const [donorHighlights, setDonorHighlights] = useState({});
   const [recentNewsLetters, setRecentLetters] = useState([]);
+  const [visitsLoading, setVisitsLoading] = useState(true)
 
   // BASE URL ENV
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  async function fetchEngagementStatistics(){
+    setVisitsLoading(true)
+    try {
+      let response = await axios.get(
+        `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`
+      );
+      console.log(response.data);
+      setFullEngagementReport(response.data);
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setVisitsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchEngagementStatistics()
+  }, [batchFilter])
 
   useEffect(() => {
     const fetchData = async () => {
       setFullEngagementReportLoading(true);
       try {
-        // First request: Engagement Statistics
-        let response = await axios.get(
-          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`
-        );
-        console.log(response.data);
-        setFullEngagementReport(response.data);
-
+        let response;
+        fetchEngagementStatistics()
         // Second request: Most Donations
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
         console.log(response.data);
@@ -68,7 +83,7 @@ function AdminEngagementReports() {
     };
 
     fetchData();
-  }, [daysFilter, batchFilter]);
+  }, [daysFilter]);
 
   const goToMostEngagedJob = () => {
     navigate('most-engaged-job-offers', { relative: 'path' });
@@ -251,51 +266,73 @@ function AdminEngagementReports() {
 
           {/* Chart Card */}
           <div className="bg-white rounded-2xl shadow p-6 mb-8">
-            <div className="flex flex-row">
-              <div className="flex flex-col pb-5">
-                <h1 className="text-3xl font-satoshi-bold text-black">Site Visits</h1>
-                <p className="text-gray-500 text-sm font-satoshi-light">
-                  User visit for the last {daysFilter === "7days" ? "7 days" : daysFilter === "year" ? "365 days" : "30 days"}
-                </p>
+            {visitsLoading ? (
+                <div className="bg-white rounded-2xl shadow p-6 mb-8">
+                <div className="flex flex-row">
+                  <div className="flex flex-col pb-5">
+                    <div className="h-8 w-48 bg-gray-300 rounded mb-2"></div>
+                    <div className="h-4 w-64 bg-gray-300 rounded"></div>
+                  </div>
+                  <div className="flex items-center gap-2 ml-auto">
+                    <div className="h-4 w-16 bg-gray-300 rounded"></div>
+                    <div className="h-8 w-36 bg-gray-300 rounded-md"></div>
+                  </div>
+                </div>
+                <div className="w-full h-56 bg-gray-200 rounded-lg mt-4"></div>
               </div>
-              <div className="flex items-center gap-2 ml-auto">
-                <label className="text-sm text-gray-700 font-satoshi-bold">Batch:</label>
-                <select className="w-36 rounded-md px-2 py-1 shadow-md" onChange={(e) => setBatchFilter(e.target.value)}>
-                  <option value={0}>All</option>
+            ) : (
+              <>
+              <div className="flex flex-row">
+                <div className="flex flex-col pb-5">
+                  <h1 className="text-3xl font-satoshi-bold text-black">Site Visits</h1>
+                  <p className="text-gray-500 text-sm font-satoshi-light">
+                    User visit for the last {daysFilter === "7days" ? "7 days" : daysFilter === "year" ? "365 days" : "30 days"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 ml-auto">
+                  <label className="text-sm text-gray-700 font-satoshi-bold">Batch:</label>
+                  <select
+                  className="w-36 rounded-md px-2 py-1 shadow-md"
+                  value={batchFilter}
+                  onChange={(e) => setBatchFilter(e.target.value)}
+                >
+                  <option value="0">All</option>
                   {Array.from({ length: 51 }, (_, i) => 1975 + i).map(year => (
                     <option key={year} value={year}>{year}</option>
                   ))}
                 </select>
+                </div>
               </div>
-            </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={fullEngagementReport}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 12, fontFamily: 'Satoshi-Light, sans-serif' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fontFamily: 'Satoshi-Light, sans-serif' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#1E1B39',
-                    borderRadius: '8px',
-                    color: 'white',
-                    border: 'none',
-                  }}
-                  labelStyle={{ color: 'white', fontSize: 12 }}
-                  itemStyle={{ color: 'white', fontSize: 14 }}
-                />
-                <Line type="linear" dataKey="visits" stroke="#0B2B6F" strokeWidth={2} dot={{ r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={fullEngagementReport}>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 12, fontFamily: 'Satoshi-Light, sans-serif' }}
+                    axisLine={false}
+                    tickLine={false}
+                    />
+                  <YAxis
+                    tick={{ fontSize: 12, fontFamily: 'Satoshi-Light, sans-serif' }}
+                    axisLine={false}
+                    tickLine={false}
+                    />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1E1B39',
+                      borderRadius: '8px',
+                      color: 'white',
+                      border: 'none',
+                    }}
+                    labelStyle={{ color: 'white', fontSize: 12 }}
+                    itemStyle={{ color: 'white', fontSize: 14 }}
+                    />
+                  <Line type="linear" dataKey="visits" stroke="#0B2B6F" strokeWidth={2} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+          </>
+        )}
+        </div>
 
           <div className="flex md:flex-row flex-col gap-5">
             {/* Most Recent Newsletters */}
