@@ -1,7 +1,11 @@
 import React from 'react'
 import { Briefcase, GraduationCap, MapIcon, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+import { jwtDecode } from 'jwt-decode';
+
 import defaultimage from "../../assets/defaultimage.jpg";
+
 
 function AlumniSearchCard({
     full_name,
@@ -18,7 +22,10 @@ function AlumniSearchCard({
 
   const handleClick = () => {
     console.log("janry", user_id);
-    navigate(`/alumni/profile/${user_id}`);
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    const tokentype = decoded.role;
+    navigate(`/${tokentype}/profile/${user_id}`);
   };
 
   return (
