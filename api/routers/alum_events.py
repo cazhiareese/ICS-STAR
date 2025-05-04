@@ -60,8 +60,9 @@ def get_event(
     db: Session = Depends(get_db), 
     user: Optional[CurrentUser] = Depends(get_current_user_optional)
 ):
-    user_id = user.user_id if user else None
-    return get_event_by_id(event_id, db, user_id=user_id)
+    if not user:
+        user = None
+    return get_event_by_id(event_id, db, user)
 
 @router.get("/events-visible-to", response_model=List[EventOut])
 def get_visible_events(
