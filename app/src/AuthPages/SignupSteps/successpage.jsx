@@ -59,14 +59,14 @@
         
                 if (response.ok) {
                     localStorage.setItem("token", data.access_token);
-                        alert("Registration Successful!");
+                        // alert("Registration Successful!");
         
                         // Redirect based on userType
                         window.location.href = userType === "alumni" ? "/alumni/dashboard" : "/student/dashboard";
                         return
                     
                 } else {
-                    alert(data.detail || "Registration failed!");
+                    // alert(data.detail || "Registration failed!");
                     console.error("Response Status:", response.status);
                     console.error("Response OK:", response.ok);
                     console.error(data);
@@ -107,12 +107,12 @@
                         
                 </div>
 
-                <div class=" flex flex-col items-end lg:w-150 md:w-100 w-70">
+                <div class=" flex flex-col items-end lg:w-150 md:w-100 w-70 mt-6 mb-57 cursor-pointer">
                 {loading ? (
                     <Loading /> // Show loading component while registration is in progress
                 ) : (
                     <button
-                        className="bg-primary text-white py-3 rounded-3xl text-lg w-40 font-bold hover:bg-blue-700 transition mt-6 mb-50"
+                        className="bg-primary text-white py-3 rounded-3xl text-lg w-40 font-bold hover:bg-blue-700 transition mt-6 mb-50 cursor-pointer"
                         onClick = {()=>(handleNextPage())}
                     >
                         Continue

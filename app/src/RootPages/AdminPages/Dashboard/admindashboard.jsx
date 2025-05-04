@@ -445,7 +445,8 @@ function AdminDashboard() {
                           <div className="relative w-full h-2 bg-gray-200 rounded-full">
                             <div
                               className="absolute h-full bg-primary rounded-full"
-                              style={{ width: `MIN(${progress}%,100%)`}}
+                              style={{ width: `${Math.min(progress, 100)}%` }}
+
                             ></div>
                           </div>
                         </div>

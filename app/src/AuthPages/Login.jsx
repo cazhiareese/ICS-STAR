@@ -476,7 +476,7 @@ function LoginPage() {
         
         }
 
-        {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error"/>}
+        {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error!"/>}
         
     </div>
     
