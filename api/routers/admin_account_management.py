@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from schemas.user import UserOut, UserStandingEnum, UserTypeEnum
@@ -199,10 +200,30 @@ async def read_graduating_students(db: Session = Depends(get_db)):
 # Returns: a message confirming the transition
 @router.put("/admin/transition/{user_id}", dependencies=None)
 async def transition_student(db: Session = Depends(get_db), user_id: UUID = None):
+
+    # Get current date
+    current_date = datetime.today()
+    
+    # If current date is August to December, year = next year
+    if current_date.month >= 8:
+        graduation_year = current_date.year + 1
+    else:
+        graduation_year = current_date.year
+
+    # If current month is August to January, semester = 1
+    if current_date.month >= 8 or current_date.month <= 1:
+        graduation_semester = "1st Semester"
+
+    # If current month is June to July, semester = Midyear
+    elif current_date.month >= 6 and current_date.month <= 7:
+        graduation_semester = "Midyear"
+    else:
+        graduation_semester = "2nd Semester"
+
     result = db.execute(
         update(User)
         .where(User.user_id == user_id)
-        .values(user_type="alumni")
+        .values(user_type="alumni", standing=None, graduation_year=graduation_year, graduation_semester=graduation_semester, is_onboarded=False)
         .returning(User.user_id)
     )
     
