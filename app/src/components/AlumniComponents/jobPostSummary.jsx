@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Search, X } from 'lucide-react';
-import axios from 'axios';
-import CircularLoading from '../LoadingComponents/circularloading';
+import { X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 
 const JobPostSummary = ({ 
     isOpen, 
@@ -16,15 +16,11 @@ const JobPostSummary = ({
         setIsOpen(false);
     };
 
-    // const job = {
-    //     image: "https://ocmxiyulokpueycaxbuv.supabase.co/storage/v1/object/public/128storage/job_posting/a.jpg",
-    //     title: "Software Development Intern",
-    //     company: "Shopee",
-    //     link: "bit.ly/ShopeeInternship",
-    //     tags: ["tag", "tag", "tag", "tag"],
-    //     salary: 20000,
-    //     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis aute irure dolor in reprehenderit in voluptate."
-    // }
+    // Navigate back
+    const navigate = useNavigate();
+    const navToJobPostLanding= () => {
+        navigate('..', { relative: 'path' });
+    }
 
     return (
         <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-100 h-auto">
@@ -38,7 +34,7 @@ const JobPostSummary = ({
                 
                 <div className="flex flex-col justify-between p-10">
                     <button className="ml-auto outline-1 outline-gray-400 rounded-full p-2 cursor-pointer" onClick={closeModal}>
-                        <X size={20} />
+                        <X onClick={navToJobPostLanding} size={20} />
                     </button>
                     <img src={job.image} className='w-full rounded-4xl my-3 h-50 object-cover'/>
                     
