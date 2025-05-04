@@ -181,8 +181,8 @@ function Step2Onboarding() {
                     <div className="flex flex-col md:flex-row mt-10 gap-3 md:gap-5 items-center justify-center">
                         <button
                             type="button"
-                            className={`flex flex-col md:w-70 w-full border h-30 md:h-60 pt-5 md:pt-10 rounded-2xl px-5 hover:bg-secondary cursor-pointer ${
-                                affiliations ? "bg-secondary" : "bg-neutral-100"
+                            className={`flex flex-col md:w-70 w-full border border-neutral-300 h-30 md:h-60 pt-5 md:pt-10 rounded-2xl px-5 hover:bg-secondary cursor-pointer ${
+                                affiliations ? "bg-secondary border-primary" : "bg-neutral-100"
                             }`}
                             onClick={() => setAffiliations(!affiliations)}
                             >
@@ -196,8 +196,8 @@ function Step2Onboarding() {
 
                         <button
                             type="button"
-                            className={`flex flex-col md:w-70 w-full border h-30 md:h-60 pt-5 md:pt-10 rounded-2xl px-5 hover:bg-secondary cursor-pointer ${
-                                scholarships ? "bg-secondary" : "bg-neutral-100"
+                            className={`flex flex-col md:w-70 w-full border border-neutral-300 h-30 md:h-60 pt-5 md:pt-10 rounded-2xl px-5 hover:bg-secondary cursor-pointer ${
+                                scholarships ? "bg-secondary border-primary" : "bg-neutral-100"
                             }`}
                             onClick={() => setScholarships(!scholarships)}
                             >
