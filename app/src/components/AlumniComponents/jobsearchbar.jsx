@@ -15,9 +15,9 @@ const JobSearchBar =
     setSelectedJob,
     currentPage,
     setCurrentPage,
-    maxPage,
     setMaxPage,
-    setSelectedJobId
+    setSelectedJobId,
+    dependencyTrigger
   })=> {
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -96,6 +96,7 @@ const JobSearchBar =
             setLoading(false);
         }
     };
+
     
     
     // const fetchJobs = async () => {

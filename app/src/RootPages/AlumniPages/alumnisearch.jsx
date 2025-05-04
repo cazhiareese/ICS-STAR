@@ -18,6 +18,7 @@ import SeeAllCareerModal from "../../components/AlumniComponents/seeAllCareerMod
 import SeeAllIndustryModal from "../../components/AlumniComponents/seeAllIndustryModal";
 import SeeAllSkillsModal from "../../components/AlumniComponents/seeAllSkillsModal";
 
+
 function AlumniSearch() {
   // State for expanding animations
   const [isBatchExpanded, setIsBatchExpanded] = useState(false);

@@ -16,7 +16,7 @@ function PaymentMode({ submitMayaDonation }) {
   return (
     <div className='outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-full'>
       <h1 className='text-lg font-satoshi-medium pb-3'>Choose a Payment Method</h1>
-      <div className='flex gap-4'>
+      <div className='flex gap-4 md:flex-row flex-col'>
         {/* Pay via QR Button */}
         <button
           onClick={handlePayViaQR}
