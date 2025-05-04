@@ -262,7 +262,7 @@ const EventCardsMain = () => {
 
                     {/* RSVP Status */}
                     <RsvpStatus event={event} />
-                    <h1 className="sm:text-3xl text-3xl font-satoshi-black text-blue-900 my-6">{event.title}</h1>
+                    <h1 className="sm:text-4xl text-3xl font-satoshi-black text-blue-900 my-4">{event.title}</h1>
                     <label className='text-gray-400 pt-8'>Event Details</label>
 
                     {/*Location  */}
