@@ -7,7 +7,7 @@ import ReactLoading from "react-loading";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
 import NewLoading from "../../../components/LoadingComponents/cyruscircular";
 
-function DonationHistoryUser({ userDetails }) {
+function DonationHistoryUser({ user_id }) {
   const [monetaryDonations, setMonetaryDonations] = useState([]);
   const [inKindDonations, setInKindDonations] = useState([]);
   const [sortedDataMonetary, setSortedDataMonetary] = useState([]);
@@ -45,11 +45,11 @@ function DonationHistoryUser({ userDetails }) {
 
       try {
         const [monetaryRes, inKindRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
+          axios.get(`${API_BASE_URL}/donation-history/monetary-donations/${user_id}`, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }),
-          axios.get(`${API_BASE_URL}/donation-history/in-kind-donations`, {
+          axios.get(`${API_BASE_URL}/donation-history/in-kind-donations/${user_id}`, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }),
