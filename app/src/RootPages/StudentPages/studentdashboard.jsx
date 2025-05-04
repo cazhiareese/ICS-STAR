@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Newspaper, Calendar, Briefcase, User } from "lucide-react";
 import CardComponent from "../../components/cardcomponent";
 import star from "../../assets/star.png";
@@ -153,13 +153,13 @@ function StudentLanding() {
 
         {/* Cards Section */}
         <div className="flex flex-wrap justify-center gap-4 mt-6">
-  <CardComponent icon={Calendar} text="Look for events to attend" />
-  <CardComponent icon={Newspaper} text="Catch up with ICS" />
+  <Link to="/student/events"><CardComponent icon={Calendar} text="Look for events to attend" /></Link>
+  <Link to="/student/newsletter"><CardComponent icon={Newspaper} text="Catch up with ICS" /></Link>
   
   {!banned && verified && (
     <>
-      <CardComponent icon={Briefcase} text="Browse job opportunities" />
-      <CardComponent icon={User} text="Connect with Alumni" />
+      <Link to="/student/jobPosting"><CardComponent icon={Briefcase} text="Browse job opportunities" /></Link>
+      <Link to="/student/alumnisearch"><CardComponent icon={User} text="Connect with Alumni" /></Link>
     </>
   )}
 </div>

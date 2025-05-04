@@ -11,13 +11,13 @@ const ConfirmationModal = ({ onClose, onContinue }) => {
                 </p>
                 <div className="flex justify-between">
                     <button
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor cursor-pointer"
                         onClick={onClose}
                     >
                         Cancel
                     </button>
                     <button
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 cursor cursor-pointer"
                         onClick={onContinue}
                     >
                         Continue

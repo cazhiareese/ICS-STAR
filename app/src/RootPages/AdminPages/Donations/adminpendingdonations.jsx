@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { MoveLeft, X } from 'lucide-react'
 import ExpandedPendingDonations from '../../../components/AdminComponents/expandedpendingdonations'
 import axios from 'axios'
@@ -10,7 +10,8 @@ function AdminPendingDonations() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const location = useLocation()
-  const { driveid } = useParams()
+  const [token, setToken] = useState()
+  // const { driveid } = useParams()
   const { pendingDonations, driveName } = location.state
 
   const [reviewDetailsModal, setReviewDetailsModal] = useState(false)
@@ -31,7 +32,7 @@ function AdminPendingDonations() {
       const choice = actionType === 'approve' ? 'approve' : 'disapprove'
       const url = `${API_BASE_URL}/admin/donations/${endpoint}/${selectedDonation.donation_id}?choice=${choice}`
 
-      await axios.post(url)
+      await axios.post(url, {headers: {Authorization: `Bearer ${token}`}})
 
       setVerificationLoading(false)
       setVerifyTransition(true)
@@ -44,6 +45,7 @@ function AdminPendingDonations() {
   }
 
   useEffect(() => {
+    setToken(localStorage.getItem('token'))
     console.log(pendingDonations)
   }, [pendingDonations])
 
@@ -57,7 +59,7 @@ function AdminPendingDonations() {
       <h1 className='text-primary text-5xl font-satoshi-bold'>{driveName}</h1>
       <h2 className='text-black text-3xl font-satoshi-medium mb-10'>Pending Verifications</h2>
 
-      <div className='border border-gray-300 rounded-2xl h-full overflow-auto'>
+      <div className='border border-gray-300 rounded-2xl h-full overflow-auto bg-white'>
         <ExpandedPendingDonations
           data={pendingDonations}
           onReview={(donation) => {
@@ -130,7 +132,9 @@ function AdminPendingDonations() {
               <>
                 {/* Proof of Payment */}
                 <div className='bg-primary h-1/3 w-full rounded-xl flex justify-center items-center text-white'>
+                {selectedDonation.type === 'Monetary' &&
                   <img src={selectedDonation.proof} alt="proof of donation" className='h-full w-full object-cover' />
+                }
                 </div>
 
                 {/* Donation Info */}
@@ -141,7 +145,7 @@ function AdminPendingDonations() {
                   </div>
                   <div className='flex justify-between w-full'>
                     <p className='font-satoshi-light'>Donation Type: </p>
-                    <p className='font-satoshi-medium'>{selectedDonation.donation_type}</p>
+                    <p className='font-satoshi-medium'>{selectedDonation.type}</p>
                   </div>
                   <div className='flex justify-between w-full'>
                     <p className='font-satoshi-light'>Donation Description: </p>
@@ -149,11 +153,11 @@ function AdminPendingDonations() {
                   </div>
                   <div className='flex justify-between w-full'>
                     <p className='font-satoshi-light'>Date Donated: </p>
-                    <p className='font-satoshi-medium'>{selectedDonation.date_donated}</p>
+                    <p className='font-satoshi-medium'>{selectedDonation.donation_date}</p>
                   </div>
                   <div className='flex justify-between w-full'>
                     <p className='font-satoshi-light'>Time Donated: </p>
-                    <p className='font-satoshi-medium'>{selectedDonation.time_donated}</p>
+                    <p className='font-satoshi-medium'>{selectedDonation.donation_time}</p>
                   </div>
                 </div>
 

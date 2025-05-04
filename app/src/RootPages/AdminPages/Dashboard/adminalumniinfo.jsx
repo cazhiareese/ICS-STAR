@@ -17,7 +17,7 @@ function AdminAlumniInfo() {
 
   const [loading, setLoading] = useState(true)
 
-  const cardDesign = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
+  const cardDesign = "bg-[#FFFFFF] drop-shadow-sm rounded-2xl p-4 w-full";
   const [alumniStatActivity, setAlumniStatActivity] = useState({
     "total_alumni": 0,
     "active_alumni": 0,
@@ -202,7 +202,7 @@ function AdminAlumniInfo() {
   const activeInactiveColors = ["#00369C", "#F7F7FB"]
 
   return (
-    <div className='bg-[rgb(243,241,244)] p-6 max-h-screen flex flex-col overflow-auto'>
+    <div className='bg-[#f9f9fb] p-6 max-h-screen flex flex-col overflow-auto'>
       <div className='flex gap-2 mb-5'>
         <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
             <MoveLeft className='text-primary'/> 
@@ -261,7 +261,7 @@ function AdminAlumniInfo() {
         <div className={`${cardDesign} row-start-1 col-start-2 flex flex-col`}>
           {/* Batch header */}
           <div className='flex items-center justify-between'>
-            <h2 className='font-satoshi-medium text-lg' >Batch Information</h2>
+            <h2 className='font-satoshi-medium pl-1 medium text-xl' >Batch Information</h2>
             <div className='flex gap-2'>
               {/* <button className='border border-disabled rounded-xl px-3 py-1 cursor-pointer'> */}
                 {/* <p className='font-satoshi-regular'>Sort by <span className='font-satoshi-medium'>Count</span></p> */}
@@ -282,11 +282,11 @@ function AdminAlumniInfo() {
                 </button>
               </div>
             </div>
-            <div className='flex items-center'> 
+            <div className='flex items-center mt-2'> 
               <table className="w-full text-center text-gray-800">
               {/* Table Header */}
               <thead>
-                <tr className="text-xs text-primary font-satoshi-regular">
+                <tr className="text-sm text-primary font-satoshi-regular">
                   <th className="p-2 w-1/4">BATCH</th>
                   <th className="p-2 w-1/4">COUNT</th>
                   <th className="p-2 w-1/4">ACTIVE</th>
@@ -300,7 +300,7 @@ function AdminAlumniInfo() {
                   const inactivePercentage = ((row.inactive_users / row.total_users) * 100).toFixed(0);
                   
                   return (
-                    <tr key={index} className="text-sm cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`, 
+                    <tr key={index} className="text-md cursor-pointer hover:bg-secondary/50" onClick={() => {navigate(`/admin/dashboard/batch-reports/${row.batch}`, 
                       {
                         state: {
                           batch: row.batch,
@@ -311,12 +311,12 @@ function AdminAlumniInfo() {
                           inactive_percentage: row.inactive_users_percentage
                         },
                     })}}>
-                      <td className="p-2">{row.batch}</td>
-                      <td className="p-2">{row.total_users}</td>
-                      <td className="p-2">
+                      <td className="px-2 py-1">{row.batch}</td>
+                      <td className="px-2 py-1">{row.total_users}</td>
+                      <td className="px-2 py-1">
                         {row.active_users} <span className="text-gray-500">({activePercentage}%)</span>
                       </td>
-                      <td className="p-2">
+                      <td className="px-2 py-1">
                         {row.inactive_users} <span className="text-gray-500">({inactivePercentage}%)</span>
                       </td>
                     </tr>
@@ -326,15 +326,18 @@ function AdminAlumniInfo() {
             </table>
           </div>
         </div>
-        {/* Filters */}
-        <div className='row-start-2 col-span-2'> Filters</div>
-        {/* Industry Reports Navigate */}
-        <button onClick={()=> navigate("/admin/dashboard/industry-reports/")}>Navigate to Industry Reports</button>
+        {/* Filters and Industry Reports Navigate*/}
+        <div className='row-start-2 col-start-2 w-full gap-8 flex justify-end'>
+          <div className='flex justify-center align-center'> 
+            Filters Here
+          </div>
+          <button className="flex flex-row gap-1 items-center cursor-pointer" onClick={()=> navigate("/admin/dashboard/industry-reports/")}><p className="font-satoshi-light text-sm">View Industry Breakdown</p><MoveRight/></button>
+        </div>
         {/* Industries and employment*/}
         <div className={`${cardDesign} row-start-3 col-span-2 flex flex-col font-satoshi-regular`}> 
           {/* Top half - bar graph */}
-          <div className='h-1/2 p-4'>
-            <h3 className='text-2xl font-satoshi-bold'> Industries</h3>
+          <div className='h-1/2 px-4 pb-4 pt-2'>
+            <h3 className='text-2xl font-satoshi-bold pb-2'> Industries</h3>
             {loading ? (
               <div className='flex items-center justify-center h-full'>
                 <CircularLoading size={90}/>
@@ -348,7 +351,7 @@ function AdminAlumniInfo() {
                     textAnchor="middle" 
                     interval={0} 
                     height={100} 
-                    tick={{ fontSize: 10, wordWrap: "break-word", width: 100 }}
+                    tick={{ fontSize: 12, wordWrap: "break-word", width: 100 }}
                     tickLine={false}
                     axisLine={false}
                     />
@@ -365,9 +368,9 @@ function AdminAlumniInfo() {
               </ResponsiveContainer>
               )}
             </div>
-          <div className='w-full border-t border-gray-300'></div>
+          <div className='w-full border-t border-gray-300 mt-3'></div>
           {/* Bottom half - pie graph */}
-          <div className='h-1/2 flex flex-row p-4'>
+          <div className='h-1/2 flex flex-row p-4 mt-3'>
             {/* Employment Status */}
             <div className='h-full flex-1 text-center flex flex-col items-center justify-center'>
               <h3 className='text-2xl font-satoshi-bold'>Employment Status</h3>
@@ -457,11 +460,13 @@ function AdminAlumniInfo() {
         </div>
         {/* Locations */}
         <div className={`${cardDesign} row-start-4 col-span-2 h-full p-4`}> 
-        {/* Country Reports Navigate */}
-        <button onClick={()=> navigate("/admin/dashboard/country-reports/")}>Navigate to country reports</button>
-          <h3 className='text-2xl font-satoshi-bold'> Locations </h3>
+          {/* Country Reports Navigate */}
+          <div className='w-full flex justify-between pb-4 px-2'>
+            <h3 className='text-2xl font-satoshi-bold'> Locations </h3>
+            <button className="flex flex-row gap-1 items-center cursor-pointer justify-self-end" onClick={()=> navigate("/admin/dashboard/country-reports/")}><p className="font-satoshi-light text-sm">View Country Breakdown</p><MoveRight/></button>
+          </div>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={locationData} layout="vertical" margin={{ left: 20, right: 20, bottom: 40 }}>
+            <BarChart data={locationData} layout="vertical" margin={{ left: 40, right: 20, bottom: 40 }}>
               <XAxis type="number"/>
               <YAxis type="category" dataKey="country" width={100} />
               <Bar dataKey="count" barSize={20} radius={[0, 5, 5, 0]}>

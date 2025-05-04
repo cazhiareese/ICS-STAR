@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Search, Calendar } from "lucide-react";
 import star from "../../../assets/star.png";
 import "../../../index.css";
-import { select } from "framer-motion/client";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -10,32 +9,28 @@ import { jwtDecode } from "jwt-decode";
 export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selectedTags }) => {
     const navigate = useNavigate();
 
-    // const formatDate = (utcDate) => {
-    //     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-    //     return new Date(utcDate).toLocaleString('en-US', options);
-    // };
-const User = localStorage.getItem("token");
-let tokentype = "guest";
-let userid = true;
+    const User = localStorage.getItem("token");
+    let tokentype = "guest";
+    let userid = true;
 
-
-if (User) {
-  try {
-    const decoded = jwtDecode(User);
-    tokentype = decoded.role;
-    userid = decoded.sub;
-  } catch (error) {
-    console.error("Invalid token:", error);
-  }
-} else {
-  console.log("No token found, defaulting to guest.");
-}
+    if (User) {
+      try {
+        const decoded = jwtDecode(User);
+        tokentype = decoded.role;
+        userid = decoded.sub;
+        console.log("Decoded token:", decoded);
+        console.log("User ID:", userid);
+        console.log("Token type:", tokentype);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    } else {
+      console.log("No token found, defaulting to guest.");
+    }
 
     return (
-        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative  border-gray-300 border shadow-md p-5">
-            <div className=" "
-            onClick={() => navigate(`/${tokentype}/newsletter/${id}`)}
-        >
+        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative border-gray-300 border shadow-md p-5">
+            <div className=" " onClick={() => navigate(`/${tokentype}/newsletter/${id}`)}>
                 <div className="flex flex-col h-full ">
                     <div className="w-full h-45 bg-primary rounded-lg overflow-hidden">
                         <img src={imageUrl} alt="" className="w-full h-full object-cover" />
@@ -48,26 +43,24 @@ if (User) {
                         </p>
                         <p className="text-sm text-gray-600 mt-1 line-clamp-3">{description}</p>
                     </div>
-                    
                 </div>
             </div>
             <div className="flex flex-row sm:mt-4 space-x-2 overflow-x-scroll absolute bottom-2 left-5 right-5 py-3">
-                        {tags.map((tag, index) => (
-                            <span
-                                key={index}
-                                onClick={() => onTagClick(tag)}
-                                className={`sm:px-4 px-2 sm:py-1 py-0.5 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap font-satoshi-light sm:text-md text-sm ${
-                                    selectedTags.includes(tag.name)
-                                        ? "bg-primary text-white"
-                                        : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
-                                }`}
-                            >
-                                {tag}
-                            </span>
-                        ))}
+                {tags.map((tag, index) => (
+                    <span
+                        key={index}
+                        onClick={() => onTagClick(tag)}
+                        className={`sm:px-4 px-2 sm:py-1 py-0.5 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap font-satoshi-light sm:text-md text-sm ${
+                            selectedTags.includes(tag.name)
+                                ? "bg-primary text-white"
+                                : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
+                        }`}
+                    >
+                        {tag}
+                    </span>
+                ))}
             </div>
         </div>
-        
     );
 };
 
@@ -92,20 +85,13 @@ export const SkeletonCards = () => {
     );
 };
 
-
-
-
 const NewsletterLanding = () => {
     const [card, setCard] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
-
-    const [query, setQuery] = useState('');
-
-    const [loading, setLoading] = useState(false)
+    const [searchQuery, setSearchQuery] = useState(""); // New state for search query
     const URL = import.meta.env.VITE_BACKEND_URL;
 
     const toggleTagSelection = (tagName) => {
-
         setSelectedTags((prevSelectedTags) =>
             prevSelectedTags.includes(tagName)
                 ? prevSelectedTags.filter((tag) => tag !== tagName)
@@ -113,9 +99,72 @@ const NewsletterLanding = () => {
         );
     };
 
-    // useEffect(() => {
-    //     setCard(mockCards);
-    // }, []);
+    const mockCards = [
+        {
+            id: 1,
+            title: "Lorem Ipsum Lorem Ipsum Lorem Lorem...",
+            date: "2025-02-24T09:00:00Z",
+            description: "Medium priority is given to this feature. This serves as a communication channel integrated into the website to keep its users updated about event...",
+            imageUrl: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+            tags: ["Technology", "Science"]
+        },
+        {
+            id: 2,
+            title: "Exploring the Future of AI and Robotics",
+            date: "2025-03-10T14:00:00Z",
+            description: "An in-depth look at how AI and robotics are shaping the future of industries and everyday life...",
+            imageUrl: "https://images.unsplash.com/photo-1581091870622-1c6d5f3f2c4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+            tags: ["Technology", "Education"]
+        },
+        {
+            id: 3,
+            title: "Health and Wellness in the Modern Era",
+            date: "2025-04-05T11:00:00Z",
+            description: "Discover the latest trends and tips for maintaining a healthy lifestyle in today's fast-paced world...",
+            imageUrl: "https://images.unsplash.com/photo-1556228724-4b1aa6a36b51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+            tags: ["Health", "Lifestyle"]
+        },
+        {
+            id: 4,
+            title: "The Rise of Sustainable Business Practices",
+            date: "2025-05-15T16:00:00Z",
+            description: "How businesses are adopting sustainable practices to protect the environment and ensure long-term growth...",
+            imageUrl: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+            tags: ["Business", "Environment"]
+        },
+        {
+            id: 5,
+            title: "Top Travel Destinations for 2025",
+            date: "2025-06-20T09:00:00Z",
+            description: "Explore the most popular travel destinations for the year and plan your next adventure Explore the most popular travel destinations for the year and plan your next adventure...",
+            imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+            tags: ["Travel", "Lifestyle"]
+        },
+        {
+            id: 6,
+            title: "Breakthroughs in Medical Science",
+            date: "2025-07-08T13:00:00Z",
+            description: "A look at the latest breakthroughs in medical science and their impact on healthcare...",
+            imageUrl: "https://images.unsplash.com/photo-1580281657521-6bfc0b4d0f4b?crop | entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+            tags: ["Health", "Science"]
+        },
+        {
+            id: 7,
+            title: "The Evolution of Entertainment Technology",
+            date: "2025-08-12T18:00:00Z",
+            description: "From streaming services to virtual reality, explore how technology is transforming entertainment...",
+            imageUrl: "https://images.unsplash.com/photo-1513351105277-d4edcf4cf8f2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+            tags: ["Entertainment", "Technology"]
+        },
+        {
+            id: 8,
+            title: "The Role of Education in a Digital World",
+            date: "2025-09-30T10:00:00Z",
+            description: "How digital tools and platforms are reshaping the way we learn and teach...",
+            imageUrl: "https://images.unsplash.com/photo-1584697964154-3c1b5f3c6c9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+            tags: ["Education", "Technology"]
+        }
+    ];
 
     const mockTag = [
         { id: 1, name: "Technology" },
@@ -132,8 +181,6 @@ const NewsletterLanding = () => {
 
     const [tags, setTags] = useState(null);
 
-
-
     const initializeTags = (tagData) => {
         setTags(
             tagData.map((tag, index) => ({
@@ -143,44 +190,31 @@ const NewsletterLanding = () => {
         );
     };
 
-    const [filteredCards, setFilteredCards] = useState(null);
+    const filteredCards = selectedTags.length
+        ? card.filter((item) =>
+              item.tags.some((tag) => selectedTags.includes(tag))
+          )
+        : card;
 
-    const fetchFilteredCards = async () => {
-        if (!card.length) return; // Wait for cards to be fetched first
-        
-        if (selectedTags.length > 0 || query.trim()!=="") {
-            setLoading(true)
-            try {
-                const params = new URLSearchParams();
-                if (query.trim() !== "") {
-                    params.append("title", query.trim());
-                }
-                if (selectedTags.length) {
-                    selectedTags.forEach((tag) => params.append("tags", tag));
-                }
-                
-                params.append("limit", 8);
-                
-                const response = await axios.get(`${URL}/search-newsletters?${params.toString()}`);
-                console.log("Hello  World", params.toString())
-                setFilteredCards(response.data);
-                console.log(selectedTags.length>0);
-                
-                setLoading(false)
-            } catch (error) {
-                console.error("Error fetching filtered newsletters:", error);
-            }
-        } else {
-            console.log("I am here SDFOSDGLFJSDFKLJDSKLFJKLDSJKLFJSDKLJKLDSJFKLS")
-            console.log(selectedTags)
-            setFilteredCards(card);
-            
+    // New search handler
+    const handleSearch = async (query) => {
+        try {
+            const response = await axios.get(`${URL}/search-newsletters?title=${query}&limit=20`);
+            console.log("Search response:", response.data);
+            setCard(response.data.map(item => ({
+                ...item,
+                id: item.newsletter_id,
+                description: item.content,
+                imageUrl: item.image || "https://via.placeholder.com/400", // Fallback image
+                date: item.date_posted,
+                tags: item.tags
+            })));
+            console.log("Search results:", response.data);
+        } catch (error) {
+            console.error("Error searching newsletters:", error);
+            setCard([]); // Clear cards on error
         }
     };
-
-    useEffect(() => {
-        fetchFilteredCards();
-    }, [selectedTags, card]);
 
     useEffect(() => {
         const fetchTags = async () => {
@@ -206,102 +240,91 @@ const NewsletterLanding = () => {
         fetchNewsletters();
         fetchTags();
     }, []);
-    
+
     return (
         <>
-        <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white mb-4">
-  <div className="relative flex flex-col w-full max-w-[350px] sm:max-w-[600px] mt-6">
-    <input
-      type="text"
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-      placeholder="Search newsletters..."
-      className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
-    />
-    <button onClick={fetchFilteredCards}
-    className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
-      <Search size={20} />
-    </button>
-  </div>
-</div>
-        <div className={`flex-1 overflow-y-hidden sm:mx-10 md:mx-15 lg:mx-20 mx-3`}>
-
-
-            { (card.length>0 && tags!=null) ? 
-
-            (<><div className={`h-7 flex flex-row items-center justify-start mt-7`}>
-                <div className="flex overflow-x-auto space-x-4 py-4">
-                    {tags.map((tag) => (
-                        <div
-                            key={tag.id}
-                            onClick={() => toggleTagSelection(tag.name)}
-                            className={`px-4 py-1 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap ${
-                                selectedTags.includes(tag.name)
-                                    ? "bg-primary text-white"
-                                    : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
-                            }`}
-                        >
-                            {tag.name}
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div
-                className={`grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto ${loading? "animate-pulse":""}`}
-                style={{ height: `calc(100vh - 18rem)` }} // Adjust height dynamically based on remaining space
-            >
-                {loading==false && filteredCards ? filteredCards.map((item) => (
-                    <Cards
-                        key={item.newsletter_id}
-                        id={item.newsletter_id}
-                        title={item.title}
-                        date={item.date_posted}
-                        description={item.content}
-                        imageUrl={item.image}
-                        tags={item.tags}
-                        onTagClick={toggleTagSelection}
-                        selectedTags={selectedTags}
+            <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white mb-4">
+                <div className="relative flex flex-col w-full max-w-[350px] sm:max-w-[600px] mt-6">
+                    <input
+                        type="text"
+                        placeholder="Search newsletters..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            handleSearch(e.target.value); // Trigger search on input change
+                        }}
+                        className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
                     />
-                )):
-
-                    <>
-                    <SkeletonCards/>
-                    <SkeletonCards/>
-                    <SkeletonCards/>
-                    <SkeletonCards/>
-
-                    </>
-                }
-            </div></>) : <div className="animate-pulse">
-            
-            <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
-                <div className="flex overflow-x-auto space-x-4 py-4">
-                    <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                    <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                    <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                    <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                    <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                    <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                    <button className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+                        <Search size={20} />
+                    </button>
                 </div>
             </div>
-            <div
-                className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
-                style={{ height: `calc(100vh - 20rem)` }} // Adjust height dynamically based on remaining space
-            >
-                <SkeletonCards/>
-                <SkeletonCards/>
-                <SkeletonCards/>
-                <SkeletonCards/>
-                
+            <div className={`flex-1 overflow-y-hidden sm:mx-10 md:mx-15 lg:mx-20 mx-3`}>
+                {card.length > 0 && tags != null ? (
+                    <>
+                        <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+                            <div className="flex overflow-x-auto space-x-4 py-4">
+                                {tags.map((tag) => (
+                                    <div
+                                        key={tag.id}
+                                        onClick={() => toggleTagSelection(tag.name)}
+                                        className={`px-4 py-1 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap ${
+                                            selectedTags.includes(tag.name)
+                                                ? "bg-primary text-white"
+                                                : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
+                                        }`}
+                                    >
+                                        {tag.name}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div
+                            className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
+                            style={{ height: `calc(100vh - 18rem)` }}
+                        >
+                            {filteredCards.map((item) => (
+                                <Cards
+                                    key={item.newsletter_id || item.id}
+                                    id={item.newsletter_id || item.id}
+                                    title={item.title}
+                                    date={item.date_posted || item.date}
+                                    description={item.content || item.description}
+                                    imageUrl={item.image || item.imageUrl || "https://via.placeholder.com/400"}
+                                    tags={item.tags}
+                                    onTagClick={toggleTagSelection}
+                                    selectedTags={selectedTags}
+                                />
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className="animate-pulse">
+                        <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+                            <div className="flex overflow-x-auto space-x-4 py-4">
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                                <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                            </div>
+                        </div>
+                        <div
+                            className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
+                            style={{ height: `calc(100vh - 20rem)` }}
+                        >
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                        </div>
+                    </div>
+                )}
             </div>
-                
-            
-            
-            </div>
-                
-            }
-            
-        </div>
         </>
     );
 };
