@@ -185,9 +185,9 @@ useEffect(() => {
     }
     return (
         <>
-            <div className="flex flex-col items-center bg-[#F8F9FB]">
-            <div className="flex flex-col w-full bg-whitey shadow-md  items-center rounded-b-[35px] bg-white">
-    <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 shadow-md' : 'relative'}`}>
+        <div className="flex flex-col items-center bg-[#F8F9FB]">
+        <div className="flex flex-col w-full bg-whitey shadow-md  items-center rounded-b-[35px] bg-white">
+        <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 shadow-md' : 'relative'}`}>
         <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
     <div className="relative flex w-full max-w-[350px] sm:max-w-[600px]">
       {/* Search Input */}
