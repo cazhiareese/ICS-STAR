@@ -40,7 +40,7 @@ const donation = {name: "Hey bro", currentRaised: 70000, maxAmount: 100000, date
 function AdminEngagementReports() {
   const navigate = useNavigate();
   const [daysFilter, setDaysFilter] = useState("30days");
-  const [batchFilter, setBatchFilter] = useState("2022");
+  const [batchFilter, setBatchFilter] = useState(0);
   const [selectedTab, setSelectedTab] = useState(null);
 
   const [fullEngagementReport, setFullEngagementReport] = useState(null);
@@ -66,7 +66,7 @@ function AdminEngagementReports() {
   useEffect(() => {
     const fetchFullEngagementReport = async () => {
       setFullEngagementReportLoading(true);
-      // console.log(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`)
+      console.log(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`)
       try {
         const response = await axios.get(
           `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`
