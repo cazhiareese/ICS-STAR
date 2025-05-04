@@ -11,6 +11,7 @@ import { div, q } from 'framer-motion/client';
 import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
 import PaginationComponent from "../../../components/AdminComponents/PaginationComponent";
+import AdminBack from '../../../components/AdminComponents/AdminBack';
 
 function AdminAlumniInfo() {
   const navigate = useNavigate();
@@ -261,13 +262,7 @@ function AdminAlumniInfo() {
 
     return (
       <div className="bg-[#f9f9fb] p-6 max-h-screen flex flex-col overflow-auto">
-        {/* Back Button - Always Visible */}
-        <div className="flex gap-2 mb-5">
-          <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
-            <MoveLeft className="text-primary" />
-            <p className="text-primary font-satoshi-medium text-lg">Back to dashboard</p>
-          </button>
-        </div>
+        <AdminBack label={"Back to dashboard"}/>
         <h1 className="font-satoshi-bold text-black text-3xl mb-4">User Information Reports</h1>
   
         {loading ? (
