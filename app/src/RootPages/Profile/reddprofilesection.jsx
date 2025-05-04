@@ -8,36 +8,62 @@ import {
   Pencil,
   Check,
   X,
+  ShieldAlert
 } from "lucide-react";
 import SaveConfirmationModal from "./components/savemodal";
 import CancelEditingModal from "./components/cancelmoda";
+import { useNavigate } from "react-router-dom";
 
 import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 import SocialLinksEditModal from "./components/sociallinksmoda";
+import axios from "axios";
+import ReportModal from "../../components/AdminComponents/ReportModal";
+import AlumniTransitionModal from "../../components/AdminComponents/AlumniTransitionModal";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-function JanryProfileSection({
+
+function AdminProfileSection({
   activeTab,
   editMode,
   userDetails,
   setEditMode,
   handleChange,
-  share
+  share,
+  userId,
 }) {
+  
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSocialModal, setShowSocialModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);  // New state to control cancel modal visibility
+  //console.log("ProfileSection userId:", userId);
+
+    const [limitAccessLoading, setLimitAccessLoading] = useState(false);
+    const [showAlumniModal, setShowAlumniModal] = useState(false);
+    const [makeAlumniLoading, setMakeAlumniLoading] = useState(false);
+    const [transitionComplete, setTransitionComplete] = useState(false);
+    const [showReportsModal, setShowReportsModal] = useState(false);
+
+
+    const [reports, setReports] = useState([]);
+    const [limitAccessComplete, setLimitAccessComplete] = useState(false);
+  const [token, setToken] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Fetch user profile picture
   useEffect(() => {
-    console.log("Fetching profile picture...");
-    fetchProfilePicture();
-    setProfilePicture(userDetails.profile_picture);
-  }, []);
+    if (userId) {
+      console.log("Fetching profile picture for:", userId);
+      fetchProfilePicture();
+    }
+  }, [userId]); // ← re-run when userId is available
+  
 
   const handleSocialLinksSave = async (links) => {
     console.log("Saving social links:", links);
@@ -49,7 +75,50 @@ function JanryProfileSection({
     }
   };
 
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      if (!token) {
+        setError("Authentication required");
+        setLoading(false);
+        navigate("/admin/login");
+        return;
+      }
+
+      if (!userId) {
+        setError("No user ID provided");
+        setLoading(false);
+        return;
+      }
+
+      try {
+
+        const response = await axios.get(`${API_BASE_URL}/admin/report-logs/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const reportsData = response.data || [];
+        setReports(reportsData);
+        console.log("Reports data:", reportsData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError(error.response?.data?.message || "Failed to load user profile");
+      } finally {
+        setLoading(false);
+      }
+      };
+
+      if (token) {
+        fetchData();
+      }
+
+  }, [userId, token, navigate]);
+
+
   const fetchProfilePicture = async () => {
+    if (!userId) return;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -59,7 +128,7 @@ function JanryProfileSection({
 
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-      const response = await fetch(`${API_BASE_URL}/profile-picture`, {
+      const response = await fetch(`${API_BASE_URL}/profile-picture/${userId}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -67,6 +136,7 @@ function JanryProfileSection({
       });
 
       if (response.ok) {
+        console.log(response);
         const result = await response.json();
         setProfilePicture(result.profile_picture || defaultimage);
       } else {
@@ -154,6 +224,37 @@ function JanryProfileSection({
     setShowCancelModal(false);  // Close the cancel modal without any changes
   };
 
+  async function makeAlumni() {
+    setMakeAlumniLoading(true);
+    try {
+      await axios.put(`${API_BASE_URL}/admin/transition/${userId}`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTransitionComplete(true);
+    } catch (error) {
+      console.error("Error transitioning to alumni:", error);
+      setError("Failed to transition to alumni");
+    } finally {
+      setMakeAlumniLoading(false);
+    }
+  }
+
+  async function limitAccountAccess() {
+    setLimitAccessLoading(true);
+    try {
+      await axios.put(`${API_BASE_URL}/admin/ban/${userId}`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      handleChange({ target: { value: true } }, 'is_banned');
+    } catch (error) {
+      console.error("Error limiting account access:", error);
+      setError("Failed to limit account access");
+    } finally {
+      setLimitAccessLoading(false);
+      setShowReportsModal(false);
+    }
+  }
+
   return (
     <div
       className={`relative w-full max-w-[1100px] border border-disabled rounded-[10px] p-6 flex flex-col sm:flex-row items-center sm:justify-between ${
@@ -166,12 +267,12 @@ function JanryProfileSection({
     {share ? (
       // New button shown only when viewing shared profile
       <button
-        onClick={() => alert("This is a shared profile. Actions are limited.")}
-        className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-gray-300 text-black cursor-not-allowed"
-      >
-        <Pencil size={18} />
-        <span className="hidden sm:inline">Viewing Only</span>
-      </button>
+      className="hidden lg:flex flex-row gap-2 ml-auto text-error font-satoshi-medium cursor-pointer"
+      onClick={() => setShowReportsModal(true)}
+    >
+      <p className="hidden lg:block">View Report Logs</p>
+      <ShieldAlert />
+    </button>
     ) : editMode ? (
       <>
         {/* Save Button */}
@@ -216,7 +317,7 @@ function JanryProfileSection({
               className="w-full h-full object-cover"
             />
           </span>
-          {userDetails?.is_verified && (
+          {!share && userDetails?.is_verified && (
             <Camera
               size={32}
               className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black w-8 h-8 rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
@@ -351,8 +452,32 @@ function JanryProfileSection({
         onConfirm={handleCancelConfirm}
         onCancel={handleCancelClose}
       />
+
+<ReportModal
+        isOpen={showReportsModal}
+        onClose={() => {
+          setShowReportsModal(false);
+          setLimitAccessComplete(false);
+        }}
+        reports={reports}
+        onLimitAccess={limitAccountAccess}
+        isLoading={limitAccessLoading}
+        isComplete={limitAccessComplete}
+      />
+    <AlumniTransitionModal
+        isOpen={showAlumniModal}
+        onClose={() => {
+          setShowAlumniModal(false);
+          setTransitionComplete(false);
+          if (transitionComplete) window.location.reload();
+        }}
+        onConfirm={makeAlumni}
+        isLoading={makeAlumniLoading}
+        isComplete={transitionComplete}
+/> 
+
     </div>
   );
 }
 
-export default JanryProfileSection;
+export default AdminProfileSection;

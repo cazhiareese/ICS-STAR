@@ -12,6 +12,7 @@ import JobPosted from "./Profile/JobPosting/userjobposting";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 import { useParams } from "react-router-dom";
+import AdminProfileSection from "./Profile/reddprofilesection";
 
 
 import {
@@ -31,7 +32,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 
-function UserProfile() {
+function ReddUserProfile() {
   const id = useParams();
   console.log("naku",id);
   const [editMode, setEditMode] = useState(false);
@@ -42,8 +43,9 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [share, setShare] = useState(null)                                     //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
-
+  const [share, setShare] = useState(null)  
+  const [userId, setUserId] = useState(null);
+                                  //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
   //fetch user details from backend
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -55,7 +57,11 @@ const tokentype = decoded.role;
 console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
-const userIdFromURL = id.userid; // id is from useParams()
+console.log("unang id",id);
+//needs to fixed si janry ay userId, si redd ay userd
+
+
+const userIdFromURL = id.userId; // id is from useParams()
 console.log("User ID from URL:", userIdFromURL);
 const loggedInUserId = decoded.sub;
 console.log("Logged-in User ID:", loggedInUserId);
@@ -68,6 +74,7 @@ if (!userIdFromURL || userIdFromURL === loggedInUserId) {
 
 
 const user_id = userIdFromURL && !share ? userIdFromURL : loggedInUserId;
+setUserId(user_id); // Set the user ID in state
 console.log("Final user ID:", user_id);
 
 
@@ -139,7 +146,7 @@ const fetchUserProfileData = async () => {
           tenured_status: workData.tenured_status,
            salary_grade: workData.salary_grade,
     });
-    console.log("User Details:", userDetails);
+
   } catch (error) {
     console.error("Error fetching user profile data:", error);
     throw error;
@@ -327,7 +334,8 @@ const fetchUserProfileData = async () => {
   const handleChange = (e, field) => {
     setUserDetails({ ...userDetails, [field]: e.target.value });
   };
-
+  console.log("User Details:", userDetails);
+  console.log("iddddd",userId);
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       
@@ -342,14 +350,16 @@ const fetchUserProfileData = async () => {
 
 
       {/* Profile Section */}
-      <ProfileSection
+      <AdminProfileSection
         activeTab={activeTab}
         editMode={editMode}
         userDetails={userDetails}
         setEditMode={setEditMode}
         handleChange={handleChange}
+        share={share} // Pass share prop to ProfileSection
+        userId={userId} // Pass userId to ProfileSection
       />
-      {userDetails.user_type === "alumni" && (
+      {userDetails.user_type === "alumni" && !share && (
         <>
           {/* Navigation Tabs */}
           <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
@@ -407,4 +417,4 @@ const fetchUserProfileData = async () => {
   );
 }
 
-export default UserProfile;
+export default ReddUserProfile;

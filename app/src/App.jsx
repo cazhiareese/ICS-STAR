@@ -86,6 +86,7 @@ import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 import GuestLanding from "./RootPages/GuestPages/guestlanding";
 import AccountSettings from "./RootPages/Account/accountsettings";
 //const isSignedIn = !!localStorage.getItem("token");
+import ReddUserProfile from "./RootPages/RedUserProfile";
 
 
 function App() {
@@ -269,7 +270,7 @@ function App() {
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
-              <Route path=":userId" element={<UserProfile />} />
+              <Route path=":userId" element={<ReddUserProfile />} />
               <Route path="pending-verifications" element={<AdminPendingVerifications />}/>
               <Route path="verification-confirmation/:userid"element={<AdminVerificationConfirmation />}/>
             </Route>
