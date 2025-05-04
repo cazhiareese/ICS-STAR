@@ -306,7 +306,7 @@ function Donationform() {
                                     setMonetaryAmountInput={setMonetaryAmountInput}
                                 />
 
-                                <PaymentMode/>
+                                <PaymentMode submitMayaDonation={submitMayaDonation}/>
                                 <button
   onClick={submitMayaDonation}
   className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"

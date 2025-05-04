@@ -1,7 +1,7 @@
 import React from 'react';
 import maya from "../../../assets/maya_logo.png";
 
-function PaymentMode({}) {
+function PaymentMode({ submitMayaDonation }) {
   return (
     <div className='outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-full'>
       <h1 className='text-lg font-satoshi-medium pb-3'>Choose a Payment Method</h1>
@@ -12,7 +12,10 @@ function PaymentMode({}) {
         </button>
 
         {/* Pay with Maya Button */}
-        <button className='flex items-center justify-center gap-2 flex-1 py-3 cursor-pointer rounded-2xl border-2 border-gray-300 text-gray-700 font-satoshi-bold hover:bg-gray-100'>
+        <button
+          onClick={submitMayaDonation} // Integrated the submitMayaDonation function here
+          className='flex items-center justify-center gap-2 flex-1 py-3 cursor-pointer rounded-2xl border-2 border-gray-300 text-gray-700 font-satoshi-bold hover:bg-gray-100'
+        >
           Pay with
           <img src={maya} alt='maya logo' className='h-4 mt-1.5' />
         </button>
