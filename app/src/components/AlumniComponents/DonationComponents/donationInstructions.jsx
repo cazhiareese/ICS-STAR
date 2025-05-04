@@ -1,4 +1,5 @@
 import React from 'react'
+import qr from "../../../assets/QR.png";
 
 function DonationInstructions(
     {donationType}
@@ -13,7 +14,7 @@ function DonationInstructions(
                 <ol>
                     <li className='font-satoshi-regular text-md'>1. Scan the QR Code and send your donation.</li>
                     {/* QR code */}
-                    <img src="sample" alt="Placeholder" className="w-40 h-40 rounded-3xl outline my-5 md:ml-20 " />
+                    <img src={qr} alt="Placeholder" className="w-40 h-40 rounded-xl my-5 md:ml-20 " />
                     <li className='font-satoshi-regular text-md'>2. Take a screenshot of your transaction and upload it as proof of payment.</li>
                     <li className='font-satoshi-regular text-md'>3. After submitting this form, wait for the admin to acknowledge your donation.</li>
                 </ol>

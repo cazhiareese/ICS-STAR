@@ -11,21 +11,35 @@ function MostEngagedJobs() {
     const [loading, setLoading] = useState(false);
     const [skip, setSkip] = useState(0);
     const navigate = useNavigate();
-    
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [maxPage, setMaxPage] = useState(1);
 
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+    const handleNextPage = () => {
+        if (currentPage < maxPage){
+            setCurrentPage((prevPage) => prevPage + 1);
+        }
+        
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1){
+            setCurrentPage((prevPage) => prevPage - 1);
+        }
+    };
+
     // API call for getting most interested list
     useEffect(() => {
         const fetchMostInterested = async () => {
+        // console.log(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-interested?time_range=${daysFilter}&page=${currentPage}&page_size=10`);
           // setFullEngagementReportLoading(true);
           setLoading(true);
           try {
-            const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-interested?time_range=${daysFilter}&skip=${skip}&limit=10`);
-            console.log(response.data);
-            setMostInterested(response.data);
+            const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-interested?time_range=${daysFilter}&page=${currentPage}&page_size=10`);
+            setMaxPage(response.data.total_pages);
+            setMostInterested(response.data.results);
             // const totalPages = Math.ceil(response.data.length / rowsPerPage);
             // setFullEngagementReportLoading(false);
             setLoading(false);
@@ -35,7 +49,8 @@ function MostEngagedJobs() {
         };
       
         fetchMostInterested();
-    }, [daysFilter, skip]);
+    }, [daysFilter, currentPage]);
+
     return (
         <div className="bg-[rgb(243,241,244)] p-6 min-h-screen">
             {/* Back Link */}
@@ -67,10 +82,10 @@ function MostEngagedJobs() {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-satoshi-bold text-black py-5">Most Engaged Job Offers</h1>
                 <div className="flex space-x-4">
-                    <button onClick={() => setSkip(prevSkip => prevSkip - 10)}  disabled={skip === 0} className="p-2 rounded-full disabled:opacity-50 cursor-pointer">
+                    <button onClick={handlePrevPage}  disabled={currentPage === 1} className="p-2 rounded-full disabled:opacity-50 cursor-pointer">
                         <ArrowLeft className="h-5 w-5 text-black" />
                     </button>
-                    <button onClick={() => setSkip(prevSkip => prevSkip + 10)}  disabled={mostInterested.length < 10} className="p-2 rounded-full disabled:opacity-50 cursor-pointer">
+                    <button onClick={handleNextPage}  disabled={currentPage == maxPage} className="p-2 rounded-full disabled:opacity-50 cursor-pointer">
                         <ArrowRight className="h-5 w-5 text-black" />
                     </button>
                 </div>
@@ -90,21 +105,41 @@ function MostEngagedJobs() {
                             </tr>
                         </thead>
                         <tbody className="font-satoshi-medium">
-                            {loading ? (
-                                <CircularLoading/>
-                            ) : (
+                        {loading ? (
+                            [...Array(10)].map((_, i) => (
+                            <tr key={i} className="border-b border-gray-300 h-20 animate-pulse">
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-24"></div>
+                                </td>
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-40"></div>
+                                </td>
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-32"></div>
+                                </td>
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-20"></div>
+                                </td>
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-10"></div>
+                                </td>
+                            </tr>
+                            ))
+                        ) : (
                             mostInterested.map((job, index) => (
-                                <tr key={index} className="border-b border-gray-300 hover:bg-gray-50 h-20">
-                                    <td className="py-4 px-6 text-gray-500">{job.date_posted}</td>
-                                    <td className="py-4 px-6 text-black">{job.title}</td>
-                                    <td className="py-4 px-6 text-black">{job.company}</td>
-                                    <td className="py-4 px-6 text-gray-500">
-                                        <a href={job.link} className="text-primary underline">Link</a>
-                                    </td>
-                                    <td className="py-4 px-6">{job.interested_count}</td>
-                                </tr>
-                            )))}
+                            <tr key={index} className="border-b border-gray-300 hover:bg-gray-50 h-20">
+                                <td className="py-4 px-6 text-gray-500">{job.date_posted}</td>
+                                <td className="py-4 px-6 text-black">{job.title}</td>
+                                <td className="py-4 px-6 text-black">{job.company}</td>
+                                <td className="py-4 px-6 text-gray-500">
+                                <a target="_blank" rel="noopener noreferrer" href={job.link} className="text-primary underline">Link</a>
+                                </td>
+                                <td className="py-4 px-6">{job.interested_count}</td>
+                            </tr>
+                            ))
+                        )}
                         </tbody>
+
                     </table>
                 </div>
             </div>

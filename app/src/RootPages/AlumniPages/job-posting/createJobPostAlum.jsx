@@ -17,6 +17,8 @@ function CreateJobPostAlum() {
     const [tagsSuggestions, setTagSuggestions] = useState([]);
     const [currentCompany, setCurrentCompany] = useState(false);
     const [summary, setSummary] = useState({});
+    const [employmentModeLabel, setEmploymentModeLabel] = useState("");
+    const [employmentTypeLabel, setEmploymentTypeLabel] = useState("");
     const handleTagInputChange = (e) => {
         setTagInput(e.target.value);
     };
@@ -81,6 +83,8 @@ function CreateJobPostAlum() {
     const [submitting, setSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
+    const [error, setError] = useState(false);
+
     // dummy tags
     const tags = [
         "Artificial Intelligence",
@@ -134,14 +138,22 @@ function CreateJobPostAlum() {
     };
 
     const handleEmploymentTypeChange = (e) => {
+        const selectedIndex = e.target.selectedIndex;
+        const selectedLabel = e.target.options[selectedIndex].text;
+        
+        setEmploymentTypeLabel(selectedLabel);
         setEmploymentType(e.target.value);
-        console.log(employmentType); //For checking only
     };
+    
 
     const handleEmploymentModeChange = (e) => {
+        const selectedIndex = e.target.selectedIndex;
+        const selectedLabel = e.target.options[selectedIndex].text;
+        
+        setEmploymentModeLabel(selectedLabel);
         setEmploymentMode(e.target.value);
-        console.log(employmentMode); //For checking only
     };
+    
 
     // Navigate back
     const navigate = useNavigate();
@@ -197,10 +209,10 @@ function CreateJobPostAlum() {
             !employmentType.trim() ||
             !employmentMode.trim()
         ) {
-            alert("Please fill in all required fields");
+            setError(true);
             return;
         }
-
+        setError(false);
         setSubmitting(true);
 
         const formData = new FormData();
@@ -346,6 +358,11 @@ function CreateJobPostAlum() {
                         type="number"
                         step="any"
                         className="bg-white font-satoshi-medium text-md w-full h-10 md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0"
+                        min={0}
+                        onInput={(e) => {
+                            // Prevents typing any character other than numbers and the dot (.)
+                            e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+                        }}
                     />
                     </div>
                 </div>
@@ -558,6 +575,7 @@ function CreateJobPostAlum() {
                             onChange={handleEmploymentTypeChange}
                             value={employmentType}
                         >
+                            <option value="">Select Job Type</option>
                             <option value="fulltime">Full-time</option>
                             <option value="parttime">Part-time</option>
                             <option value="contractual">Contractual</option>
@@ -568,7 +586,7 @@ function CreateJobPostAlum() {
 
                         {/* Fake dropdown with icon */}
                         <div className="bg-white font-satoshi-medium text-md w-full flex items-center justify-between md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 pointer-events-none">
-                            {employmentType || 'Select Job Type'}
+                            {employmentTypeLabel || 'Select Job Type'}
                             <ChevronDown className="w-5 h-5 text-gray-500" />
                         </div>
                     </div>
@@ -587,6 +605,7 @@ function CreateJobPostAlum() {
                             onChange={handleEmploymentModeChange}
                             value={employmentMode}
                         >
+                             <option value="">Select Job Type</option>
                             <option value="onsite">On-site</option>
                             <option value="remote">Remote</option>
                             <option value="hybrid">Hybrid</option>
@@ -594,13 +613,15 @@ function CreateJobPostAlum() {
 
                         {/* Fake dropdown with icon */}
                         <div className="bg-white font-satoshi-medium text-md w-full flex items-center justify-between md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 pointer-events-none">
-                            {employmentMode || 'Select Mode'}
+                            {employmentModeLabel || 'Select Mode'}
                             <ChevronDown className="w-5 h-5 text-gray-500" />
                         </div>
                     </div>
 
                 </div>
             </div>
+
+            {error && (<h1 className='text-error font-satoshi-regular justify-center w-full flex pt-5'>Please fill out all the required fields</h1>)}
             
 
             {submitting ? (

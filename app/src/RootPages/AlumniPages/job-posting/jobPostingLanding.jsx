@@ -8,6 +8,7 @@ import JobCard from '../../../components/AlumniComponents/JobCard';
  import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import axios from 'axios';
+import SkeletonJobCard from '../../../components/AlumniComponents/skeletonjobCard';
 
 
 function JobPostingLanding() {
@@ -38,6 +39,7 @@ function JobPostingLanding() {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
+    const [dependencyTrigger, setDependencyTrigger] = useState(false);
     
 
     const toggleWorkType = (workType) => {
@@ -137,7 +139,7 @@ function JobPostingLanding() {
         };
 
         fetchJobs();
-    }, [currentPage]);
+    }, [currentPage, dependencyTrigger]);
 
     
 
@@ -510,9 +512,10 @@ function JobPostingLanding() {
                                 )}
                             </div>
                         ) : (
-                            <div className='flex flex-row justify-center h-full gap-5 pt-10'>
-                                <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
-                                <CircularLoading />
+                            <div className='flex flex-col gap-5 items-center'>
+                                {[...Array(6)].map((_, i) => (
+                                <SkeletonJobCard key={i} />
+                                ))}
                             </div>
                         )}
                     </div>
@@ -528,7 +531,10 @@ function JobPostingLanding() {
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} setSelectedJobId={setSelectedJobId} />
+                    <JobExpandedCard job={selectedJob} currentUserID={userId} 
+                    mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} 
+                    setJob={setSelectedJob} setSelectedJobId={setSelectedJobId} 
+                    setDependencyTrigger={setDependencyTrigger}/>
                 )}
                 
             </div>

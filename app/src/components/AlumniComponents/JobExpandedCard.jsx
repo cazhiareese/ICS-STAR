@@ -9,7 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 
 
 
-function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded, setJob, setSelectedJobId }) {
+function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded, setJob, setSelectedJobId, setDependencyTrigger }) {
     const [showOptions, setShowOptions] = useState(false);
     const [isInterested, setIsInterested] = useState(false);
     const [starLoading, setStarLoading] = useState(false);
@@ -62,6 +62,7 @@ const [showModal, setShowModal] = useState(false);//
             });
             console.log('Success:', response.data);
             await fetchJobs();
+            setDependencyTrigger(prev => !prev);
             setIsInterested(true);
             setStarLoading(false);
             return response.data;
@@ -86,6 +87,7 @@ const [showModal, setShowModal] = useState(false);//
             });
             console.log('Success:', response.data);
             await fetchJobs();
+            setDependencyTrigger(prev => !prev);
             setIsInterested(false);
             setStarLoading(false);
             return response.data;
