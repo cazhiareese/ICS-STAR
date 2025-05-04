@@ -219,26 +219,33 @@ const EventCardsMain = () => {
         }
     }
 
+    {/*Show a loading state while fetching the event*/}
     if (!event && isGoing===null) {
-        return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
+        return <div><EventCardsMainSkeleton/></div>;
     }
     return (
-        <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
+        <div className='bg-[#F8F9FB]'>
+        <div className='mx-auto sm:max-w-250 sm:w-[80%] h-full flex flex-col items-center justify-center'>
+            {/* Back Button */}
+            <label className="flex flex-row cursor-pointer sm:pt-0 mt-8 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label className='cursor-pointer'>Go Back</label></label>
             
-            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
             {user?.role !== "student" && event.rsvp_closed==false && (
+                // Going/RSVP Button
                 <button
-                    className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
+                    className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 rounded-full shadow-md hover:cursor-pointer ${
                     isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                     } hover:scale-115 transform transition-transform duration-200`}
                     onClick={event.rsvp_closed ? () => handleRSVPClick(event.event_id): ""}
                 >
                     <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                    <label>{isGoing ? 'Going' : 'RSVP'}</label>
+                    <label>{isGoing ? 'Going' : 'Reserve My Spot'}</label>
                 </button>
             )}
-            <div className="sm:max-w-180 sm:w-[80%] w-[90%] min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
-                <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl overflow-hidden">
+
+            {/* Event Card */}
+            <div className=" min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-whitey w-full sm:border-gray-200 p-10">
+                {/* Image */}
+                <div className="h-80 bg-primary rounded-2xl overflow-hidden">
                     {event.image && (
                         <img
                             src={event.image}
@@ -247,48 +254,62 @@ const EventCardsMain = () => {
                         />
                     )}
                 </div>
-                <div className='pt-5 mx-10'>
+               
+                {/* RSVP Status */}
+                <div className='pt-5'>
                   <RsvpStatus event={event} />
                 </div>
-                {user?.role !== "student" && event.rsvp_closed ==false && (
-                    <button
-                        className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                        } hover:scale-115 transform transition-transform duration-200`}
-                        onClick={() => handleRSVPClick(event.event_id)}
-                    >
-                        <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                        <label>{isGoing ? 'Going' : 'RSVP'}</label>
-                    </button>
-                )}
-                <div className="p-4 mx-5 flex flex-col">
-                    <h1 className="sm:text-3xl text-2xl font-satoshi-bold text-blue-900">{event.title}</h1>
-                    
+
+                <div className='absolute left-290 top-140 g-secondary'>
+                    {/* Going/RSVP Button */}
+                    {user?.role !== "student" && event.rsvp_closed ==false && (
+                        <button
+                            className={`hidden items-center px-6 py-3 sm:flex z-10 flex-row space-x-3 rounded-full shadow-md hover:cursor-pointer ${
+                            isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white font-bold'
+                            } hover:scale-115 transform transition-transform duration-200`}
+                            onClick={() => handleRSVPClick(event.event_id)} 
+                        >
+                            <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
+                            <label className='text-l font-extrabold'>{isGoing ? 'Going' : 'Reserve My Spot'}</label>
+                        </button>
+                    )}
+
+                    {/* RSVP Count */}
+                    <div className='flex flex-row w-full'>
+                        <div className='flex flex-row ml-auto text-lg flex items-center text-primary mt-2 font-extrabold'>
+                            <img src= {PersonOutline} className='ml-auto mr-3'/> 
+                            <label>{event.going_count} are going</label>
+                        </div>                 
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="block py-4 flex flex-col">
+                    <h1 className="sm:text-3xl text-2xl font-satoshi-black text-blue-900">{event.title}</h1>
                     <label className='text-gray-400 pt-8'>Event Details</label>
-                    
+
+                    {/*Location  */}
                     <div className="flex items-center mt-2 text-gray-600 space-x-3">
                         <MapPinned/>
                         <label>{event.location}</label>
                     </div>
-                    <div className="flex w-full overflow-x-auto items-center mt-2 text-gray-600 space-x-3">
+                    {/* Date */}
+                    <div className="flex w-full items-center mt-2 text-gray-600 space-x-3">
                         <Calendar />
-                        
                             {event.datetimes.map((datetime, index) => (
                                 <div className="flex flex-row overflow-x-scroll max-h-32 flex-shrink-0">
                                 <label key={index} className='pr-5'>{parseTime(datetime)}</label>
                                 </div>
                             ))}
-                        
                     </div>
+
+                    {/* Description */}
                     <div className='flex flex-col mt-5 '>
                         <label className='text-gray-400'>Event Description</label>
                         <label className="text-gray-600 pt-2">{event.description} 
-
-
-
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                         </label>
-
+                        
+                        {/* Relevant Links */}
                         <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
                         {event.links.map((link, index) => (
                                 <li key={index}>
@@ -299,36 +320,21 @@ const EventCardsMain = () => {
                         ))}
                     </div>
                     
+                    {/* Tags */}
                     <div className="flex flex-row gap-2 mt-5 overflow-x-scroll">
                         {event.tags.map((tag, index) => (
                             <span
                                 key={index}
                                 className="bg-blue-100 text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg"
                             >
-                                {tag}asdfsd
+                                {tag}
                             </span>
-                        ))}
-                        
-                        
+                        ))}                
                     </div>
-
-                    <div className='flex flex-row w-full mt-2'>
-                                      <div className='flex flex-row ml-auto space-x-5'>
-                                        <img 
-                                                src= {PersonOutline}
-                                                alt="Sample Image" 
-                                                className='mt-auto ml-auto'
-                                        /> 
-                                        <label className='flex flex-row text-primary ml-auto '>
-                                        {event.going_count} Going</label>
-                                      </div>
-                                        
-                                    </div>
-                </div>
-                
+                </div>    
             </div>
-        </div>
-        
+        </div>  
+    </div>
     );
 };
 
