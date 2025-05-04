@@ -16,7 +16,8 @@ const JobSearchBar =
     currentPage,
     setCurrentPage,
     maxPage,
-    setMaxPage
+    setMaxPage,
+    setSelectedJobId
   })=> {
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -39,6 +40,7 @@ const JobSearchBar =
     const search = () => {
         let filters = {};
         setSelectedJob({});
+        setSelectedJobId({});
         setCurrentPage(1);
         setMaxPage(1);
         if (searchInput != ""){

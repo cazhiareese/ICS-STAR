@@ -17,7 +17,6 @@ function AdminRecords() {
   const [userType, setUserType] = useState('alum')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [viewStyle, setViewStye] = useState('List')
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false)
  
@@ -111,7 +110,7 @@ function AdminRecords() {
   }, []);
   
   return ( 
-      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-[#F9F9FB]'>
+      <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
         {/* Records, search, view pending */}
         <div className='justify-between mt-9 lg:mb-8 flex relative'>
           {/* Records header */}
@@ -156,18 +155,6 @@ function AdminRecords() {
            { userType === 'alum' ? <FilterModal filters={alumniFilters} setterFunction={handleFilterChange}/>:
               <FilterModal filters={studentFilters} setterFunction={handleFilterChange}/>
            }
-            {/* View changer */}
-            <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
-              {/* List View Button */}
-              <button className="px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
-                <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-              <div className="h-6 w-px bg-disabled"></div>
-              {/* Grid View Button */}
-              <button className="px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
-                <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-            </div>
             <PaginationComponent 
               page={page}
               setPage={setPage}
@@ -178,7 +165,7 @@ function AdminRecords() {
         </div>
         {/* Table for desktop*/}
         <div
-          className="border border-gray-300 h-fit rounded-xl p-6 hidden lg:block bg-white"
+          className="border border-gray-300 h-fit rounded-xl p-6 hidden lg:block bg-white overflow-auto"
         >
           <UsersTable data={users} loading={loading} userType={userType}/>
         </div>
