@@ -35,7 +35,7 @@ async def create_job_posting(
             raise HTTPException(status_code=400, detail="File type not allowed.")
         
         file_extension = image.filename.split(".")[-1].lower()
-        file_name = f"job_posting/{job_title.replace(' ', '_')}.{file_extension}"
+        file_name = f"job_posting/{company.replace(' ', '_')}{job_title.replace(' ', '_')}.{file_extension}"
 
         try:
             supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
