@@ -34,3 +34,35 @@ class ReportAttachmentOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ReportedJobPostingOut(BaseModel):
+    post_id: UUID
+    title: str
+    date_posted: str
+    user_name: str
+    interested_count: int
+    report_count: int
+    
+    class Config:
+        from_attributes = True
+class PostReportDetailOut(BaseModel):
+    title: str
+    company: str
+    user_id: UUID
+    date_reported: datetime
+    reporter_name: str
+    reason: str
+    attachment: str = None
+
+    class Config:
+        from_attributes = True
+
+class PaginationMeta(BaseModel):
+    page: int
+    per_page: int
+    total_items: int
+    total_pages: int
+
+class PaginatedReportedResponse(BaseModel):
+    items: List[ReportedJobPostingOut]
+    meta: PaginationMeta

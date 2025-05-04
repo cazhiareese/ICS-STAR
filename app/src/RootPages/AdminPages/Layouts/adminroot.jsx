@@ -11,7 +11,16 @@ function AdminRoot() {
     { id: "events", title: "Events", icon: <Calendar size={24} />, path: "events" },
     { id: "newsletter", title: "Newsletter", icon: <Newspaper size={24} />, path: "newsletter" },
     { id: "career", title: "Career", icon: <BriefcaseBusiness size={24} />, path: "career" },
-    { id: "donations", title: "Donations", icon: <Heart size={24} />, path: "donations" },    
+    { 
+      id: "donations", 
+      title: "Donations", 
+      icon: <Heart size={24} />, 
+      path: "donations",
+      children: [
+        { title: "Donation Drives", path: "donations" },
+        { title: "General Insights", path: "donations/insights" },
+      ],
+    } 
   ];
 
   return (
@@ -19,7 +28,7 @@ function AdminRoot() {
         {/* Sidebar */}
         <Sidebar sidebarItems={sidebarItems} />
         {/* Content */}
-        <div className="w-full overflow-auto">
+        <div className="w-full overflow-auto bg-gray-100">
           <Outlet/>
         </div>
     </div>

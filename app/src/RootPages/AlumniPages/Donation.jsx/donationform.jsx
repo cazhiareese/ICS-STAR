@@ -10,8 +10,9 @@ import check from "../../../assets/check.png";
 import axios from "axios";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
 import Curve from "../../../assets/curve.png";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
+import PaymentMode from "../../../components/AlumniComponents/DonationComponents/paymentmode";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
@@ -19,7 +20,7 @@ function Donationform() {
     const id = useParams(); // Get the drive_id from the URL params
     const drive_id = id.driveid; // Extract the drive_id from the params
     const formattedDate = new Date().toLocaleDateString();
-    console.log(drive_id)
+    // console.log(drive_id)
     // UseState for checking if the buttons are activated
     const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
     const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
@@ -36,6 +37,15 @@ function Donationform() {
     const [summary, setSummary] = useState({});
     const [summaryLoading, setSummaryLoading] = useState(true);
     const [driveDetails, setDriveDetails] = useState(null);
+    const [searchParams] = useSearchParams();
+    const success = searchParams.get("success");
+    const [summaryheader,setSummaryHeader] = useState("Your donation will be reflected once it has been reviewed and verified by our admin team.")
+
+    const [error, setError] = useState(false);
+    const [errorInKind, setErrorInKind] = useState(false);
+    const [paymentError, setPaymentError] = useState(false);
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const formatDate = (date) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -58,12 +68,11 @@ function Donationform() {
         
     }, [summary]);
 
-        
     
         useEffect(() => {
             const token = localStorage.getItem("token");
     
-            fetch(`https://ics-star-api.vercel.app/one-donation-drive/${drive_id}`, {
+            fetch(`${API_BASE_URL}/one-donation-drive/${drive_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -71,7 +80,7 @@ function Donationform() {
                 .then((res) => res.json())
                 .then((data) => {
                     setDriveDetails(data);
-                    console.log("Drive details:", data);
+                    // console.log("Drive details:", data);
                 })
                 .catch((err) => {
                     console.error("Error fetching drive details:", err);
@@ -82,16 +91,18 @@ function Donationform() {
     const submitMonetaryDonation = async () => {
         // Ensure that all required fields are not empty
         if (monetaryAmountInput <= 0 || file == null) {
-            alert("Please enter a valid amount and upload a proof of payment.");
+            setError(true);
             return;
         }
         setSubmitting(true);
+        setError(false)
         const formData = new FormData();
         const token = localStorage.getItem("token");
 
         formData.append('monetary_donation', true);
         formData.append('in_kind_donation', false);
         formData.append('amount', monetaryAmountInput);
+        formData.append('direct_maya', false); 
         formData.append('is_anonymous', isAnonymous);
 
         if (file != null) {
@@ -99,7 +110,7 @@ function Donationform() {
         }
 
         try {
-            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -122,22 +133,117 @@ function Donationform() {
         }
     };
 
+    const submitMayaDonation = async () => {
+        if (monetaryAmountInput <= 0) {
+            setPaymentError(true);
+            return;
+        }
+        setPaymentError(false);
+        setSubmitting(true);
+        const formData = new FormData();
+        const token = localStorage.getItem("token");
+    
+        formData.append('monetary_donation', 'true'); // Use strings
+        formData.append('in_kind_donation', 'false');
+        formData.append('direct_maya', 'true'); 
+        formData.append('amount', String(monetaryAmountInput));
+    
+        try {
+            // for (let pair of formData.entries()) {
+            //     // console.log(`${pair[0]}: ${pair[1]}`);
+            // }
+    
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+    
+            if (response.status === 200 && response.data.redirectUrl) {
+                // ✅ Automatically redirect
+                localStorage.setItem("maya_donation_amount", String(monetaryAmountInput));
+
+                window.location.href = response.data.redirectUrl;
+            } else {
+                console.warn("No redirect URL found in response");
+            }
+        } catch (error) {
+            console.error("Error submitting donation:", error);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    useEffect(() => {
+        if (success === "true") {
+          console.log("Payment successful");
+          callMayaCallback();
+        }
+      }, [success]);
+    
+
+
+
+      const callMayaCallback = async () => {
+        const token = localStorage.getItem("token");
+        const amount = localStorage.getItem("maya_donation_amount");
+    
+        console.log("Maya Callback triggered with amount:", amount);
+    
+        const formData = new FormData();
+        formData.append("amount", amount);  // Append the amount as form data
+    
+        try {
+            const response = await axios.post(`${API_BASE_URL}/maya-callback?drive_id=${drive_id}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'  
+                }
+            });
+    
+            if (response.status === 200) {
+                console.log("Donation acknowledged:", response.data);
+                setDonationSuccess(true);
+                setSummaryLoading(true); // Start loading for the summary
+                setSummary(response.data); // Set summary after successful donation
+                setSummaryHeader("Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.");
+                setMonetaryAmountInput(amount)
+                setIsMonetaryTypeOpen(false);
+                setIsInKindTypeOpen(false);
+                setSubmitting(false);
+                localStorage.removeItem("amount");
+
+            } else {
+                console.warn("Callback response issue:", response);
+            }
+        } catch (error) {
+            console.error("Error in Maya callback:", error);
+        }
+    };
+    
+    
+
+
+
     const submitInKindDonation = async () => {
         // Ensure that all required fields are not empty
         if (donationDetailsInput == null) {
-            alert("Please enter a donation description.");
+            setErrorInKind(true);
             return;
         }
         setSubmitting(true);
+        setErrorInKind(false);
         const formData = new FormData();
         const token = localStorage.getItem("token");
 
         formData.append('monetary_donation', false);
         formData.append('in_kind_donation', true);
+        formData.append('direct_maya', 'false'); 
         formData.append('description', donationDetailsInput);
 
         try {
-            const response = await axios.post(`https://ics-star-api.vercel.app/make-donation/${drive_id}`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -167,7 +273,7 @@ function Donationform() {
                     {/* Make a Donation Part */}
                     <div className='flex flex-col lg:w-7/12 w-full'>
                         {/* Back button */}
-                        <button className='text-primary flex gap-5 cursor-pointer'>
+                        <button onClick={handleClick} className='text-primary flex gap-5 cursor-pointer'>
                             <ArrowLeft size={25} />
                             <span className='font-satoshi-medium text-primary text-xl'>Back</span>
                         </button>
@@ -205,7 +311,12 @@ function Donationform() {
                                 <MonetaryAmountInput
                                     monetaryAmountInput={monetaryAmountInput}
                                     setMonetaryAmountInput={setMonetaryAmountInput}
+                                    paymentError={paymentError}
                                 />
+
+                                <PaymentMode submitMayaDonation={submitMayaDonation}/>
+
+
                                 <DonationInstructions donationType={"monetary"} />
                                 <PaymentProof
                                     fileInputRef={fileInputRef}
@@ -227,6 +338,8 @@ function Donationform() {
                                     )}
                                     
                                 </div>
+
+                                {error && (<h1 className='text-error font-satoshi-regular justify-center w-full flex'>Please fill out all the required fields</h1>)}
                                 
                                 {/* Submit Button */}
                                 {submitting ? (
@@ -256,14 +369,15 @@ function Donationform() {
                                 <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:hidden block">
                                     {/* <DonationDeets/> */}
                                     {isMonetaryType && (
-                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary"/>
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} type="monetary" landing={null}/>
                                     )}
 
                                     {!isMonetaryType && (
-                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id}/>
+                                        <DonationMainView driveDetails={driveDetails} driveId = {drive_id} landing={null}/>
                                     )}
                                     
                                 </div>
+                                {errorInKind && (<h1 className='text-error font-satoshi-regular justify-center w-full flex'>Please fill out all the required fields</h1>)}
                                 {/* Submit Button */}
                                 
                                 {submitting ? (
@@ -281,7 +395,7 @@ function Donationform() {
                             </div>
                         )}
                     </div>
-                    {/* PLACEHOLDER FOR MAR's COMPONENT */}
+                    {/* donation details */}
                     <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:block hidden">
                         {/* <DonationDeets/> */}
                         {isMonetaryType && (
@@ -302,7 +416,7 @@ function Donationform() {
                         <div className="flex flex-col md:w-10/12 w-11/12 items-center absolute z-10 top-2/3">
                             <img className="w-15 h-15 rounded-full" src={check} alt="check" />
                             <h1 className="font-satoshi-bold text-3xl pt-5 text-center">Donation Submitted</h1>
-                            <p className="font-satoshi-light text-lg pt-5 md:w-2/3 w-full text-center">Your donation will be reflected once it has been reviewed and verified by our admin team.</p>
+                            <p className="font-satoshi-light text-lg pt-5 md:w-2/3 w-full text-center">{summaryheader}</p>
 
                             <div className="flex flex-col w-full items-start mx-10">
                                 <h1 className="font-satoshi-bold md:text-xl text-lg pt-5 md:text-left text-center border-b-1 border-neutral-300 w-full pb-3 ">Donation Summary</h1>

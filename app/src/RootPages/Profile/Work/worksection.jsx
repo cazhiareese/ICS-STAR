@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
 import SectionHeader from "../components/sectionheader"; 
+import SaveWorkModal from "../components/saveworkmodal";
 
-function WorkSection({ userDetails, handleChange }) {
+function WorkSection({ userDetails, handleChange, isVerified }) {
   const [showMore, setShowMore] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+const [saveSuccess, setSaveSuccess] = useState(false);
 
   const workModes = ["Remote", "Onsite", "Hybrid"];
   const employerClasses = ["Government", "NGO", "Private Sector"];
@@ -21,6 +24,9 @@ function WorkSection({ userDetails, handleChange }) {
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
+    if (!isEditing) {
+      setShowMore(true); // Activate "View More" when entering edit mode
+    }
   };
 
   const salaryRanges = {
@@ -62,8 +68,6 @@ function WorkSection({ userDetails, handleChange }) {
   
       const urlEncodedData = new URLSearchParams(currentEmploymentData).toString();
   
-      console.log("📤 Employment Data:", urlEncodedData);
-  
       const response = await fetch(`${API_BASE_URL}/update-employment`, {
         method: "PUT",
         headers: {
@@ -80,14 +84,17 @@ function WorkSection({ userDetails, handleChange }) {
   
       const result = await response.json();
       console.log("✅", result.message);
-      setIsEditing(false);
+      setSaveSuccess(true);
+  
+      setTimeout(() => {
+        setIsEditing(false);
+        setShowSaveModal(false);
+        setSaveSuccess(false);
+      }, 1500);
     } catch (err) {
       console.error("❌", err);
     }
   };
-
-
-  
   
 
   return (
@@ -96,7 +103,8 @@ function WorkSection({ userDetails, handleChange }) {
       <SectionHeader
         title="Current Work"
         buttonText={isEditing ? "Save Work" : "Edit Work"}
-        onButtonClick={isEditing? saveEmployment : handleEditToggle}
+        onButtonClick={isEditing ? () => setShowSaveModal(true) : handleEditToggle}
+        isVerified={isVerified}
       />
 
       {/* Work Experience Card */}
@@ -111,13 +119,13 @@ function WorkSection({ userDetails, handleChange }) {
             {isEditing ? (
               <input
                 type="text"
-                value={userDetails.job_title}
+                value={userDetails.job_title || ""}
                 onChange={(e) => handleChange(e, "job_title")}
-                className="w-[250px] h-[30px] py-1 text-[23px]  font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 ${isEditing ?} "
+                className="w-[250px] h-[30px] py-1 text-[23px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2"
               />
             ) : (
-              <h3 className=" text-[23px] text-primary font-satoshi-black">
-                {userDetails.job_title}
+              <h3 className="text-[23px] text-primary font-satoshi-black">
+                {userDetails.job_title || "Not Available"}
               </h3>
             )}
 
@@ -139,38 +147,25 @@ function WorkSection({ userDetails, handleChange }) {
               </div>
             ) : (
               <span className="bg-blue-800 text-white w-[81px] h-[26px] text-[14px] px-2 py-1 rounded-full flex items-center justify-center font-satoshi-medium">
-                {userDetails.work_mode}
+                {userDetails.work_mode || "Not Available"}
               </span>
             )}
           </div>
 
-          {isEditing ? (
-            <input
-              type="text"
-              value={userDetails.work_start_date}
-              onChange={(e) => handleChange(e, "work_start_date")}
-              className={`w-[200px] h-[30px] py-1 text-[23px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2 ${
-                isEditing ? "sm:mb-0 mb-8" : ""
-              }`}
-            />
-          ) : (
-            <p className="text-primary text-[18px] font-satoshi-medium">
-              2022 - Present
-            </p>
-          )}
+
         </div>
 
         {/* Second Row: Company Name */}
         {isEditing ? (
           <input
             type="text"
-            value={userDetails.company_name}
+            value={userDetails.company_name || ""}
             onChange={(e) => handleChange(e, "company_name")}
-            className=" text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px] "
+            className="text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px]"
           />
         ) : (
           <p className="text-black text-[20px] font-satoshi-medium">
-            {userDetails.company_name}
+            {userDetails.company_name || "Not Available"}
           </p>
         )}
 
@@ -179,13 +174,13 @@ function WorkSection({ userDetails, handleChange }) {
           {isEditing ? (
             <input
               type="text"
-              value={userDetails.work_location}
+              value={userDetails.work_location || ""}
               onChange={(e) => handleChange(e, "work_location")}
-              className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px]  "
+              className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px]"
             />
           ) : (
             <p className="text-black font-satoshi-medium text-[20px]">
-              {userDetails.work_location}
+              {userDetails.work_location || "Not Available"}
             </p>
           )}
 
@@ -206,13 +201,14 @@ function WorkSection({ userDetails, handleChange }) {
               <span className="font-satoshi-medium">Employer Class:</span>
               {isEditing ? (
                 <select
-                  value={userDetails.employer_class}
+                  value={userDetails.employer_class || ""}
                   onChange={(e) => handleChange(e, "employer_class")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] "
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px]"
                 >
+                  <option value="">Select Employer Class</option>
                   {employerClasses.map((status) => (
                     <option
-                      className="text-[15px] sm:text-[20px] "
+                      className="text-[15px] sm:text-[20px]"
                       key={status}
                       value={status}
                     >
@@ -231,13 +227,14 @@ function WorkSection({ userDetails, handleChange }) {
               <span className="font-satoshi-medium">Tenured Status:</span>
               {isEditing ? (
                 <select
-                  value={userDetails.tenured_status}
+                  value={userDetails.tenured_status || ""}
                   onChange={(e) => handleChange(e, "tenured_status")}
-                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] "
+                  className="text-primary font-satoshi-bold bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px]"
                 >
+                  <option value="">Select Tenured Status</option>
                   {tenuredStatuses.map((status) => (
                     <option
-                      className="text-[15px] sm:text-[20px] "
+                      className="text-[15px] sm:text-[20px]"
                       key={status}
                       value={status}
                     >
@@ -252,19 +249,19 @@ function WorkSection({ userDetails, handleChange }) {
               )}
             </div>
 
-            {/* Salary Range (Instead of Salary Grade) */}
-            
+            {/* Salary Range */}
             <div className="flex flex-col items-start text-left">
               <span className="font-satoshi-medium">Salary Range:</span>
               {isEditing ? (
                 <select
-                  value={userDetails.salary_grade}
+                  value={userDetails.salary_grade || ""}
                   onChange={(e) => handleChange(e, "salary_grade")}
                   className="text-primary font-satoshi-bold bg-white border text-[20px] border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] sm:w-[250px] sm:text-[20px]"
                 >
+                  <option value="">Select Salary Range</option>
                   {Object.entries(salaryRanges).map(([key, value]) => (
                     <option
-                      className="text-[15px] sm:text-[20px] "
+                      className="text-[15px] sm:text-[20px]"
                       key={key}
                       value={key}
                     >
@@ -281,6 +278,18 @@ function WorkSection({ userDetails, handleChange }) {
           </div>
         )}
       </div>
+      <SaveWorkModal
+  isOpen={showSaveModal}
+  isSuccess={saveSuccess}
+  onClose={(action) => {
+    if (action === "confirm") {
+      saveEmployment();
+    } else {
+      setShowSaveModal(false);
+    }
+  }}
+/>
+
     </div>
   );
 }

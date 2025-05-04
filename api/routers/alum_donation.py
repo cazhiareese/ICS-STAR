@@ -1,21 +1,30 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from typing import List, Optional
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from config.database import get_db
-from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation
+from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation, fetch_drive_suggestions, maya_success
 from util.userutil import get_current_user
-from models.usermodel import User
+# from models.usermodel import User
+from schemas.user import CurrentUser
 from schemas.user import UserTypeEnum
 from uuid import UUID
+from util.alum_donation_util import maya_donation
 
 router = APIRouter()
 
+@router.get("/drive-suggestions")
+def get_drive_suggestions(
+    q: str = Query(..., min_length=1, description="Search donation drive title"),
+    limit: Optional[int] = Query(5, ge=1, le=20, description="Maximum number of results"),
+    db: Session = Depends(get_db)
+):
+    return fetch_drive_suggestions(db, q, limit)
+
 @router.get("/donationdrive", response_model=List[DonationDriveOut])
-def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    
+def get_donation_drives(db: Session = Depends(get_db), user: CurrentUser = Depends(get_current_user)):
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
     
@@ -32,7 +41,7 @@ def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_
     return donation_data
 
 @router.get("/donationdrive-limit", response_model=List[DonationDriveOut])
-def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def get_donation_drives(db: Session = Depends(get_db), user: CurrentUser = Depends(get_current_user)):
     
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -53,7 +62,7 @@ def get_donation_drives(db: Session = Depends(get_db), user: User = Depends(get_
 def get_one_drive(
     drive_id: UUID,
     db: Session = Depends(get_db), 
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -74,7 +83,7 @@ def get_one_drive(
 @router.get("/gen-donation-drive", response_model=OneDonationDriveOut)
 def get_one_drive(
     db: Session = Depends(get_db), 
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if user.user_type.value == UserTypeEnum.student:
         raise HTTPException(status_code=400, detail="For alumni only")
@@ -97,13 +106,14 @@ async def make_donations(
     drive_id: UUID,
     monetary_donation: bool = Form(...),
     in_kind_donation: bool = Form(...),
+    direct_maya: Optional[bool] = Form(None),
     amount: Optional[float] = Form(None),
     description: Optional[str] = Form(None),
     proof: Optional[UploadFile] = File(None),
     is_anonymous: Optional[bool] = Form(None),
     is_general: Optional[bool] = Form(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     
     if user.user_type.value == UserTypeEnum.student:
@@ -123,20 +133,21 @@ async def make_donations(
         )
     
     return await make_donation(
-        db, user, drive, monetary_donation, in_kind_donation, amount, description, proof, is_anonymous
+        db, user, drive, monetary_donation, in_kind_donation, direct_maya, amount, description, proof, is_anonymous
     )
     
 @router.post("/make-general-donation")
 async def make_donations(
     monetary_donation: bool = Form(...),
     in_kind_donation: bool = Form(...),
+    direct_maya: Optional[bool] = Form(None),
     amount: Optional[float] = Form(None),
     description: Optional[str] = Form(None),
     proof: Optional[UploadFile] = File(None),
     is_anonymous: Optional[bool] = Form(None),
     is_general: Optional[bool] = Form(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     
     if user.user_type.value == UserTypeEnum.student:
@@ -157,5 +168,15 @@ async def make_donations(
         )
     
     return await make_donation(
-        db, user, drive, monetary_donation, in_kind_donation, amount, description, proof, is_anonymous
+        db, user, drive, monetary_donation, in_kind_donation, direct_maya, amount, description, proof, is_anonymous
     )
+    
+@router.post("/maya-callback")
+def maya_callback(
+    drive_id: UUID,
+    amount: float = Form(...),
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+    return maya_success(drive, amount, user.user_id, db)

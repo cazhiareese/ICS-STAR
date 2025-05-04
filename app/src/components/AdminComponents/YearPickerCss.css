@@ -1,0 +1,29 @@
+.rmdp-wrapper {
+    border-radius: 12px !important;  /* Adjust border radius */
+  }
+  
+  /* Set border radius for the calendar itself */
+  .rmdp-calendar {
+    border-radius: 12px !important;  /* Ensure corners are rounded */
+  }
+  
+  .rmdp-day.rmdp-selected span,
+  .rmdp-day.rmdp-selected .sd {
+    background-color: black !important;
+    color: white !important;
+    border-radius: 10px !important;
+  }
+  
+  .rmdp-day.rmdp-today,
+  .rmdp-day.rmdp-today span,
+  .rmdp-day.rmdp-today .sd {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  .rmdp-day.rmdp-today.rmdp-day.rmdp-selected span,
+  .rmdp-day.rmdp-today.rmdp-day.rmdp-selected .sd {
+    background-color: black !important;
+    color: white !important;
+    border-radius: 10px !important;
+  }

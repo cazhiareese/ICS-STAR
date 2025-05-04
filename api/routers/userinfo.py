@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships, get_user_job_post_history, get_user_job_posting, get_user_work
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
+from models.job_posting_model import JobPosting
 
-from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum, UserStandingEnum
+from schemas.user import UserEmploymentStatus, UserTypeEnum, UnemploymentReasonEnum, UserStandingEnum, CurrentUser
 
 from uuid import UUID
 
@@ -26,83 +27,96 @@ def get_org(
 async def upload_profile_picture(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
-    
-    file_path = await upload_profile(file, user, db)
+    try:
+        userpic = db.query(User.user_id, User.image).filter(User.user_id==user.user_id).first()
+        file_path = await upload_profile(file, userpic, db)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error uploading {e}')
 
     return {"message": "Profile picture uploaded successfully"}
 
 @router.post("/add-scholarships")
 async def add_scholarships(
-    scholarships: List[str] = Query(...),
+    scholarships: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    new_scholarships = [
-        UserScholarship(user_id=user.user_id, scholarship=scholarship)
-        for scholarship in scholarships
-    ]
+    if scholarships:
+        new_scholarships = [
+            UserScholarship(user_id=user.user_id, scholarship=scholarship)
+            for scholarship in scholarships
+        ]
+        
+        db.add_all(new_scholarships)
+        db.commit()
     
-    db.add_all(new_scholarships)
-    db.commit()
-    
-    return {"message": "scholarships added successfully"}
+        return {"message": "scholarships added successfully"}
+    else:
+        return {"success": True}
 
 @router.post("/add-affiliations")
 async def add_affiliations(
-    affiliations: List[str] = Query(...),
-    roles: List[str] = Query(...),
+    affiliations: Optional[List[str]] = Query(None),
+    roles: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
-    
-    if len(affiliations) != len(roles):
-        raise HTTPException(status_code=400, detail="Invalid input")
+    if affiliations and roles:
+        if len(affiliations) != len(roles):
+            raise HTTPException(status_code=400, detail="Invalid input")
 
-    new_affiliations = [
-        UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role) for affiliation, role in zip(affiliations, roles)
-    ]
+        new_affiliations = [
+            UserAffiliation(user_id=user.user_id, affiliation=affiliation, role=role) for affiliation, role in zip(affiliations, roles)
+        ]
+        
+        db.add_all(new_affiliations)
+        db.commit()
     
-    db.add_all(new_affiliations)
-    db.commit()
-    
-    return {"message": "affiliations added successfully"}
+        return {"message": "affiliations added successfully"}
+    else:
+        return {"success": True}
+
 
 @router.post("/add-skills")
 async def add_skills(
-    skills: List[str] = Query(...),
+    skills: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
-    
-    db.add_all(new_skills)
-    db.commit()
-    primt(new_skills)
-    return {"message": "skills added successfully"}
+    if skills:
+        new_skills = [UserSkill(user_id=user.user_id, skill=skill) for skill in skills]
+        db.add_all(new_skills)
+        db.commit()
+        
+        return {"message": "skills added successfully"}
+    else:
+        return {"success": True}
+
+
 
 @router.post("/onboarding-info-student")
 async def onboarding_student(
     standing: Optional[UserStandingEnum] = Form(None),
-    scholarships: Optional[List[str]] = Query(None),
-    affiliations: Optional[List[str]] = Query(None),
-    roles: Optional[List[str]] = Query(None),
-    skills: Optional[List[str]] = Query(None),
+    scholarships: Optional[List[str]] = Form(None),
+    affiliations: Optional[List[str]] = Form(None),
+    roles: Optional[List[str]] = Form(None),
+    skills: Optional[List[str]] = Form(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
-    process_student_onboarding(
+    data = process_student_onboarding(
         user=user,
         db=db,
         standing=standing,
@@ -112,17 +126,16 @@ async def onboarding_student(
         skills=skills,
     )
 
-    return {"message": "onboarding details updated successfully"}
-
+    return data
 
 @router.post("/onboarding-info-alum")
 async def onboarding_info(
-    scholarships: Optional[List[str]] = Query(None),
-    affiliations: Optional[List[str]] = Query(None),
-    roles: List[str] = Query(None),
+    scholarships: Optional[List[str]] = Form(None),
+    affiliations: Optional[List[str]] = Form(None),
+    roles: List[str] = Form(None),
     industry: str = Form(None),
     employment_status: UserEmploymentStatus = Form(None),
-    reasons: Optional[List[UnemploymentReasonEnum]] = Query(None),
+    reasons: Optional[List[UnemploymentReasonEnum]] = Form(None),
     company_name: str = Form(None),
     job_title: str = Form(None),
     country: str = Form(None),
@@ -131,12 +144,12 @@ async def onboarding_info(
     employer_class: str = Form(None),
     tenured_status: str = Form(None),
     salary_grade: str = Form(None),
-    skills: Optional[List[str]] = Query(None),
+    skills: Optional[List[str]] = Form(None),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
 
-    process_alumni_onboarding(
+    data = process_alumni_onboarding(
         user=user,
         db=db,
         scholarships=scholarships,
@@ -156,7 +169,7 @@ async def onboarding_info(
         skills=skills
     )
     
-    return {"message": "onboarding details updated successfully"}
+    return data
 
 @router.put("/update-employment")
 async def update_employment(
@@ -172,7 +185,7 @@ async def update_employment(
     tenured_status: str = Form(...),
     salary_grade: str = Form(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
@@ -188,72 +201,236 @@ async def update_employment(
         db.add_all(unemployment_reasons)
         db.commit()
     
-    user.industry = industry
-    user.employment_status = employment_status.value
-    user.company_name = company_name
-    user.job_title = job_title
-    user.work_location = f"{city}, {country}"
-    user.work_mode = work_mode
-    user.employer_class = employer_class
-    user.tenured_status = tenured_status
-    user.salary_grade = salary_grade
+    db.query(User).filter(User.user_id==user.user_id).update({
+        User.industry: industry,
+        User.employment_status: employment_status.value,
+        User.company_name: company_name,
+        User.job_title: job_title,
+        User.work_location: f"{city}, {country}",
+        User.work_mode: work_mode,
+        User.employer_class: employer_class,
+        User.tenured_status: tenured_status,
+        User.salary_grade: salary_grade
+    })
+    
     db.commit()
-    db.refresh(user)
+    
     return {"message": "employment details updated successfully"}
 
 # Get user profile details
 # Arguments: db - SQLAlchemy session, user - current user
-@router.get("/profile")
+@router.get("/profile/me/personal-information")
 async def get_profile(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     
-    profile_details = {
-        "user_id": user.user_id,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "email": user.email,
-        "mobile_number": user.mobile_number,
-        "age": user.age,
-        "gender": user.gender.value if user.gender else None,
-        "city": user.city,
-        "state": user.state,
-        "country": user.country,
-        "marital_status": user.marital_status,
-        "image": user.image,
-        "user_type": user.user_type.value,
-        "position": user.position,
-        "is_banned": user.is_banned,
-        "student_number": user.student_number,
-        "standing": user.standing.value if user.standing else None,
-        "graduation_year": user.graduation_year,
-        "graduation_semester": user.graduation_semester,
-        "employment_status": user.employment_status,
-        "industry": user.industry,
-        "company_name": user.company_name,
-        "job_title": user.job_title,
-        "work_location": user.work_location,
-        "work_mode": user.work_mode,
-        "employer_class": user.employer_class,
-        "tenured_status": user.tenured_status,
-        "salary_grade": user.salary_grade,
-        "facebook": user.facebook,
-        "linkedin": user.linkedin,
-        "github": user.github,
-        "is_verified": user.is_verified,
-        "verification_file": user.verification_file,
-        "created_at": user.created_at,
-        "updated_at": user.updated_at,
-        "skills": [skill.skill for skill in user.skills],
-        "scholarships": [scholarship.scholarship for scholarship in user.scholarships],
-        "affiliations": [
-            {"affiliation": aff.affiliation, "role": aff.role} for aff in user.affiliations
-        ],
-    }
-    print(profile_details)
+    personal_info = get_personal_info(user.user_id, db)
+
+    if not personal_info:
+        raise HTTPException(status_code=404, detail="User not found")
     
-    return {"message": "success", "data": profile_details}
+    result = {
+        "user_id": personal_info.user_id,
+        "first_name": personal_info.first_name,
+        "last_name": personal_info.last_name,
+        "email": personal_info.email,
+        "image": personal_info.image,
+        "mobile_number": personal_info.mobile_number,
+        "city": personal_info.city,
+        "state": personal_info.state,
+        "country": personal_info.country,
+        "marital_status": personal_info.marital_status,
+        "student_number": personal_info.student_number,
+        "graduation_semester": personal_info.graduation_semester,
+        "graduation_year": personal_info.graduation_year,
+        "facebook": personal_info.facebook,
+        "linkedin": personal_info.linkedin,
+        "github": personal_info.github
+    }
+
+    return {"message": "success", "data": result}
+
+@router.get("/profile/me/skills")
+async def get_skills(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    skills = get_user_skills(user.user_id, db)
+
+    return {"message": "success", "data": skills}
+
+@router.get("/profile/me/affiliations")
+async def get_affiliations(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    affiliations = get_user_affiliations(user.user_id, db)
+
+    return {"message": "success", "data": affiliations}
+
+@router.get("/profile/me/scholarships")
+async def get_scholarships(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    scholarships = get_user_scholarships(user.user_id, db)
+
+    return {"message": "success", "data": scholarships}
+
+@router.get("/profile/me/job-post-history")
+async def get_post_history(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+        
+    job_post_history = get_user_job_post_history(user.user_id, db)
+
+    return {"message": "success", "data": job_post_history}
+
+@router.get("/profile/me/job-post/{post_id}")
+async def get_user_post(
+    post_id: UUID,
+    db: Session = Depends(get_db)
+):
+    job_post = get_user_job_posting(post_id, db)
+
+    return {"message": "success", "data": job_post}
+
+@router.get("/profile/me/work")
+async def get_work(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    work_info = get_user_work(user.user_id, db)
+
+    if not work_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "employment_status": work_info.employment_status,
+        "industry": work_info.industry,
+        "company_name": work_info.company_name,
+        "job_title": work_info.job_title,
+        "work_location": work_info.work_location,
+        "work_mode": work_info.work_mode,
+        "employer_class": work_info.employer_class,
+        "tenured_status": work_info.tenured_status,
+        "salary_grade": work_info.salary_grade
+    }
+
+    return {"message": "success", "data": result}
+
+
+@router.get("/profile/{user_id}/personal-information")
+async def get_profile(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    
+    personal_info = get_personal_info(user_id, db)
+
+    if not personal_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "user_id": personal_info.user_id,
+        "first_name": personal_info.first_name,
+        "last_name": personal_info.last_name,
+        "email": personal_info.email,
+        "image": personal_info.image,
+        "mobile_number": personal_info.mobile_number,
+        "city": personal_info.city,
+        "state": personal_info.state,
+        "country": personal_info.country,
+        "marital_status": personal_info.marital_status,
+        "student_number": personal_info.student_number,
+        "graduation_semester": personal_info.graduation_semester,
+        "graduation_year": personal_info.graduation_year,
+        "facebook": personal_info.facebook,
+        "linkedin": personal_info.linkedin,
+        "github": personal_info.github
+    }
+
+    return {"message": "success", "data": result}
+
+@router.get("/profile/{user_id}/skills")
+async def get_skills(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    skills = get_user_skills(user_id, db)
+
+    return {"message": "success", "data": skills}
+
+@router.get("/profile/{user_id}/affiliations")
+async def get_affiliations(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    affiliations = get_user_affiliations(user_id, db)
+
+    return {"message": "success", "data": affiliations}
+
+@router.get("/profile/{user_id}/scholarships")
+async def get_scholarships(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    
+    scholarships = get_user_scholarships(user_id, db)
+
+    return {"message": "success", "data": scholarships}
+
+@router.get("/profile/{user_id}/job-post-history")
+async def get_post_history(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+        
+    job_post_history = get_user_job_post_history(user_id, db)
+
+    return {"message": "success", "data": job_post_history}
+
+@router.get("/profile/{user_id}/job-post/{post_id}")
+async def get_user_post(
+    post_id: UUID,
+    db: Session = Depends(get_db)
+):
+    job_post = get_user_job_posting(post_id, db)
+
+    return {"message": "success", "data": job_post}
+
+@router.get("/profile/{user_id}/work")
+async def get_work(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    
+    work_info = get_user_work(user_id, db)
+
+    if not work_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    result = {
+        "employment_status": work_info.employment_status,
+        "industry": work_info.industry,
+        "company_name": work_info.company_name,
+        "job_title": work_info.job_title,
+        "work_location": work_info.work_location,
+        "work_mode": work_info.work_mode,
+        "employer_class": work_info.employer_class,
+        "tenured_status": work_info.tenured_status,
+        "salary_grade": work_info.salary_grade
+    }
+
+    return {"message": "success", "data": result}
 
 # Get user profile details by user ID
 # Arguments: db - SQLAlchemy session, user_id - the user ID
@@ -262,7 +439,7 @@ async def get_profile(
 async def get_profile_by_id(
     db: Session = Depends(get_db),
     user_id: str = None,
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
@@ -292,25 +469,26 @@ async def update_profile(
     linkedin: str = Form(...),
     github: str = Form(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    user.first_name = first_name
-    user.last_name = last_name
-    user.email = email
-    user.mobile_number = mobile_number
-    user.city = city
-    user.state = state
-    user.country = country
-    user.marital_status = marital_status
-    user.facebook = facebook
-    user.linkedin = linkedin
-    user.github = github
+    db.query(User).filter(User.user_id==user.user_id).update({
+        User.first_name: first_name,
+        User.last_name: last_name,
+        User.email: email,
+        User.mobile_number: mobile_number,
+        User.city: city,
+        User.state: state,
+        User.country: country,
+        User.marital_status: marital_status,
+        User.facebook: facebook,
+        User.linkedin: linkedin,
+        User.github: github
+    })
     
     db.commit()
-    db.refresh(user)
     
     return {"message": "Profile updated successfully"}
 
@@ -322,19 +500,20 @@ async def update_password(
     old_password: str = Form(...),
     new_password: str = Form(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    if not verify_password(old_password, user.password):
+    user_pass = db.query(User.password).filter(User.user_id==user.user_id).first()
+    
+    if not verify_password(old_password, user_pass.password):
         raise HTTPException(status_code=400, detail="Old password is incorrect")
     
     if old_password == new_password:
         raise HTTPException(status_code=400, detail="New password cannot be the same as old password")
 
-    user.password = hash_password(new_password)
-
+    db.query(User).filter(User.user_id==user.user_id).update({User.password: hash_password(new_password)})
     db.commit()
     
     return {"message": "Password updated successfully"}
@@ -345,12 +524,13 @@ async def update_password(
 @router.get("/profile-picture")
 async def get_profile_picture(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    return {"profile_picture": user.image}
+    img = db.query(User.image).filter(User.user_id==user.user_id).first()
+    return {"profile_picture": img.image}
 
 # Remove a skill from the user's profile
 # Arguments: db - SQLAlchemy session, skill_id - the skill ID
@@ -359,7 +539,7 @@ async def get_profile_picture(
 async def remove_skill(
     skill: str = Query(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
@@ -381,7 +561,7 @@ async def remove_skill(
 async def remove_scholarship(
     scholarship: str = Query(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
@@ -403,7 +583,7 @@ async def remove_scholarship(
 async def remove_affiliation(
     affiliation: str = Query(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
@@ -424,12 +604,12 @@ async def remove_affiliation(
 @router.delete("/remove-profile-picture")
 async def remove_profile_picture(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    user.image = None
+    db.query(User).filter(User.user_id==user.user_id).update({User.image: None})
     db.commit()
     
     return {"message": "Profile picture removed successfully"}
@@ -440,7 +620,7 @@ async def remove_profile_picture(
 @router.get("/donation-history/all")
 async def get_donation_history(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
 
     if not user.is_verified:
@@ -456,12 +636,15 @@ async def get_donation_history(
 @router.get("/donation-history/monetary-donations")
 async def get_monetary_donations(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user),
+    isIncreasing: Optional[bool] = Query(None, description="Sort order for monetary donations"),
+    isNewest: Optional[bool] = Query(None, description="Sort order for monetary donations")
+
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    monetary_donations = get_user_monetary_donations(db, user.user_id)
+    monetary_donations = get_user_monetary_donations(db, user.user_id, isIncreasing, isNewest)
 
     return {"message": "success", "data": monetary_donations}
 
@@ -471,12 +654,42 @@ async def get_monetary_donations(
 @router.get("/donation-history/in-kind-donations")
 async def get_in_kind_donations(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user),
+    isNewest: Optional[bool] = Query(None, description="Sort order for in-kind donations"),
+
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    in_kind_donations = get_user_in_kind_donations(db, user.user_id)
+    in_kind_donations = get_user_in_kind_donations(db, user.user_id, isNewest)
+
+    return {"message": "success", "data": in_kind_donations}
+
+@router.get("/donation-history/monetary-donations/{user_id}")
+async def get_monetary_donations(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+    isIncreasing: Optional[bool] = Query(None, description="Sort order for monetary donations"),
+    isNewest: Optional[bool] = Query(None, description="Sort order for monetary donations")
+
+):
+    
+    monetary_donations = get_user_monetary_donations(db, user_id, isIncreasing, isNewest)
+
+    return {"message": "success", "data": monetary_donations}
+
+# Get the in-kind donations of the user
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of in-kind donations made by the user
+@router.get("/donation-history/in-kind-donations/{user_id}")
+async def get_in_kind_donations(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+    isNewest: Optional[bool] = Query(None, description="Sort order for in-kind donations"),
+
+):
+    
+    in_kind_donations = get_user_in_kind_donations(db, user_id, isNewest)
 
     return {"message": "success", "data": in_kind_donations}
 
@@ -486,12 +699,15 @@ async def get_in_kind_donations(
 @router.get("/donation-history/monetary-donations/acknowledged")
 async def get_acknowledged_monetary_donations(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user),
+    isIncreasing: Optional[bool] = Query(None, description="Sort order for monetary donations"),
+    isNewest: Optional[bool] = Query(None, description="Sort order for monetary donations")
+
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    acknowledged_monetary_donations = get_user_monetary_donations_acknowledged(db, user.user_id)
+    acknowledged_monetary_donations = get_user_monetary_donations_acknowledged(db, user.user_id, isIncreasing, isNewest)
 
     return {"message": "success", "data": acknowledged_monetary_donations}
 
@@ -501,12 +717,14 @@ async def get_acknowledged_monetary_donations(
 @router.get("/donation-history/in-kind-donations/acknowledged")
 async def get_acknowledged_in_kind_donations(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user),
+    isNewest: Optional[bool] = Query(None, description="Sort order for in-kind donations")
+
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    acknowledged_in_kind_donations = get_user_in_kind_donations_acknowledged(db, user.user_id)
+    acknowledged_in_kind_donations = get_user_in_kind_donations_acknowledged(db, user.user_id, isNewest)
 
     return {"message": "success", "data": acknowledged_in_kind_donations}
 
@@ -516,7 +734,7 @@ async def get_acknowledged_in_kind_donations(
 @router.get("/donation-history")
 async def get_donation_history_me(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
@@ -534,15 +752,127 @@ async def update_links(
     linkedin: str = Form(...),
     github: str = Form(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: CurrentUser = Depends(get_current_user)
 ):
     if not user.is_verified:
         raise HTTPException(status_code=400, detail="For verified users only")
     
-    user.facebook = facebook
-    user.linkedin = linkedin
-    user.github = github
+    db.query(User).filter(User.user_id==user.user_id).update({
+        User.facebook: facebook,
+        User.linkedin: linkedin,
+        User.github: github
+    })
     
     db.commit()
     
     return {"message": "Links updated successfully"}
+
+# Fetch the user's job posts
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of job posts made by the user
+@router.get("/profile/job-posts")
+async def get_job_posts(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    if not user.is_verified:
+        raise HTTPException(status_code=400, detail="For verified users only")
+    
+    job_posts = db.query(JobPosting).filter(JobPosting.user_id == user.user_id).all()
+
+    return {"message": "success", "data": job_posts}
+
+@router.get("/email-name/me")
+async def get_email_name(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    email_name = db.query(User.email, User.first_name, User.last_name).filter(User.user_id == user.user_id).first()
+
+    email, first_name, last_name = email_name
+    return {
+        "message": "success",
+        "data": {
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name
+        }
+    }
+
+@router.put("/update-email")
+async def update_email(
+    email: str = Form(...),
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    db.query(User).filter(User.user_id==user.user_id).update({User.email: email})
+    db.commit()
+    
+    return {"message": "Email updated successfully"}
+
+@router.get("/email-name/{user_id}")
+async def get_email_name_by_id(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    email_name = db.query(User.email, User.first_name, User.last_name).filter(User.user_id == user_id).first()
+
+    email, first_name, last_name = email_name
+    return {
+        "message": "success",
+        "data": {
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name
+        }
+    }
+
+@router.get("/profile-picture/{userid}")
+async def get_profile_picture_by_id(
+    userid: UUID,
+    db: Session = Depends(get_db),
+):
+    img = db.query(User.image).filter(User.user_id==userid).first()
+    return {"profile_picture": img.image}
+
+@router.get("/me/status")
+async def get_user_status(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    status = db.query(
+        User.is_banned,
+        User.is_verified,
+        User.user_type
+    ).filter(User.user_id==user.user_id).first()
+    
+    return {
+        "status": {
+            "is_banned": status[0],
+            "is_verified": status[1],
+            "user_type": status[2]
+        }
+    }
+
+@router.get("/{user_id}/status")
+async def get_user_status_by_id(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    status = db.query(
+        User.is_banned,
+        User.is_verified,
+        User.user_type
+    ).filter(User.user_id == user_id).first()
+
+
+    return {
+        "status": {
+            "is_banned": status[0],
+            "is_verified": status[1],
+            "user_type": status[2]
+        }
+    }

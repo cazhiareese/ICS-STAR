@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { updateSocialLinks } from "./UserProfileAPI/userProfileApi";
 import {
   Camera,
   Facebook,
@@ -6,12 +7,15 @@ import {
   Linkedin,
   Pencil,
   Check,
+  X,
 } from "lucide-react";
 import SaveConfirmationModal from "./components/savemodal";
+import CancelEditingModal from "./components/cancelmoda";
 
 import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
+import SocialLinksEditModal from "./components/sociallinksmoda";
 
 function ProfileSection({
   activeTab,
@@ -24,13 +28,25 @@ function ProfileSection({
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showSocialModal, setShowSocialModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);  // New state to control cancel modal visibility
 
-  //fetch user profile picture, can be removed since it can easily be accessed from the userdetails
+  // Fetch user profile picture
   useEffect(() => {
     console.log("Fetching profile picture...");
     fetchProfilePicture();
     setProfilePicture(userDetails.profile_picture);
   }, []);
+
+  const handleSocialLinksSave = async (links) => {
+    console.log("Saving social links:", links);
+    try {
+      await updateSocialLinks(links);
+      console.log("Social links updated");
+    } catch (err) {
+      console.error("Error updating links:", err);
+    }
+  };
 
   const fetchProfilePicture = async () => {
     try {
@@ -94,7 +110,6 @@ function ProfileSection({
       const urlEncodedData = new URLSearchParams(currentFormData).toString();
 
       console.log("🔍 Final Request Body:", urlEncodedData);
-      
 
       const response = await fetch(`${API_BASE_URL}/profile/edit`, {
         method: "PUT",
@@ -124,40 +139,60 @@ function ProfileSection({
     fetchProfilePicture();
   };
 
+  // Handle cancel edit
+  const handleCancel = () => {
+    setShowCancelModal(true); // Show cancel modal when user clicks "Cancel Edit"
+  };
+
+  const handleCancelConfirm = () => {
+    setEditMode(false);  // Set edit mode to false
+    setShowCancelModal(false);  // Close the cancel modal
+  };
+
+  const handleCancelClose = () => {
+    setShowCancelModal(false);  // Close the cancel modal without any changes
+  };
+
   return (
     <div
-  className={`relative w-full max-w-[1100px] border border-disabled rounded-[10px] p-6 flex flex-col sm:flex-row items-center sm:justify-between ${
-    userDetails?.is_verified ? "bg-whitey" : "bg-white"
-  }`}
->
+      className={`relative w-full max-w-[1100px] border border-disabled rounded-[10px] p-6 flex flex-col sm:flex-row items-center sm:justify-between ${
+        userDetails?.is_verified ? "bg-whitey" : "bg-white"
+      }`}
+    >
+      {/* Edit / Save / Cancel Buttons */}
+      {activeTab === "About" && userDetails?.is_verified && (
+        <div className="absolute top-4 right-4 z-10 flex flex-col-reverse sm:flex-row-reverse sm:gap-2 gap-1">
+          {editMode ? (
+            <>
+              {/* Save Button (on right) */}
+              <button
+                onClick={() => setShowModal(true)}
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
+              >
+                <Check size={18} className="text-white" />
+                <span className="hidden sm:inline text-neutral">Save Profile</span>
+              </button>
 
-      {/* Edit / Save Profile Button - only visible on "About" tab */}
-      {activeTab === "About" && (
-  <button
-    onClick={() => {
-      if (userDetails?.is_verified) {
-        if (editMode) {
-          setShowModal(true);
-        } else {
-          setEditMode(true);
-        }
-      }
-    }}
-    disabled={!userDetails?.is_verified}
-    className={`absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium transition cursor-pointer w-auto h-auto
-      ${userDetails?.is_verified ? "bg-primary text-white hover:bg-hover" : "bg-bg-disabled text-neutral-c cursor-not-allowed"}`}
-  >
-    {editMode ? (
-      <Check size={18} className={`${userDetails?.is_verified ? "text-white" : "text-neutral"} pointer-events-none`} />
-    ) : (
-      <Pencil size={18} className={`${userDetails?.is_verified ? "" : "text-neutral"} pointer-events-none`} />
-    )}
-    <span className="hidden sm:inline pointer-events-none text-neutral">
-      {editMode ? "Save Profile" : "Edit Profile"}
-    </span>
-  </button>
-)}
-
+              {/* Cancel Button (on left at desktop) */}
+              <button
+                onClick={handleCancel}  // Call handleCancel here
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-bg-disabled text-black border border-primary hover:bg-disabled transition "
+              >
+                <X size={18} className="text-error " />
+                <span className="hidden sm:inline">Cancel Edit</span>
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setEditMode(true)}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
+            >
+              <Pencil size={18} />
+              <span className="hidden sm:inline text-neutral">Edit Profile</span>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
@@ -171,12 +206,12 @@ function ProfileSection({
             />
           </span>
           {userDetails?.is_verified && (
-    <Camera
-      size={32}
-      className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black w-8 h-8 rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
-      onClick={() => setShowUploadModal(true)}
-    />
-  )}
+            <Camera
+              size={32}
+              className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black w-8 h-8 rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
+              onClick={() => setShowUploadModal(true)}
+            />
+          )}
         </span>
 
         {/* Name, Email, and Social Icons */}
@@ -185,22 +220,24 @@ function ProfileSection({
             <>
               <input
                 type="text"
-                value={userDetails.first_name}
+                value={userDetails.first_name || ""}
                 onChange={(e) => handleChange(e, "first_name")}
                 className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
               <input
                 type="text"
-                value={userDetails.last_name}
+                value={userDetails.last_name || ""}
                 onChange={(e) => handleChange(e, "last_name")}
                 className="w-full text-[24px] sm:text-[32px] font-bold text-primary bg-white border border-disabled rounded-[12px] px-2 py-1"
               />
-              <input
-                type="email"
-                value={userDetails.email}
-                onChange={(e) => handleChange(e, "email")}
-                className="w-full text-[16px] sm:text-[20px] text-black bg-white border border-disabled rounded-[12px] px-2 py-1"
-              />
+              {userDetails.email ? (
+                <p className="text-[16px] sm:text-[20px] text-black font-satoshi-regular">
+                  {userDetails.email}
+                </p>
+              ) : (
+                <div className="w-[150px] h-[20px] sm:w-[200px] sm:h-[24px] bg-disabled animate-pulse rounded-[12px]" />
+              )}
+
             </>
           ) : (
             <>
@@ -209,46 +246,99 @@ function ProfileSection({
                   {userDetails.first_name} {userDetails.last_name}
                 </h2>
               ) : (
-                <CircularLoading />
+                <div className="w-[200px] h-[32px] sm:w-[300px] sm:h-[40px] bg-disabled animate-pulse rounded-[12px]" />
               )}
-
-              <p className="text-[16px] sm:text-[20px] text-black">
-                {userDetails.email}
-              </p>
+              {userDetails.email ? (
+                <p className="text-[16px] sm:text-[20px] text-black">
+                  {userDetails.email}
+                </p>
+              ) : (
+                <div className="w-[150px] h-[20px] sm:w-[200px] sm:h-[24px] bg-disabled animate-pulse rounded-[12px]" />
+              )}
             </>
           )}
 
-{/* Social Icons */}
-{userDetails?.is_verified && (
-  <div className="flex gap-3 mt-1">
-    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
-      <Facebook size={20} className="text-white" />
-    </span>
-    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
-      <Github size={20} className="text-white" />
-    </span>
-    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full cursor-pointer hover:bg-hover transition">
-      <Linkedin size={20} className="text-white" />
-    </span>
-  </div>
-)}
-
-
+          {/* Social Media */}
+          {userDetails?.is_verified && (
+            <div
+              className={
+                editMode
+                  ? "bg-white border border-disabled rounded-[12px] px-2 py-1 mt-2 group cursor-pointer hover:bg-hover transition"
+                  : "mt-2"
+              }
+              onClick={editMode ? () => setShowSocialModal(true) : undefined}
+            >
+              <div
+                className={`flex gap-3 mt-1 ${
+                  editMode ? "pointer-events-none" : ""
+                }`}
+              >
+                {userDetails.facebook && (
+                  <a
+                    href={userDetails.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+                      <Facebook size={20} className="text-white" />
+                    </span>
+                  </a>
+                )}
+                {userDetails.github && (
+                  <a
+                    href={userDetails.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+                      <Github size={20} className="text-white" />
+                    </span>
+                  </a>
+                )}
+                {userDetails.linkedin && (
+                  <a
+                    href={userDetails.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="w-7 h-7 flex items-center justify-center bg-black rounded-full hover:bg-hover transition">
+                      <Linkedin size={20} className="text-white" />
+                    </span>
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Modal Component */}
+      {/* Modals */}
       <SaveConfirmationModal
         isOpen={showModal}
         onConfirm={handleSave}
         onCancel={() => setShowModal(false)}
         emailChanged={userDetails.email !== originalEmail}
+        text={"save"}
       />
 
       <ImageUploadModal
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         onUpload={handleUpload}
+      />
+
+      <SocialLinksEditModal
+        isOpen={showSocialModal}
+        onClose={() => setShowSocialModal(false)}
+        onSaveLinks={handleSocialLinksSave}
+        userDetails={userDetails}
+      />
+
+      {/* Cancel Editing Modal */}
+      <CancelEditingModal
+        isOpen={showCancelModal}
+        onConfirm={handleCancelConfirm}
+        onCancel={handleCancelClose}
       />
     </div>
   );

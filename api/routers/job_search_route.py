@@ -1,0 +1,284 @@
+from math import ceil
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
+from util.job_search_logic import admin_search_job, view_interested_in, job_overview, get_current_interested, add_user_interested, get_all_user_interested_by_batch_ascending, get_all_user_interested_by_batch_descending, get_all_user_interested_by_date_of_interest_newest, get_all_user_interested_by_date_of_interest_oldest, get_all_user_interested_by_name_alphabetical, get_all_user_interested_by_name_reverse, generate_interested_users_csv, remove_user_interested, check_user_interested
+from util.userutil import get_current_user
+from schemas.job_search_schema import JobSearchOut, UserInterestedOut, JobPostingOverviewOut, PaginatedUserInterestedResponse, PaginatedJobSearchResponse
+from schemas.user import CurrentUser
+from typing import Optional, List
+from config.database import get_db
+from uuid import UUID
+
+router = APIRouter(tags=["Job Search"])
+
+def paginate_results(results: List, page: int, page_size: int):
+    total_results = len(results)
+    total_pages = ceil(total_results / page_size)
+    start = (page - 1) * page_size
+    end = start + page_size
+    paginated_results = results[start:end]
+    
+    return total_pages, paginated_results
+
+@router.get("/admin/job/search", response_model=PaginatedJobSearchResponse)
+def job_search(
+    title: Optional[str] = "",
+    creator_name: Optional[str] = "",
+    tag: Optional[str] = "",
+    company: Optional[str] = "",
+    employment_type: Optional[str] = "",
+    mode_options: Optional[str] = "",
+    min_salary: Optional[int] = 0,
+    max_salary: Optional[int] = 0,
+    sort_by: Optional[str] = "date_desc",
+    page: int = Query(1, ge=1, description="Page number, starting from 1"),
+    db: Session = Depends(get_db),
+):
+    
+    page_size: int = 10
+    result = admin_search_job(
+        db=db,
+        title=title,
+        creator_name=creator_name,
+        tag=tag,
+        company=company,
+        employment_type=employment_type,
+        mode_options=mode_options,
+        min_salary=min_salary,
+        max_salary=max_salary,
+        sort_by=sort_by,
+        page=page,
+        page_size=page_size
+    )
+    
+    return result
+
+@router.post("/job/add-user-interested/{post_id}", response_model=dict)
+def add_user_interested_route(
+    post_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    
+    user_id = user.user_id
+
+    result = add_user_interested(db, post_id=post_id, user_id=user_id)
+
+    if not result:
+        raise HTTPException(status_code=200, detail="Failed to add user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
+    
+    return result
+
+@router.get("/job/interested_in/{post_id}", response_model=PaginatedUserInterestedResponse)
+def interested_in(
+    post_id: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+):
+    results = view_interested_in(db, post_id=post_id)
+
+    page_size = 10  
+
+    if not results:
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "total_pages": total_pages,
+        "current_page": page,
+        "page_size": page_size,
+        "results": paginated_results
+    }
+
+@router.get("/job/interested_in/{post_id}/batch-ascending", response_model=PaginatedUserInterestedResponse)
+def interested_in_batch_ascending(
+    post_id: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+):
+    results = get_all_user_interested_by_batch_ascending(db, post_id=post_id)
+
+    page_size = 10  
+
+    if not results:
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "total_pages": total_pages,
+        "current_page": page,
+        "page_size": page_size,
+        "results": paginated_results
+    }
+
+@router.get("/job/interested_in/{post_id}/batch-descending", response_model=PaginatedUserInterestedResponse)
+def interested_in_batch_descending(
+    post_id: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+):
+    results = get_all_user_interested_by_batch_descending(db, post_id=post_id)
+
+    page_size = 10  
+
+    if not results:
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "total_pages": total_pages,
+        "current_page": page,
+        "page_size": page_size,
+        "results": paginated_results
+    }
+
+@router.get("/job/interested_in/{post_id}/date-of-interest-newest", response_model=PaginatedUserInterestedResponse)
+def interested_in_date_of_interest_newest(
+    post_id: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+):
+    results = get_all_user_interested_by_date_of_interest_newest(db, post_id=post_id)
+
+    page_size = 10  
+
+    if not results:
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "total_pages": total_pages,
+        "current_page": page,
+        "page_size": page_size,
+        "results": paginated_results
+    }
+
+@router.get("/job/interested_in/{post_id}/date-of-interest-oldest", response_model=PaginatedUserInterestedResponse)
+def interested_in_date_of_interest_oldest(
+    post_id: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+):
+    results = get_all_user_interested_by_date_of_interest_oldest(db, post_id=post_id)
+
+    page_size = 10  
+
+    if not results:
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "total_pages": total_pages,
+        "current_page": page,
+        "page_size": page_size,
+        "results": paginated_results
+    }
+
+@router.get("/job/interested_in/{post_id}/name-alphabetical", response_model=PaginatedUserInterestedResponse)
+def interested_in_name_alphabetical(
+    post_id: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+):
+    results = get_all_user_interested_by_name_alphabetical(db, post_id=post_id)
+
+    page_size = 10  
+
+    if not results:
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "total_pages": total_pages,
+        "current_page": page,
+        "page_size": page_size,
+        "results": paginated_results
+    }
+
+@router.get("/job/interested_in/{post_id}/name-reverse", response_model=PaginatedUserInterestedResponse)
+def interested_in_name_reverse(
+    post_id: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+):
+    results = get_all_user_interested_by_name_reverse(db, post_id=post_id)
+
+    page_size = 10  
+
+    if not results:
+        raise HTTPException(status_code=200, detail="No users found who are interested in this job posting.")
+    
+    total_pages, paginated_results = paginate_results(results, page, page_size)
+    
+    return {
+        "total_pages": total_pages,
+        "current_page": page,
+        "page_size": page_size,
+        "results": paginated_results
+    }
+
+
+
+@router.get("/job/overview/{post_id}", response_model=JobPostingOverviewOut)
+def job_overview_route(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    
+    results = job_overview(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=200, detail="Job posting not found.")
+    
+    return results
+
+@router.get("/job/new-interested/{post_id}", response_model=list[UserInterestedOut])
+def view_new_interested(
+    post_id: str,
+    db: Session = Depends(get_db)
+):
+    results = get_current_interested(db, post_id=post_id)
+
+    if not results:
+        raise HTTPException(status_code=200, detail="No new interested users found.")
+    
+    return results
+
+@router.get("/job/generate-interested-csv/{post_id}/")
+def admin_get_interested_users(
+    post_id: UUID,
+    db: Session = Depends(get_db),
+):
+    return generate_interested_users_csv(db, post_id)
+
+@router.delete("/job/remove-user-interested/{post_id}", response_model=dict)
+def remove_user_interested_route(
+    post_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    
+    user_id = user.user_id
+
+    result = remove_user_interested(db, user_id=user_id, post_id=post_id)
+
+    if not result:
+        raise HTTPException(status_code=200, detail="Failed to remove user interested in the job posting. Please check if the job posting exists or if the User/Post IDs are valid.")
+    
+    return result
+
+@router.get("/job/check-user-interested/{post_id}", response_model=bool)
+def check_user_interested_route(
+    post_id: UUID,
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    result = check_user_interested(db, user_id=user_id, post_id=post_id)
+    
+    return result

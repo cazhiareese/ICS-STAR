@@ -16,6 +16,8 @@ const suggestedSkills = [
 const AddSkillsModal = ({ isOpen, onClose, onSave, existingSkills }) => {
   const [skillInput, setSkillInput] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [warning, setWarning] = useState("");
+
 
   useEffect(() => {
     if (!isOpen) {
@@ -25,10 +27,19 @@ const AddSkillsModal = ({ isOpen, onClose, onSave, existingSkills }) => {
   }, [isOpen]);
 
   const toggleSkill = (skill) => {
-    if (!selectedSkills.includes(skill)) {
+    const normalizedSkill = skill.toLowerCase();
+    const exists = selectedSkills.some(
+      (s) => s.toLowerCase() === normalizedSkill
+    );
+  
+    if (!exists) {
       setSelectedSkills([...selectedSkills, skill]);
+      setWarning("");
+    } else {
+      setWarning("Skill already added.");
     }
   };
+  
 
   const handleInputChange = (e) => {
     setSkillInput(e.target.value);
@@ -36,15 +47,36 @@ const AddSkillsModal = ({ isOpen, onClose, onSave, existingSkills }) => {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && skillInput.trim() !== "") {
-      setSelectedSkills([...selectedSkills, skillInput.trim()]);
-      setSkillInput("");
+      const trimmedSkill = skillInput.trim();
+      const normalizedInput = trimmedSkill.toLowerCase();
+  
+      const existsInSelected = selectedSkills.some(
+        (s) => s.toLowerCase() === normalizedInput
+      );
+  
+      const existsInExisting = existingSkills.some(
+        (s) => s.toLowerCase() === normalizedInput
+      );
+  
+      if (!existsInSelected && !existsInExisting) {
+        setSelectedSkills([...selectedSkills, trimmedSkill]);
+        setSkillInput("");
+        setWarning("");
+      } else {
+        setWarning("Skill already added.");
+        setSkillInput(""); // clear the input as requested
+      }
     }
   };
+  
+  
+  
 
   const handleSave = () => {
     onSave(selectedSkills);
     setSelectedSkills([]);
     setSkillInput("");
+    setWarning("");
     onClose();
   };
 
@@ -70,7 +102,11 @@ const AddSkillsModal = ({ isOpen, onClose, onSave, existingSkills }) => {
           <XCircle
             size={24}
             className="cursor-pointer text-white bg-error rounded-full hover:bg-red-800"
-            onClick={onClose}
+            onClick={() => {
+              setWarning("");
+              onClose();
+            }}
+            
           />
         </div>
 
@@ -90,6 +126,9 @@ const AddSkillsModal = ({ isOpen, onClose, onSave, existingSkills }) => {
               placeholder="Enter skills..."
               style={{ height: "50px" }}
             />
+{warning && (
+  <p className="text-sm text-error font-satoshi-medium">{warning}</p>
+)}
 
             {/* Selected Skills */}
             <div className="flex flex-wrap gap-2">

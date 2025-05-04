@@ -17,6 +17,8 @@ const SearchBar =
     setLoading,
     setAlumniList
   })=> {
+    // BASE URL ENV
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const [filteredAlumni, setFilteredAlumni] = useState([]); 
     // cache reference
     const cache = useRef({});
@@ -34,15 +36,15 @@ const SearchBar =
             // Check if the data for this query is already cached
             if (cache.current[query]) {
             setFilteredAlumni(cache.current[query]); // Use cached data
-            console.log("Using cached alumni data for:", query, cache.current[query]);
+            // console.log("Using cached alumni data for:", query, cache.current[query]);
             return;
             }
 
             try {
-            const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/names?q=${encodeURIComponent(searchInput)}&limit=5`);
+            const response = await axios.get(`${API_BASE_URL}/autocomplete/names?q=${encodeURIComponent(searchInput)}&limit=5`);
             setFilteredAlumni(response.data);
             cache.current[query] = response.data; // Cache the result for future use
-            console.log("Fetched alumni data for:", query, response.data);
+            // console.log("Fetched alumni data for:", query, response.data);
             } catch (error) {
             console.error("Error fetching alumni data:", error);
             }
@@ -87,7 +89,7 @@ const SearchBar =
         if (Object.keys(filters).length > 0){
             // Pass filters to buildSearchUrl and make API call
             let apiUrl = buildSearchUrl(filters);
-            console.log(apiUrl);
+            // console.log(apiUrl);
             return apiUrl;
         }
     };
@@ -95,7 +97,7 @@ const SearchBar =
     //Function for getting the data of alumni based on filters
     const fetchData = async () => {
         let searchAPIURL = search();  // Get API URL based on the filters
-        console.log("Triggered fetchData()", searchAPIURL);
+        // console.log("Triggered fetchData()", searchAPIURL);
         setLoading(true); 
         try {
             const response = await axios.get(searchAPIURL);
@@ -105,7 +107,7 @@ const SearchBar =
                 }
                 return prevList;
             });
-            console.log(response.data);
+            // console.log(response.data);
         } catch (error) {
             console.error("Error fetching alumni data:", error);
             setAlumniList([]);
@@ -117,7 +119,7 @@ const SearchBar =
     
     //Builds URL using object
     function buildSearchUrl(filters) {
-        let baseUrl = "https://ics-star-api.vercel.app/alumni/search";
+        let baseUrl = `${API_BASE_URL}/alumni/search`;
         let queryParams = new URLSearchParams(filters).toString();
         return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
     }

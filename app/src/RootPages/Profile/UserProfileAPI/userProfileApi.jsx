@@ -118,3 +118,40 @@ export const removeScholarship = async (scholarshipToRemove) => {
   if (!response.ok) throw new Error("Failed to remove scholarship");
   return await response.json();
 };
+
+export const updateSocialLinks = async (links) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("User not authenticated");
+    }
+
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    const body = new URLSearchParams({
+      facebook: links.facebook || "",
+      linkedin: links.linkedin || "",
+      github: links.github || "",
+    }).toString();
+
+    console.log("🔍 Final Request Body:", body);
+
+    const response = await fetch(`${API_BASE_URL}/update-links`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${token}`,
+      },
+      body,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update social links");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};

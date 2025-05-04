@@ -12,7 +12,7 @@ from typing import Optional, List, Dict
 from config.database import get_db
 from typing import List, Optional
 
-router = APIRouter(prefix="/autocomplete", tags=["autocomplete"])
+router = APIRouter(prefix="/autocomplete", tags=["Alumni Search Autocomplete"])
 
 @router.get("/job-titles", response_model=List[str])
 def autocomplete_job_titles(

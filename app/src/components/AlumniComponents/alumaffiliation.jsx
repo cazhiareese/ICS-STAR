@@ -17,8 +17,9 @@ const AlumniAffiliationFilter = ({
   setIsSeeAllAffiliationOpen
 }) => {
   const [affiliations, setAffiliations] = useState([]); 
-  // const [isOpen, setIsOpen] = useState(false);
 
+  // BASE URL ENV
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   // cache reference
   const cache = useRef({});
 
@@ -33,7 +34,7 @@ const AlumniAffiliationFilter = ({
         }
 
         try {
-          const response = await axios.get("https://ics-star-api.vercel.app/suggestions/top-affiliations");
+          const response = await axios.get(`${API_BASE_URL}/suggestions/top-affiliations`);
           setAffiliations(response.data);
           cache.current["top-affiliations"] = response.data; // Cache the result
           console.log("Fetched top affiliations:", response.data);
@@ -51,7 +52,7 @@ const AlumniAffiliationFilter = ({
         }
 
         try {
-          const response = await axios.get(`https://ics-star-api.vercel.app/autocomplete/affiliations?q=${encodeURIComponent(query)}&limit=5`);
+          const response = await axios.get(`${API_BASE_URL}/autocomplete/affiliations?q=${encodeURIComponent(query)}&limit=5`);
           setAffiliations(response.data);
           cache.current[query] = response.data; // Cache the result for future use
           console.log("Fetched affiliations for input:", query, response.data);
@@ -98,7 +99,13 @@ const AlumniAffiliationFilter = ({
         >
           Alumni Affiliation
         </motion.h1>
-
+        {affiliationList.length > 0 && !isAffiliationExpanded && (
+          <span className="text-sm font-satoshi-medium text-gray-400 pt-2 pr-2">
+            {affiliationList.slice(0, 2).join(", ").length > 10
+              ? affiliationList.slice(0, 2).join(", ").substring(0, 7) + "..."
+              : affiliationList.slice(0, 2).join(", ")}
+          </span>
+        )}
         <motion.button
           className="cursor-pointer hover:text-primary"
           animate={{ rotate: isAffiliationExpanded ? 180 : 0 }}
@@ -147,9 +154,9 @@ const AlumniAffiliationFilter = ({
 
 
         <div className="flex flex-row px-12 pb-3 pt-5">
-          <h1 className="flex-1 text-gray-400">Suggestions</h1>
+          <h1 className="flex-1 text-gray-400 font-satoshi-medium text-md">Suggestions</h1>
           <button onClick={() => setIsSeeAllAffiliationOpen(true)}>
-            <h1 className="underline text-primary">See all</h1>
+            <h1 className="underline text-primary hover:text-blue-700 cursor-pointer">See all</h1>
           </button>
         </div>
 

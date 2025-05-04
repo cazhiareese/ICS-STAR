@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react'
-import { MoveLeft, Check, IdCard, GraduationCap } from 'lucide-react'
-import { Navigate, useNavigate , useParams } from 'react-router-dom'
+import { MoveLeft, Check, IdCard, GraduationCap, UserCircle2 } from 'lucide-react'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import { CheckCircle } from 'lucide-react';
@@ -8,31 +8,59 @@ import { CheckCircle } from 'lucide-react';
 function AdminVerificationConfirmation() {
   const navigate = useNavigate()
 
-  const [user, setUser] = useState({
-  })
+  const [user, setUser] = useState({})
+  const [fileType, setFileType] = useState(null)
+  const [error, setError] = useState(null)
+  const [pdfFileUrl, setPdfFileUrl] = useState(null)
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  const [token, setToken] = useState(null)
   const { userid } = useParams();
   const [loading, setLoading] = useState(true)
-  const [verifyTransition, setVerifyTransition] = useState(false)  
+  const [verifyTransition, setVerifyTransition] = useState(false)
   const [verificationLoading, setVerificationLoading] = useState(false)
   const [showVerificationModal, setShowVerificationModal] = useState(false)
-  
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const userProfile = await axios.get(`${API_BASE_URL}/admin/unverified/user/${userid}`)
-        console.log(userProfile.data)
+        const userProfile = await axios.get(`${API_BASE_URL}/admin/unverified/user/${userid}`, {headers: {Authorization: `Bearer ${token}`}})
         setUser(userProfile.data)
+        if (userProfile.data.verification_file) {
+          const extension = userProfile.data.verification_file.split('.').pop().toLowerCase()
+          setFileType(extension === 'pdf' ? 'pdf' : 'image')
+          if (extension === 'pdf') {
+            // Fetch PDF as blob
+            const response = await axios.get(userProfile.data.verification_file, {
+              responseType: 'blob'
+            })
+            // Create a File object from the blob
+            const pdfBlob = new Blob([response.data], { type: 'application/pdf' })
+            const fileUrl = URL.createObjectURL(pdfBlob)
+            setPdfFileUrl(fileUrl)
+          }
+        }
       } catch (error) {
-        console.log(error)
+        console.error('Error fetching user or file:', error)
+        setError('Failed to load verification file. Please try downloading.')
       } finally {
         setLoading(false)
       }
-    } 
+    }
+
+    setToken(localStorage.getItem('token'))
+
     fetchData()
-  }, [])
+  }, [userid])
+
+  useEffect(() => {
+    return () => {
+      if (pdfFileUrl) {
+        URL.revokeObjectURL(pdfFileUrl)
+      }
+    }
+  }, [pdfFileUrl])
 
   async function verifyUser() {
     setVerificationLoading(true)
@@ -40,7 +68,7 @@ function AdminVerificationConfirmation() {
       const response = await axios.put(`${API_BASE_URL}/admin/confirm/${userid}`)
       console.log(response)
       setVerifyTransition(false)
-      setTimeout(() => {        
+      setTimeout(() => {
       }, 500)
       setVerifyTransition(true)
     } catch (error) {
@@ -52,71 +80,84 @@ function AdminVerificationConfirmation() {
 
   return (
     loading ? (
-      <div className='flex items-center justify-center h-screen'>
-        <CircularLoading size={90}/>
+      <div className="flex justify-center items-center min-h-screen w-full">
+        <CircularLoading />
       </div>
     ) : (
-    <div className='p-6'>
-      <div className='flex gap-2 mb-3'>
+    <div className='p-6 flex flex-col h-screen w-full'>
+      <div className='flex gap-2 mb-0'>
         <button className="flex flex-row gap-4 items-center cursor-pointer" onClick={() => navigate(-1)}>
-          <MoveLeft className='text-primary'/> 
+          <MoveLeft className='text-primary'/>
           <p className='text-primary font-satoshi-medium text-lg'>Back</p>
         </button>
       </div>
       <div className='flex justify-between mt-2'>
-        {/* Records header */}
         <div className="items-baseline gap-2 hidden lg:flex">
-          <h1 className='text-primary font-satoshi-bold text-5xl '> Records </h1>
+          <h1 className='text-primary font-satoshi-bold text-5xl'>Records</h1>
           <p className='font-satoshi-light text-lg text-gray-500'>/ Pending Verifications</p>
         </div>
-        <button className='flex items-center bg-success text-white text-md font-satoshi-regular gap-2 rounded-3xl px-4 py-1 cursor-pointer' onClick={() => {setShowVerificationModal(true)}}>
+        <button className='flex items-center bg-success text-white text-md font-satoshi-medium gap-2 rounded-3xl px-4 py-1 cursor-pointer hover:bg-green-400' onClick={() => {setShowVerificationModal(true)}}>
           <Check className=''/>
-          <p> Confirm Verification</p>
+          <p>Confirm Verification</p>
         </button>
       </div>
-      {/* Information */}
-      <div className='w-full p-6 mt-10'>
-        {/* Basic information */}
+      <div className='w-full p-6 mt-10 flex flex-col'>
         <div className='flex'>
-          {/* Image placeholder */}
-          <div className='bg-primary rounded-full h-30 w-30'></div>
-            <div className='flex flex-col justify-between ml-6'>
-              <div>
-                <p className='font-satoshi-bold text-3xl'> {user.name} </p>
-                <p className='font-satoshi-light'> {user.email}</p>
-              </div>
-            {/* Student number and graduating class */}
+          <div className='rounded-full h-30 w-30'>
+            {user.image === null ? (
+              <UserCircle2 className='w-full h-full object-cover stroke-1'/>
+            ) : (
+              <img src={user.image} alt='' className='object-contain w-full' />
+            )}
+          </div>
+          <div className='flex flex-col justify-between ml-6'>
+            <div>
+              <p className='font-satoshi-bold text-3xl'>{user.name || 'N/A'}</p>
+              <p className='font-satoshi-light'>{user.email || 'N/A'}</p>
+            </div>
             <div className='flex flex-row'>
-              {/* Student number */}
               <div className='flex flex-col'>
                 <div className='flex flex-row gap-2'>
-                  <IdCard/> 
+                  <IdCard/>
                   <p className='font-satoshi-regular'>Student Number</p>
                 </div>
-                <p className='ml-8 font-satoshi-bold'>{user.student_number}</p>
+                <p className='ml-8 font-satoshi-bold'>{user.student_number || 'N/A'}</p>
               </div>
               <div className='flex flex-col ml-20'>
                 <div className='flex flex-row gap-2'>
-                  <GraduationCap/> 
+                  <GraduationCap/>
                   <p className='font-satoshi-regular'>Graduating Class</p>
                 </div>
-                <p className='ml-8 font-satoshi-bold'>{user.grad_class}</p>
+                <p className='ml-8 font-satoshi-bold'>{user.grad_class || 'N/A'}</p>
               </div>
             </div>
           </div>
         </div>
-        {/* Verification File */}
-        <div className='mt-10'>
-          <h2 className='font-satoshi-bold text-xl'>VERIFICATION FILE</h2>
-          <div className='border border-disabled'></div>
+      </div>
+      <div className='mt-4 flex-1 flex flex-col'>
+        <h2 className='font-satoshi-bold text-xl'>VERIFICATION FILE</h2>
+        <div className='border border-disabled mb-4'></div>
+        <div className='w-1/2 h-96 '>
+          {error ? (
+            <p className='font-satoshi-regular text-red-500'>{error}</p>
+          ) : user.verification_file === null ? (
+            <h2 className='font-satoshi-regular'>No verification file submitted</h2>
+          ) : fileType === 'pdf' ? (
+            <div className='flex flex-col gap-4'>
+              <iframe
+                src={pdfFileUrl}
+                title="Verification PDF"
+                className="w-full h-96"
+              />
+            </div>
+          ) : (
+            <img src={user.verification_file} alt="verification file" className="object-cover h-full border" />
+          )}
         </div>
       </div>
-
-      {/* Graduation loading */}
       {showVerificationModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
           <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
-            {/* Loading Spinner */}
             {verificationLoading ? (
               <div className='h-full'>
                 <CircularLoading />
@@ -143,20 +184,20 @@ function AdminVerificationConfirmation() {
             ) : (
               <div className=''>
                 <p className="text-xl font-satoshi-medium text-center mt-4">
-                  Confirm verification?
+                  Are you sure you want to verify this account?
                 </p>
-                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                <div className="pt-8 font-satoshi-medium flex gap-3 mt-6 w-ful h-full justify-center">
                   <button
-                    className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="bg-white text-primary px-4 py-2 rounded-3xl w-25 outline outline-1 outline-primary cursor-pointer"
                     onClick={() => setShowVerificationModal(false)}
                   >
-                    Cancel
+                    Not yet
                   </button>
                   <button
-                    className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
                     onClick={verifyUser}
                   >
-                    Confirm
+                    Verify
                   </button>
                 </div>
               </div>

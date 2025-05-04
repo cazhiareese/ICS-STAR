@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {MoveLeft} from 'lucide-react'
 import { PieChart, ResponsiveContainer, Pie, Cell, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid} from 'recharts'
-
+import axios  from 'axios'
 function AdminDonationDriveDemographics() {
+  const {driveid} = useParams()
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate()
   const [donorsByBatch, setDonorsByBatch] = useState([])
   const [amountByBatch, setAmountByBatch] = useState([])
@@ -12,10 +14,10 @@ function AdminDonationDriveDemographics() {
   
   useEffect(() => {
     setDonorsByBatch([
-      { batch: "2022", donors: 60 },
-      { batch: "2010", donors: 20 },
-      { batch: "2011", donors: 10 },
-      { batch: "Others", donors: 10 }
+      // { batch: "2022", donors: 60 },
+      // { batch: "2010", donors: 20 },
+      // { batch: "2011", donors: 10 },
+      // { batch: "Others", donors: 10 }
     ])
     setAmountByBatch([
       { batch: "2022", amount: 60000 },
@@ -41,7 +43,46 @@ function AdminDonationDriveDemographics() {
       { date: '3/07', amount: 88 },
     ])
   }, [])
-  
+
+  useEffect(()=>{
+
+    const fetchData = async () => {
+      try{
+        const getDonorsbyBatch = await axios.get(`${API_BASE_URL}/admin/donations/drive-donor-counts?drive_id=${driveid}`);
+        console.log(getDonorsbyBatch.data.top_3)
+        setDonorsByBatch(getDonorsbyBatch.data.top_3)
+    }catch (error){
+      console.log(error)
+      setDonorsByBatch([])
+    }
+
+    try{
+        const getAmountByBatch = await axios.get(`${API_BASE_URL}/admin/donations/top-monetary-donors?drive_id=${driveid}`)
+        setAmountByBatch(getAmountByBatch.data.top_3)
+
+    }catch(error){
+      setAmountByBatch([])
+    }
+
+    try{
+      const getDonationTypeData = await axios.get(`${API_BASE_URL}/admin/donations/donation-totals?drive_id=${driveid}`)
+      // console.log(getDonationTypeData.data)
+      setDonationTypeData(getDonationTypeData.data.slice(0,2))
+    }catch (error){
+
+    }
+
+    try{
+      const getAmountTimeData = await axios.get(`${API_BASE_URL}/admin/donations/weekly-amounts?drive_id=${driveid}`)
+      setAmountTimeData(getAmountTimeData.data)
+
+  }catch(error){
+    setAmountTimeData([])
+  }
+    }
+    fetchData();
+  }, [])
+
   const COLORS = ['#0a3d91', '#5a78c8', '#a3b9ec', '#d8e4fa'];
 
   return (
@@ -65,7 +106,7 @@ function AdminDonationDriveDemographics() {
                     cx="50%"
                     cy="50%"
                     outerRadius="80%"
-                    dataKey="donors"
+                    dataKey="total_donors"
                     stroke="none"
                     >
                     {donorsByBatch.map((entry, index) => (
@@ -84,7 +125,7 @@ function AdminDonationDriveDemographics() {
                 <div key={index} className="flex items-center gap-2 text-sm font-satoshi-regular">
                   <div className="w-4 h-4" style={{ backgroundColor: COLORS[index] }} />
                   <p className="">
-                      Batch {entry.batch}: {entry.donors} Donors
+                      Batch {entry.batch}: {entry.total_donors} Donors
                   </p>
                 </div>
               ))}
@@ -105,7 +146,7 @@ function AdminDonationDriveDemographics() {
                     cx="50%"
                     cy="50%"
                     outerRadius="80%"
-                    dataKey="amount"
+                    dataKey="total_amount"
                     stroke="none"
                     >
                     {amountByBatch.map((entry, index) => (
@@ -124,7 +165,7 @@ function AdminDonationDriveDemographics() {
                 <div key={index} className="flex items-center gap-2 text-sm font-satoshi-regular">
                   <div className="w-4 h-4" style={{ backgroundColor: COLORS[index] }} />
                   <p className="">
-                      Batch {entry.batch}: {entry.amount}
+                      Batch {entry.batch}: {entry.total_amount}
                   </p>
                 </div>
               ))}
@@ -147,7 +188,7 @@ function AdminDonationDriveDemographics() {
                     cx="50%"
                     cy="50%"
                     outerRadius="80%"
-                    dataKey="amount"
+                    dataKey="count"
                     stroke="none"
                     >
                     {donationTypeData.map((entry, index) => (
@@ -164,7 +205,7 @@ function AdminDonationDriveDemographics() {
               {donationTypeData.map((entry, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm font-satoshi-regular">
                   <div className="w-4 h-4" style={{ backgroundColor: COLORS[index] }} />
-                  <p className=""> {entry.type}: {entry.amount} </p>
+                  <p className=""> {entry.name}: {entry.percentage} </p>
                 </div>
               ))}
             </div>
@@ -175,12 +216,12 @@ function AdminDonationDriveDemographics() {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={amountTimeData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
+              <XAxis dataKey="week" />
               <YAxis />
               <Tooltip></Tooltip>
               <Line
                 type="monotone"
-                dataKey="amount"
+                dataKey="amount_in_thousands"
                 stroke="#007bff"
                 strokeWidth={3}
                 dot={{ r: 4 }}

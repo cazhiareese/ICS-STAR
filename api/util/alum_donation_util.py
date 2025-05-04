@@ -1,36 +1,107 @@
-from fastapi import Depends, HTTPException, UploadFile, File
-from config.config import supabase_client, STORAGE_STRING
-from config.database import get_db
+from fastapi import HTTPException, UploadFile, File
+from config.config import SUPABASE_BUCKET, supabase_client, STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import or_, func, distinct
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from models.usermodel import User
+from schemas.user import CurrentUser
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, List
 import uuid
+import math
+from config.config import MAYA_PUBLIC_KEY, MAYA_CANCEL, MAYA_FAIL, MAYA_SUCCESS, MAYA_URL
+import random
+import string
+import httpx
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf", "heic", "docx"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
+
+async def maya_donation(drive_id: uuid, value: float):
+    url = MAYA_URL
+    ref_num = ''.join(random.choices(string.ascii_letters + string.digits, k=12)).upper()
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": MAYA_PUBLIC_KEY
+    }
+
+    payload = {
+        "totalAmount": {
+            "value": value,
+            "currency": "PHP"
+        },
+        "redirectUrl": {
+            "success": f"{MAYA_SUCCESS}{drive_id}?success=true",
+            "failure": f"{MAYA_FAIL}{drive_id}",
+            "cancel": f"{MAYA_CANCEL}{drive_id}",
+        },
+        "requestReferenceNumber": f'ICS-{ref_num}'
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        return response.json()
+
+def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[DonationDriveOut]:
+    drives = (
+        db.query(DonationDrive)
+        .filter(
+            DonationDrive.is_deleted.is_(False),
+            DonationDrive.is_closed.is_(False),
+            or_(
+                DonationDrive.title.ilike(f"%{query_text}%"),
+                DonationDrive.description.ilike(f"%{query_text}%")
+            )
+        )
+        .filter(DonationDrive.title.isnot(None))
+        .order_by(DonationDrive.title)
+        .limit(limit)
+        .all()
+    )
+
+    return [get_donation_drive_data(db, drive) for drive in drives]
+
+def safe_float(value):
+    try:
+        value = float(value)
+        if math.isnan(value) or math.isinf(value):
+            return 0.0
+        return value
+    except (TypeError, ValueError):
+        return 0.0
 
 def get_donation_drive_data(db: Session, drive: DonationDrive) -> DonationDriveOut:
     monetary_data = db.query(
         func.coalesce(func.sum(MonetaryDonation.amount), 0).label('total_amount_donated'),
         func.count(MonetaryDonation.donation_id).label('monetary_count')
-    ).filter(MonetaryDonation.drive_id == drive.drive_id).one()
+    ).filter(
+        MonetaryDonation.drive_id == drive.drive_id,
+        MonetaryDonation.is_acknowledged.is_(True)
+    ).one()
 
     total_amount_donated = monetary_data.total_amount_donated
     monetary_count = monetary_data.monetary_count
     
-    in_kind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar()
+    in_kind_count = (
+        db.query(func.count(InKindDonation.donation_id))
+        .filter(
+            InKindDonation.drive_id == drive.drive_id,
+            InKindDonation.is_acknowledged.is_(True)
+        )
+        .scalar()
+    )
 
     donation_count = monetary_count + in_kind_count
+    
 
     return DonationDriveOut(
         drive_id=drive.drive_id,
         title=drive.title,
         description=drive.description,
-        target_cost=float(drive.target_cost or 0) if drive.target_cost else None,
+        target_cost=safe_float(drive.target_cost) if drive.target_cost else None,
         image_url=drive.image,
         total_amount_donated=float(total_amount_donated or 0),
         donation_count=donation_count,
@@ -41,13 +112,23 @@ def get_one_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     monetary_data = db.query(
         func.coalesce(func.sum(MonetaryDonation.amount), 0).label('total_amount_donated'),
         func.count(MonetaryDonation.donation_id).label('monetary_count')
-    ).filter(MonetaryDonation.drive_id == drive.drive_id).one()
+    ).filter(
+        MonetaryDonation.drive_id == drive.drive_id,
+        MonetaryDonation.is_acknowledged.is_(True)
+    ).one()
 
     total_amount_donated = monetary_data.total_amount_donated
     fund_percentage = (monetary_data.total_amount_donated / drive.target_cost * 100) if drive.target_cost else None
     
     monetary_count = monetary_data.monetary_count
-    in_kind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar()
+    in_kind_count = (
+        db.query(func.count(InKindDonation.donation_id))
+        .filter(
+            InKindDonation.drive_id == drive.drive_id,
+            InKindDonation.is_acknowledged.is_(True)
+        )
+        .scalar()
+    )
 
     donation_count = monetary_count + in_kind_count
     
@@ -72,11 +153,21 @@ def general_donation_drive(db: Session, drive: DonationDrive) -> OneDonationDriv
     monetary_data = db.query(
         func.coalesce(func.sum(MonetaryDonation.amount), 0).label('total_amount_donated'),
         func.count(MonetaryDonation.donation_id).label('monetary_count')
-    ).filter(MonetaryDonation.drive_id == drive.drive_id).one()
+    ).filter(
+        MonetaryDonation.drive_id == drive.drive_id,
+        MonetaryDonation.is_acknowledged.is_(True)
+    ).one()
 
     total_amount_donated = monetary_data.total_amount_donated    
     monetary_count = monetary_data.monetary_count
-    in_kind_count = db.query(func.count(InKindDonation.donation_id)).filter(InKindDonation.drive_id == drive.drive_id).scalar()
+    in_kind_count = (
+        db.query(func.count(InKindDonation.donation_id))
+        .filter(
+            InKindDonation.drive_id == drive.drive_id,
+            InKindDonation.is_acknowledged.is_(True)
+        )
+        .scalar()
+    )
 
     donation_count = monetary_count + in_kind_count
     
@@ -109,7 +200,7 @@ async def upload_proof(
         proof_ext = proof.filename.split(".")[-1]
         proof_name = f"proof_of_payment/{uuid.uuid4()}.{proof_ext}"
         try:
-            supabase_client.storage.from_("128storage").upload(proof_name, file_content)
+            supabase_client.storage.from_(SUPABASE_BUCKET).upload(proof_name, file_content)
         except Exception as e:
             print("Upload Error:", e)
         proof_url = f"{STORAGE_STRING}{proof_name}"
@@ -120,16 +211,20 @@ async def upload_proof(
 
 async def make_donation(
     db: Session,
-    user: User,
+    user: CurrentUser,
     drive: DonationDrive,
     monetary_donation: bool = False,
     in_kind_donation: bool = False,
+    direct_maya: Optional[bool] = None,
     amount: Optional[float] = None,
     description: Optional[str] = None,
     proof: Optional[UploadFile] = File(None),
     is_anonymous = Optional[bool],
     is_general = Optional[bool],
 ):
+    
+    name = db.query(User.first_name, User.last_name).filter(User.user_id == user.user_id).first()
+    
     if not monetary_donation and not in_kind_donation:
         raise HTTPException(
             status_code=400,
@@ -144,35 +239,37 @@ async def make_donation(
     
     if monetary_donation:
         if amount is None or amount <= 0:
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid amount"
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid amount"
+                )
+        if not direct_maya:
+            proof_of_payment = await upload_proof(db, proof)
+            
+            monetary = MonetaryDonation(
+                date_donated = datetime.now(timezone.utc),
+                amount = amount,
+                drive_id = drive.drive_id,
+                user_id = user.user_id,
+                is_anonymous = is_anonymous if is_anonymous else False,
+                proof = proof_of_payment,
             )
-        
-        proof_of_payment = await upload_proof(db, proof)
-        
-        monetary = MonetaryDonation(
-            date_donated = datetime.now(timezone.utc),
-            amount = amount,
-            drive_id = drive.drive_id,
-            user_id = user.user_id,
-            is_anonymous = is_anonymous if is_anonymous else False,
-            proof = proof_of_payment,
-        )
-        try:
-            db.add(monetary)
-            db.commit()
-            db.refresh(monetary)
-        except Exception as e:
-            raise HTTPException(status_code=500, details=e)
-        
-        return {
-            "donation_drive": drive.title,
-            "date": monetary.date_donated,
-            "user": f"{user.first_name} {user.last_name}" if not is_anonymous else "Anonymous",
-            "status": "Pending Acknowledgement",
-            "amount": monetary.amount
-        }
+            try:
+                db.add(monetary)
+                db.commit()
+                db.refresh(monetary)
+            except Exception as e:
+                raise HTTPException(status_code=500, details=e)
+            
+            return {
+                "donation_drive": drive.title,
+                "date": monetary.date_donated,
+                "user": f"{name.first_name} {name.last_name}" if not is_anonymous else "Anonymous",
+                "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
+                "amount": monetary.amount
+            }
+        else:
+            return await maya_donation(drive.drive_id, amount)
     
     if in_kind_donation:
         if not description:
@@ -194,7 +291,30 @@ async def make_donation(
         return {
             "donation_drive": drive.title,
             "date": in_kind.date_donated,
-            "user": f"{user.first_name} {user.last_name}",
+            "user": f"{name.first_name} {name.last_name}",
             "status": "Pending Acknowledgement",
             "details": in_kind.description
         }
+
+def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session):
+    name = db.query(User.first_name, User.last_name).filter(User.user_id == user_id).first()
+    monetary = MonetaryDonation(
+                date_donated = datetime.now(timezone.utc),
+                amount = amount,
+                drive_id = drive.drive_id,
+                user_id = user_id,
+                is_acknowledged = True
+            )
+    try:
+        db.add(monetary)
+        db.commit()
+        db.refresh(monetary)
+    except Exception as e:
+        raise HTTPException(status_code=500, details=e)
+    return {
+        "donation_drive": drive.title,
+        "date": monetary.date_donated,
+        "user": f"{name.first_name} {name.last_name}",
+        "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
+        "amount": monetary.amount
+    }

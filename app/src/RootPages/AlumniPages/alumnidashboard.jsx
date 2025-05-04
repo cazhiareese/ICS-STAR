@@ -5,8 +5,9 @@ import star from "../../assets/star.png";
 import wave from "../../assets/wave.png";
 // import OnBoarding from "../../AuthPages/OnBoarding/onboardinglanding";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {fetchPublicProfileById as apiFetchPublicProfile} from "../Profile/UserProfileAPI/userProfileApi"
+import { jwtDecode } from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 
 // Define fixed star positions
 const stars = [
@@ -19,86 +20,38 @@ const stars = [
   { id: 7, top: "8%", left: "88%", size: "w-4" },
 ];
 
+const Usera = localStorage.getItem("token");
+let tokentype = "guest";
+let userid = true;
+let banned = false;
+let verified = false;
+
+
+if (Usera) {
+  try {
+    const decoded = jwtDecode(Usera);
+    tokentype = decoded.role;
+    userid = decoded.sub;
+    console.log("Decoded token:", decoded);
+    console.log("User ID:", userid);
+    console.log("Token type:", tokentype);
+    banned = decoded.is_banned;
+    console.log("Banned status:", banned);
+    verified = decoded.is_verified;
+    console.log("Verified status:", verified);
+    
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+} else {
+  console.log("No token found, defaulting to guest.");
+}
+
 
 function AlumniLanding() {
 
-  const navigate = useNavigate();
-  const [userId, setid]= useState(null);
-  const [error, setError] = useState(null); // State to handle errors
-  const [skills, setSkills] = useState([]); // State to manage skills
-  useEffect(() => {
-    const fetchName = async () => {
-      try {
-        const token = localStorage.getItem("token");
-    
-        if (!token) {
-          setError("No token found. Please log in.");
-          return;
-        }
-    
-        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-        const response = await fetch(`https://ics-star-api.vercel.app/users/me`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    
-        if (!response.ok) {
-          if (response.status === 401) {
-            setError("Unauthorized access. Please log in again.");
-            return;
-          }
-          throw new Error("Network response was not ok");
-        }
-    
-        const text = await response.text();
-    
-        let result;
-        try {
-          result = JSON.parse(text);
-        } catch (jsonError) {
-          setError("Failed to parse the server response.");
-          console.error("JSON parsing error: ", jsonError);
-          return;
-        }
-    
-        const id = result.user_id;
-        setid(id); // still set state if needed elsewhere
-        await fetchSkills(id); // pass directly
-      } catch (err) {
-        console.error("Error fetching data: ", err);
-        setError("Failed to load profile data. Please try again.");
-      }
-    };
-    
-    const fetchSkills = async (id) => {
-      try {
-        console.log({ id });
-        const data = await apiFetchPublicProfile({ userId: id });
-        setSkills(data.skills || []);
-    
-        if (!data.skills || data.skills.length === 0) {
-          navigate("/setup");
-        }
-    
-        console.log(data.skills);
-      } catch (err) {
-        setError("Failed to load profile");
-        console.log("SDFDSF Reached here:");
-      }
-    };
-    
-    fetchName(); // runs once
-    
-
-    
-  }, []);
-
   return (
     <div className="relative min-h-screen bg-white overflow-hidden">
-      
-
       {/* Wave Image */}
       <img src={wave} alt="Wave" className="absolute top-0 left-0 w-full h-auto z-0" />
 
@@ -121,19 +74,30 @@ function AlumniLanding() {
       {/* Main header */}
       <div className="flex flex-col items-center justify-center pt-32 relative z-20">
         <h1 className="text-center font-satoshi-medium sm:text-6xl text-4xl text-black ">Bridging Alumni</h1>
-        <h1 className="text-center font-satoshi-variable font-extrabold text-primary sm:text-6xl text-4xl">
+        <h1 className="text-center font-satoshi-black text-primary sm:text-6xl text-4xl">
           Across the Cosmos
         </h1>
-        <h1 className="text-center font-satoshi text-black sm:text-2xl text-lg pt-10">What do you want to view?</h1>
+        <h1 className="text-center font-satoshi-medium text-black sm:text-2xl text-lg pt-10">What do you want to view?</h1>
 
-        {/* Cards Section */}
         <div className="flex flex-wrap flex-row gap-5 font-satoshi-regular mt-10 items-center justify-center">
-          <CardComponent icon={Calendar} text="Look for events to attend" />
-          <CardComponent icon={BookOpen} text="Catch up with ICS" />
-          <CardComponent icon={Briefcase} text="Browse job opportunities" />
-          <CardComponent icon={Users} text="Connect with Alumni" />
-          <CardComponent icon={HelpingHand} text="Give ICS a helping hand" />
-        </div>
+  {(banned || !verified) && (
+    <>
+      <Link to="/alumni/events"><CardComponent icon={Calendar} text="Look for events to attend " /></Link>
+      <Link to="/alumni/events"><CardComponent icon={BookOpen} text="Catch up with ICS" /></Link>
+    </>
+  )}
+
+  {!banned && verified && (
+    <>
+      <Link to="/alumni/events"><CardComponent icon={Calendar} text="Look for events to attend " /></Link>
+      <Link to="/alumni/newsletter"><CardComponent icon={BookOpen} text="Catch up with ICS" /></Link>
+      <Link to="/alumni/jobPosting"><CardComponent icon={Briefcase} text="Browse job opportunities" /></Link>
+      <Link to="/alumni/alumnisearch"><CardComponent icon={Users} text="Connect with Alumni" /></Link>
+      <Link to="/alumni/donations"><CardComponent icon={HelpingHand} text="Give ICS a helping hand" /></Link>
+    </>
+  )}
+</div>
+
       </div>
       
       {/* Add CSS for rotation animation */}

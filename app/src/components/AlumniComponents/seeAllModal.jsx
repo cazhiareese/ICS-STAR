@@ -35,49 +35,9 @@ const SeeAllAffiliationModal = ({ isOpen, setIsOpen, setAffiliationList, affilia
         setsubAffiliationList(updatedAffiliationList);
     };
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const query = affiliationInput.trim().toLowerCase();
+
     
-    //         if (query === "") {
-    //             if (cache.current["all-affiliations"]) {
-    //                 setAffiliations(cache.current["all-affiliations"]);
-    //                 console.log("Using cached affiliations:", cache.current["all-affiliations"]);
-    //                 return;
-    //             }
     
-    //             try {
-    //                 const response = await axios.get(`${API_BASE_URL}/suggestions/all-affiliations`);
-    //                 setAffiliations(response.data);
-    //                 cache.current["all-affiliations"] = response.data;
-    //                 console.log("Fetched all affiliations:", response.data);
-    //             } catch (error) {
-    //                 console.error("Error fetching affiliations data:", error);
-    //             }
-    //         } else {
-    //             if (cache.current[query]) {
-    //                 setAffiliations(cache.current[query]);
-    //                 console.log("Using cached affiliations for input:", query, cache.current[query]);
-    //                 return;
-    //             }
-    
-    //             try {
-    //                 const response = await axios.get(
-    //                     `${API_BASE_URL}/autocomplete/affiliations?q=${encodeURIComponent(query)}&limit=5`
-    //                 );
-    //                 setAffiliations(response.data);
-    //                 cache.current[query] = response.data;
-    //                 console.log("Fetched affiliations for input:", query, response.data);
-    //             } catch (error) {
-    //                 console.error("Error fetching affiliations data:", error);
-    //             }
-    //         }
-    //     };
-    
-    //     fetchData();
-    // }, [affiliationInput]);
-    
-    // Without caching
     useEffect(() => {
         setLoading(true);
         const fetchData = async () => {            
@@ -109,7 +69,7 @@ const SeeAllAffiliationModal = ({ isOpen, setIsOpen, setAffiliationList, affilia
                 
                 <div className="flex justify-between items-center p-4">
                     <button className="ml-auto outline-1 outline-gray-400 rounded-full p-2 cursor-pointer" onClick={closeModal}>
-                        <X size={26} />
+                        <X size={16} />
                     </button>
                 </div>
 

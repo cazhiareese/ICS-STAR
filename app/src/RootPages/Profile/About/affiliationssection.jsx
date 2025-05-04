@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { XCircle } from "lucide-react";
+import { X } from "lucide-react";
 import SectionHeader from "../components/sectionheader";
 import AddAffiliationsModal from "../components/affiliationmodal";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
@@ -11,6 +11,7 @@ const AffiliationsSection = ({
   addAffiliation,
   isLoading, 
   isVerified,
+  share
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -21,6 +22,7 @@ const AffiliationsSection = ({
         buttonText="Add affiliations"
         onButtonClick={() => setIsModalOpen(true)}
         isVerified={isVerified}
+        share={share} // Pass the share prop to SectionHeader
       />
 
 
@@ -46,9 +48,9 @@ const AffiliationsSection = ({
                     {affiliation.affiliation}
                   </p>
                   {editMode && (
-                    <div className="bg-error rounded-full flex items-center justify-center hover:bg-red-800">
-                      <XCircle
-                        size={16}
+                    <div className="w-4 h-4 bg-error rounded-full flex items-center justify-center hover:bg-red-800">
+                      <X
+                        size={12}
                         className="text-white cursor-pointer hover:text-white transition"
                         onClick={() => removeAffiliation(affiliation)}
                       />

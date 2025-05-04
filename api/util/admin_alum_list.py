@@ -7,6 +7,7 @@ from models.report_model import Report
 from sqlalchemy import func, case, or_, text, desc,asc
 from datetime import datetime, timedelta
 
+
 def get_all_alumni(db: Session):
 
     one_year_ago = datetime.now() - timedelta(days=365)
@@ -26,7 +27,7 @@ def get_all_alumni(db: Session):
         ).label('is_inactive')
     ).filter(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
     ).all()
 
     count_alumni = (
@@ -34,12 +35,12 @@ def get_all_alumni(db: Session):
             func.count()
         ).where(
             User.is_verified == True,
-            User.user_type == 'alumni',
+            User.user_type == UserTypeEnum.alumni,
         ).scalar()
     )
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return []
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -66,11 +67,13 @@ def get_all_alumni(db: Session):
     return {"list": alum_list, "count": count_alumni}
 
 
-def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: Optional[str] = None, country: Optional[str] = None, order_by:list[str] = None):
+def get_alumni_list_filter(db: Session, page:int=1, batch: Optional[str] = None, industry: Optional[str] = None, country: Optional[str] = None, order_by:list[str] = None):
 
     one_year_ago = datetime.now() - timedelta(days=365)
+    ITEMS_PER_PAGE = 10
     query = db.query(
         User.user_id,
+        User.image,
         User.first_name, 
         User.last_name,
         func.split_part(User.student_number, '-', 1).label("batch"),
@@ -85,7 +88,7 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         ).label('is_inactive')
     ).filter(
         User.is_verified == True,
-        User.user_type == 'alumni',
+        User.user_type == UserTypeEnum.alumni,
     )
 
     if batch:
@@ -102,6 +105,10 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         query = query.filter(
         User.country == country
     )
+    
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
 
     if order_by:
         for order in order_by:
@@ -141,10 +148,12 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         # Default ordering if none specified
         query = query.order_by(asc(User.last_name), asc(User.first_name))
     
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
     alumni = query.all()
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return[]
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -158,6 +167,7 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
             check = False
         al = {
             "user_id": alum["user_id"],
+            "image": alum["image"],
             "name": f"{alum['first_name']} {alum['last_name']}",
             "batch": alum["batch"],
             "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
@@ -168,7 +178,7 @@ def get_alumni_list_filter(db: Session, batch: Optional[str] = None, industry: O
         }
         alum_list.append(al)
 
-    return alum_list
+    return alum_list, total_pages
 
 
 def get_alumni_filter(
@@ -183,13 +193,15 @@ def get_alumni_filter(
     affiliation: Optional[str] = None,
     order_by: Optional[List[str]] = None,
     needs_verified: Optional[bool] = False,
+    page: int = 1
 ) -> List[Dict]:
     one_year_ago = datetime.now() - timedelta(days=365)
-    
+    ITEMS_PER_PAGE = 10
     # Base query
     query = db.query(
         User.user_id,
         User.first_name, 
+        User.image,
         User.last_name,
         func.split_part(User.student_number, '-', 1).label("batch"),
         User.city,
@@ -211,19 +223,14 @@ def get_alumni_filter(
     if not needs_verified:
         query = query.filter(
         User.is_verified == False,
-        User.user_type == 'alumni'
+        User.user_type == UserTypeEnum.alumni
         )
     else:
         query = query.filter(
         User.is_verified == True,
-        User.user_type == 'alumni'
+        User.user_type == UserTypeEnum.alumni
         )
-
-        # Append appropriate filters to the initial query
     if name:
-        # We have to also catch if full name was inputted (e.g. "John Doe" or "John Michael Doe")
-        #
-        # Split the name by space and filter for each part
         name_parts = name.split()
         if len(name_parts) == 1:
             query = query.filter(or_(User.first_name.ilike(f"%{name_parts[0]}%"), User.last_name.ilike(f"%{name_parts[0]}%")))
@@ -276,6 +283,10 @@ def get_alumni_filter(
 
             query = query.filter(User.user_id.in_(db.query(affiliation_subquery.c.user_id)))
 
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
+
     if order_by:
         for order in order_by:
             order_parts = order.lower().split('_')
@@ -310,10 +321,13 @@ def get_alumni_filter(
             query = query.order_by(asc(User.last_name), asc(User.first_name))
 
 
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
+
     alumni = query.all()
 
     if not alumni:
-        raise HTTPException(status_code=404, detail="No alumni found")
+        return []
 
     alums_dict = [row._asdict() for row in alumni]
     alum_list = []
@@ -329,6 +343,7 @@ def get_alumni_filter(
         if needs_verified:
             al = {
                 "user_id": alum["user_id"],
+                "image": alum["image"],
                 "name": f"{alum['first_name']} {alum['last_name']}",
                 "batch": alum["batch"],
                 "location_base": ", ".join(filter(None, [alum["city"], alum["state"], alum["country"]])),
@@ -340,6 +355,7 @@ def get_alumni_filter(
         else:
             al = {
                  "user_id": alum["user_id"],
+                 "image": alum["image"],
                 "name": f"{alum['first_name']} {alum['last_name']}",
                 "email": alum["email"],
                 "student_number": alum["student_number"],
@@ -348,7 +364,7 @@ def get_alumni_filter(
             }
         alum_list.append(al)
 
-    return alum_list
+    return alum_list, total_pages
 
 
 def get_student_filter(
@@ -359,14 +375,17 @@ def get_student_filter(
     affiliation: Optional[str] = None,
     order_by: Optional[List[str]] = None,
     needs_verified: Optional[bool] = False,
+    page: int=1
 ) -> List[Dict]:
     one_year_ago = datetime.now() - timedelta(days=365)
-    
+    ITEMS_PER_PAGE = 10
     # Base query
     query = db.query(
         User.user_id,
         User.first_name, 
         User.last_name,
+        User.image,
+        User.student_number,
         func.split_part(User.student_number, '-', 1).label("batch"),
         User.standing,
         func.to_char(User.updated_at, 'MM/DD/YYYY').label('last_updated'), 
@@ -412,7 +431,9 @@ def get_student_filter(
         if affiliation_list:
             affiliation_subquery = db.query(UserAffiliation.user_id).filter(or_(*[UserAffiliation.affiliation.ilike(f"%{a}%") for a in affiliation_list])).distinct().subquery()
             query = query.filter(User.user_id.in_(db.query(affiliation_subquery.c.user_id)))
-
+    count_query = query.statement.with_only_columns(func.count()).order_by(None)
+    total_items = db.execute(count_query).scalar()
+    total_pages = max((total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE, 1)
     if order_by:
         for order in order_by:
             order_parts = order.lower().split('_')
@@ -444,11 +465,12 @@ def get_student_filter(
         # Default ordering if none specified
             query = query.order_by(asc(User.last_name), asc(User.first_name))
 
-
+    offset = (page - 1) * ITEMS_PER_PAGE
+    query = query.offset(offset).limit(ITEMS_PER_PAGE)
     students = query.all()
 
     if not students:
-        raise HTTPException(status_code=404, detail="No students found")
+        return []
 
     students_dict = [row._asdict() for row in students]
     student_list = []
@@ -460,8 +482,10 @@ def get_student_filter(
         if needs_verified:
             student_data = {
                 "user_id": student["user_id"],
+                "image": student["image"],
                 "name": f"{student['first_name']} {student['last_name']}",
                 "batch": student["batch"],
+                "student_number": student["student_number"],
                 "standing": student["standing"],
                 "last_updated": student["last_updated"],
                 "is_reported": check,
@@ -470,6 +494,7 @@ def get_student_filter(
         else:
             student_data = {
                 "user_id": student["user_id"],
+                "image": student["image"],
                 "name": f"{student['first_name']} {student['last_name']}",
                 "email": student["email"],
                 "student_number": student["student_number"],
@@ -478,4 +503,5 @@ def get_student_filter(
             }
         student_list.append(student_data)
 
-    return student_list
+    return student_list, total_pages
+
