@@ -89,7 +89,10 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
       {/* Main Content */}
       <div className="flex flex-col flex-grow px-5 pt-3 pb-4">
         <div>
-          <RsvpStatus event={event} />
+        {tokentype !== "guest" && tokentype !== "student" && (
+  <RsvpStatus event={event} />
+)}
+
           <h1 className="text-2xl font-bold text-black mt-3">{event.title}</h1>
           <p className="text-gray-600 pt-2 line-clamp-2">{event.description}</p>
         </div>
