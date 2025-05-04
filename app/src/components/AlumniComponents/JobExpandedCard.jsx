@@ -44,7 +44,7 @@ const [showModal, setShowModal] = useState(false);//
     const fetchJobs = async () => {
         try {
             const jobRes = await axios.get(`${API_BASE_URL}/job-postings/${jobId}`);
-            console.log("Job Data:", jobRes.data);
+            // console.log("Job Data:", jobRes.data);
             setJob(jobRes.data);
         } catch (err) {
             console.error(err.response?.data?.message || err.message || 'Something went wrong');
@@ -464,6 +464,7 @@ const [showModal, setShowModal] = useState(false);//
                 setShowModal={setShowModal}
                 onCancel={() => setShowModal(false)}
                 options={{ type: "delete" }}
+                setDependencyTrigger={setDependencyTrigger}
             />
             )}
                     </div>
