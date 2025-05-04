@@ -22,11 +22,20 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const handleNavigate = () => {
-    const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    const tokentype = decoded.role;
-    navigate(`/${tokentype}/profile/${job.user_id}`);
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        const tokentype = decoded.role;
+        const userId = decoded.sub;
+      
+        // Check if the user is navigating to their own profile
+        if (userId === job.user_id) {
+          navigate(`/${tokentype}/profile`);
+        } else {
+          // Navigate to the other user's profile
+          navigate(`/${tokentype}/profile/${job.user_id}`);
+        }
       };
+      
 
     const fetchJobs = async () => {
         console.log(`${API_BASE_URL}/job-postings/${jobId}`);
