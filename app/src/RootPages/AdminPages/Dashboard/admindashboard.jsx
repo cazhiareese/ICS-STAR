@@ -82,7 +82,7 @@ function AdminDashboard() {
         setTopDonation(topDonationsResponse.data);
 
         // Fetch Engagement
-        const engagementResponse = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=30_days`);
+        const engagementResponse = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=30days`);
         setFullEngagementReport(engagementResponse.data);
 
       } catch (error) {
