@@ -78,18 +78,18 @@ const JobSearchBar =
         
         try {
             const apiUrl = search(); // get the full URL based on current filters
-            console.log(apiUrl);
+            // console.log(apiUrl);
             if (!apiUrl) {
                 setLoading(false);
                 return console.log('No valid filters to search.');
             }
     
             const response = await axios.get(apiUrl);
-            console.log(response.data);
+            // console.log(response.data);
             setJobList(response.data.result);
             setMaxPage(response.data.total_pages);
         } catch (err) {
-            console.error(err);
+            // console.error(err);
             console.log('Job not found');
             setMaxPage(1);
         } finally {

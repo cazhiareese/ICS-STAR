@@ -196,7 +196,7 @@ function AlumniSearch() {
 
     if (Object.keys(filters).length > 0) {
       let apiUrl = buildSearchUrl(filters);
-      console.log(apiUrl);
+      // console.log(apiUrl);
       return apiUrl;
     }
   };
@@ -220,7 +220,7 @@ function AlumniSearch() {
           }
           return prevList;
         });
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.error("Error fetching alumni data:", error);
         setAlumniList([]);

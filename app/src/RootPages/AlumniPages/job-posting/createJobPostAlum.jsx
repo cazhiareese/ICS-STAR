@@ -33,7 +33,7 @@ function CreateJobPostAlum() {
           // Add new tags to the state and reset input
           setTagss(prevTags => [...prevTags, ...newTags]);
           setTagInput('');
-          console.log(tagss);
+        //   console.log(tagss);
         }
     };
     
@@ -113,28 +113,28 @@ function CreateJobPostAlum() {
 
     const handleJobTitleChange = (e) => {
         setJobTitleInput(e.target.value);
-        console.log(jobTitleInput); //For checking only
+        // console.log(jobTitleInput); //For checking only
     };
 
     const handleJobDescriptionChange = (e) => {
         setDescription(e.target.value);
-        console.log(description); //For checking only
+        // console.log(description); //For checking only
     };
     
 
     const handleCompanyChange = (e) => {
         setCompanyInput(e.target.value);
-        console.log(companyInput); //For checking only
+        // console.log(companyInput); //For checking only
     };
 
     const handleSalaryChange = (e) => {
         setSalaryInput(e.target.value);
-        console.log(salaryInput); //For checking only
+        // console.log(salaryInput); //For checking only
     };
 
     const handleLinkInput = (e) => {
         setLinkInput(e.target.value);
-        console.log(linkInput); //For checking only
+        // console.log(linkInput); //For checking only
     };
 
     const handleEmploymentTypeChange = (e) => {
@@ -245,7 +245,7 @@ function CreateJobPostAlum() {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            console.log('Job successfully posted:', response.data);
+            // console.log('Job successfully posted:', response.data);
             // alert("Job successfully submitted!");
 
             setSubmitting(false);
