@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi import APIRouter, Depends, Query, HTTPException, status, Form
 from sqlalchemy.orm import Session
 from typing import Optional, List, Literal
 from config.database import get_db
@@ -81,7 +81,7 @@ def get_visible_events(
 
 @router.post("/track-userclicks")
 def userclicks(
-    event_id: UUID,
+    event_id: UUID = Form(...),
     db: Session = Depends(get_db)
 ):
     try:
