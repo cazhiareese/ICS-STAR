@@ -11,6 +11,7 @@ import Unauthorized from "./AuthPages/Unauthorized";
 
 
 
+
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
 import { OnboardingProvider } from "./AuthPages/AuthContext/onboardingcontext";
@@ -318,6 +319,7 @@ function App() {
       {/* Redirect unknown routes */}
       <Route path="*" element={<LoginPage />} />
     </Routes>
+
   );
 }
 
