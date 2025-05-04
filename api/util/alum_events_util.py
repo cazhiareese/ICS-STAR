@@ -109,7 +109,7 @@ def get_confirmed_events_by_user(user_id: UUID, db: Session):
 
     return [EventOut(**e) for e in sorted_events]
 
-def get_event_by_id(event_id: UUID, db: Session, user_id: Optional[UUID] = None) -> OneEventOut:
+def get_event_by_id(event_id: UUID, db: Session, user: Optional[CurrentUser]) -> OneEventOut:
     event = (
         db.query(Event)
         .filter(Event.event_id == event_id)
@@ -126,10 +126,10 @@ def get_event_by_id(event_id: UUID, db: Session, user_id: Optional[UUID] = None)
     going_count = len(event.confirmed_by)
         
     visible_event_ids = set()
-    if user_id:
+    if user:
         visible_event_ids = {
             event_id for (event_id,) in db.query(EventVisibleTo.event_id)
-            .filter(EventVisibleTo.user_id == user_id)
+            .filter(EventVisibleTo.user_id == user.user_id)
             .all()
         }
         
