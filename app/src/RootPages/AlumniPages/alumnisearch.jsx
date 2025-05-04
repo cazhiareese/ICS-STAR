@@ -694,9 +694,7 @@ function AlumniSearch() {
             >
               Reset All
             </button>
-            <button className="mt-4 cursor-pointer hover:text-primary">
-              <X size={24} />
-            </button>
+           
           </div>
           <div className="flex flex-col shadow-lg mt-14 rounded-lg gap-3 items-center h-auto">
             <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniInfoExpanded(!isALumniInfoExpanded)}>

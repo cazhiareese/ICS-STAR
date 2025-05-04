@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { X, Trash2, Flag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
+function JobModal({ jobId, setShowModal, onCancel, options, formData, setDependencyTrigger }) {
   const [confirmed, setConfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -34,6 +34,8 @@ function JobModal({ jobId, setShowModal, onCancel, options, formData }) {
               navigate("/alumni/jobPosting");
               setShowModal(false);
             }, 2000); // Redirect after 2 seconds
+            setDependencyTrigger(prev => !prev);
+
           } catch (err) {
             console.error("Delete Job Error:", err);
           } finally {
