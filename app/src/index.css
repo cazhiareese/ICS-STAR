@@ -113,3 +113,24 @@
 }
 
 
+/* Clean minimal scrollbar */
+.thin-scrollbar {
+  scrollbar-width: thin;            /* Firefox */
+  scrollbar-color: #cbd5e1 transparent; /* thumb color, track color */
+}
+
+/* Chrome, Edge, Safari */
+.thin-scrollbar::-webkit-scrollbar {
+  height: 6px;   /* horizontal scrollbar height */
+  width: 6px;    /* vertical scrollbar width */
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Track background */
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* Thumb color (Tailwind slate-300-ish) */
+  border-radius: 10px;
+  border: 2px solid transparent; /* Adds padding inside thumb */
+}

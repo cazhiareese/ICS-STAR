@@ -294,7 +294,7 @@ function AdminDashboard() {
   return (
     <>
       <div className="bg-gray-100 flex-1 lg:max-h-screen overflow-auto">
-        <div className="p-4 flex flex-col max-w-7xl mx-auto">
+        <div className="p-4 flex flex-col mt-4 max-w-7xl mx-auto">
           {/* Welcome admin div */}
           <div className="flex flex-row mb-3 items-center">
             <CircleUserRound size={32}/>
@@ -443,7 +443,8 @@ function AdminDashboard() {
                           <div className="relative w-full h-2 bg-gray-200 rounded-full">
                             <div
                               className="absolute h-full bg-primary rounded-full"
-                              style={{ width: `${progress}%` }}
+                              style={{ width: `${Math.min(progress, 100)}%` }}
+
                             ></div>
                           </div>
                         </div>
@@ -476,10 +477,10 @@ function AdminDashboard() {
             </div> 
             {/* Alumni part */}
             <div className="row-start-6 col-span-2 lg:row-start-5 lg:col-span-4 text-2xl font-satoshi-medium -mb-4">
-              <h2 className="">More about your Alumni</h2>
+              <h2>More about your Alumni</h2>
             </div>
             {/* Registered Alumni */}
-            <div className={`${dashboardCard} col-span-2 row-start-7 lg:row-start-6 flex flex-col`}> 
+            <div className={`${dashboardCard} mt-2 col-span-2 row-start-7 lg:row-start-6 flex flex-col`}> 
               {loading ? <SkeletonAlumni /> : (
                 <>
                   <div className="flex flex-row justify-between">
@@ -554,7 +555,7 @@ function AdminDashboard() {
               )}
             </div> 
             {/* System Engagement */}
-            <div className={`${dashboardCard} col-start-1 row-start-8 lg:row-start-6 lg:col-start-3 col-span-2 flex flex-col`}> 
+            <div className={`${dashboardCard} mt-2 col-start-1 row-start-8 lg:row-start-6 lg:col-start-3 col-span-2 flex flex-col`}> 
               {loading ? <SkeletonEngagement /> : (
                 <>
                   <div className="flex flex-row justify-between">

@@ -7,11 +7,13 @@ import AffiliationsSection from "./Profile/About/affiliationssection";
 import ScholarshipsSection from "./Profile/About/scholarshipsection";
 import WorkSection from "./Profile/Work/worksection";
 import DonationHistoryUser from "./Profile/DonationHistory/Donationhistoryuser";
-import { Info } from "lucide-react";
+import { Info, Check } from "lucide-react";
 import JobPosted from "./Profile/JobPosting/userjobposting";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 import { useParams } from "react-router-dom";
+import AdminProfileSection from "./Profile/reddprofilesection";
+import AdminBack from "../components/AdminComponents/AdminBack";
 
 
 import {
@@ -23,6 +25,7 @@ import {
   addScholarship as apiAddScholarship,
   removeScholarship as apiRemoveScholarship,
 } from "./Profile/UserProfileAPI/userProfileApi"; 
+import AlumniTransitionModal from "../components/AdminComponents/AlumniTransitionModal";
 
 
 
@@ -31,7 +34,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 
-function UserProfile() {
+function ReddUserProfile() {
   const id = useParams();
   console.log("naku",id);
   const [editMode, setEditMode] = useState(false);
@@ -42,8 +45,13 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [share, setShare] = useState(null)                                     //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
+  const [share, setShare] = useState(null)  
+  const [userId, setUserId] = useState(null);
 
+      const [showAlumniModal, setShowAlumniModal] = useState(false);
+      const [makeAlumniLoading, setMakeAlumniLoading] = useState(false);
+      const [transitionComplete, setTransitionComplete] = useState(false);
+                                  //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
   //fetch user details from backend
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -55,20 +63,22 @@ const tokentype = decoded.role;
 console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
-const userIdFromURL = id.userid; // id is from useParams()
+console.log("unang id",id);
+//needs to fixed si janry ay userId, si redd ay userd
+
+
+const userIdFromURL = id.userId; // id is from useParams()
 console.log("User ID from URL:", userIdFromURL);
 const loggedInUserId = decoded.sub;
 console.log("Logged-in User ID:", loggedInUserId);
 
-setShare(false);
 
-
-
-const user_id = loggedInUserId;
+setShare(true);
+const user_id = userIdFromURL && !share ? userIdFromURL : loggedInUserId;
+setUserId(userIdFromURL); // Set the user ID in state
 console.log("Final user ID:", user_id);
 
 
- 
 
 
 const fetchUserProfileData = async () => {
@@ -136,7 +146,7 @@ const fetchUserProfileData = async () => {
           tenured_status: workData.tenured_status,
            salary_grade: workData.salary_grade,
     });
-    console.log("User Details:", userDetails);
+
   } catch (error) {
     console.error("Error fetching user profile data:", error);
     throw error;
@@ -260,6 +270,23 @@ const fetchUserProfileData = async () => {
     }
   };
 
+  async function makeAlumni() {
+    const token = localStorage.getItem("token");
+    setMakeAlumniLoading(true);
+    try {
+      await axios.put(`${API_BASE_URL}/admin/transition/${userId}`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTransitionComplete(true);
+    } catch (error) {
+      console.error("Error transitioning to alumni:", error);
+      setError("Failed to transition to alumni");
+    } finally {
+      setMakeAlumniLoading(false);
+    }
+  }
+ 
+
   const removeSkill = async (skillToRemove) => {
     try {
       await apiRemoveSkill(skillToRemove); // Call the API function to remove skill
@@ -324,32 +351,47 @@ const fetchUserProfileData = async () => {
   const handleChange = (e, field) => {
     setUserDetails({ ...userDetails, [field]: e.target.value });
   };
-
+  console.log("User Details:", userDetails);
+  console.log("iddddd",userId);
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
-      
-      {!isLoading && !userDetails?.is_verified && (
-  <div className="flex items-center gap-2 w-full max-w-3xl px-4 py-3 rounded-2xl border border-primary bg-blue-50 text-primary sm:max-w-[1100px]">
-    <Info className="w-5 h-5 flex-shrink-0" />
-    <span className="text-sm sm:text-base font-satoshi-bold text-center sm:text-left">
-      Pending Account Verification
-    </span>
+    {/* Left-aligned section for Back button and Records header */}
+<div className="w-full max-w-[1100px]">
+  {/* Row 1: Back button on its own line */}
+  <div className="mb-3">
+    <AdminBack label={'Back'} />
   </div>
-)}
 
+  {/* Row 2: Header on the left, Button on the right */}
+  <div className="flex justify-between items-center mb-2">
+    <h1 className="text-primary font-satoshi-bold text-5xl">Records</h1>
+
+    {userDetails.user_type === "student" && (
+      <button
+        className="flex items-center bg-success text-white text-md font-satoshi-regular gap-2 rounded-3xl px-4 py-2 cursor-pointer"
+        onClick={() => setShowAlumniModal(true)}
+      >
+        <Check size={20} />
+        <p>Make Alumni</p>
+      </button>
+    )}
+  </div>
+</div>
 
       {/* Profile Section */}
-      <ProfileSection
+      <AdminProfileSection
         activeTab={activeTab}
         editMode={editMode}
         userDetails={userDetails}
         setEditMode={setEditMode}
         handleChange={handleChange}
+        share={share} // Pass share prop to ProfileSection
+        userId={userId} // Pass userId to ProfileSection
       />
-      {userDetails.user_type === "alumni" && (
+      {userDetails.user_type === "alumni" && share && (
         <>
           {/* Navigation Tabs */}
-          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
+          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} admin={true} />
 
           {/* Information Sections */}
         </>
@@ -400,8 +442,20 @@ const fetchUserProfileData = async () => {
       {activeTab === "Job Posted" && (
         <JobPosted />
       )}
+
+    <AlumniTransitionModal
+        isOpen={showAlumniModal}
+        onClose={() => {
+          setShowAlumniModal(false);
+          setTransitionComplete(false);
+          if (transitionComplete) window.location.reload();
+        }}
+        onConfirm={makeAlumni}
+        isLoading={makeAlumniLoading}
+        isComplete={transitionComplete}
+/> 
     </div>
   );
 }
 
-export default UserProfile;
+export default ReddUserProfile;

@@ -1,48 +1,39 @@
 import React, { useState } from "react";
 
 function ImageUploadModal({ isOpen, onClose, onUpload }) {
-  const [image, setImage] = useState(null); 
+  const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log("File selected:", file); // Debugging: log the selected file
     if (file) {
-      setImage(file); 
-      setImagePreview(URL.createObjectURL(file)); 
-      console.log("Image URL created:", URL.createObjectURL(file)); 
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async () => {
     if (!image) {
       setError("No image selected");
-      console.log("Error: No image selected"); 
       return;
     }
 
     setLoading(true);
     setError(null);
-    console.log("Uploading image...");
 
-    const token = localStorage.getItem("token"); 
-    console.log("Token retrieved:", token); 
+    const token = localStorage.getItem("token");
     if (!token) {
       setError("User not authenticated");
-      console.log("Error: User not authenticated"); 
       setLoading(false);
       return;
     }
 
-    // Prepare form data
     const formData = new FormData();
-    formData.append("file", image); 
-    console.log("FormData created:", formData); 
+    formData.append("file", image);
 
     try {
-      console.log("Sending request...");
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload-profile-picture`, {
         method: "POST",
         headers: {
@@ -56,18 +47,12 @@ function ImageUploadModal({ isOpen, onClose, onUpload }) {
       }
 
       const result = await response.json();
-      console.log("Response from backend:", result); 
-
-      // Pass the uploaded image URL or path back to the parent component
-      onUpload(result.imageUrl); 
-
-      onClose(); 
+      onUpload(result.imageUrl);
+      onClose();
     } catch (err) {
-      console.error("Error during upload:", err); 
       setError(err.message || "An error occurred during upload");
     } finally {
       setLoading(false);
-      console.log("Upload process finished."); 
     }
   };
 
@@ -80,30 +65,36 @@ function ImageUploadModal({ isOpen, onClose, onUpload }) {
 
       {/* Modal Container */}
       <div className="bg-white w-[450px] p-6 relative rounded-2xl border border-gray-300 shadow-lg flex flex-col items-center">
-        {/* Modal Title */}
-        <p className="text-2xl font-semibold text-gray-900 text-center mb-4">
+        <p className="text-2xl font-satoshi-bold text-gray-900 text-center mb-4">
           Upload Profile Picture
         </p>
 
-        {/* Image Upload Input */}
+        {/* Custom File Upload */}
+        <label
+          htmlFor="profile-image-upload"
+          className="w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer flex items-center justify-center mb-4 hover:border-green-500 transition-colors"
+        >
+          {imagePreview ? (
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          ) : (
+            <div className="text-center text-gray-500">
+              <p className="font-satoshi-medium text-base">Click to upload image</p>
+              <p className="text-sm font-satoshi-regular">Only image files are allowed</p>
+            </div>
+          )}
+        </label>
+
         <input
+          id="profile-image-upload"
           type="file"
           accept="image/*"
           onChange={handleImageChange}
-          className="block w-full mb-4 text-sm cursor-pointer"
+          className="hidden"
         />
-        
-        {/* Image Preview */}
-        {imagePreview && (
-  <div className="w-[300px] h-[300px] mb-4 rounded-md overflow-hidden border border-gray-300">
-    <img
-      src={imagePreview}
-      alt="Preview"
-      className="w-full h-full object-cover"
-    />
-  </div>
-)}
-
 
         {/* Error Message */}
         {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -112,14 +103,14 @@ function ImageUploadModal({ isOpen, onClose, onUpload }) {
         <div className="mt-6 flex justify-between gap-4">
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-gray-600 text-white rounded-full text-sm font-medium hover:bg-gray-700 flex items-center gap-2 transition"
+            className="px-5 py-2 bg-gray-600 text-white rounded-full text-sm font-satoshi-medium hover:bg-gray-700 flex items-center gap-2 transition"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-5 py-2 bg-green-600 text-white rounded-full text-sm font-medium hover:bg-green-700 flex items-center gap-2 transition"
+            className="px-5 py-2 bg-green-600 text-white rounded-full text-sm font-satoshi-medium hover:bg-green-700 flex items-center gap-2 transition"
           >
             {loading ? "Uploading..." : "Upload"}
           </button>

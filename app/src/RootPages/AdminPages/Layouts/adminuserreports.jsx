@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { MoveLeft, CalendarDays, Users, User } from 'lucide-react'
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from 'recharts'
-import AdminBack from '../../../components/AdminComponents/AdminBack'
+import { MoveLeft, CalendarDays, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from 'recharts';
+import AdminBack from '../../../components/AdminComponents/AdminBack';
 
 function AdminEngagementReports() {
   const navigate = useNavigate();
@@ -24,65 +24,55 @@ function AdminEngagementReports() {
   useEffect(() => {
     const fetchData = async () => {
       setFullEngagementReportLoading(true);
-  
       try {
         // First request: Engagement Statistics
-        let response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
+        let response = await axios.get(
+          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`
+        );
         console.log(response.data);
         setFullEngagementReport(response.data);
-  
+
         // Second request: Most Donations
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`);
-        // console.log(response.data);
+        console.log(response.data);
         setMostDonations(response.data);
-  
+
         // Third request: Most Interested (Jobs)
-        // setMostInterestedLoading(true);
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-3-interested?time_range=${daysFilter}`);
-        // console.log(response.data);
+        console.log(response.data);
         setMostInterested(response.data);
-        // setMostInterestedLoading(false);
-  
+
         // Fourth request: Recent Newsletters
-        // setNewsLoading(true);
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/newsletters/top-3?time_range=${daysFilter}`);
-        // console.log(response.data);
+        console.log(response.data);
         setRecentLetters(response.data);
-        // setNewsLoading(false);
-  
+
         // Fifth request: Donation Highlights
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donations?time_range=${daysFilter}`);
         if (response.status !== 404) {
-          // console.log("donation", response.data);
+          console.log("donation", response.data);
           setDonationHighlights(response.data);
         }
-        // setDonationLoading(false);
-  
+
         // Sixth request: Donor Highlights
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/most-donors?time_range=${daysFilter}`);
         if (response.status !== 404) {
-          // console.log(response.data);
+          console.log(response.data);
           setDonorHighlights(response.data);
         }
-        // setDonorLoading(false);
-  
-        // setFullEngagementReportLoading(false);
       } catch (err) {
         console.log(err.message || 'Something went wrong');
-        // setFullEngagementReportLoading(false);
-        // setMostInterestedLoading(false);
-        // setNewsLoading(false);
-        // setDonationLoading(false);
-        // setDonorLoading(false);
       } finally {
-        setFullEngagementReportLoading(false)
+        setFullEngagementReportLoading(false);
       }
     };
-  
+
     fetchData();
   }, [daysFilter, batchFilter]);
-  
 
+  const goToMostEngagedJob = () => {
+    navigate('most-engaged-job-offers', { relative: 'path' });
+  };
 
   // Skeleton Component
   const LoadingSkeleton = () => (
@@ -233,16 +223,9 @@ function AdminEngagementReports() {
     </div>
   );
 
-  // Filtered chart data
-  // const filteredData = fullEngagementReport.slice(-daysFilter);
-  const goToMostEngagedJob = () =>{
-    navigate('most-engaged-job-offers', { relative: 'path' });
-  }
-
- 
   return (
     <div className="bg-[rgb(243,241,244)] p-6 min-h-screen">
-      <AdminBack label={'Back to dashboard'}/>
+      <AdminBack label={'Back to dashboard'} />
 
       {fullEngagementReportLoading ? (
         <LoadingSkeleton />
@@ -485,4 +468,4 @@ function AdminEngagementReports() {
   );
 }
 
-export default AdminEngagementReports
+export default AdminEngagementReports;

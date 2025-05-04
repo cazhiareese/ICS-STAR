@@ -99,7 +99,13 @@ const AlumniAffiliationFilter = ({
         >
           Alumni Affiliation
         </motion.h1>
-
+        {affiliationList.length > 0 && !isAffiliationExpanded && (
+          <span className="text-sm font-satoshi-medium text-gray-400 pt-2 pr-2">
+            {affiliationList.slice(0, 2).join(", ").length > 10
+              ? affiliationList.slice(0, 2).join(", ").substring(0, 7) + "..."
+              : affiliationList.slice(0, 2).join(", ")}
+          </span>
+        )}
         <motion.button
           className="cursor-pointer hover:text-primary"
           animate={{ rotate: isAffiliationExpanded ? 180 : 0 }}
@@ -148,7 +154,7 @@ const AlumniAffiliationFilter = ({
 
 
         <div className="flex flex-row px-12 pb-3 pt-5">
-          <h1 className="flex-1 text-gray-400">Suggestions</h1>
+          <h1 className="flex-1 text-gray-400 font-satoshi-medium text-md">Suggestions</h1>
           <button onClick={() => setIsSeeAllAffiliationOpen(true)}>
             <h1 className="underline text-primary hover:text-blue-700 cursor-pointer">See all</h1>
           </button>

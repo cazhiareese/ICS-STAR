@@ -3,6 +3,8 @@ import Step1 from "../../assets/SignupAssets/step1.png"
 import { useAppContext } from "../AuthContext/signupcontext.jsx"
 import {useState, useEffect } from "react";
 import Loading from "../../components/LoadingComponents/starloading.jsx"
+import ModalTemplate from "../modaltemplate.jsx";
+
 
 function PersonalInformation(){
     const { userData, updateUserData, setUserData, userType } = useAppContext();
@@ -12,7 +14,8 @@ function PersonalInformation(){
 
     const [passMismatch, setPassMismatch] = useState(false)
     const [confirmPassword, setConfirmPassword] = useState("")
-    
+
+    const [showEmailErrorModal, setShowEmailErrorModal] = useState(false)
     const [firstNameError, setFirstNameError] = useState(false)
     const [lastNameError, setLastNameError] = useState(false)
     const [emailError, setEmailError] = useState(false)
@@ -33,6 +36,7 @@ function PersonalInformation(){
             userData.email=""
             // console.log("HELJDKFDSF", checker)
             setLoading(false)
+            setShowEmailErrorModal(true)
             return
         }
         else if (userData.firstName == "" || userData.lastName== "" || (userData.email=="" || validateEmail(userData.email) == false) || userData.password==""){
@@ -174,6 +178,14 @@ function PersonalInformation(){
                     </div>
                 </div>
             </div>
+            {showEmailErrorModal && (
+                <ModalTemplate
+                    onClose={() => setShowSuccessModal(false)}
+                    choiceclose="Close"
+                    header="Error"
+                    information="Email already registered, please enter another email."
+                />
+            )}
         </div>
     );
 }
