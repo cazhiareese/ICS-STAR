@@ -46,7 +46,7 @@ import AdminCareerLayout from "./RootPages/AdminPages/Layouts/admincareerlayout"
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
-import OtherUserProfile from "./RootPages/OtherUserprofile";
+
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
@@ -87,6 +87,7 @@ import GuestLanding from "./RootPages/GuestPages/guestlanding";
 import AccountSettings from "./RootPages/Account/accountsettings";
 //const isSignedIn = !!localStorage.getItem("token");
 import ReddUserProfile from "./RootPages/RedUserProfile";
+import JanryUserProfile from "./RootPages/JanryUserProfile";
 
 
 function App() {
@@ -173,7 +174,7 @@ function App() {
             <Route path="alumni/account/settings" element={<AccountSettings />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
-            <Route path="alumni/profile/:userId" element={<UserProfile />} />
+            <Route path="alumni/profile/:userId" element={<JanryUserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/events" element={<EventsLanding />} />
             <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
