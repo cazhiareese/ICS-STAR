@@ -190,6 +190,15 @@ function App() {
             <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
             <Route path="*" element={<LoginPage />} />
+            
+            <Route
+              path="/setup"
+              element={
+                <OnboardingProvider>
+                  <OnBoarding />
+                </OnboardingProvider>
+              }
+              />
 
 
           </Route>
