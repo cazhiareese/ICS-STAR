@@ -3,6 +3,9 @@ import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import axios from "axios";
 import Unauthorized from "../Unauthorized";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
+import ModalTemplate from "../modaltemplate";
+
+
 
 export default function Step4Onboarding() {
   const suggestions = [
@@ -19,6 +22,8 @@ export default function Step4Onboarding() {
   const [inputValue, setInputValue] = useState([]);
   const [customSkills, setCustomSkills] = useState([]);
   const [errorMessage, setErrorMessage] = useState(""); // State for error message
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -113,7 +118,7 @@ export default function Step4Onboarding() {
             ...(userData.employmentType === "employed" && userData.jobTitle && { job_title: userData.jobTitle }),
             ...(userData.employmentType === "employed" && userData.workCountry && { country: userData.workCountry }),
             ...(userData.employmentType === "employed" && userData.workCity && { city: userData.workCity }),
-            ...(userData.employmentType === "employed" && { work_mode: userData.remote ? "remote" : "f2f" }),
+            ...(userData.employmentType === "employed" && { work_mode: userData.remote ? "Remote" : "Onsite" }),
             ...(userData.employmentType === "employed" && userData.employerclass && { employer_class: userData.employerclass }),
             ...(userData.employmentType === "employed" && userData.tenureStatus && { tenured_status: userData.tenureStatus }),
             ...(userData.employmentType === "employed" && userData.salaryRange && { salary_grade: userData.salaryRange }),
@@ -121,13 +126,13 @@ export default function Step4Onboarding() {
             ...(userData.skillsInterests?.length > 0 && { skills: userData.skillsInterests }),
             };
 
-          const studentPayload = {
-            standing: userData.standing ?? "",
-            scholarships: userData.scholarshipList ?? [],
-            affiliations: userData.affiliationList ?? [],
-            roles: userData.roleList ?? [],
-            skills: userData.skillsInterests ?? [],
-          };
+            const studentPayload = {
+              ...(userData.standing && { standing: userData.standing }),
+              ...(userData.scholarshipList?.length > 0 && { scholarships: userData.scholarshipList }),
+              ...(userData.affiliationList?.length > 0 && { affiliations: userData.affiliationList }),
+              ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
+              ...(userData.skillsInterests?.length > 0 && { skills: userData.skillsInterests }),
+            };
 
           function objectToFormData(obj) {
             const formData = new FormData();
@@ -177,7 +182,7 @@ export default function Step4Onboarding() {
 
 
       console.log("Onboarding information submitted successfully.");
-      setCurrentSection(5);
+      // setCurrentSection(5);
     } catch (error) {
       console.error("Error submitting onboarding information:", error);
     }
@@ -257,7 +262,7 @@ export default function Step4Onboarding() {
         ) : (
           <div
           className="w-70 md:h-17 h-10 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
-          onClick={submitStep4}
+          onClick={()=>setShowSuccessModal(true)}
           >
             
             <label className="font-satoshi-bold cursor-pointer">Proceed</label>
@@ -265,8 +270,23 @@ export default function Step4Onboarding() {
         )
 
         }
+
         
       </div>
+
+      {showSuccessModal && (
+          <ModalTemplate
+              onClose={() => setShowSuccessModal(false)}
+              onContinue={() => {
+                  setShowSuccessModal(false);
+                  submitStep4();
+              }}
+              choiceclose="Close"
+              choicecontinue="Proceed"
+              header="Final"
+              information="Please proceed if your entries are final. You may still change them in the profile section afterwards."
+          />
+      )}
     </div>
   );
 }
