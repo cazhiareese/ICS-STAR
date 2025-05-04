@@ -10,18 +10,10 @@ from sqlalchemy import func, update
 
 router = APIRouter()
 
-# Check if user is an admin
-# Arguments: current_user - the current user
-# Returns: True if user is an admin, False otherwise
-def isAdmin(current_user: User = Depends(require_admin)):
-    if current_user.user_type.value != UserTypeEnum.admin:
-        raise HTTPException(status_code=403, detail="You do not have permission to access this resource")
-    return True
-
 # Get all unverified users
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified users
-@router.get("/admin/unverified", dependencies=None, response_model=list[UserOut])
+@router.get("/admin/unverified", dependencies=[Depends(require_admin)])
 async def read_unverified_users(db: Session = Depends(get_db)):
     unverified_users = db.query(
         User.user_id,
@@ -54,7 +46,7 @@ async def read_unverified_users(db: Session = Depends(get_db)):
 # Get unverified alumni
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified alumni
-@router.get("/admin/unverified/alumni", dependencies=None)
+@router.get("/admin/unverified/alumni", dependencies=[Depends(require_admin)])
 async def read_unverified_alumni(db: Session = Depends(get_db)):
     unverified_alum = db.query(
         User.user_id,
@@ -90,7 +82,7 @@ async def read_unverified_alumni(db: Session = Depends(get_db)):
 # Get unverified students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified students
-@router.get("/admin/unverified/students", dependencies=None)
+@router.get("/admin/unverified/students", dependencies=[Depends(require_admin)],)
 async def read_unverified_students(db: Session = Depends(get_db)):
     unverified_students = db.query(
         User.user_id,
@@ -122,7 +114,7 @@ async def read_unverified_students(db: Session = Depends(get_db)):
 # Get the number of unverified alumni 
 # Arguments: db - SQLAlchemy session
 # Returns: the count of unverified alumni
-@router.get("/admin/unverified/alumni/count", dependencies=None)
+@router.get("/admin/unverified/alumni/count", dependencies=[Depends(require_admin)],)
 async def read_unverified_alumni_count(db: Session = Depends(get_db)):
     unverified_alumni_count = db.query(User.user_id).filter(User.user_type == UserTypeEnum.alumni , User.is_verified == False).count()
     return {"unverified_alumni_count": unverified_alumni_count}
@@ -130,7 +122,7 @@ async def read_unverified_alumni_count(db: Session = Depends(get_db)):
 # Get the number of unverified students
 # Arguments: db - SQLAlchemy session
 # Returns: the count of unverified students
-@router.get("/admin/unverified/students/count", dependencies=None)
+@router.get("/admin/unverified/students/count", dependencies=[Depends(require_admin)],)
 async def read_unverified_students_count(db: Session = Depends(get_db)):
     unverified_students_count = db.query(User.user_id).filter(User.user_type == UserTypeEnum.student, User.is_verified == False).count()
     return {"unverified_students_count": unverified_students_count}
@@ -138,7 +130,7 @@ async def read_unverified_students_count(db: Session = Depends(get_db)):
 # Verify and confirm user registration
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the user registration
-@router.put("/admin/confirm/{user_id}", dependencies=None)
+@router.put("/admin/confirm/{user_id}", dependencies=[Depends(require_admin)],)
 async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
     result = db.execute(
         update(User)
@@ -159,7 +151,7 @@ async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
 # Get all graduating students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all graduating students
-@router.get("/admin/graduating", dependencies=None)
+@router.get("/admin/graduating", dependencies=[Depends(require_admin)],)
 async def read_graduating_students(db: Session = Depends(get_db)):
     graduating_students = db.query(
         User.user_id,
@@ -197,7 +189,7 @@ async def read_graduating_students(db: Session = Depends(get_db)):
 # Transition graduating students to alumni
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the transition
-@router.put("/admin/transition/{user_id}", dependencies=None)
+@router.put("/admin/transition/{user_id}", dependencies=[Depends(require_admin)],)
 async def transition_student(db: Session = Depends(get_db), user_id: UUID = None):
     result = db.execute(
         update(User)
@@ -218,7 +210,7 @@ async def transition_student(db: Session = Depends(get_db), user_id: UUID = None
 # Get all students (not transitioned students)
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all students
-@router.get("/admin/students", dependencies=None)
+@router.get("/admin/students", dependencies=[Depends(require_admin)],)
 async def read_students(db: Session = Depends(get_db)):
     students = db.query(
         User.user_id,
@@ -253,7 +245,7 @@ async def read_students(db: Session = Depends(get_db)):
 # Get verified alumni
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all verified alumni
-@router.get("/admin/verified-alumni", dependencies=None)
+@router.get("/admin/verified-alumni", dependencies=[Depends(require_admin)],)
 async def read_verified_alumni(db: Session = Depends(get_db)):
     alumni = db.query(
         User.user_id,
@@ -287,7 +279,7 @@ async def read_verified_alumni(db: Session = Depends(get_db)):
 # Get verified students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all verified students
-@router.get("/admin/verified-students", dependencies=None)
+@router.get("/admin/verified-students", dependencies=[Depends(require_admin)],)
 async def read_verified_students(db: Session = Depends(get_db)):
     students = db.query(
         User.user_id,
@@ -319,7 +311,7 @@ async def read_verified_students(db: Session = Depends(get_db)):
 # Get user's verification file
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: the verification file of the user
-@router.get("/admin/verification-file/{user_id}", dependencies=None)
+@router.get("/admin/verification-file/{user_id}", dependencies=[Depends(require_admin)],)
 async def read_verification_file(db: Session = Depends(get_db), user_id: UUID = None):
     file = db.query(User.verification_file).filter(User.user_id == user_id).scalar()
     if file is None:
@@ -329,7 +321,7 @@ async def read_verification_file(db: Session = Depends(get_db), user_id: UUID = 
 # Get user's report logs
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a list of all report logs of the user
-@router.get("/admin/report-logs/{user_id}", dependencies=None)
+@router.get("/admin/report-logs/{user_id}", dependencies=[Depends(require_admin)],)
 async def read_report_logs(db: Session = Depends(get_db), user_id: UUID = None):
     report_logs = db.query(
         Report.report_id,
@@ -356,7 +348,7 @@ async def read_report_logs(db: Session = Depends(get_db), user_id: UUID = None):
 # Ban user
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the ban
-@router.put("/admin/ban/{user_id}", dependencies=None)
+@router.put("/admin/ban/{user_id}", dependencies=[Depends(require_admin)],)
 async def ban_user(db: Session = Depends(get_db), user_id: UUID = None):
     result = db.execute(
         update(User)
@@ -377,7 +369,7 @@ async def ban_user(db: Session = Depends(get_db), user_id: UUID = None):
 # Get user profile
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: the user profile
-@router.get("/profile/{user_id}", dependencies=None)
+@router.get("/profile/{user_id}", dependencies=[Depends(require_admin)],)
 async def get_profile(
     db: Session = Depends(get_db),
     user_id: UUID = None,
@@ -437,7 +429,7 @@ async def get_profile(
 # Get unverified user
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: the unverified user
-@router.get("/admin/unverified/user/{user_id}", dependencies=None)
+@router.get("/admin/unverified/user/{user_id}", dependencies=[Depends(require_admin)],)
 async def read_unverified_user(db: Session = Depends(get_db), user_id: UUID = None):
     user = db.query(
         User.user_id,
