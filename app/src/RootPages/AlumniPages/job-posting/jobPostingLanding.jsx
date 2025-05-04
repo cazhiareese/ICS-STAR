@@ -39,6 +39,7 @@ function JobPostingLanding() {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
+    const [dependencyTrigger, setDependencyTrigger] = useState(false);
     
 
     const toggleWorkType = (workType) => {
@@ -138,7 +139,7 @@ function JobPostingLanding() {
         };
 
         fetchJobs();
-    }, [currentPage]);
+    }, [currentPage, dependencyTrigger]);
 
     
 
@@ -530,7 +531,10 @@ function JobPostingLanding() {
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} setSelectedJobId={setSelectedJobId} />
+                    <JobExpandedCard job={selectedJob} currentUserID={userId} 
+                    mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} 
+                    setJob={setSelectedJob} setSelectedJobId={setSelectedJobId} 
+                    setDependencyTrigger={setDependencyTrigger}/>
                 )}
                 
             </div>
