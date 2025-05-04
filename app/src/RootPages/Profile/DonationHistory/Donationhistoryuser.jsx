@@ -178,17 +178,17 @@ function DonationHistoryUser({ userDetails }) {
               </div>
               <div
                 className="w-1/4 cursor-pointer flex justify-center sm:justify-start items-center gap-1 text-left"
-                onClick={() => handleSort("is_acknowledged", selectedType)}
+
               >
-                Status {getSortIcon("is_acknowledged", selectedType)}
+                Status 
               </div>
             </>
           ) : (
             <div
               className="w-1/4 cursor-pointer flex justify-center sm:justify-start items-center gap-1 text-left"
-              onClick={() => handleSort("is_acknowledged", selectedType)}
+
             >
-              Status {getSortIcon("is_acknowledged", selectedType)}
+              Status 
             </div>
           )}
         </div>
