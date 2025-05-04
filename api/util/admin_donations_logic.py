@@ -581,7 +581,7 @@ def get_all_closed_drives(db: Session) -> list[AdminClosedDonationDriveOut]:
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -615,7 +615,7 @@ def get_all_closed_drives_by_date_closed_newest(title: Optional[str],db: Session
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -651,7 +651,7 @@ def get_all_closed_drives_by_date_closed_oldest(title: Optional[str],db: Session
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -687,7 +687,7 @@ def get_all_closed_drives_by_amount_raised_descending(title: Optional[str], db: 
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -723,7 +723,7 @@ def get_all_closed_drives_by_amount_raised_ascending(title: Optional[str], db: S
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -812,7 +812,7 @@ def get_all_closed_drives_by_donation_count_ascending(title: Optional[str],db: S
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -849,14 +849,14 @@ def get_all_closed_drives_by_date_created_newest(title: Optional[str], db: Sessi
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
         )
         drive_out_list.append(drive_out)
 
-    drive_out_list.sort(key=lambda x: x.date_created, reverse=True)
+    drive_out_list.sort(key=lambda x: x.created_at, reverse=True)
     
     return drive_out_list
 
@@ -885,14 +885,14 @@ def get_all_closed_drives_by_date_created_oldest(title: Optional[str],db: Sessio
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at= open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
         )
         drive_out_list.append(drive_out)
 
-    drive_out_list.sort(key=lambda x: x.date_created)
+    drive_out_list.sort(key=lambda x: x.created_at)
     
     return drive_out_list
 
@@ -921,7 +921,7 @@ def get_all_closed_drives_by_percent_funded_descending(title: Optional[str],db: 
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -957,7 +957,7 @@ def get_all_closed_drives_by_percent_funded_ascending(title: Optional[str],db: S
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -993,7 +993,7 @@ def get_all_closed_drives_by_target_cost_descending(title: Optional[str], db: Se
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at= open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -1029,7 +1029,7 @@ def get_all_closed_drives_by_target_cost_ascending(title: Optional[str],db: Sess
             drive_id = drive.drive_id,
             title = drive.title,
             date_closed = close_date,
-            date_created = open_date,
+            created_at = open_date,
             percent_funded = total_percentage,
             amount_raised = total_amount,
             target_cost = drive.target_cost,
@@ -1993,7 +1993,7 @@ def get_top_drives_with_goals_reached(
             "title": drive.title,
             "target_cost": drive.target_cost,
             "total_amount": drive.total_amount,
-            "percent_funded": drive.percent_funded
+            "percent_funded": round(drive.percent_funded, 2) if drive.percent_funded else 0
         }
         top_drives.append(drive_out)
 

@@ -1,13 +1,16 @@
 
 
 from typing import Any, Dict, List, Optional
+import brevo_python
+from brevo_python.rest import ApiException
 from fastapi import Depends, Form, HTTPException, UploadFile
 from requests import Session
 from sqlalchemy import UUID, func, or_
+from util.emailing.newsletter import newsLetter
 from models.newsletter_model import Newsletter, NewsletterLink, NewsletterTag
-from models.usermodel import User
+from models.usermodel import User, UserTypeEnum
 from schemas.newsletter_schema import ListNewsletterOut, SingleNewsLetterOut
-from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET
+from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET,brevo_configuration, email_sender
 from config.database import get_db
 from datetime import datetime
 
@@ -49,7 +52,8 @@ def create_util(
         newsletter = Newsletter(
             title = title,
             content=content,
-            image= image_url
+            image= image_url,
+            # user_id = "61984760-9a95-42ec-a1f6-67f71370e1a5"
         )
         db.add(newsletter)
         db.commit()  
@@ -80,44 +84,43 @@ def create_util(
             db.commit()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f'Fail event link upload: {e}')
-        
-    
-
     if sendEmail:
         sendSet = set()
         if sendAll:
-            query = db.query(User.first_name, User.last_name, User.email).all()
-            allFiltered = {"name": f"{query.first_name} {query.last_name}", "email": query.email}
-            sendSet.update(allFiltered)
+            users = db.query(User.first_name, User.last_name, User.email).filter(User.user_type == UserTypeEnum.alumni, User.is_verified == True).all()
+            for user in users:
+                sendSet.add((f"{user.first_name} {user.last_name}", user.email))
         else:
             if sendtoBatch and len(sendtoBatch) > 0:
-                
-                print("Entered batch")
-                query = db.query(User.first_name, User.last_name, User.email)\
+                print("Entered batch filter")
+                batch_users = db.query(User.first_name, User.last_name, User.email)\
                     .filter(or_(*[func.split_part(User.student_number, '-', 1) == b for b in sendtoBatch]))\
                     .distinct()\
                     .all()
-                batchFiltered =  {"name": f"{query.first_name} {query.last_name}", "email": query.email}
-                sendSet.update(batchFiltered)
+                for user in batch_users:
+                    sendSet.add((f"{user.first_name} {user.last_name}", user.email))
+
             if sendtoJob and len(sendtoJob) > 0:
-                
-                print("Entered batch")
-                query = db.query(User.first_name, User.last_name, User.email)\
+                print("Entered job filter")
+                job_users = db.query(User.first_name, User.last_name, User.email)\
                     .filter(or_(*[User.job_title == job for job in sendtoJob]))\
                     .distinct()\
                     .all()
-                jobFiltered =  {"name": f"{query.first_name} {query.last_name}", "email": query.email}
-                sendSet.update(jobFiltered)
-            
+                for user in job_users:
+                    sendSet.add((f"{user.first_name} {user.last_name}", user.email))
+
             if sendEmployment and len(sendEmployment) > 0:
-                print("Entered batch")
-                query = db.query(User.first_name, User.last_name, User.email)\
+                print("Entered employment filter")
+                employ_users = db.query(User.first_name, User.last_name, User.email)\
                     .filter(or_(*[User.employment_status == employ for employ in sendEmployment]))\
                     .distinct()\
                     .all()
-                employFiltered =  {"name": f"{query.first_name} {query.last_name}", "email": query.email}
-                sendSet.update(employFiltered)
-   
+                for user in employ_users:
+                    sendSet.add((f"{user.first_name} {user.last_name}", user.email))
+
+        sendList = [{"name": name, "email": email} for name, email in sendSet]
+        print(sendList)
+        # send_email(newsId=newsletter.newsletter_id, recipients=sendList, db=db)
     return newsletter.newsletter_id
 
 def edit_util(
@@ -293,3 +296,53 @@ def delete_util(
         db.refresh(newsletter)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete newsletter: {e}")
+    
+def get_newsletter_by_id(newsId: UUID, db: Session):
+    newsletter = db.query(Newsletter.title, 
+                          Newsletter.newsletter_id,
+                            Newsletter.image, 
+                            Newsletter.content, 
+                            Newsletter.date_posted).filter(Newsletter.newsletter_id == newsId, Newsletter.is_deleted == False).first()
+    
+    return {
+        "newsletter_id": newsletter.newsletter_id,
+        "title": newsletter.title,
+        "image": newsletter.image,
+        "date_posted": newsletter.date_posted.strftime("%B %d, %Y, %I:%M %p"),
+        "content": newsletter.content
+    }
+
+def send_email(newsId: UUID, recipients: List[dict], db: Session):
+    try:
+        newsletter = get_newsletter_by_id(newsId= newsId, db=db)
+        newsContent = {
+            "content" : newsletter['content'],
+            "title": newsletter['title'], 
+            "newsId": newsletter['newsletter_id'], 
+            "image": newsletter['image'], 
+            "datePosted": newsletter['date_posted']
+        }
+        print(recipients)
+        finalImage = newsContent['image'] if newsContent.get('image') else 'https://rtyworjvisvjmixvxwmc.supabase.co/storage/v1/object/public/128storage/emailing_assets/default.jpg'
+        api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
+        subject = f"{newsContent['title']}"
+        sender = email_sender
+        html_content = newsLetter(newsId=newsContent['newsId'], 
+                                title=newsContent['title'],
+                                datePosted=newsContent['datePosted'],
+                                image=finalImage,
+                                content= newsContent['content'])
+        to = [email_sender]
+        bcc=recipients
+        send_smtp_email = brevo_python.SendSmtpEmail(to=to, bcc=bcc, html_content=html_content, sender=sender, subject=subject)
+
+        try:
+            print("before execute")
+            api_response = api_instance.send_transac_email(send_smtp_email)
+            return {"message": api_response}
+        except ApiException as e:
+            print(f"Error: {e}")
+
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {e}")

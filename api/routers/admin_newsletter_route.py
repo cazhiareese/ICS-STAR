@@ -46,7 +46,6 @@ async def create_news(
     links=clean_input(links)
 
     try:
-        print("befire")
         created_news = create_util(
             db = db, 
             title = title,

@@ -665,6 +665,34 @@ async def get_in_kind_donations(
 
     return {"message": "success", "data": in_kind_donations}
 
+@router.get("/donation-history/monetary-donations/{user_id}")
+async def get_monetary_donations(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+    isIncreasing: Optional[bool] = Query(None, description="Sort order for monetary donations"),
+    isNewest: Optional[bool] = Query(None, description="Sort order for monetary donations")
+
+):
+    
+    monetary_donations = get_user_monetary_donations(db, user_id, isIncreasing, isNewest)
+
+    return {"message": "success", "data": monetary_donations}
+
+# Get the in-kind donations of the user
+# Arguments: db - SQLAlchemy session, user - current user
+# Returns: a list of in-kind donations made by the user
+@router.get("/donation-history/in-kind-donations/{user_id}")
+async def get_in_kind_donations(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+    isNewest: Optional[bool] = Query(None, description="Sort order for in-kind donations"),
+
+):
+    
+    in_kind_donations = get_user_in_kind_donations(db, user_id, isNewest)
+
+    return {"message": "success", "data": in_kind_donations}
+
 # Get the monetary donation history of the user that has been acknowledged
 # Arguments: db - SQLAlchemy session, user - current user
 # Returns: a list of acknowledged donations made by the user
@@ -808,3 +836,43 @@ async def get_profile_picture_by_id(
 ):
     img = db.query(User.image).filter(User.user_id==userid).first()
     return {"profile_picture": img.image}
+
+@router.get("/me/status")
+async def get_user_status(
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user)
+):
+    
+    status = db.query(
+        User.is_banned,
+        User.is_verified,
+        User.user_type
+    ).filter(User.user_id==user.user_id).first()
+    
+    return {
+        "status": {
+            "is_banned": status[0],
+            "is_verified": status[1],
+            "user_type": status[2]
+        }
+    }
+
+@router.get("/{user_id}/status")
+async def get_user_status_by_id(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+):
+    status = db.query(
+        User.is_banned,
+        User.is_verified,
+        User.user_type
+    ).filter(User.user_id == user_id).first()
+
+
+    return {
+        "status": {
+            "is_banned": status[0],
+            "is_verified": status[1],
+            "user_type": status[2]
+        }
+    }
