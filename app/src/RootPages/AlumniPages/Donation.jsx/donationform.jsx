@@ -42,6 +42,7 @@ function Donationform() {
     const [summaryheader,setSummaryHeader] = useState("Your donation will be reflected once it has been reviewed and verified by our admin team.")
 
     const [error, setError] = useState(false);
+    const [errorInKind, setErrorInKind] = useState(false);
     const [paymentError, setPaymentError] = useState(false);
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -228,10 +229,11 @@ function Donationform() {
     const submitInKindDonation = async () => {
         // Ensure that all required fields are not empty
         if (donationDetailsInput == null) {
-            alert("Please enter a donation description.");
+            setErrorInKind(true);
             return;
         }
         setSubmitting(true);
+        setErrorInKind(false);
         const formData = new FormData();
         const token = localStorage.getItem("token");
 
@@ -375,6 +377,7 @@ function Donationform() {
                                     )}
                                     
                                 </div>
+                                {errorInKind && (<h1 className='text-error font-satoshi-regular justify-center w-full flex'>Please fill out all the required fields</h1>)}
                                 {/* Submit Button */}
                                 
                                 {submitting ? (
