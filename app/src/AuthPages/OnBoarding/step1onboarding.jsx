@@ -217,13 +217,20 @@ function Step1Onboarding() {
         <div className="relative flex flex-row items-center justify-center md:h-45 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-120 w-90 h-30 bg-neutral-100">
           <div className="absolute -left-1 md:-left-8 flex items-center justify-center rounded-full md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0 bg-white drop-shadow-lg">
             <div className="relative inline-block">
-              {userData.profilePicture == null ? 
-                (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>) : 
-                (<img src={userData.profilePicture} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" onLoad={() => setImageLoaded(true)}/>)
-              }
+              <div className="w-40 h-40 md:w-55 md:h-55 border-2 border-primary rounded-full overflow-hidden">
+                {userData.profilePicture == null ? 
+                  (<User className="w-full h-full text-gray-300 rounded-full"/>) : 
+                  (<img 
+                    src={userData.profilePicture} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover rounded-full" 
+                    onLoad={() => setImageLoaded(true)}
+                  />)
+                }
+              </div>
               <button
                 type="button"
-                className="absolute -bottom-8 -right-7 w-10 h-10 md:w-16 md:h-16 flex items-center justify-center bg-primary rounded-full cursor-pointer"
+                className="absolute -bottom-0 -right-0 w-10 h-10 md:w-16 md:h-16 flex items-center justify-center bg-primary rounded-full cursor-pointer"
                 onClick={() => document.getElementById('fileInput').click()}
               >
                 <Camera className="text-white w-5 h-5 md:w-8 md:h-8"/>
@@ -290,7 +297,7 @@ function Step1Onboarding() {
 
               
                 {/* Picture container */}
-                <div className="relative flex flex-col items-center justify-center w-[50%] h-[100%] md:h-[80%] md:max-h-100 max-h-50  rounded-4xl overflow-hidden  bg-black picture-holder"
+                <div className="relative flex flex-col items-center justify-center w-[50%] h-[100%] md:h-[80%] md:max-h-100 max-h-50  rounded-4xl overflow-hidden bg-black picture-holder"
                   ref={containerRef}
                 >
 

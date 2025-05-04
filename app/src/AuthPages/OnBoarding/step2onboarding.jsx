@@ -276,7 +276,7 @@ function Step2Onboarding() {
                                 <div className="flex flex-row pt-5 space-x-3 items-center">
                                     <input
                                         type="text"
-                                        className="border border-neutral-300 md:w-110 sm:w-100 w-70 h-15 rounded-3xl text-xl pl-5 pr-5 bg-neutral-100"
+                                        className="border border-neutral-300 focus:outline-none focus:border-primary w-full max-w-full h-15 rounded-2xl text-xl pl-5 pr-5 bg-neutral-100"
                                         placeholder="Name of scholarship"
                                         value={scholarshipInput}
                                         onChange={handleScholarshipChange}
@@ -318,10 +318,10 @@ function Step2Onboarding() {
                                 </label>
                                 <div className="flex flex-row items-center justify-center pt-5 gap-3">
                                     <div className="flex flex-col gap-3 lg:flex-row items-center w-full">
-                                        <div className="relative lg:w-120 w-full">
+                                        <div className="relative lg:basis-3/4 w-full">
                                             <input
                                                 type="text"
-                                                className="border border-neutral-300 focus:outline-none focus:border-primary w-full max-w-full h-15 rounded-2xl text-xl pl-5 pr-5 bg-neutral-100"
+                                                className="border border-neutral-300 focus:outline-none focus:border-primary w-full h-15 rounded-2xl text-xl pl-5 pr-5 bg-neutral-100"
                                                 placeholder="Org Name"
                                                 value={affiliationInput}
                                                 onChange={handleAffiliationChange}
@@ -350,10 +350,10 @@ function Step2Onboarding() {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="w-full lg:w-90">
+                                        <div className="relative lg:basis-1/4 w-full">
                                             <input
                                                 type="text"
-                                                className="border border-neutral-300 focus:outline-none focus:border-primary w-full max-w-full h-15 rounded-2xl text-xl pl-5 pr-5 bg-neutral-100"
+                                                className="border border-neutral-300 focus:outline-none focus:border-primary w-full h-15 rounded-2xl text-xl pl-5 pr-5 bg-neutral-100"
                                                 placeholder="Role"
                                                 value={roleInput}
                                                 onChange={handleRoleChange}
