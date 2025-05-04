@@ -70,7 +70,7 @@ function AdminHelpIcs() {
     const token= localStorage.getItem('token');
 
   
-    async function loadData() {
+    async function loadData(token) {
       setLoading(true);
       try {
         const driveId = await fetchDriveDetails(token);
@@ -87,7 +87,7 @@ function AdminHelpIcs() {
       }
     }
 
-    loadData();
+    loadData(token);
   }, []);
 
   return (
