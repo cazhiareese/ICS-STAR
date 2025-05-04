@@ -35,8 +35,6 @@ function SignupPage() {
                 </button>
             </span>
         </div>
-
-
     </div>
     
   );

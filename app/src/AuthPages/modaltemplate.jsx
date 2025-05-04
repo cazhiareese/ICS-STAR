@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ModalTemplate = ({ onClose, onContinue, choiceclose, choicecontinue, header, information }) => {
+const ModalTemplate = ({ onClose, onContinue, choiceclose, choicecontinue, header, information, color="bg-green-500" }) => {
     return (
 
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 bg-opacity-10 z-50">
@@ -14,7 +14,7 @@ const ModalTemplate = ({ onClose, onContinue, choiceclose, choicecontinue, heade
                 <div className="flex justify-center space-x-10">
                     {choiceclose &&
                         <button
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-2xl hover:bg-gray-300 cursor-pointer font-regular"
+                        className="px-4 py-2 bg-whitey text-primary border border-primary rounded-full  cursor-pointer"
                         onClick={onClose}
                     >
                         {choiceclose}
@@ -22,7 +22,7 @@ const ModalTemplate = ({ onClose, onContinue, choiceclose, choicecontinue, heade
                     }
                     {choicecontinue &&
                         <button
-                            className="px-4 py-2 bg-green-500 text-white rounded-2xl hover:bg-green-600 font-regular"
+                            className={`px-4 py-2 ${color} text-white rounded-full cursor-pointer`}
                             onClick={onContinue}
                         >
                             {choicecontinue}

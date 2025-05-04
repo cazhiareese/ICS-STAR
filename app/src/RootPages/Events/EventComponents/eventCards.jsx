@@ -70,7 +70,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
         return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '...');
     };
 
-    //const truncatedDescription = truncateDescription(event.description, 2);
+    const truncatedDescription = truncateDescription(event.description, 2);
 
     return (
       <div
