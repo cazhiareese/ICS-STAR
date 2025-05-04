@@ -14,10 +14,12 @@ import star from "../assets/star.png";
 import google from "../assets/google.png"
 import GuestModal from "./guestModal"
 import ModalTemplate from "./modaltemplate"
+import { useLocation } from 'react-router-dom';
 
 function LoginPage() {
 
     const baseURL = import.meta.env.VITE_BACKEND_URL;
+    const location = useLocation();
 
     const [openModal, setOpenModal] = useState(false);
 
@@ -53,6 +55,11 @@ function LoginPage() {
         { id: 6, top: "45%", left: "80%", size: "w-6" },
         { id: 7, top: "8%", left: "88%", size: "w-4" },
       ];
+
+      useEffect(() => {
+        const currentPath = location.pathname + location.search;
+        localStorage.setItem('lastVisitedPath', currentPath);
+      }, [location]);
 
     const login = async (e) => {
       // setIsLoading(true);
@@ -120,6 +127,12 @@ function LoginPage() {
             console.log("User Info:", userData);
 
             if (userData.user_type=="alumni"){
+                const lastPath = localStorage.getItem('lastVisitedPath');
+                if (lastPath) {
+                  navigate(lastPath);
+                  localStorage.removeItem('lastVisitedPath');
+                }
+                
                 window.location.href = "/alumni/dashboard";
 
             } else if (userData.user_type=="student"){
