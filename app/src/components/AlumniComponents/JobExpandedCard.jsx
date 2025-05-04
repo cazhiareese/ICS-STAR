@@ -20,6 +20,12 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+    const handleNavigate = () => {
+        // Navigate to the user's profile or desired route
+        //navigate(`/profile/${job.user_id}`); // Update the route as needed
+        console.log("clicked    ");
+      };
+
     const fetchJobs = async () => {
         console.log(`${API_BASE_URL}/job-postings/${jobId}`);
         try {
@@ -126,7 +132,12 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
                         </div>
                         <div className="flex items-center gap-2 pt-1">
                             <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
-                            <h1 className='cursor-pointer font-satoshi-bold'>{job.user_name}</h1> 
+                            <button 
+      onClick={handleNavigate} 
+      className="cursor-pointer font-satoshi-bold text-left text-primary underline"
+    >
+      {job.user_name}
+    </button>
                         </div>  
 
                         {/* Job Image */}
@@ -316,7 +327,12 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
                         </div>
                         <div className="flex items-center gap-2 pt-1">
                             <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
-                            <h1 className='cursor-pointer font-satoshi-bold'>{job.user_name}</h1> 
+                            <h1 
+      className="cursor-pointer font-satoshi-bold text-primary underline" 
+      onClick={handleNavigate}
+    >
+      {job.user_name}
+    </h1> 
                         </div>  
 
                         {/* Job Image */}
