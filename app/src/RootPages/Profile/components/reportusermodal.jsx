@@ -27,18 +27,25 @@ const ReportUserModal = ({ isOpen, onClose, userId, name }) => {
     console.log("reporterId:", reporterId);
     console.log("userId:", userId);
     console.log("reason:", reason);
+  
     if (confirmed && reporterId && userId && reason.trim() !== "") {
       const reportUser = async () => {
         try {
           setSubmitting(true);
-          const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/reports/report-user`,
-            {
-              reporter_id: reporterId,
-              reported_user_id: userId,
-              reason: reason.trim(),
-            }
-          );
+  
+          // Prepare form data
+          const formData = new FormData();
+          formData.append("reason", reason.trim());
+  
+          // Build full URL with query params
+          const url = `${import.meta.env.VITE_BACKEND_URL}/reports/report-user?reported_user_id=${userId}&reporter_id=${reporterId}`;
+  
+          const response = await axios.post(url, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+  
           console.log("Report submitted:", response.data);
           setSuccess(true);
         } catch (error) {
@@ -48,10 +55,11 @@ const ReportUserModal = ({ isOpen, onClose, userId, name }) => {
           setConfirmed(false);
         }
       };
-
+  
       reportUser();
     }
   }, [confirmed, reporterId, userId, reason]);
+  
 
   const handleConfirm = () => {
     if (reason.trim() !== "") {
