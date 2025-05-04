@@ -261,11 +261,11 @@ const EventCardsMain = () => {
                 )}
               </div>
       
-              {/* Desktop RSVP Elements (Positioned absolutely relative to card) */}
+              {/* Desktop RSVP Elements*/}
               {user?.role !== "student" && !event.rsvp_closed && (
                 <div className="hidden sm:flex flex-col items-end absolute right-10 mt-3 top-[360px]">
                   <button
-                    className={`items-center px-6 py-3 flex flex-row rounded-full shadow-md hover:cursor-pointer ${
+                    className={`items-center px-6 py-3 flex flex-row gap-3 rounded-full shadow-md hover:cursor-pointer ${
                       isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white font-bold'
                     } hover:scale-105 transform transition-transform duration-200`}
                     onClick={() => handleRSVPClick(event.event_id)}
@@ -312,27 +312,35 @@ const EventCardsMain = () => {
                   <label className="text-gray-600 pt-2">{event.description}</label>
       
                   {/* Relevant Links */}
-                  <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
-                  {event.links.map((link, index) => (
-                    <li key={index}>
-                      <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
+                  {event.links && event.links.length > 0 && (
+                    <div className='mt-5'>
+                      <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
+                      <div></div>
+                      {event.links.map((link, index) => (
+                        <li key={index}>
+                          <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                            {link}
+                          </a>
+                        </li>
+                      ))}
+                    </div>
+                  )}
+                 
                 </div>
       
                 {/* Tags */}
-                <div className="flex flex-row gap-2 mt-5 overflow-x-scroll">
-                  {event.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="bg-blue-100 text-primary/80 text-s font-satoshi-medium px-3 py-1.5 rounded-xl"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {event.tags && event.tags.length > 0 && (
+                  <div className='mt-5 mb-3'>
+                    <label className='text-gray-400 pt-5 pb-1'>Event Tags</label>
+                    <div className="flex flex-row gap-2 overflow-x-scroll">
+                      {event.tags.map((tag, index) => (
+                      <span
+                        key={index} className="bg-secondary text-primary text-s font-satoshi-medium px-4 py-1 rounded-xl"> {tag} </span>
+                    ))}
+                    </div>
+                 
+                  </div>
+                )}
               </div>
             </div>
           </div>
