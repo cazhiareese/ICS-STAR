@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      env:
+      PYTHONPATH: ${{ github.workspace }}
       STORAGE_URL: ${{ secrets.STORAGE_URL }}
       STORAGE_API_KEY: ${{ secrets.STORAGE_API_KEY }}
       BREVO_API: ${{ secrets.BREVO_API }}

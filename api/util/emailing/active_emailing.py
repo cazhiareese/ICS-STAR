@@ -5,7 +5,7 @@ import os
 from supabase import create_client, Client
 import brevo_python
 from brevo_python.rest import ApiException
-from util.emailing.inactive import inactivity  
+from api.util.emailing.inactive import inactivity  
 from dotenv import load_dotenv
 
 load_dotenv()
