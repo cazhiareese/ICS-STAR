@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { XCircle } from "lucide-react";
 
 const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
-  console.log(donation);
+  const [showProof, setShowProof] = useState(false);
+
   if (!isOpen || !donation) return null;
 
   const formattedDate = new Date(donation.date_donated).toLocaleDateString("en-US", {
@@ -12,15 +13,15 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
   });
 
   const isInKind = donation.type === "In-Kind";
-  const statusText = donation.is_acknowledged === null 
-  ? { text: "Pending Acknowledgement", color: "text-primary" }
-  : donation.is_acknowledged === false
-  ? { text: "Disapproved", color: "text-red-500" }
-  : { text: "Acknowledged", color: "text-primary" };
 
+  const statusText = donation.is_acknowledged === null
+    ? { text: "Pending Acknowledgement", color: "text-primary" }
+    : donation.is_acknowledged === false
+    ? { text: "Disapproved", color: "text-red-500" }
+    : { text: "Acknowledged", color: "text-primary" };
 
   const displayAmount = isInKind
-    ? donation.description // Show description for In-Kind donations
+    ? donation.description
     : new Intl.NumberFormat("en-PH", {
         style: "currency",
         currency: "PHP",
@@ -33,27 +34,29 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
       <div className="absolute inset-0 bg-gray-500 opacity-40 pointer-events-none"></div>
 
       {/* Modal Container */}
-      <div className="bg-white p-6 relative z-10 w-full max-w-[600px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen">
+      <div className="bg-white p-6 relative z-10 w-full max-w-[600px] rounded-2xl shadow-lg sm:w-11/12 max-h-screen overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
           <h2 className="text-lg font-satoshi-bold sm:text-2xl">Donation Details</h2>
           <XCircle
             size={24}
             className="cursor-pointer text-white bg-error rounded-full hover:bg-red-800"
-            onClick={onClose}
+            onClick={() => {
+              setShowProof(false); // Reset when closing
+              onClose();
+            }}
           />
         </div>
 
         {/* Donation Info */}
         <div className="mt-6 space-y-3 text-sm sm:text-base">
-          {[ 
+          {[
             { label: "Donation Drive", value: donation.donation_drive_title },
             { label: "Date", value: formattedDate },
             { label: "Type", value: donation.type },
             { label: "Status", value: <span className={`${statusText.color} font-semibold`}>{statusText.text}</span> },
-
             {
-              label: isInKind ? "Description" : "Amount", // Show 'Description' for In-Kind donations
+              label: isInKind ? "Description" : "Amount",
               value: displayAmount,
             },
           ].map(({ label, value }, index) => (
@@ -64,10 +67,40 @@ const DonationDetailsModal = ({ isOpen, onClose, donation }) => {
           ))}
         </div>
 
+        {/* Proof Section */}
+        {!isInKind && (
+  <div className="mt-6 flex flex-col items-center">
+    <button
+      onClick={() => setShowProof(!showProof)}
+      className="bg-primary text-white px-4 py-2 rounded-full font-satoshi-medium hover:bg-hover transition"
+    >
+      {showProof ? "Hide Proof" : "View Proof of Donation"}
+    </button>
+
+    {showProof && (
+      <div className="mt-4 w-full flex justify-center">
+        {donation.proof ? (
+          <img
+            src={donation.proof}
+            alt="Proof of Donation"
+            className="w-full max-w-md rounded-xl border"
+          />
+        ) : (
+          <p className="text-black font-satoshi-medium text-center">No proof of donation</p>
+        )}
+      </div>
+    )}
+  </div>
+)}
+
+
         {/* Footer */}
         <div className="mt-8 flex justify-end">
           <button
-            onClick={onClose}
+            onClick={() => {
+              setShowProof(false); // Reset when closing
+              onClose();
+            }}
             className="bg-primary text-white px-6 py-2 rounded-full font-medium hover:bg-hover transition"
           >
             Done
