@@ -39,6 +39,7 @@ function Donationform() {
     const [driveDetails, setDriveDetails] = useState(null);
     const [searchParams] = useSearchParams();
     const success = searchParams.get("success");
+    const [summaryheader,setSummaryHeader] = useState("Your donation will be reflected once it has been reviewed and verified by our admin team.")
 
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -202,6 +203,7 @@ function Donationform() {
                 setDonationSuccess(true);
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
+                setSummaryHeader("Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.");
                 setMonetaryAmountInput(amount)
                 setIsMonetaryTypeOpen(false);
                 setIsInKindTypeOpen(false);
@@ -405,7 +407,7 @@ function Donationform() {
                         <div className="flex flex-col md:w-10/12 w-11/12 items-center absolute z-10 top-2/3">
                             <img className="w-15 h-15 rounded-full" src={check} alt="check" />
                             <h1 className="font-satoshi-bold text-3xl pt-5 text-center">Donation Submitted</h1>
-                            <p className="font-satoshi-light text-lg pt-5 md:w-2/3 w-full text-center">Your donation will be reflected once it has been reviewed and verified by our admin team.</p>
+                            <p className="font-satoshi-light text-lg pt-5 md:w-2/3 w-full text-center">{summaryheader}</p>
 
                             <div className="flex flex-col w-full items-start mx-10">
                                 <h1 className="font-satoshi-bold md:text-xl text-lg pt-5 md:text-left text-center border-b-1 border-neutral-300 w-full pb-3 ">Donation Summary</h1>
