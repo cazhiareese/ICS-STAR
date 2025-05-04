@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../index.css";
 import peersIcon from "../../assets/onBoardingAssets/peersIcon.png";
-import { CirclePlus, ChevronLeft } from "lucide-react";
+import { Plus, ChevronLeft } from "lucide-react";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import Unathorized from "../Unauthorized";
 import Loading from "../../components/LoadingComponents/circularloading"
@@ -263,135 +263,163 @@ function Step2Onboarding() {
                 </div>
                     
                 ) : (
-                    <div className="flex flex-col justify-center pt-10 md:mx-30 mx-10">
-                        <label className="font-satoshi-light lg:text-3xl text-xl pb-10">
+                    <div className="flex flex-col justify-center lg:pt-10 md:mx-30 mx-10">
+                        <label className="font-satoshi-light lg:text-2xl text-xl pb-10">
                             Please select at most 5 each
                         </label>
                         {/* Scholarships Section */}
                         {scholarships === true && (
                             <>
-                                <label className="font-satoshi-black lg:text-4xl md:text-3xl sm:text-2xl text-xl">
+                                <label className="font-satoshi-black lg:text-4xl md:text-3xl sm:text-2xl text-xl pt-10">
                                     Scholarships
                                 </label>
-                                <div className="flex flex-row pt-10 space-x-6">
+                                <div className="flex flex-row pt-5 space-x-3 items-center">
                                     <input
                                         type="text"
-                                        className="border md:w-110 sm:w-100 w-70 h-15 rounded-3xl text-xl pl-5"
-                                        placeholder="Scholarships"
+                                        className="border border-neutral-300 md:w-110 sm:w-100 w-70 h-15 rounded-3xl text-xl pl-5 pr-5 bg-neutral-100"
+                                        placeholder="Name of scholarship"
                                         value={scholarshipInput}
                                         onChange={handleScholarshipChange}
                                     />
-                                    <button onClick={addScholarship}>
-                                        <CirclePlus className="md:h-10 md:w-10 cursor-pointer" />
+                                    <button onClick={addScholarship} className="flex items-center justify-center rounded-full bg-primary w-8 h-8 md:w-10 md:h-10 hover:bg-hover cursor-pointer flex-shrink-0">
+                                        <Plus className="h-5 w-5 md:h-7 md:w-7 cursor-pointer text-white stroke-3" />
                                     </button>
                                 </div>
-                                <div className="flex flex-wrap mt-4 gap-3">
+                                <div className="flex flex-wrap flex-row mt-4 gap-3">
+                
                                     {userData.scholarshipList.map((item) => (
-                                        <span
+                                        <div
                                             key={item}
-                                            className="px-4 py-2 bg-primary text-white rounded-full text-sm font-medium cursor-pointer"
-                                            onClick={() => removeScholarship(item)}
+                                            className="flex justify-between items-center bg-primary text-white rounded-full px-4 py-2 w-full max-w-md"
                                         >
-                                            {item} ✖
-                                        </span>
-                                    ))}
+                                            <div className="flex flex-col text-xs font-medium">
+                                            <span className="whitespace-normal break-words">{item}</span>
+                                            </div>
+                                            <button
+                                            type="button"
+                                            className="ml-4 text-white hover:text-gray-200 focus:outline-none"
+                                            onClick={() => {
+                                                removeScholarship(item);
+                                            }}
+                                            aria-label={`Remove ${item}`}
+                                            >
+                                            ✖
+                                            </button>
+                                        </div>
+                                    ))}  
                                 </div>
                             </>
                         )}
                         {/* Affiliations Section */}
                         {affiliations === true && (
                             <>
-                                <label className="font-satoshi-black lg:text-4xl md:text-3xl sm:text-2xl text-xl pt-10">
+                                <label className="font-satoshi-black lg:text-4xl md:text-3xl sm:text-2xl text-xl lg:pt-10 pt-5">
                                     Affiliations
                                 </label>
-                                <div className="flex flex-row pt-10 space-x-6">
-                                    <div className="relative md:w-95 sm:w-50 w-35">
-                                        <input
-                                            type="text"
-                                            className="border w-full h-15 rounded-2xl text-xl pl-5"
-                                            placeholder="Org Name"
-                                            value={affiliationInput}
-                                            onChange={handleAffiliationChange}
-                                        />
-                                        {(orgSuggestions.length > 0 || loadingOrgs) && (
-                                            <div className="absolute left-0 top-full bg-white border border-gray-300 rounded-md shadow-md w-full max-h-40 overflow-y-auto z-20 mt-1">
-                                                {loadingOrgs ? (
-                                                    <div className="px-4 py-2 text-gray-500 flex justify-center items-center">
-                                                        <Loading size={20} />{" "}
-                                                        <span className="ml-2 text-sm">Loading...</span>
-                                                    </div>
-                                                ) : (
-                                                    orgSuggestions.map((org, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-lg"
-                                                            onClick={() => {
-                                                                setAffiliationInput(org);
-                                                                setOrgSuggestions([]);
-                                                            }}
-                                                        >
-                                                            {org}
+                                <div className="flex flex-row items-center justify-center pt-5 gap-3">
+                                    <div className="flex flex-col gap-3 lg:flex-row items-center w-full">
+                                        <div className="relative lg:w-120 w-full">
+                                            <input
+                                                type="text"
+                                                className="border border-neutral-300 focus:outline-none focus:border-primary w-full max-w-full h-15 rounded-2xl text-xl pl-5 pr-5 bg-neutral-100"
+                                                placeholder="Org Name"
+                                                value={affiliationInput}
+                                                onChange={handleAffiliationChange}
+                                            />
+                                            {(orgSuggestions.length > 0 || loadingOrgs) && (
+                                                <div className="absolute left-0 top-full bg-white border border-gray-300 rounded-md shadow-md w-full max-h-40 overflow-y-auto z-20 mt-1">
+                                                    {loadingOrgs ? (
+                                                        <div className="px-4 py-2 text-gray-500 flex justify-center items-center">
+                                                            <Loading size={20} />{" "}
+                                                            <span className="ml-2 text-sm">Loading...</span>
                                                         </div>
-                                                    ))
-                                                )}
-                                            </div>
-                                        )}
+                                                    ) : (
+                                                        orgSuggestions.map((org, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-lg"
+                                                                onClick={() => {
+                                                                    setAffiliationInput(org);
+                                                                    setOrgSuggestions([]);
+                                                                }}
+                                                            >
+                                                                {org}
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="w-full lg:w-90">
+                                            <input
+                                                type="text"
+                                                className="border border-neutral-300 focus:outline-none focus:border-primary w-full max-w-full h-15 rounded-2xl text-xl pl-5 pr-5 bg-neutral-100"
+                                                placeholder="Role"
+                                                value={roleInput}
+                                                onChange={handleRoleChange}
+                                            />
+                                        </div>
+                                        
                                     </div>
-                                    <input
-                                        type="text"
-                                        className="border md:w-65 sm:w-50 w-35 h-15 rounded-2xl text-xl pl-5"
-                                        placeholder="Role"
-                                        value={roleInput}
-                                        onChange={handleRoleChange}
-                                    />
-                                    <button onClick={addAffiliation}>
-                                        <CirclePlus className="md:h-10 md:w-10 cursor-pointer" />
+                                    <button onClick={addAffiliation} className="flex items-center justify-center rounded-full bg-primary w-8 h-8 md:w-10 md:h-10 hover:bg-hover cursor-pointer flex-shrink-0">
+                                        <Plus className="h-5 w-5 md:h-7 md:w-7 cursor-pointer text-white stroke-3" />
                                     </button>
                                 </div>
-                                <div className="flex flex-wrap mt-4 gap-3">
+                                <div className="flex flex-wrap flex-row mt-4 gap-3">
+                
                                     {userData.affiliationList.map((item, index) => (
-                                        <span
+                                        <div
                                             key={item}
-                                            className="px-4 py-2 bg-primary text-white rounded-full text-sm font-medium cursor-pointer"
-                                            onClick={() => (
-                                                removeAffiliation(item),
-                                                removeRole(userData.roleList[index])
-                                            )}
+                                            className="flex justify-between items-center bg-primary text-white rounded-full px-4 py-2 w-full max-w-md"
                                         >
-                                            <span>{item}</span>
-                                            <span className="text-xs text-white/80">
-                                                ({userData.roleList[index]})
-                                            </span>
-                                            <span className="ml-2">✖</span>
-                                        </span>
-                                    ))}
+                                            <div className="flex flex-col text-xs font-medium">
+                                            <span className="whitespace-normal break-words">{item}</span>
+                                            <span className="text-white/80">{userData.roleList[index]}</span>
+                                            </div>
+                                            <button
+                                            type="button"
+                                            className="ml-4 text-white hover:text-gray-200 focus:outline-none"
+                                            onClick={() => {
+                                                removeAffiliation(item);
+                                                removeRole(userData.roleList[index]);
+                                            }}
+                                            aria-label={`Remove ${item}`}
+                                            >
+                                            ✖
+                                            </button>
+                                        </div>
+                                    ))}  
                                 </div>
+                               
                             </>
                         )}
-                        <div className="flex flex-row items-center justify-center my-20 md:space-x-20 sm:space-x-10 w-full sm:text-2xl text-xl">
-                            <div
-                                className="md:w-70 h-20 text-primary flex items-center justify-center rounded-3xl"
+                        {/* Bottom Previous and Proceed Buttons */}
+                        <div className="flex flex-row items-center justify-between mt-10 w-full sticky bottom-0 mb-10">
+                            <button
+                                type="button"
+                                className="flex flex-row items-center justify-center hover:text-hover cursor-pointer group"
                                 onClick={() => {
                                     setSecondStep(false)
                                     setStandingStep(true)
-                                }}
+                                    }
+                                }
                             >
-                                <label className="font-satoshi-italic w-40">
-                                    &lt; Previous
-                                </label>
-                            </div>
-                            <div className="md:w-[70%]"></div>
-                            <div
-                                className="md:w-70 sm:h-17 w-40 h-14 bg-primary text-white flex items-center justify-center rounded-3xl cursor-pointer"
+                                <ChevronLeft className="text-primary group-hover:text-hover"/>
+                                <span className="font-satoshi-bold text-primary flex items-center w-20 p-2 text-md group-hover:text-hover">
+                                    Previous
+                                </span>
+                            </ button>
+
+                            <button
+                                type="button"
+                                className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-20 md:w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
                                 onClick={() => {
                                     submitStep2();
                                     confirmData();
                                 }}
                             >
-                                <label className="font-satoshi-bold cursor-pointer">
-                                    Proceed
-                                </label>
-                            </div>
+                                Proceed
+                            </button>
                         </div>
                     </div>
                 )
