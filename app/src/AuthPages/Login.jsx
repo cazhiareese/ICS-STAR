@@ -58,8 +58,14 @@ function LoginPage() {
 
       useEffect(() => {
         const currentPath = location.pathname + location.search;
-        localStorage.setItem('lastVisitedPath', currentPath);
+      
+        // Avoid saving login or signup pages as last visited
+        const blockedPaths = ["/login", "/"];
+        if (!blockedPaths.includes(location.pathname)) {
+          localStorage.setItem('lastVisitedPath', currentPath);
+        }
       }, [location]);
+      
 
     const login = async (e) => {
       // setIsLoading(true);
