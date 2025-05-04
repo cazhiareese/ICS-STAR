@@ -1,11 +1,13 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BriefcaseBusiness } from 'lucide-react';
+import { BriefcaseBusiness, ArrowLeft, ArrowRight } from 'lucide-react';
 import JobCard from '../../../components/AlumniComponents/JobCard';
-// import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
+import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import SectionHeader from '../components/sectionheader';
 
 export default function JobPosted() {
         const [selectedJobId, setSelectedJobId] = useState(""); //the job id will be stored here
@@ -15,10 +17,34 @@ export default function JobPosted() {
         const [loading, setLoading] = useState(false);
         const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
         const token = localStorage.getItem("token");
+        const [mobileExpanded, setMobileExpanded] = useState(false);
+        const [currentPage, setCurrentPage] = useState(1);
+        const [maxPage, setMaxPage] = useState(1);
+        const [joblength, setJobLength] = useState(0);
+const [isError, setError] = useState(false);
 
         //For Dummy testing only
+
+            const [usertype, setUserType] = useState(null);
+            
+            useEffect(() => {
+                const token = localStorage.getItem('token'); 
+                const decoded = jwtDecode(token);
+                console.log("Decoded JWT:", decoded);
+                setUserId(decoded.sub); 
+                setUserType(decoded.role); //cyrus was here
+                // console.log(decoded.sub)
+                if (decoded.role == "alumni"){
+                    setUserType("alumni");
+                }
+                else{
+                    setUserType("student");
+                }
+                
+            }, []);
         useEffect(() => {
           const fetchJobs = async () => {
+            setLoading(true);
             try {
               const response = await axios.get(`${API_BASE_URL}/profile/me/job-post-history`, {
                 headers: {
@@ -28,14 +54,12 @@ export default function JobPosted() {
               
               console.log("Job List Response:", response.data);
 
-              const jobs = response.data.data.map((job) => ({
-                title: job.position || "Untitled Role",
-                company: job.company || "Unknown Company",
-                description: job.description || "No description available.",
-                user_name: "",
-                tags: job.tags || [],
-                interested_count: job.interested_count || 0,
-              }));
+
+              const jobs = response.data.data;
+              console.log("Number of jobs:", jobs.length); // ✅ Get job count here
+              setJobLength(jobs.length); // Set job length here
+              setLoading(false);
+              setError(false);
       
               setJobList(jobs);
             } catch (error) {
@@ -46,72 +70,92 @@ export default function JobPosted() {
           fetchJobs();
         }, [token]);
 
-
-
-
     useEffect(() => {
-        // Job Dummy Data
-        const job = {
-            title: "Data Scientist",
-            company: "Google Alphabet",
-            description: "Lorem ipsum dolor sit amet consectetur. Risus tellus odio sit vel ut nibh natoque id. Eu facilisis augue neque non enim a duis. Odio tortor vestibulum gravida nullam quis sed enim ipsum ullamcorper. Venenatis nulla vulputate et ut ut rhoncu...",
-            salary: 20000,
-            tags: ["Software Engineering", "UI/UX","Software Engineering", "UI/UX","Software Engineering", "UI/UX"],
-            employment_type: "Full-time",
-            mode: "On-site",
-            link: "LinkedIn.com",
-            image: "https://www.computersciencedegreehub.com/wp-content/uploads/2020/05/What-is-a-Software-Engineer-scaled.jpg",
-            user_name: "Roche Quejada", //Tentative
-            interested_count: 5,
-            user_id: "2543d5a7-f7f3-4a90-92f7-d0a8595db26b"
-        }
+        const fetchJobs = async () => {
+            console.log(`${API_BASE_URL}/job-postings/${selectedJobId}`);
+            try {
+                const response = await fetch(`${API_BASE_URL}/job-postings/${selectedJobId}`);
+                if (!response.ok) {
+                throw new Error('Failed to fetch job using id');
+                }
+                const data = await response.json();
+                console.log("data", data)
+                // Set selected job
+                setSelectedJob(data)
+            } catch (err) {
+                console.log(err.message || 'Something went wrong');
+            } 
+        };
 
-        setSelectedJob(job);
-        
-    }, []);
+        fetchJobs();
+    }, [selectedJobId]);
 
-  return (
-    <div className="w-full max-w-[1100px] mt-6">
-<div className="flex flex-col lg:flex-row lg:gap-2 justify-center items-center sm:justify-start sm:px-1 ml-7">
-  {/* Scrollable Job List */}
-  <div className="h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full lg:max-w-[420px] outline-0 flex-shrink-0">
-    {!loading ? (
-      <div className="flex flex-col gap-5">
-        {jobList.map((job, index) => (
-          <JobCard
-            key={index}
-            job={job}
-            selectedJobId={selectedJobId}
-            setSelectedJobId={setSelectedJobId}
-          />
-        ))}
-      </div>
-    ) : (
-      <div className="flex flex-row justify-center h-full gap-5">
-        <h1 className="text-xl font-satoshi-bold text-gray-400">Loading Jobs</h1>
-        <CircularLoading />
-      </div>
-    )}
-  </div>
 
-  {/* Job Preview */}
-  <div className="w-full flex-grow">
-    {!selectedJob || !selectedJob.tags ? (
-      <div className="flex flex-col items-center justify-center px-4 py-8 sm:py-12 rounded-xl">
-        <div className="text-primary opacity-50">
-          <BriefcaseBusiness size={120} className="sm:size-[200px]" />
+    return (
+      <>
+        {/* Moved SectionHeader here */}
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-[1100px] mt-6">
+            <SectionHeader title="JOBS POSTED" joblength={joblength} />
+          </div>
         </div>
-        <h1 className="text-primary opacity-50 text-2xl sm:text-3xl font-satoshi-bold text-center mt-4">
-          Select Job Posting
-        </h1>
-      </div>
-    ) : (
-      <JobExpandedCard job={selectedJob} currentUserID={userId} />
-    )}
-  </div>
-</div>
-
-
-    </div>
-  );
+    
+        <div className="w-full">
+          <div className='w-full max-w-[1100px] mx-auto'>
+            <div className='flex flex-row mt-10 gap-2 justify-center'>
+              <div className='flex flex-col'>
+    
+                {/* Scrollable wrapper */}
+                <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
+    
+                  {!loading ? (
+                    <div className='flex flex-col gap-5 items-center '>
+    
+                      {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
+                        jobList.map((job, index) => (
+                          <JobCard
+                            key={index} // Prefer job.id if possible
+                            job={job}
+                            selectedJobId={selectedJobId}
+                            setSelectedJobId={setSelectedJobId}
+                            setMobileExpanded={setMobileExpanded}
+                          />
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center mt-4">
+                          {isError ? 'No jobs found.' : 'No jobs available.'}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className='flex flex-row justify-center h-full gap-5 pt-10'>
+                      <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
+                      <CircularLoading />
+                    </div>
+                  )}
+                </div>
+              </div>
+    
+              {/* Job Preview */}
+              {!selectedJob || !selectedJob.tags ? (
+                <div className="md:flex flex-col items-center justify-center w-[800px] outline-0 hidden">
+                  <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200} /></h1>
+                  <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
+                </div>
+              ) : (
+                <JobExpandedCard
+                  job={selectedJob}
+                  currentUserID={userId}
+                  mobileExpanded={mobileExpanded}
+                  setMobileExpanded={setMobileExpanded}
+                  setJob={setSelectedJob}
+                />
+              )}
+    
+            </div>
+          </div>
+        </div>
+      </>
+    );
+    
 }

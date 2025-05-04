@@ -17,26 +17,34 @@ import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 import SocialLinksEditModal from "./components/sociallinksmoda";
 
-function ProfileSection({
+function JanryProfileSection({
   activeTab,
   editMode,
   userDetails,
   setEditMode,
   handleChange,
+  share,
+  userId,
 }) {
+  
+
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSocialModal, setShowSocialModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);  // New state to control cancel modal visibility
+  console.log("ProfileSection userId:", userId);
+
 
   // Fetch user profile picture
   useEffect(() => {
-    console.log("Fetching profile picture...");
-    fetchProfilePicture();
-    setProfilePicture(userDetails.profile_picture);
-  }, []);
+    if (userId) {
+      console.log("Fetching profile picture for:", userId);
+      fetchProfilePicture();
+    }
+  }, [userId]); // ← re-run when userId is available
+  
 
   const handleSocialLinksSave = async (links) => {
     console.log("Saving social links:", links);
@@ -49,6 +57,7 @@ function ProfileSection({
   };
 
   const fetchProfilePicture = async () => {
+    if (!userId) return;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -58,7 +67,7 @@ function ProfileSection({
 
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-      const response = await fetch(`${API_BASE_URL}/profile-picture`, {
+      const response = await fetch(`${API_BASE_URL}/profile-picture/${userId}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -66,6 +75,7 @@ function ProfileSection({
       });
 
       if (response.ok) {
+        console.log(response);
         const result = await response.json();
         setProfilePicture(result.profile_picture || defaultimage);
       } else {
@@ -161,38 +171,48 @@ function ProfileSection({
     >
       {/* Edit / Save / Cancel Buttons */}
       {activeTab === "About" && userDetails?.is_verified && (
-        <div className="absolute top-4 right-4 z-10 flex flex-col-reverse sm:flex-row-reverse sm:gap-2 gap-1">
-          {editMode ? (
-            <>
-              {/* Save Button (on right) */}
-              <button
-                onClick={() => setShowModal(true)}
-                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
-              >
-                <Check size={18} className="text-white" />
-                <span className="hidden sm:inline text-neutral">Save Profile</span>
-              </button>
+  <div className="absolute top-4 right-4 z-10 flex flex-col-reverse sm:flex-row-reverse sm:gap-2 gap-1">
+    {share ? (
+      // New button shown only when viewing shared profile
+      <button
+        onClick={() => alert("This is a shared profile. Actions are limited.")} //dito red report things, replace mo na lang
+        className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-gray-300 text-black cursor-not-allowed"
+      >
+        <Pencil size={18} />
+        <span className="hidden sm:inline">Viewing Only</span>
+      </button>
+    ) : editMode ? (
+      <>
+        {/* Save Button */}
+        <button
+          onClick={() => setShowModal(true)}
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
+        >
+          <Check size={18} className="text-white" />
+          <span className="hidden sm:inline text-neutral">Save Profile</span>
+        </button>
 
-              {/* Cancel Button (on left at desktop) */}
-              <button
-                onClick={handleCancel}  // Call handleCancel here
-                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-bg-disabled text-black border border-primary hover:bg-disabled transition "
-              >
-                <X size={18} className="text-error " />
-                <span className="hidden sm:inline">Cancel Edit</span>
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => setEditMode(true)}
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
-            >
-              <Pencil size={18} />
-              <span className="hidden sm:inline text-neutral">Edit Profile</span>
-            </button>
-          )}
-        </div>
-      )}
+        {/* Cancel Button */}
+        <button
+          onClick={handleCancel}
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-bg-disabled text-black border border-primary hover:bg-disabled transition"
+        >
+          <X size={18} className="text-error" />
+          <span className="hidden sm:inline">Cancel Edit</span>
+        </button>
+      </>
+    ) : (
+      <button
+        onClick={() => setEditMode(true)}
+        className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
+      >
+        <Pencil size={18} />
+        <span className="hidden sm:inline text-neutral">Edit Profile</span>
+      </button>
+    )}
+  </div>
+)}
+
 
       {/* Profile Section */}
       <div className="relative flex flex-row items-center gap-4 sm:gap-6 w-full">
@@ -205,7 +225,7 @@ function ProfileSection({
               className="w-full h-full object-cover"
             />
           </span>
-          {userDetails?.is_verified && (
+          {!share && userDetails?.is_verified && (
             <Camera
               size={32}
               className="absolute bottom-6 right-0 transform translate-x-1 text-white bg-black w-8 h-8 rounded-full p-[4px] cursor-pointer hover:bg-hover border-2 border-white z-10"
@@ -344,4 +364,4 @@ function ProfileSection({
   );
 }
 
-export default ProfileSection;
+export default JanryProfileSection;
