@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
 import SectionHeader from "../components/sectionheader"; 
+import SaveWorkModal from "../components/saveworkmodal";
 
 function WorkSection({ userDetails, handleChange, isVerified }) {
   const [showMore, setShowMore] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+const [saveSuccess, setSaveSuccess] = useState(false);
 
   const workModes = ["Remote", "Onsite", "Hybrid"];
   const employerClasses = ["Government", "NGO", "Private Sector"];
@@ -65,8 +68,6 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
   
       const urlEncodedData = new URLSearchParams(currentEmploymentData).toString();
   
-      console.log("📤 Employment Data:", urlEncodedData);
-  
       const response = await fetch(`${API_BASE_URL}/update-employment`, {
         method: "PUT",
         headers: {
@@ -83,11 +84,18 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
   
       const result = await response.json();
       console.log("✅", result.message);
-      setIsEditing(false);
+      setSaveSuccess(true);
+  
+      setTimeout(() => {
+        setIsEditing(false);
+        setShowSaveModal(false);
+        setSaveSuccess(false);
+      }, 1500);
     } catch (err) {
       console.error("❌", err);
     }
   };
+  
 
   return (
     <div className="w-full max-w-[1100px] mt-6">
@@ -95,7 +103,7 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
       <SectionHeader
         title="Current Work"
         buttonText={isEditing ? "Save Work" : "Edit Work"}
-        onButtonClick={isEditing ? saveEmployment : handleEditToggle}
+        onButtonClick={isEditing ? () => setShowSaveModal(true) : handleEditToggle}
         isVerified={isVerified}
       />
 
@@ -270,6 +278,18 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
           </div>
         )}
       </div>
+      <SaveWorkModal
+  isOpen={showSaveModal}
+  isSuccess={saveSuccess}
+  onClose={(action) => {
+    if (action === "confirm") {
+      saveEmployment();
+    } else {
+      setShowSaveModal(false);
+    }
+  }}
+/>
+
     </div>
   );
 }

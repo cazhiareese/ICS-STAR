@@ -3,6 +3,7 @@ import { MapPinned, Calendar, Star } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import {jwtDecode} from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 import PersonOutline from "../../../assets/personoutline.png"
+import "../../../index.css";
 
 import RsvpStatus from './rsvpstatus';
 const EventCards = ({event, reservationExclusiveWidth}) => {
@@ -56,7 +57,6 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
     }
 
-    
     const openEventDetails = (eventId) => {
 
         console.log("RSVP clicked for event ID:", eventId);
@@ -71,78 +71,75 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
     };
 
     const truncatedDescription = truncateDescription(event.description, 2);
+
     return (
-        <div className={`max-w-130  ${reservationExclusiveWidth==true? "min-w-95 w-100":"min-w-70 w-full"}} h-130 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1`}
-        onClick={() => {openEventDetails(event.event_id)}} 
-        >
-<div className="h-40 w-full">
-  {event.image ? (
-    <img
-      src={event.image}
-      alt="Event"
-      className="w-full h-full object-cover"
-    />
-  ) : (
-    <div className="w-full h-full bg-primary" />
-  )}
-</div>
+      <div
+      className={`max-w-130 ${reservationExclusiveWidth ? "min-w-95 w-100" : "min-w-70 w-full"} h-120 rounded-3xl border border-neutral-200 overflow-hidden shadow-xl bg-white relative border-gray-200 flex flex-col`}
+      onClick={() => { openEventDetails(event.event_id) }}
+    >
+      {/* Image */}
+      <div className="h-40 w-full">
+        {event.image ? (
+          <img src={event.image} alt="Event" className="w-full h-40 object-cover" />
+        ) : (
+          <div className="w-full h-40 bg-primary" />
+        )}
+      </div>
+    
+      {/* Main Content */}
+      <div className="flex flex-col flex-grow px-5 pt-3 pb-4">
+        <div>
+        {tokentype !== "guest" && tokentype !== "student" && (
+  <RsvpStatus event={event} />
+)}
 
-            
-            
-            <div className="p-4  h-full relative">
-                <div>
-                  <RsvpStatus event={event} />
-                </div>
-                <h1 className="text-xl font-bold text-blue-900 mt-3 h-15 w-full">{event.title}</h1>
-                <p className="text-gray-600 pt-2 h-15 flex line-clamp-2 w-full">{truncatedDescription}</p>
-                
-                
-                <div className="flex items-center mt-4 text-gray-600 space-x-3 w-full">
-                    <MapPinned />
-                    <div className="w-full  overflow-x-auto">
-                        <label className="flex-shrink-0 whitespace-nowrap">{event.location}</label>
-                    </div>
-                </div>
-                <div className="flex items-center mt-2 text-gray-600 space-x-3">
-                    <Calendar />
-                    <div className="flex w-full overflow-x-scroll max-h-8 space-x-5">
-                            {event.dates.map((datetime, index) => (
-                              <div className='flex-shrink-0'>
-
-                                  <label key={index}>{parseTime(datetime)}</label>
-                              </div>
-                            ))}
-
-                    </div>
-                </div>
-                <div className="flex flex-row gap-2 mt-4 overflow-x-scroll w-full h-10 items-center">
-                    {event.tags.map((tag, index) => (
-                        <span
-                            key={index}
-                            className="bg-secondary text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg h-8"
-                        >
-                            {tag}
-                        </span>
-                    ))}
-                    
-                    
-                </div>
-
-                <div className='flex flex-row w-full mt-2'>
-                  <div className='flex flex-row ml-auto space-x-5'>
-                    <img 
-                            src= {PersonOutline}
-                            alt="Sample Image" 
-                            className='mt-auto ml-auto'
-                    /> 
-                    <label className='flex flex-row text-primary ml-auto '>
-                    {event.going_count} Going</label>
-                  </div>
-                    
-                </div>
-            </div>
-            
+          <h1 className="text-2xl font-bold text-black mt-3">{event.title}</h1>
+          <p className="text-gray-600 pt-2 line-clamp-2">{event.description}</p>
         </div>
+    
+        <div className="mt-auto">
+          {/* Location */}
+          <div className="flex items-center mt-3 text-gray-600 space-x-3">
+            <MapPinned />
+            <div className="">
+              <label className="whitespace-nowrap">{event.location}</label>
+            </div>
+          </div>
+    
+          {/* Dates */}
+          <div className="flex items-center mt-1 text-s text-gray-600 space-x-3">
+            <Calendar />
+            <div className="flex truncate space-x-5">
+              {event.dates.map((datetime, index) => (
+                <div key={index} className="flex-shrink-0">
+                  <label>{parseTime(datetime)}</label>
+                </div>
+              ))}
+            </div>
+          </div>
+    
+          {/* Tags */}
+          {event.tags && event.tags.length > 0 && (
+            <div className="flex gap-2 overflow-x-scroll mt-4 items-center scrollbar-hidden">
+            {event.tags.map((tag, index) => (
+              <span
+                key={index}
+                className="bg-secondary text-primary text-xs font-satoshi-medium px-3 py-1.5 rounded-xl h-8 whitespace-nowrap"
+              >
+                {tag}
+              </span>
+            ))}
+            </div>
+           )}
+
+          {/* Going Count */}
+          <div className="flex justify-end items-center text-primary font-extrabold mt-1 pr-2">
+            <img src={PersonOutline} alt="Going" className='h-5 mr-2'/>
+            <label>{event.going_count} are going</label>
+          </div>
+        </div>
+      </div>
+    </div>    
     );
 };
 

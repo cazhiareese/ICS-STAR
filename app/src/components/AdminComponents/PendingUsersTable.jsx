@@ -132,7 +132,7 @@ function PendingUsersTable({ pendingUsers = [], loading = false }) {
             ))}
             {/* Empty Rows to Fill Up to 10 */}
             {Array.from({ length: emptyRows }).map((_, index) => (
-              <tr
+              <tr 
                 key={`empty-${index}`}
                 className="border-b border-gray-200 h-14"
               >

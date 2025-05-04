@@ -5,17 +5,19 @@ import { MapPinned, Calendar, Star, Search, Filter } from 'lucide-react';
 import axios from 'axios';
 import EventCards from './EventComponents/eventCards';
 import EventCardsSkeleton from './EventComponents/eventCardsSkeleton'
+import "../../index.css";
 import { samp } from 'framer-motion/client';
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { jwtDecode } from "jwt-decode";
+import ModalTemplate from '../../AuthPages/modaltemplate';
 
 const EventsLanding = () => {
 
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [pickedDate, setPickedDate] = useState(null);
-
+    const [showModal, setshowModal] = useState(false);
 
     const [isSticky, setIsSticky] = useState(false);
 
@@ -145,11 +147,12 @@ useEffect(() => {
             })
             .then(response => {
                 console.log("RSVP canceled:", response.data);
+                window.location.reload();
             })
             .catch(error => {
                 console.error("Error canceling RSVP:", error);
             });
-            setReservations(currReservations=>currReservations.filter(reservation => reservation !== event)); 
+            
             
             // setReservationSignal(true);
         } else {
@@ -169,13 +172,9 @@ useEffect(() => {
             
             // console.log(isAlreadyRSVPd)
             // setReservationSignal(true);
-            setReservations(currReservations => [
-                ...currReservations, event // Add event (or sampleEvent) to reservations
-            ]);    
+            
         }
     }
-
-
 
     if (user === null) {
         return (
@@ -186,10 +185,10 @@ useEffect(() => {
     }
     return (
         <>
-            <div className="flex flex-col items-center ">
-            <div className="flex flex-col w-full shadow-md pb-4 items-center rounded-b-[35px] bg-white">
-            <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
-  <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
+        <div className="flex flex-col items-center bg-[#F8F9FB]">
+        <div className="flex flex-col w-full bg-whitey shadow-md  items-center rounded-b-[35px] bg-white">
+        <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 shadow-md' : 'relative'}`}>
+        <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
     <div className="relative flex w-full max-w-[350px] sm:max-w-[600px]">
       {/* Search Input */}
       <input
@@ -212,18 +211,12 @@ useEffect(() => {
             .slice(0, 5); // limit to 5
 
           setSuggestions(matches || []);
-
-          if (exploreRef.current) {
-            const yOffset = -130;
-            const y = exploreRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: "smooth" });
-          }
         }}
         value={searchInput}
       />
 
       {/* Search Button */}
-      <div className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+      <div className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-20 cursor-pointer">
         <Search size={20} />
       </div>
     </div>
@@ -255,11 +248,24 @@ useEffect(() => {
                                         
                                         <button
                                             className="z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer bg-green-500 text-whitey"
-                                            onClick={() => handleRSVPClick(reservation.event_id, reservation)}
+                                            onClick={() => setshowModal(true)}
                                         >
                                             <Star className="fill-white" />
                                             <label>Going</label>
                                         </button>
+                                        {showModal && (
+                                            <ModalTemplate
+                                                isOpen={showModal}
+                                                onClose={() => setshowModal(false)}
+                                                choiceclose="Close"
+                                                onContinue={()=>handleRSVPClick(reservation.event_id, reservation)}
+                                                choicecontinue="Cancel RSVP"
+                                                information="This will remove your attendance from the event."
+                                                header="Cancel RSVP?"
+                                                color="bg-red-700"
+                                            >
+                                            </ModalTemplate>
+                                        )}
                                     </div>
                                 ))
                             ) : (
@@ -411,7 +417,7 @@ useEffect(() => {
 
                     
 
-                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-center sm:justify-start sm:mx-0 mx-10">
+                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start">
                         
                         {suggestions!= "none" ? (
                             
@@ -419,20 +425,9 @@ useEffect(() => {
                             suggestions.map((event, index) => {
                             const isGoing = reservations && reservations.some(reservation => reservation.event_id === event.event_id);
                             return !isGoing && (
-                                <div key={index} className="flex relative">
+                                <div key={index} className="flex relative ">
                                 <EventCards event={event} reservationExclusiveWidth={true}/>
-                                {userType === "alumni" && (
-                                    <button
-                                    className={`z-10 flex flex-row space-x-3 absolute right-25 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                                    }`}
-                                    onClick={() => handleRSVPClick(event.event_id, event)}
-                                >
-                                    <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                                    <label>{isGoing ? 'Going' : 'RSVP'}</label>
-                                    </button>
-                                    )
-                                }
+
                                 </div>
                             );
                             })
@@ -443,18 +438,7 @@ useEffect(() => {
                             return !isGoing && (
                             <div key={index} className="flex relative ">
                                 <EventCards event={event} />
-                                {userType === "alumni" && (
-                                    event.rsvp_closed == false && <button
-                                    className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer  ${
-                                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                                    }`}
-                                    onClick={() => handleRSVPClick(event.event_id, event)}
-                                >
-                                    <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                                    <label>{isGoing ? 'Going' : 'RSVP'}</label>
-                                    </button>
-                                    )
-                                }
+
                             </div>
                             );
                         })
@@ -463,7 +447,6 @@ useEffect(() => {
                             <EventCardsSkeleton />
                             <EventCardsSkeleton />
                             <EventCardsSkeleton />
-                            {/* <EventCards event={sampleEvent}/> */}
                             
                         </div>
                         )}
@@ -471,6 +454,7 @@ useEffect(() => {
                 </div>
 
             </div>
+            
         </>
     );
     

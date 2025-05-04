@@ -3,7 +3,8 @@ import React from 'react'
 
 function MonetaryAmountInput({
     monetaryAmountInput,
-    setMonetaryAmountInput
+    setMonetaryAmountInput,
+    paymentError
 }) {
     // Handle change in input of amount
     const handleChange = (e) => {
@@ -12,7 +13,7 @@ function MonetaryAmountInput({
 
     return (
         <div className='outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-full'>
-            <h1 className='text-lg font-satoshi-medium pb-3'>Enter Amount</h1>
+            <h1 className='text-lg font-satoshi-medium pb-3'>Enter Amount <span className='text-error'>*</span></h1>
             {/* Input Box */}
             <div className="relative w-full h-14">
                 <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black text-xl">₱</span>
@@ -22,6 +23,7 @@ function MonetaryAmountInput({
                     onChange={handleChange}
                 />
             </div>
+            {paymentError && (<h1 className='text-error text-sm font-satoshi-regular justify-start w-full flex pt-1'>Please enter a valid amount.</h1>)}
         </div>
     )
 }

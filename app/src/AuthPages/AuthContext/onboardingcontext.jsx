@@ -14,7 +14,7 @@ export function OnboardingProvider({ children }) {
     const [affiliations, setAffiliations] = useState(false);
 
     const [userData, setUserData] = useState({
-        standing: "null",
+        standing: "freshman",
         profilePicture: null,
         scholarshipList: [],
         affiliationList:[],
