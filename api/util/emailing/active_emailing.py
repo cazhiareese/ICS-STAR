@@ -73,6 +73,8 @@ async def send_inactive_email(inactive: Dict) -> bool:
 
 async def main():
     try:
+        print(SUPABASE_URL)
+        print(SUPABASE_KEY)
         success = await check_inactive_then_email()
         print(f"Inactive user check completed: {'Success' if success else 'Failed'}")
     except Exception as e:
