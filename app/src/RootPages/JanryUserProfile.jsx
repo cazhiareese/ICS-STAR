@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ProfileSection from "./Profile/profilesection";
+import JanryProfileSection from "./Profile/janryprofilesection";
 import UserProfileTabs from "./Profile/components/userprofiletabs";
 import PersonalInfoSection from "./Profile/About/personalinfosection";
 import SkillsInterestsSection from "./Profile/About/skillsinterestsection";
@@ -12,7 +12,7 @@ import JobPosted from "./Profile/JobPosting/userjobposting";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 import { useParams } from "react-router-dom";
-
+import AdminBack from "../components/AdminComponents/AdminBack";
 
 import {
   fetchProfile as apiFetchProfile,
@@ -31,7 +31,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 
-function UserProfile() {
+function JanryUserProfile() {
   const id = useParams();
   console.log("naku",id);
   const [editMode, setEditMode] = useState(false);
@@ -42,8 +42,9 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [share, setShare] = useState(null)                                     //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
-
+  const [share, setShare] = useState(null)  
+  const [userId, setUserId] = useState(null);
+                                  //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
   //fetch user details from backend
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -55,18 +56,19 @@ const tokentype = decoded.role;
 console.log(decoded);
 console.log("Decoded token typee:", tokentype);
 
-const userIdFromURL = id.userid; // id is from useParams()
+console.log("unang id",id);
+//needs to fixed si janry ay userId, si redd ay userd
+
+const userIdFromURL = id.userId; // id is from useParams()
 console.log("User ID from URL:", userIdFromURL);
 const loggedInUserId = decoded.sub;
 console.log("Logged-in User ID:", loggedInUserId);
 
-setShare(false);
 
-
-
-const user_id = loggedInUserId;
+setShare(true);
+const user_id = userIdFromURL && !share ? userIdFromURL : loggedInUserId;
+setUserId(userIdFromURL); // Set the user ID in state
 console.log("Final user ID:", user_id);
-
 
  
 
@@ -136,7 +138,7 @@ const fetchUserProfileData = async () => {
           tenured_status: workData.tenured_status,
            salary_grade: workData.salary_grade,
     });
-    console.log("User Details:", userDetails);
+
   } catch (error) {
     console.error("Error fetching user profile data:", error);
     throw error;
@@ -324,29 +326,31 @@ const fetchUserProfileData = async () => {
   const handleChange = (e, field) => {
     setUserDetails({ ...userDetails, [field]: e.target.value });
   };
-
+  console.log("User Details:", userDetails);
+  console.log("iddddd",userId);
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       
-      {!isLoading && !userDetails?.is_verified && (
-  <div className="flex items-center gap-2 w-full max-w-3xl px-4 py-3 rounded-2xl border border-primary bg-blue-50 text-primary sm:max-w-[1100px]">
-    <Info className="w-5 h-5 flex-shrink-0" />
-    <span className="text-sm sm:text-base font-satoshi-bold text-center sm:text-left">
-      Pending Account Verification
-    </span>
-  </div>
-)}
+    {/* Left-aligned section for Back button and Records header */}
+    <div className="w-full max-w-[1100px]">
+      <AdminBack label={'Back'} />
+      <div className="flex justify-start items-center mb-5">
+        <h1 className="text-primary font-satoshi-bold text-5xl">Alumni Information</h1>
+      </div>
+    </div>
 
 
       {/* Profile Section */}
-      <ProfileSection
+      <JanryProfileSection
         activeTab={activeTab}
         editMode={editMode}
         userDetails={userDetails}
         setEditMode={setEditMode}
         handleChange={handleChange}
+        share={share} // Pass share prop to ProfileSection
+        userId={userId} // Pass userId to ProfileSection
       />
-      {userDetails.user_type === "alumni" && (
+      {userDetails.user_type === "alumni" && !share && (
         <>
           {/* Navigation Tabs */}
           <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
@@ -404,4 +408,4 @@ const fetchUserProfileData = async () => {
   );
 }
 
-export default UserProfile;
+export default JanryUserProfile;

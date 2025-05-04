@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import EventCardsMainSkeleton from './eventCardsMainSkeleton';
 import RsvpStatus from './EventComponents/rsvpstatusbig';
 import PersonOutline from "../../assets/personoutline.png"
+import { Paperclip } from 'lucide-react';
 
 const EventCardsMain = () => {
     const [isSticky, setIsSticky] = useState(false);
@@ -282,37 +283,38 @@ const EventCardsMain = () => {
                     </div>
                     <div className='flex flex-col mt-5 '>
                         <label className='text-gray-400'>Event Description</label>
-                        <label className="text-gray-600 pt-2">{event.description} 
+                        <label className="text-gray-600 pt-2 min-h-25">{event.description} 
 
 
 
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                         </label>
 
                         <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
+                        <ul className="space-y-2">
                         {event.links.map((link, index) => (
-                                <li key={index}>
-                                    <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                        {link}
-                                    </a>
-                                </li>
+                            <li key={index} className="flex items-center space-x-2">
+                            <Paperclip size={16} className="text-blue-500 flex-shrink-0" />
+                            <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline break-all">
+                                {link}
+                            </a>
+                            </li>
                         ))}
+                        </ul>
                     </div>
                     
-                    <div className="flex flex-row gap-2 mt-5 overflow-x-scroll">
+                    <div className="flex flex-row gap-2 mt-5 overflow-x-auto items-center thin-scrollbar">
                         {event.tags.map((tag, index) => (
                             <span
-                                key={index}
-                                className="bg-blue-100 text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg"
+                            key={index}
+                            className="bg-secondary text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg whitespace-nowrap"
                             >
-                                {tag}asdfsd
+                            {tag}
                             </span>
                         ))}
-                        
-                        
                     </div>
 
-                    <div className='flex flex-row w-full mt-2'>
+
+                    <div className='flex flex-row w-full mt-5'>
                                       <div className='flex flex-row ml-auto space-x-5'>
                                         <img 
                                                 src= {PersonOutline}

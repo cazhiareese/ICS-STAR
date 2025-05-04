@@ -63,7 +63,7 @@ const SeeAllLocationModal = ({ isOpen, setIsOpen, setLocationList, locationList 
             >
                 <div className="flex justify-between items-center p-4">
                     <button className="ml-auto outline-1 outline-gray-400 rounded-full p-2 cursor-pointer" onClick={closeModal}>
-                        <X size={26} />
+                        <X size={16} />
                     </button>
                 </div>
 

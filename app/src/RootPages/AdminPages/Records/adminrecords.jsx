@@ -165,7 +165,7 @@ function AdminRecords() {
         </div>
         {/* Table for desktop*/}
         <div
-          className="border border-gray-300 h-fit rounded-xl p-6 hidden lg:block bg-white"
+          className="border border-gray-300 h-fit rounded-xl p-6 hidden lg:block bg-white overflow-auto"
         >
           <UsersTable data={users} loading={loading} userType={userType}/>
         </div>
