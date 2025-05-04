@@ -18,6 +18,7 @@ function AdminEngagementReports() {
   const [donorHighlights, setDonorHighlights] = useState({});
   const [recentNewsLetters, setRecentLetters] = useState([]);
   const [visitsLoading, setVisitsLoading] = useState(true)
+  const [token, setToken] = useState(null)
 
   // BASE URL ENV
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -26,7 +27,7 @@ function AdminEngagementReports() {
     setVisitsLoading(true)
     try {
       let response = await axios.get(
-        `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`
+        `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`, {headers: {Authorization: `Bearer ${token}`}}
       );
       console.log(response.data);
       setFullEngagementReport(response.data);
@@ -46,13 +47,8 @@ function AdminEngagementReports() {
       setFullEngagementReportLoading(true);
       try {
         // First request: Engagement Statistics
-        const token = localStorage.getItem('token');
-        let response = await axios.get(
-          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`, {headers: {Authorization: `Bearer ${token}`}}
-        );
-        console.log(response.data);
-        setFullEngagementReport(response.data);
-
+        let response;
+        fetchEngagementStatistics()
         // Second request: Most Donations
         response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/donation-drives/top-3-donors?time_range=${daysFilter}`, {headers: {Authorization: `Bearer ${token}`}});
         console.log(response.data);
@@ -87,7 +83,7 @@ function AdminEngagementReports() {
         setFullEngagementReportLoading(false);
       }
     };
-
+    setToken(localStorage.getItem('token'))
     fetchData();
   }, [daysFilter]);
 
@@ -273,7 +269,7 @@ function AdminEngagementReports() {
           {/* Chart Card */}
           <div className="bg-white rounded-2xl shadow p-6 mb-8">
             {visitsLoading ? (
-                <div className="bg-white rounded-2xl shadow p-6 mb-8">
+                <>
                 <div className="flex flex-row">
                   <div className="flex flex-col pb-5">
                     <div className="h-8 w-48 bg-gray-300 rounded mb-2"></div>
@@ -285,7 +281,7 @@ function AdminEngagementReports() {
                   </div>
                 </div>
                 <div className="w-full h-56 bg-gray-200 rounded-lg mt-4"></div>
-              </div>
+                </>
             ) : (
               <>
               <div className="flex flex-row">
