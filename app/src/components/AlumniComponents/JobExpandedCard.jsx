@@ -8,7 +8,8 @@ import JobModal from '../../RootPages/AlumniPages/job-posting/jobcomponent/jobmo
 import { jwtDecode } from 'jwt-decode';
 
 
-function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded, setJob }) {
+
+function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded, setJob, setSelectedJobId }) {
     const [showOptions, setShowOptions] = useState(false);
     const [isInterested, setIsInterested] = useState(false);
     const [starLoading, setStarLoading] = useState(false);
@@ -117,6 +118,11 @@ const [showModal, setShowModal] = useState(false);//
         navigate(`/alumni/jobPosting/report/${jobId}`);
     }
 
+
+    const handleModalBack = () => {
+        setMobileExpanded(false)
+        setSelectedJobId("");
+    }
 
     return (
         <div className='flex flex-col items-center'>
@@ -281,7 +287,7 @@ const [showModal, setShowModal] = useState(false);//
             </div>
             {/* MOBILE VIEW */}
             {mobileExpanded && (
-                <div className="fixed inset-0 flex justify-center sm:mr-0 mr-3 md:hidden z-50">
+                <div className="fixed inset-0 flex justify-center md:hidden z-50">
                     <motion.div
                         className="w-screen bg-gray-50 p-4 shadow-lg rounded-t-2xl overflow-y-auto flex flex-col gap-4"
                         style={{ maxHeight: "100vh", height: "100%" }}
@@ -292,7 +298,7 @@ const [showModal, setShowModal] = useState(false);//
                     >
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-col outline-1 outline-neutral-300 w-full rounded-2xl px-6 pt-4 pb-6">
-                                <div className="flex items-center mb-4 cursor-pointer" onClick={() => setMobileExpanded(false)}>
+                                <div className="flex items-center mb-4 cursor-pointer" onClick={handleModalBack}>
                                     <MoveLeft className="text-primary" size={24} />
                                     <p className="text-primary font-satoshi-medium text-base ml-2">Back</p>
                                 </div>
