@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import maya from "../../../assets/maya_logo.png";
 
 function PaymentMode({ submitMayaDonation }) {
-  const [activeButton, setActiveButton] = useState(null);
+  const [activeButton, setActiveButton] = useState('qr'); // 'qr' is now the default
 
   const handlePayWithMaya = () => {
     setActiveButton('maya');
@@ -27,7 +27,7 @@ function PaymentMode({ submitMayaDonation }) {
 
         {/* Pay with Maya Button */}
         <button
-          onClick={handlePayWithMaya} // Integrated the submitMayaDonation function here
+          onClick={handlePayWithMaya}
           className={`flex items-center justify-center gap-2 flex-1 py-3 cursor-pointer rounded-2xl border-2 ${activeButton === 'maya' ? 'border-primary' : 'border-gray-300'} text-gray-700 font-satoshi-bold hover:bg-gray-100`}
         >
           Pay with
