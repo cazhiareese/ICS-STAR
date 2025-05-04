@@ -144,7 +144,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
             </div>
             
         </div>
-        </div>
+       
     );
 };
 

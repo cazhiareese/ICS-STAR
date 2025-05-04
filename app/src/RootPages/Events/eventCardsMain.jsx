@@ -246,9 +246,11 @@ const EventCardsMain = () => {
             
             <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
             {user?.role !== "student" && event.rsvp_closed==false && (
+
+                isloading ?
                 <button
                     className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                    isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
+                    isGoing ? 'bg-primary text-white' : 'bg-primary text-white'
                     } hover:scale-115 transform transition-transform duration-200`}
                     onClick={() => {
                         if (!isGoing) {
@@ -259,18 +261,33 @@ const EventCardsMain = () => {
                         }
                       }}
                     >
-                    {!isloading ? <>
+                    
                             <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                            <label>{isGoing ? 'Going' : 'RSVP'}</label>
-                        </> :
-                        <>
-                        <CircularLoading/>
-                        </> 
+                            <label>{isGoing ? 'Reserve my Spot' : 'Cancel Reservations'}</label>
+                    
+                </button>:
+                <div className='sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer'>
+                <CircularLoading/>
+                </div> 
 
-                    }
-                </button>
             )}
-            <div className="sm:max-w-180 sm:w-[80%] w-[90%] min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
+
+            
+            
+            <div className="sm:max-w-180 sm:w-[80%] w-[90%] min-h-180 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
+
+            <div className='hidden sm:flex z-10 flex-row absolute right-10 top-90 px-4 py-2 rounded-full '>
+                        <div className='flex flex-row ml-auto space-x-2 items-center'>
+                        <img 
+                            src={PersonOutline}
+                            alt="Sample Image" 
+                            className='h-4 w-4'
+                        /> 
+                        <label className='flex flex-row text-primary'>
+                            {event.going_count} are Going
+                        </label>
+                        </div>
+                    </div>
                 <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl overflow-hidden">
                     {event.image && (
                         <img
@@ -283,39 +300,52 @@ const EventCardsMain = () => {
                 <div className='pt-5 mx-10'>
                   <RsvpStatus event={event} />
                 </div>
-                {user?.role !== "student" && event.rsvp_closed ==false && (
-
-                    !isloading ?
-                    <button
-                        className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                        isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                        } hover:scale-115 transform transition-transform duration-200`}
-                        onClick={() => {
-                            if (!isGoing) {
-                              // show modal here
-                              setshowModalAdd(true);  // Example
-                            } else {
-                                setshowModalCancel(true); 
-                            }
-                          }}
-                    >
-                         
-                            <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                            <label>{isGoing ? 'Going' : 'RSVP'}</label>
-                        
-                        
-
-                        
-                        
-                    </button>
-                    :
-                    <div className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                        'bg-white text-primary'
-                        } hover:scale-115 transform transition-transform duration-200`}>
-                        <CircularLoading/>
-                    </div> 
-
-                )}
+                {user?.role !== "student" && (
+                    <>
+                        {!event.rsvp_closed ? (
+                        !isloading ? (
+                            <button
+                            className={`hidden sm:flex z-10 flex-row space-x-2.5 absolute right-10 top-80 px-3.5 py-2 rounded-full shadow-lg hover:cursor-pointer ${
+                                isGoing ? 'bg-primary text-white' : 'bg-primary text-white'
+                            } hover:scale-110 transform transition-transform duration-200`}
+                            onClick={() => {
+                                if (!isGoing) {
+                                setshowModalAdd(true);
+                                } else {
+                                setshowModalCancel(true);
+                                }
+                            }}
+                            >
+                            <label className="flex items-center">
+                                {isGoing ? <Star className="fill-white w-4 h-4" /> : <Star className="w-4 h-4" />}
+                            </label>
+                            <label className={`text-[15px] ${!isGoing ? 'font-satoshi-regular' : 'font-satoshi-bold'}`}>
+                                {isGoing ? 'Cancel Reservations' : 'Reserve my Spot'}
+                            </label>
+                            </button>
+                        ) : (
+                            <div
+                            className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer bg-white text-primary hover:scale-115 transform transition-transform duration-200`}
+                            >
+                            <CircularLoading />
+                            </div>
+                        )
+                        ) : (
+                        // SHOW this when RSVP is closed
+                        <button
+                            disabled
+                            className={`hidden sm:flex z-10 flex-row space-x-2.5 absolute right-10 top-80 px-3.5 py-2 rounded-full bg-gray-300 text-gray-700 shadow-xl cursor-not-allowed`}
+                        >
+                            <label className="flex items-center">
+                            <Star className="w-4 h-4 text-gray-500" />
+                            </label>
+                            <label className={`text-[15px] font-satoshi-regular`}>
+                            Reserve my Spot
+                            </label>
+                        </button>
+                        )}
+                    </>
+                    )}
                 <div className="p-4 mx-5 flex flex-col">
                     <h1 className="sm:text-3xl text-2xl font-satoshi-bold text-blue-900">{event.title}</h1>
                     
@@ -342,8 +372,9 @@ const EventCardsMain = () => {
 
 
                         </label>
-
-                        <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
+                    {event.links.length >0 &&
+                    <>
+                    <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
                         <ul className="space-y-2">
                         {event.links.map((link, index) => (
                             <li key={index} className="flex items-center space-x-2">
@@ -354,6 +385,10 @@ const EventCardsMain = () => {
                             </li>
                         ))}
                         </ul>
+                    </>
+
+                    }
+                        
                     </div>
                     
                     <div className="flex flex-row gap-2 mt-5 overflow-x-auto items-center thin-scrollbar">
@@ -368,7 +403,7 @@ const EventCardsMain = () => {
                     </div>
 
 
-                    <div className='flex flex-row w-full mt-5'>
+                    <div className='flex flex-row w-full mt-5 sm:hidden'>
                                       <div className='flex flex-row ml-auto space-x-5'>
                                         <img 
                                                 src= {PersonOutline}
