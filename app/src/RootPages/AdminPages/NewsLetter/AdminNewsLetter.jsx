@@ -92,27 +92,7 @@ function AdminNewsletter() {
             setFocused={setFocused}
           />
           </div>
-        <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-          <MoveLeft
-            className='cursor-pointer'
-            onClick={() => handlePageChange(page - 1)}
-          />
-          <p> Page </p>
 
-          <input
-            type="text"
-            placeholder="Search"
-            value={query}
-            onChange={(e) => {
-              setPage(1); // Reset to page 1 when searching
-              setQuery(e.target.value);
-            }}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2' : 'border-gray-400'}`}
-          />
-          <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
-        </div>
         {query.trim() === '' && (
           <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
             <MoveLeft className='cursor-pointer' onClick={() => handlePageChange(page - 1)} />
