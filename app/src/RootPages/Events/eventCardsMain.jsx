@@ -237,91 +237,10 @@ const EventCardsMain = () => {
         // window.location.reload();
     }
 
-    {/*Show a loading state while fetching the event*/}
     if (!event && isGoing===null) {
-        return <div><EventCardsMainSkeleton/></div>;
-        return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
         return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
     }
     return (
-        <div className='bg-[#F8F9FB]'>
-          <div className='mx-auto sm:max-w-250 sm:w-[80%] h-full flex flex-col items-center justify-center'>
-            {/* Back Button */}
-            <label 
-              className="flex flex-row cursor-pointer sm:pt-0 mt-8 my-5 sm:mb-7 sm:space-x-7 ml-auto w-full font-satoshi-bold text-primary" 
-              onClick={() => navigate("/alumni/events")}
-            >
-              <ArrowLeft />
-              <label className='cursor-pointer'>Go Back</label>
-            </label>
-      
-            {/* Mobile RSVP Button (Absolute positioned) */}
-            {user?.role !== "student" && !event.rsvp_closed && (
-              <button
-                className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 rounded-full shadow-md hover:cursor-pointer ${
-                  isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                } hover:scale-115 transform transition-transform duration-200`}
-                onClick={() => handleRSVPClick(event.event_id)}
-              >
-                <label>{isGoing ? <Star className='fill-white' /> : <Star />}</label>
-                <label>{isGoing ? 'Going' : 'Reserve My Spot'}</label>
-              </button>
-            )}
-      
-            {/* Event Card */}
-            <div className="relative min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-whitey w-full sm:border-gray-200 p-10">
-              {/* Image */}
-              <div className="h-80 bg-primary rounded-2xl overflow-hidden">
-                {event.image && (
-                  <img
-                    src={event.image}
-                    alt="Event"
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
-      
-              {/* Desktop RSVP Elements*/}
-              {user?.role !== "student" && !event.rsvp_closed && (
-                <div className="hidden sm:flex flex-col items-end absolute right-10 mt-3 top-[360px]">
-                  <button
-                    className={`items-center px-6 py-3 flex flex-row gap-3 rounded-full shadow-md hover:cursor-pointer ${
-                      isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white font-bold'
-                    } hover:scale-105 transform transition-transform duration-200`}
-                    onClick={() => handleRSVPClick(event.event_id)}
-                  >
-                    <label>{isGoing ? <Star className="fill-white" /> : <Star />}</label>
-                    <label className="text-l font-extrabold">{isGoing ? 'Going' : 'Reserve My Spot'}</label>
-                  </button>
-      
-                  <div className="flex flex-row text-lg items-center text-primary mt-2 font-bold px-4 py-2">
-                    <img src={PersonOutline} className="mr-3" />
-                    <label>{event.going_count} are going</label>
-                  </div>
-                </div>
-              )}
-      
-              {/* Main Content */}
-              <div className="pt-5">
-                <RsvpStatus event={event} />
-              </div>
-      
-              <div className="block py-4 flex flex-col">
-                <h1 className="sm:text-4xl text-2xl font-satoshi-black text-blue-900">{event.title}</h1>
-                <label className='text-gray-400 pt-4'>Event Details</label>
-      
-                {/* Location */}
-                <div className="flex items-center mt-2 text-gray-600 space-x-3">
-                  <MapPinned />
-                  <label>{event.location}</label>
-                </div>
-      
-                {/* Date */}
-                <div className="flex w-full items-center mt-2 text-gray-600 space-x-3">
-                  <Calendar />
-                  {event.datetimes.map((datetime, index) => (
-                    <div key={index} className="flex flex-row max-h-32 flex-shrink-0">
-                      <label className='pr-5'>{parseTime(datetime)}</label>
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
             
             <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>

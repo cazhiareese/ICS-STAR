@@ -180,7 +180,7 @@ function PersonalInformation(){
             </div>
             {showEmailErrorModal && (
                 <ModalTemplate
-                    onClose={() => setShowEmailErrorModal(false)}
+                    onClose={() => setShowSuccessModal(false)}
                     choiceclose="Close"
                     header="Error"
                     information="Email already registered, please enter another email."
