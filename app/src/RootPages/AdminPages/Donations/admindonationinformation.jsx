@@ -258,14 +258,14 @@ function AdminDonationInformation() {
                 <>
                   {/* View Statistics */}
                   <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer hover:bg-hover' onClick={() => {navigate(`/admin/donations/donation-drive-demographics/${driveid}`)}}>
-                    <p className='font-satoshi-light'>View Statistics</p>
+                    <p className='font-satoshi-regular'>View Statistics</p>
                   </button>
                   {/* Close Drive */}
                   <button
                     className='bg-error hover:bg-red-400 text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'
                     onClick={() => {setCloseDonation(true)}}
                   >
-                    <p className='font-satoshi-light'>Close Drive</p>
+                    <p className='font-satoshi-regular'>Close Drive</p>
                   </button>
                 </>
               )}
@@ -570,18 +570,18 @@ function AdminDonationInformation() {
                       <p className="text-xl font-satoshi-medium text-center mt-4">
                         Are you sure you want to close this donation drive?
                       </p>
-                      <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                      <div className="pt-8 font-satoshi-medium flex gap-3 mt-6 w-ful h-full justify-center">
                         <button
-                          className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-400"
+                          className="bg-white text-primary px-4 py-2 rounded-3xl w-25 outline outline-1 outline-primary cursor-pointer"
                           onClick={() => setCloseDonation(false)}
                         >
                           Cancel
                         </button>
                         <button
-                          className="bg-error text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                          className="bg-error text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
                           onClick={() => handleCloseDrive()}
                         >
-                          Confirm
+                          Close
                         </button>
                       </div>
                     </>

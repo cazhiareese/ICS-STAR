@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { MoveLeft, Pencil, Trash2, CalendarDays, Link } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import NewsletterModal from '../../../components/AdminComponents/Adminnewslettermodal'
 
 function AdminNewsletterDetails() {
@@ -45,8 +46,8 @@ function AdminNewsletterDetails() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen w-full flex items-center justify-center">
-        <p>Loading newsletter...</p>
+      <div className='flex justify-center items-center min-h-screen w-full'>
+        <CircularLoading />
       </div>
     )
   }

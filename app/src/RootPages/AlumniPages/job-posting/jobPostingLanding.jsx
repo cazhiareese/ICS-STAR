@@ -144,7 +144,7 @@ function JobPostingLanding() {
     // Get job by id
     useEffect(() => {
         const fetchJobs = async () => {
-            console.log(`${API_BASE_URL}/job-postings/${selectedJobId}`);
+            // console.log(`${API_BASE_URL}/job-postings/${selectedJobId}`);
             try {
                 const response = await fetch(`${API_BASE_URL}/job-postings/${selectedJobId}`);
                 if (!response.ok) {
@@ -528,7 +528,7 @@ function JobPostingLanding() {
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} />
+                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} setSelectedJobId={setSelectedJobId} />
                 )}
                 
             </div>

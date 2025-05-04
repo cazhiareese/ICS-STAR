@@ -177,7 +177,7 @@ function AdminUserDetails() {
   return (
     loading ? (
       <div className="flex items-center justify-center h-screen">
-        <CircularLoading size={90} />
+        <CircularLoading />
       </div>
     ) : error ? (
       <div className="text-red-500 font-satoshi-medium text-center p-6">{error}</div>
