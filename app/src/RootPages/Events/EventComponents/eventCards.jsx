@@ -71,7 +71,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
         return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '...');
     };
 
-    //const truncatedDescription = truncateDescription(event.description, 2);
+    const truncatedDescription = truncateDescription(event.description, 2);
 
     return (
         <div className={`max-w-130  ${reservationExclusiveWidth==true? "md:min-w-110  w-80 sm:w-full" :"xl:min-w-70 lg:min-w-120 md:min-w-70 sm:w-full  w-90 "}} h-130 rounded-3xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1`}
