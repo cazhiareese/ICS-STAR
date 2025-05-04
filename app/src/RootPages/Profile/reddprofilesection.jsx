@@ -20,7 +20,7 @@ import CircularLoading from "../../components/LoadingComponents/circularloading"
 import SocialLinksEditModal from "./components/sociallinksmoda";
 import axios from "axios";
 import ReportModal from "../../components/AdminComponents/ReportModal";
-import AlumniTransitionModal from "../../components/AdminComponents/AlumniTransitionModal";
+
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
@@ -44,9 +44,6 @@ function AdminProfileSection({
   //console.log("ProfileSection userId:", userId);
 
     const [limitAccessLoading, setLimitAccessLoading] = useState(false);
-    const [showAlumniModal, setShowAlumniModal] = useState(false);
-    const [makeAlumniLoading, setMakeAlumniLoading] = useState(false);
-    const [transitionComplete, setTransitionComplete] = useState(false);
     const [showReportsModal, setShowReportsModal] = useState(false);
 
 
@@ -224,20 +221,7 @@ function AdminProfileSection({
     setShowCancelModal(false);  // Close the cancel modal without any changes
   };
 
-  async function makeAlumni() {
-    setMakeAlumniLoading(true);
-    try {
-      await axios.put(`${API_BASE_URL}/admin/transition/${userId}`, null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTransitionComplete(true);
-    } catch (error) {
-      console.error("Error transitioning to alumni:", error);
-      setError("Failed to transition to alumni");
-    } finally {
-      setMakeAlumniLoading(false);
-    }
-  }
+
 
   async function limitAccountAccess() {
     setLimitAccessLoading(true);
@@ -464,17 +448,7 @@ function AdminProfileSection({
         isLoading={limitAccessLoading}
         isComplete={limitAccessComplete}
       />
-    <AlumniTransitionModal
-        isOpen={showAlumniModal}
-        onClose={() => {
-          setShowAlumniModal(false);
-          setTransitionComplete(false);
-          if (transitionComplete) window.location.reload();
-        }}
-        onConfirm={makeAlumni}
-        isLoading={makeAlumniLoading}
-        isComplete={transitionComplete}
-/> 
+
 
     </div>
   );
