@@ -1993,7 +1993,7 @@ def get_top_drives_with_goals_reached(
             "title": drive.title,
             "target_cost": drive.target_cost,
             "total_amount": drive.total_amount,
-            "percent_funded": drive.percent_funded
+            "percent_funded": round(drive.percent_funded, 2) if drive.percent_funded else 0
         }
         top_drives.append(drive_out)
 
