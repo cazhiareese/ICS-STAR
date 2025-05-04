@@ -488,7 +488,11 @@ function AdminCreateEvent({ purpose }) {
               name="isAll"
               className="accent-primary cursor-pointer"
               checked={formData.isAll}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                handleInputChange(e);
+                setAllAlumni(true); //set as true, all alumni na ito
+              }}
+              
             />
             <label>All Alumni</label>
           </div>
@@ -496,7 +500,7 @@ function AdminCreateEvent({ purpose }) {
           <FilterDropdown 
               setCareerList={setCareerList} 
               setDateList={setDateList} 
-              setJobList={setJobList} // Added for sendtoJob
+              setJobList={setJobList} // return lists sa lahat
               disabled={allAlumni} 
             />
 
