@@ -22,8 +22,6 @@ function AdminDashboard() {
   const [alumniIndustries, setAlumniIndustries] = useState([]);
   const [alumniLocations, setAlumniLocations] = useState([]);
   const [fullEngagementReport, setFullEngagementReport] = useState([]);
-  const [daysFilter, setDaysFilter] = useState("30days");
-  const [batchFilter, setBatchFilter] = useState("2022");
   const [events, setEvents] = useState([]);
   const [topDonation, setTopDonation] = useState([]);
   const COLORS = ["#0B2B6F", "#2858D6", "#8CA6DB", "#CBD7F1", "#E8F0FF"];
@@ -84,7 +82,7 @@ function AdminDashboard() {
         setTopDonation(topDonationsResponse.data);
 
         // Fetch Engagement
-        const engagementResponse = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
+        const engagementResponse = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=30_days`);
         setFullEngagementReport(engagementResponse.data);
 
       } catch (error) {
