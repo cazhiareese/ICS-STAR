@@ -21,7 +21,11 @@ function JobCard({job, selectedJobId, setSelectedJobId, setMobileExpanded}) {
     }
     
     return (
-        <div onClick={handleJobClick} className='flex flex-col outline-1 outline-neutral-300 xl:w-[400px] lg:w-[300px] md:w-[220px] w-[300px]   rounded-2xl p-8 cursor cursor-pointer'>
+        <div
+        onClick={handleJobClick}
+        className={`flex flex-col xl:w-[400px] lg:w-[300px] md:w-[220px] w-[300px] rounded-2xl p-8 cursor-pointer transition-all duration-200 ease-in-out
+            ${selectedJobId === (job.post_id ?? job.id) ? 'outline-2 outline-primary' : 'outline-1 outline-neutral-300'}`}
+        >
             {/* Title and Company */}
             <h1 className='font-satoshi-bold md:text-3xl text-2xl break-words'>{job.title}</h1>
             <h1 className='font-satoshi-bold md:text-lg text-md pt-2 break-words'>{job.company}</h1>
@@ -29,14 +33,14 @@ function JobCard({job, selectedJobId, setSelectedJobId, setMobileExpanded}) {
             
             {/* user name and interested count */}
             <div className="flex flex-row justify-between items-center">
-                <h1 className="font-satoshi-bold md:text-sm text-xs pt-2">{job.user_name || job.posted_by}</h1>
+                <h1 className="font-satoshi-bold md:text-sm text-xs pt-2">{job.user_name ?? job.posted_by}</h1>
                 <div className="flex items-center gap-1 pt-2">
                 {job.user_id === currentUserID ? (
                     <button
                         onClick={() => navigate(`/alumni/jobPosting/interested/${job.post_id}`)}
                         className="md:text-lg text-sm text-primary font-satoshi-bold  hover:text-hover cursor-pointer"
                     >
-                        {job.interested_count || job.interested_in} are interested
+                        {job.interested_count ?? job.interested_in} are interested
                     </button>
                     ) : (
                     <span className="md:text-lg text-sm text-primary font-satoshi-bold">
