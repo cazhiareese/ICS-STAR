@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi import APIRouter, Depends, Query, HTTPException, status, Form
 from sqlalchemy.orm import Session
 from typing import Optional, List, Literal
 from config.database import get_db
 from util.alum_events_util import fetch_event_suggestions, confirm_event_rsvp, get_confirmed_events_by_user, cancel_event_rsvp, get_event_by_id, get_visible_events_for_user
 from uuid import UUID
+from util.admin_events_util import add_user_clicks
 #from models.usermodel import User
 from schemas.user import CurrentUser
 from util.userutil import get_current_user, get_current_user_optional
@@ -77,3 +78,14 @@ def get_visible_events(
         user = None
     # print(user.user_id)
     return get_visible_events_for_user(db, user, date_filter)
+
+@router.post("/track-userclicks")
+def userclicks(
+    event_id: UUID = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        add_user_clicks(event_id, db)
+        return {"success": True}
+    except Exception as e:
+        raise e

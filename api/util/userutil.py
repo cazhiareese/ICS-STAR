@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
-import jwt
-from jose import JWTError
+from jose import jwt, JWTError, ExpiredSignatureError
 from google.oauth2 import id_token
 from google.auth.transport import requests
 import uuid
@@ -312,8 +311,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    token_expired_exception = HTTPException(
+        status_code=500,
+        detail="Token has expired",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": True})
         user_id: int = payload.get("sub")
         role: str = payload.get("role")
         is_onboarded: bool = payload.get("is_onboarded")
@@ -321,6 +325,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         is_banned: bool = payload.get("is_banned")
         if user_id is None or role is None or is_onboarded is None or is_verified is None or is_banned is None:
             raise credentials_exception
+    except ExpiredSignatureError:
+        raise token_expired_exception
     except JWTError:
         raise credentials_exception
 
