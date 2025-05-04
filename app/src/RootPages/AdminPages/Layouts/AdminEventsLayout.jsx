@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 
 function AdminEventsLayout() {
   return (
-    <div>
+    <div className="bg-gray-100">
         <Outlet/>
     </div>
   )

@@ -16,6 +16,7 @@ function AlumniSearchCard({
   const navigate = useNavigate();
 
   const handleClick = () => {
+    console.log("janry", user_id);
     navigate(`/alumni/profile/${user_id}`);
   };
 

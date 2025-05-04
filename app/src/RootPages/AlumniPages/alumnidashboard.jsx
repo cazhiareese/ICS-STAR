@@ -5,7 +5,7 @@ import star from "../../assets/star.png";
 import wave from "../../assets/wave.png";
 // import OnBoarding from "../../AuthPages/OnBoarding/onboardinglanding";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {fetchPublicProfileById as apiFetchPublicProfile} from "../Profile/UserProfileAPI/userProfileApi"
 import { jwtDecode } from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 
@@ -149,26 +149,26 @@ function AlumniLanding() {
       {/* Main header */}
       <div className="flex flex-col items-center justify-center pt-32 relative z-20">
         <h1 className="text-center font-satoshi-medium sm:text-6xl text-4xl text-black ">Bridging Alumni</h1>
-        <h1 className="text-center font-satoshi-variable font-extrabold text-primary sm:text-6xl text-4xl">
+        <h1 className="text-center font-satoshi-black text-primary sm:text-6xl text-4xl">
           Across the Cosmos
         </h1>
-        <h1 className="text-center font-satoshi text-black sm:text-2xl text-lg pt-10">What do you want to view?</h1>
+        <h1 className="text-center font-satoshi-medium text-black sm:text-2xl text-lg pt-10">What do you want to view?</h1>
 
         <div className="flex flex-wrap flex-row gap-5 font-satoshi-regular mt-10 items-center justify-center">
   {(banned || !verified) && (
     <>
-      <CardComponent icon={Calendar} text="Look for events to attend " />
-      <CardComponent icon={BookOpen} text="Catch up with ICS" />
+      <Link to="/alumni/events"><CardComponent icon={Calendar} text="Look for events to attend " /></Link>
+      <Link to="/alumni/events"><CardComponent icon={BookOpen} text="Catch up with ICS" /></Link>
     </>
   )}
 
   {!banned && verified && (
     <>
-      <CardComponent icon={Calendar} text="Look for events to attend " />
-      <CardComponent icon={BookOpen} text="Catch up with ICS" />
-      <CardComponent icon={Briefcase} text="Browse job opportunities" />
-      <CardComponent icon={Users} text="Connect with Alumni" />
-      <CardComponent icon={HelpingHand} text="Give ICS a helping hand" />
+      <Link to="/alumni/events"><CardComponent icon={Calendar} text="Look for events to attend " /></Link>
+      <Link to="/alumni/newsletter"><CardComponent icon={BookOpen} text="Catch up with ICS" /></Link>
+      <Link to="/alumni/jobPosting"><CardComponent icon={Briefcase} text="Browse job opportunities" /></Link>
+      <Link to="/alumni/alumnisearch"><CardComponent icon={Users} text="Connect with Alumni" /></Link>
+      <Link to="/alumni/donations"><CardComponent icon={HelpingHand} text="Give ICS a helping hand" /></Link>
     </>
   )}
 </div>

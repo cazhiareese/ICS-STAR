@@ -11,6 +11,7 @@ const SkillsInterestsSection = ({
   addSkills,
   isLoading,
   isVerified, 
+  share
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   console.log(isVerified);
@@ -23,6 +24,7 @@ const SkillsInterestsSection = ({
         buttonText="Add skills/interests"
         onButtonClick={() => setIsModalOpen(true)}
         isVerified={isVerified} 
+        share={share} // Pass the share prop to SectionHeader
       />
 
         {isVerified && (

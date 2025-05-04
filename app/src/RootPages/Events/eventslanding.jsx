@@ -5,6 +5,7 @@ import { MapPinned, Calendar, Star, Search, Filter } from 'lucide-react';
 import axios from 'axios';
 import EventCards from './EventComponents/eventCards';
 import EventCardsSkeleton from './EventComponents/eventCardsSkeleton'
+import "../../index.css";
 import { samp } from 'framer-motion/client';
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -60,6 +61,11 @@ if (User) {
   console.log("No token found, defaulting to guest.");
 }
 
+useEffect(() => { 
+    setUserId(userid);
+    setUser(userid);
+    setUserType(tokentype);     
+},[])
 
     useEffect(() => {
         const handleScroll = () => {
@@ -72,11 +78,7 @@ if (User) {
     }, []);
 
     //cyrus was here
-    useEffect(() => { 
-        setUserId(userid);
-        setUser(userid);
-        setUserType(tokentype);     
-    },[])
+
 
 
     useEffect(() => {
@@ -85,95 +87,43 @@ if (User) {
 
         const fetchReservations = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/events/confirmed`, {
-                    headers: {
-                      Authorization: `Bearer ${token}`
-                    }
-                  });
-                  setReservations(response.data);
-                  console.log(reservations.length)
-                
+              const config = tokentype === "guest"
+                ? {}
+                : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
+          
+              const response = await axios.get(`${API_BASE_URL}/events/confirmed`, config);
+              setReservations(response.data);
+              console.log(reservations.length);
             } catch (error) {
-                
-                console.error('Error fetching reservations:', error);
+              console.error("Error fetching reservations:", error);
             }
-        };
-
-        fetchReservations();
-        setReservationSignal(false);
-        console.log("RESERVATION SIGNAL")
-        
-
-        const fetchAllEvents = async () => {
+          };
+          
+          fetchReservations();
+          setReservationSignal(false);
+          console.log("RESERVATION SIGNAL");
+          
+          const fetchAllEvents = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/events-visible-to`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setAllEvents(response.data);
-                console.log(allEvents)
-                console.log(allEvents)
-
+              const config = tokentype === "guest"
+                ? {}
+                : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
+          
+              const response = await axios.get(`${API_BASE_URL}/events-visible-to`, config);
+              setAllEvents(response.data);
+              console.log("naku",allEvents);
             } catch (error) {
-                console.error('Error fetching all events:', error);
-                console.log(allEvents)
+              console.error("Error fetching all events:", error);
+              console.log(allEvents);
             }
-        };
-
-        fetchAllEvents();
+          };
+          
+          fetchAllEvents();
+          
         // setAllEvents([sampleEvent1, sampleEvent2, sampleEvent3, sampleEvent4]);
         
         console.log("RESERVATION SIGNALasdfasdf")
     }, []);
-
-    const sampleEvent1 = {
-        event_id: 1,
-        title: "Community Clean-Up Drive",
-        description: "Join us for a community clean-up event to make our neighborhood cleaner and greener.",
-        dates: "2023-12-15T08:00:00Z", // UTC time format
-        location: "Central Park, Main Street",
-        organizer: "Green Earth Organization",
-        image: "https://example.com/clean-up-drive.jpg",
-        tags: ["Community", "Environment", "Volunteer"],
-        is_closed: false,
-    };
-
-    const sampleEvent2 = {
-        event_id: 2,
-        title: "Charity Fun Run",
-        description: "Participate in a fun run to raise funds for local charities.",
-        dates: "2023-12-20T06:00:00Z", // UTC time format
-        location: "Riverside Park, Elm Street",
-        organizer: "Helping Hands Foundation",
-        image: "https://example.com/fun-run.jpg",
-        tags: ["Charity", "Fitness", "Community"],
-        is_closed: false,
-    };
-
-    const sampleEvent3 = {
-        event_id: 3,
-        title: "Art Workshop for Beginners",
-        description: "Learn the basics of painting and drawing in this beginner-friendly workshop.",
-        dates: "2023-12-18T10:00:00Z", // UTC time format
-        location: "Art Center, Maple Avenue",
-        organizer: "Creative Minds Studio",
-        image: "https://example.com/art-workshop.jpg",
-        tags: ["Art", "Workshop", "Creativity"],
-        is_closed: false,
-    };
-    
-    const sampleEvent4 = {
-        event_id: 4,
-        title: "Tech Talk: Future of AI",
-        description: "Explore the latest advancements in AI technology with industry experts.",
-        dates: "2023-12-22T14:00:00Z", // UTC time format
-        location: "Tech Hub, Silicon Street",
-        organizer: "Innovators Network",
-        image: "https://example.com/tech-talk.jpg",
-        tags: ["Technology", "AI", "Education"],
-        is_closed: false,
-    };
 
     const handleRSVPClick = (eventId, event) => {
         // setReservations([])
@@ -226,8 +176,6 @@ if (User) {
         }
     }
 
-
-
     if (user === null) {
         return (
             <div className="flex flex-col items-center justify-center h-screen">
@@ -237,10 +185,10 @@ if (User) {
     }
     return (
         <>
-            <div className="flex flex-col items-center ">
-            <div className="flex flex-col w-full shadow-md pb-4 items-center rounded-b-[35px] bg-white">
-            <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 bg-white shadow-md' : 'relative'}`}>
-  <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
+        <div className="flex flex-col items-center bg-[#F8F9FB]">
+        <div className="flex flex-col w-full bg-whitey shadow-md  items-center rounded-b-[35px] bg-white">
+        <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 shadow-md' : 'relative'}`}>
+        <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
     <div className="relative flex w-full max-w-[350px] sm:max-w-[600px]">
       {/* Search Input */}
       <input
@@ -274,7 +222,7 @@ if (User) {
       />
 
       {/* Search Button */}
-      <div className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-12 cursor-pointer">
+      <div className="absolute right-0 top-0 h-full bg-primary text-white p-3 rounded-2xl hover:brightness-125 flex items-center justify-center w-20 cursor-pointer">
         <Search size={20} />
       </div>
     </div>
@@ -297,12 +245,12 @@ if (User) {
 )}
 
                     {userType === "alumni" && (
-                        <div className="flex flex-row mt-5 sm:mr-10  sm:ml-0 sm:mx-0 mx-auto gap-5 overflow-scroll sm:w-full">
+                        <div className="flex flex-row mt-5 sm:mr-10  sm:ml-0 sm:mx-0 mx-auto gap-5 overflow-x-scroll sm:w-full w-[90%] px-2 py-5">
                         {reservations != null ? (
                             reservations.length > 0 ? (
                                 reservations.map((reservation, index) => (
                                     <div key={index} className="flex relative ">
-                                        <EventCards event={reservation} />
+                                        <EventCards event={reservation} reservationExclusiveWidth={true}/>
                                         
                                         <button
                                             className="z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer bg-green-500 text-whitey"
@@ -462,7 +410,7 @@ if (User) {
 
                     
 
-                    <div className="flex flex-wrap mt-10 gap-5 h-10/12 overflow-auto justify-center sm:justify-start">
+                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-center sm:justify-start sm:mx-0 mx-10">
                         
                         {suggestions!= "none" ? (
                             
@@ -471,10 +419,10 @@ if (User) {
                             const isGoing = reservations && reservations.some(reservation => reservation.event_id === event.event_id);
                             return !isGoing && (
                                 <div key={index} className="flex relative">
-                                <EventCards event={event} />
+                                <EventCards event={event} reservationExclusiveWidth={true}/>
                                 {userType === "alumni" && (
                                     <button
-                                    className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
+                                    className={`z-10 flex flex-row space-x-3 absolute right-25 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
                                         isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                                     }`}
                                     onClick={() => handleRSVPClick(event.event_id, event)}
@@ -492,10 +440,10 @@ if (User) {
                         allEvents.map((event, index) => {
                             const isGoing = reservations && reservations.some(reservation => reservation.event_id === event.event_id);
                             return !isGoing && (
-                            <div key={index} className="flex relative">
+                            <div key={index} className="flex relative ">
                                 <EventCards event={event} />
                                 {userType === "alumni" && (
-                                    <button
+                                    event.rsvp_closed == false && <button
                                     className={`z-10 flex flex-row space-x-3 absolute right-5 top-35 px-4 py-2 rounded-full shadow-md hover:cursor-pointer  ${
                                         isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
                                     }`}
@@ -514,7 +462,6 @@ if (User) {
                             <EventCardsSkeleton />
                             <EventCardsSkeleton />
                             <EventCardsSkeleton />
-                            {/* <EventCards event={sampleEvent}/> */}
                             
                         </div>
                         )}

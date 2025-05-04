@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/AlumniComponents/searchbar'
 import JobSearchBar from '../../../components/AlumniComponents/jobsearchbar';
-import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown } from 'lucide-react';
+import { BriefcaseBusiness, PlusCircle, Filter, ChevronDown, Check, ArrowBigLeft, ArrowLeft, ArrowRight } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import JobCard from '../../../components/AlumniComponents/JobCard';
-import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
+ import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import axios from 'axios';
 
 
 function JobPostingLanding() {
@@ -15,9 +16,6 @@ function JobPostingLanding() {
     const [selectedJob, setSelectedJob] = useState({});
     const [jobList, setJobList] = useState([]);
     const [userId, setUserId] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null); // State to handle errors
-
     const [showFilterModal, setShowFilterModal] = useState(false);
 
     const [showWorkTypeDropdown, setShowWorkTypeDropdown] = useState(false);
@@ -25,11 +23,20 @@ function JobPostingLanding() {
 
     const [showRemoteOptionDropdown, setShowRemoteDropdown] = useState(false);
     const [selectedRemoteOption, setSelectedRemoteOption] = useState([]); 
+    const [loading, setLoading] = useState(false);
 
     const [showSalaryRangeDropdown, setShowSalaryRangeDropdown] = useState(false);
-    const [salaryRange, setSalaryRange] = useState({ min: 0, max: 500000 });
+    const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 });
 
     const [mobileExpanded, setMobileExpanded] = useState(false);
+
+    const [isError, setError] = useState(false);
+    const [isAlumni, setIsAlumni] = useState(false);
+
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [maxPage, setMaxPage] = useState(1);
+    
 
     const toggleWorkType = (workType) => {
         setSelectedWorkTypes((prev) =>
@@ -53,44 +60,51 @@ function JobPostingLanding() {
         const { name, value } = e.target;
         setSalaryRange((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: value === "" ? "" : Number(value), // Convert to number
         }));
-        console.log(salaryRange);
+        console.log({
+            ...salaryRange,
+            [name]: Number(value),
+        });
     };
+    
     
 
     const workTypeOptions = [
-        "All",
-        "Full time",
-        "Part time",
-        "Contractual",
-        "Freelance",
-        "Internship",
-        "Apprenticeship",
+        // { label: "All", value: "all" },
+        { label: "Full time", value: "fulltime" },
+        { label: "Part time", value: "parttime" },
+        { label: "Contractual", value: "contractual" },
+        { label: "Freelance", value: "freelance" },
+        { label: "Internship", value: "internship" },
+        { label: "Apprenticeship", value: "apprenticeship" },
     ];
+    
 
     const remoteOptions = [
-        "All",
-        "Onsite",
-        "Remote",
-        "Hybrid"
+        // { label: "All", value: "All" },
+        { label: "Onsite", value: "onsite" },
+        { label: "Remote", value: "remote" },
+        { label: "Hybrid", value: "hybrid" },
     ];
+    
 
     const [usertype, setUserType] = useState(null);
-
+    
     useEffect(() => {
         const token = localStorage.getItem('token'); 
-        if (token) {
-            try {
-            const decoded = jwtDecode(token);
-            console.log("Decoded JWT:", decoded);
-            setUserId(decoded.sub); 
-            setUserType(decoded.role); //cyrus was here
-            // console.log(decoded.sub)
-            } catch (error) {
-            console.error("Invalid token", error);
-            }
+        const decoded = jwtDecode(token);
+        console.log("Decoded JWT:", decoded);
+        setUserId(decoded.sub); 
+        setUserType(decoded.role); //cyrus was here
+        // console.log(decoded.sub)
+        if (decoded.role == "alumni"){
+            setUserType("alumni");
         }
+        else{
+            setUserType("student");
+        }
+        
     }, []);
 
     
@@ -99,45 +113,48 @@ function JobPostingLanding() {
     // Get all jobs
     useEffect(() => {
         const fetchJobs = async () => {
+        console.log(`${API_BASE_URL}/job-postings/?page=${currentPage}`)
         setLoading(true);
-        try {
-            const response = await fetch(`${API_BASE_URL}/job-postings`);
-            if (!response.ok) {
-            throw new Error('Failed to fetch jobs');
-            }
-            const data = await response.json();
-            console.log(data)
-            setJobList(data);
-        } catch (err) {
-            setError(err.message || 'Something went wrong');
-        } finally {
-            setLoading(false);
-        }
+            try {
+                const response = await fetch(`${API_BASE_URL}/job-postings/?page=${currentPage}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch jobs');
+                }
+                const data = await response.json();
+                setMaxPage(data.total_pages);
+                setJobList(data.result);
+            
+                setLoading(false);
+                setError(false);
+            } catch (err) {
+                console.log(err.message || 'Something went wrong');
+                setLoading(false);
+                setError(true);
+            } 
+
         };
 
         fetchJobs();
-    }, []);
+    }, [currentPage]);
 
     
 
     // Get job by id
     useEffect(() => {
         const fetchJobs = async () => {
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/job-postings/${selectedJobId}`);
-            if (!response.ok) {
-            throw new Error('Failed to fetch job using id');
-            }
-            const data = await response.json();
-            console.log(data)
-            // Set selected job
-            setSelectedJob(data)
-        } catch (err) {
-            setError(err.message || 'Something went wrong');
-        } //finally {
-        //     setLoading(false);
-        // }
+            console.log(`${API_BASE_URL}/job-postings/${selectedJobId}`);
+            try {
+                const response = await fetch(`${API_BASE_URL}/job-postings/${selectedJobId}`);
+                if (!response.ok) {
+                throw new Error('Failed to fetch job using id');
+                }
+                const data = await response.json();
+                console.log("data", data)
+                // Set selected job
+                setSelectedJob(data)
+            } catch (err) {
+                console.log(err.message || 'Something went wrong');
+            } 
         };
 
         fetchJobs();
@@ -152,39 +169,135 @@ function JobPostingLanding() {
     // Get company by id
     useEffect(() => {
         const fetchJobs = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${API_BASE_URL}/get-company-by-id/${userId}`);
-            if (!response.ok) {
-            throw new Error('Failed to fetch company');
-            }
-            const data = await response.json();
-            console.log(data)
-            
-        } catch (err) {
-            setError(err.message || 'Something went wrong');
-        } finally {
-            setLoading(false);
-        }
-        };
+            try {
+                const response = await fetch(`${API_BASE_URL}/get-company-by-id/${userId}`);
+                if (!response.ok) {
+                throw new Error('Failed to fetch company');
+                }
+                const data = await response.json();
+                console.log(data)
+                
+            } catch (err) {
+                console.log(err.message || 'Something went wrong');
+            } //finally {
+            //     setLoading(false);
+            // }
+            };
 
         fetchJobs();
     }, []);
+
+
+    //Builds URL using object
+    function buildSearchUrl(filters) {
+        let baseUrl = `${API_BASE_URL}/admin/job/search`;
+        let queryParams = new URLSearchParams(filters).toString();
+        return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
+    }
+
+    //creates an object for url making
+    const search = () => {
+        let filters = {};
+        setSelectedJob({});
+
+        if (Array.isArray(selectedWorkTypes) && selectedWorkTypes.length > 0) {
+            filters.employment_type = selectedWorkTypes;
+        }
+
+        if (Array.isArray(selectedRemoteOption) && selectedRemoteOption.length > 0) {
+            filters.mode_options = selectedRemoteOption;
+        }
+
+        if (
+            salaryRange &&
+            salaryRange.min !== undefined &&
+            salaryRange.max !== undefined &&
+            salaryRange.max != 0
+        ) {
+            filters.min_salary = salaryRange.min;
+            filters.max_salary = salaryRange.max;
+        }
+        filters.page=currentPage;
+        console.log(filters);
+        
+
+        if (Object.keys(filters).length > 0){
+            // Pass filters to buildSearchUrl and make API call
+            let apiUrl = buildSearchUrl(filters);
+            // console.log(apiUrl);
+            return apiUrl;
+        }
+    }
+
+    const fetchJobs = async () => {
+        setLoading(true);
+        setSelectedJob({});
+        setCurrentPage(1);
+        setMaxPage(1);
+        setShowFilterModal(false);
+        try {
+            const apiUrl = search(); // get the full URL based on current filters
+            console.log(apiUrl);
+            if (!apiUrl) {
+                setLoading(false);
+                return console.log('No valid filters to search.');
+            }
+    
+            const response = await axios.get(apiUrl); //API request
+            console.log(response.data);
+            setJobList(response.data.result);
+            setMaxPage(response.data.total_pages)
+            setError(false);
+            setLoading(false);
+        } catch (err) {
+            console.error(err);
+            console.log('Job not found');
+            setError(true);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < maxPage){
+            setCurrentPage((prevPage) => prevPage + 1);
+        }
+        
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1){
+            setCurrentPage((prevPage) => prevPage - 1);
+        }
+    };
     
 
     return (
         <div className='flex flex-col mb-16'>
             <div className="flex flex-row w-full mt-8 shadow-md pb-8  rounded-full md:px-8 px-4">
                 {/* Filter Button aligned to the left */}
-                <button  
-                    onClick={() => setShowFilterModal(!showFilterModal)}
-                    className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12  text-primary border-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
-                >
-                    <Filter />
-                    <h1 className='hidden md:block'>Filters</h1>
-                    
+                {(selectedWorkTypes.length > 0 ||
+                salaryRange.max > 0 ||
+                selectedRemoteOption.length > 0) ? (
+                    <button  
+                        onClick={() => setShowFilterModal(!showFilterModal)}
+                        className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12 text-white border-primary bg-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                    >
+                        <Filter />
+                        <h1 className='hidden md:block'>Filters</h1>
+                    </button>
+                ) : (
+                    <button  
+                        onClick={() => setShowFilterModal(!showFilterModal)}
+                        className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12 text-primary border-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                    >
+                        <Filter />
+                        <h1 className='hidden md:block'>Filters</h1>
+                    </button>
+                )}
 
-                </button>
+
 
                 {/* Filters */}
                 {showFilterModal && (
@@ -201,28 +314,28 @@ function JobPostingLanding() {
                                 </span>
                                 <h1 className="ml-auto"><ChevronDown size={30} /></h1>
                             </div>
-
-                            
+                           
                             {/* dropDown for work type */}
                             {showWorkTypeDropdown && (
-                            <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
+                                <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
                                 {workTypeOptions.map((type) => (
                                     <label
-                                    key={type}
-                                    className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
+                                        key={type.value}
+                                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
                                     >
-                                    <input
+                                        <input
                                         type="checkbox"
-                                        checked={selectedWorkTypes.includes(type)}
-                                        onChange={() => toggleWorkType(type)}
+                                        checked={selectedWorkTypes.includes(type.value)}
+                                        onChange={() => toggleWorkType(type.value)}
                                         className="w-5 h-5 text-blue-600 accent-primary"
-                                    />
-                                    <span className="text-gray-700 font-satoshi-medium">
-                                        {type}
-                                    </span>
+                                        />
+                                        <span className="text-gray-700 font-satoshi-medium">
+                                        {type.label}
+                                        </span>
                                     </label>
                                 ))}
                             </div>
+                          
                             )}
                         </button>
 
@@ -232,30 +345,31 @@ function JobPostingLanding() {
                         className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
                             <div className="flex flex-row items-center">
                                 <span className="truncate">
-                                    {remoteOptions.length > 0
-                                    ? remoteOptions.slice(0, 5).join(", ") + (remoteOptions.length > 2 ? "..." : "")
-                                    : "Work Type"}
+                                    {selectedRemoteOption.length > 0
+                                    ? selectedRemoteOption.slice(0, 5).join(", ") + (selectedRemoteOption.length > 2 ? "..." : "")
+                                    : "Work Mode"}
                                 </span>
                                 <h1 className="ml-auto"><ChevronDown size={30} /></h1>
                             </div>
                             {showRemoteOptionDropdown && (
                             <div onClick={(e) => e.stopPropagation()} className="absolute md:top-16 top-30 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
-                                {remoteOptions.map((type) => (
+                                {remoteOptions.map((option) => (
                                     <label
-                                    key={type}
-                                    className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
+                                        key={option.value}
+                                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
                                     >
-                                    <input
+                                        <input
                                         type="checkbox"
-                                        checked={selectedRemoteOption.includes(type)}
-                                        onChange={() => toggleRemoteType(type)}
+                                        checked={selectedRemoteOption.includes(option.value)}
+                                        onChange={() => toggleRemoteType(option.value)}
                                         className="w-5 h-5 text-blue-600 accent-primary"
-                                    />
-                                    <span className="text-gray-700 font-satoshi-medium">
-                                        {type}
-                                    </span>
+                                        />
+                                        <span className="text-gray-700 font-satoshi-medium">
+                                            {option.label}
+                                        </span>
                                     </label>
                                 ))}
+
                             </div>
                             )}
                         </button>
@@ -279,7 +393,11 @@ function JobPostingLanding() {
                                             value={salaryRange.min}
                                             onChange={handleSalaryChange}
                                             className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                                            min="0"
+                                            min={0}
+                                            onInput={(e) => {
+                                                // Prevents typing any character other than numbers and the dot (.)
+                                                e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+                                            }}
                                         />
                                     </div>
                                     
@@ -291,12 +409,27 @@ function JobPostingLanding() {
                                             value={salaryRange.max}
                                             onChange={handleSalaryChange}
                                             className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                                            min={salaryRange.min}
+                                            min={salaryRange.min}  // ensures max >= min
+                                            step="0.01"            // allows decimal precision
+                                            onInput={(e) => {
+                                                // Prevents typing any character other than numbers and the dot (.)
+                                                e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+                                            }}
                                         />
+
                                     </div>
                                 </div>
                             )}
                         </button>
+                        
+                        <div className="flex w-8 h-8 aspect-square items-center justify-center md:ml-0 ml-auto ">
+                            <button onClick={fetchJobs} className="bg-primary cursor-pointer rounded-full w-full h-full flex items-center justify-center p-0 box-border mt-3">
+                                <Check size={18} className="text-white" />
+                            </button>
+                        </div>
+
+
+
 
                         
 
@@ -307,48 +440,80 @@ function JobPostingLanding() {
                 {/* Centered Search Bar */}
                 <div className="flex-1 flex justify-center md:ml-30 ml-8">
                     <JobSearchBar 
-                    searchInput={searchInput}
-                    setSearchInput={setSearchInput}
-                    setLoading={setLoading}
-                    setJobList={setJobList}
+                        searchInput={searchInput}
+                        setSearchInput={setSearchInput}
+                        setLoading={setLoading}
+                        setJobList={setJobList}
+                        selectedWorkTypes={selectedWorkTypes}
+                        selectedRemoteOption={selectedRemoteOption}
+                        salaryRange={salaryRange}
+                        setSelectedJob={setSelectedJob}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        maxPage={maxPage}
+                        setMaxPage={setMaxPage}
                     />
                 </div>
 
                 {/* Button aligned to the right */}
 
-{usertype !== "student" && (
-                <button  
-                    onClick={navToCreateJobPost}
-                    className="flex items-center gap-2 md:w-56 w-12 md:h-14 h-12 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
-                >
-                    <PlusCircle />
-                    <h1 className='md:block hidden'>Create Job Posting</h1>
-                </button>
-)}
+                {usertype !== "student" && (
+                    <button  
+                        onClick={navToCreateJobPost}
+                        className="flex items-center gap-2 md:w-56 w-12 md:h-14 h-12 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                    >
+                        <PlusCircle />
+                        <h1 className='md:block hidden'>Create Job Posting</h1>
+                    </button>
+                )}
 
             </div>
 
-            <div className='flex flex-row mt-16 gap-2 justify-center'>
-                {/* Scrollable wrapper */}
-                <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
-                    {!loading ? (
-                        <div className='flex flex-col gap-5 items-center '>
-                            {jobList.map((job, index) => (
-                                <JobCard
-                                key={index}
-                                job={job}
-                                selectedJobId={selectedJobId}
-                                setSelectedJobId={setSelectedJobId}
-                                setMobileExpanded={setMobileExpanded}
-                                />
-                            ))}
+            <div className='flex flex-row mt-10 gap-2 justify-center'>
+                <div className='flex flex-col'>
+                    <div className='flex flex-col items-center mb-6'>
+                        {/* Pagination */}
+                        <div className='flex flex-row gap-5 font-satoshi-medium text-lg'>
+                            <button onClick={handlePrevPage} className='cursor-pointer'><ArrowLeft/></button>
+                            <h1>Page</h1> 
+                            <div className='flex justify-center bg-blue-100 w-8 rounded-md'>
+                                <h1 className='text-primary'>{currentPage}</h1>
+                            </div> 
+                            <h1>of</h1> 
+                            <h1>{maxPage}</h1> 
+                            <button onClick={handleNextPage} className='cursor-pointer'><ArrowRight/></button>
                         </div>
-                    ) : (
-                        <div className='flex flex-row justify-center h-full gap-5'>
-                            <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
-                            <CircularLoading />
-                        </div>
-                    )}
+                    </div>
+                    {/* Scrollable wrapper */}
+                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-xl outline-0'>
+                        
+                        {!loading ? (
+                            <div className='flex flex-col gap-5 items-center '>
+                                
+                                {!isError && Array.isArray(jobList) && jobList.length > 0 ? (
+                                    jobList.map((job, index) => (
+                                        <JobCard
+                                        key={index} // Consider using job.id if available instead of index
+                                        job={job}
+                                        selectedJobId={selectedJobId}
+                                        setSelectedJobId={setSelectedJobId}
+                                        setMobileExpanded={setMobileExpanded}
+                                        
+                                        />
+                                    ))
+                                    ) : (
+                                    <p className="text-gray-500 text-center mt-4">
+                                        {isError ? 'No jobs found.' : 'No jobs available.'}
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <div className='flex flex-row justify-center h-full gap-5 pt-10'>
+                                <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
+                                <CircularLoading />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
 
@@ -361,7 +526,7 @@ function JobPostingLanding() {
                         <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} />
+                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} />
                 )}
                 
             </div>

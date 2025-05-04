@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
 
-function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVerified }) {
+function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVerified, share, joblength }) {
   const [selectedDonationType, setSelectedDonationType] = useState("Monetary");
+  console.log("cyyyy",joblength)
 
   useEffect(() => {
     if (title === "DONATIONS" && onToggleChange) {
@@ -21,11 +22,17 @@ function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVer
     <div className="w-full">
       {/* Title & Button Container */}
       <div className="flex justify-between items-center">
-        <h2 className="font-satoshi-bold text-[20px] sm:text-[22px] md:text-[24px] leading-tight tracking-[-0.02em] text-gray-800 uppercase">
-          {title}
-        </h2>
+      <h2 className="font-satoshi-bold text-[20px] sm:text-[22px] md:text-[24px] leading-tight tracking-[-0.02em] text-gray-800 uppercase">
+  {title}
+  {title === "JOBS POSTED" && typeof joblength === "number" && (
+    <span className="ml-2 text-primary text-[18px] sm:text-[20px] md:text-[22px] leading-tight tracking-[-0.02em]  font-satoshi-bold">
+      ({joblength})
+    </span>
+  )}
+</h2>
 
-        {title === "DONATIONS" ? (
+
+        {!share && title === "DONATIONS" ? (
           <div className="flex gap-2 bg-gray-200 rounded-full p-1">
             {["Monetary", "In-Kind"].map((type) => (
               <button
@@ -42,7 +49,7 @@ function SectionHeader({ title, buttonText, onButtonClick, onToggleChange, isVer
             ))}
           </div>
         ) : (
-          onButtonClick && (
+          !share && onButtonClick && (
             <button
               onClick={isVerified ? onButtonClick : undefined}
               disabled={!isVerified}

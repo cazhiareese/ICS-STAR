@@ -11,11 +11,15 @@ function SearchComponent({ query, setQuery, focused, setFocused }) {
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none bg-white ${
+        className={`w-full lg:w-64 px-4 py-2 border rounded-3xl focus:outline-none bg-white ${
           focused ? 'border-primary border-2' : 'border-gray-400'
         }`}
       />
-      <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
+      <button
+        className='absolute top-1/2 -translate-y-1/2 right-0 h-[40px] w-[70px] flex items-center justify-center rounded-full bg-primary'
+      >
+        <Search className={`absolute text-white`} size={20} />
+      </button>
     </div>
   );
 }

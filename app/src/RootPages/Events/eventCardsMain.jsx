@@ -4,7 +4,8 @@ import { MapPinned, Calendar, Star } from 'lucide-react';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import EventCardsMainSkeleton from './eventCardsMainSkeleton';
-
+import RsvpStatus from './EventComponents/rsvpstatusbig';
+import PersonOutline from "../../assets/personoutline.png"
 
 const EventCardsMain = () => {
     const [isSticky, setIsSticky] = useState(false);
@@ -14,11 +15,13 @@ const EventCardsMain = () => {
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const token = localStorage.getItem("token");
     const [reservationSignal, setReservationSignal] = useState(false);
+
+
     const [userId, setUserId] = useState(null);
     const [event, setEvent] = useState(null);
     
     const navigate = useNavigate();
-    const [isGoing, setIsGoing] = useState(false);
+    const [isGoing, setIsGoing] = useState(null);
     const [user, setUser] = useState(null);
     const id = useParams(); // Get the drive_id from the URL params
     const event_id = id.eventid; // Extract the drive_id from the params
@@ -75,6 +78,15 @@ const EventCardsMain = () => {
             console.log("Event data:", event);     
         },[])
 
+    
+    useEffect(() => {
+        if (event && reservations.length > 0) {
+            const going = reservations.some(reservation => reservation.event_id === event.event_id);
+            setIsGoing(going);
+            console.log("isGoing computed:", going);
+        }
+    }, [event, reservations]);
+
     useEffect(() => {
 
         const fetchReservations = async () => {
@@ -86,16 +98,18 @@ const EventCardsMain = () => {
                     }
                   });
                   setReservations(response.data);
-                  console.log(reservations.length)
-                
+                  console.log(reservations.length);
+                  console.log(reservations);
+                  
             } catch (error) {
                 
                 console.error('Error fetching reservations:', error);
             }
+            
         };
 
-        // fetchReservations();
-        // setReservationSignal(false);
+
+        
         console.log("RESERVATION SIGNAL")
         
 
@@ -108,6 +122,7 @@ const EventCardsMain = () => {
                 });
                 setAllEvents(response.data);
                 console.log(allEvents)
+                fetchReservations();
 
             } catch (error) {
                 console.error('Error fetching all events:', error);
@@ -134,7 +149,7 @@ const EventCardsMain = () => {
             "https://example.com/event-details",
             "https://example.com/registration-form"
         ],
-        is_closed: false,
+        rsvp_closed: false,
     };
 
     const parseTime = (isoTimestamp) => {
@@ -165,8 +180,8 @@ const EventCardsMain = () => {
         // setReservations([])
         
         
-        if (!isGoing) {  
-            setIsGoing (true)
+        if (isGoing) {  
+            setIsGoing (false)
             console.log(event)
             console.log("Event ID here:", eventId)
             console.log("User ID here: ", userId)
@@ -188,7 +203,7 @@ const EventCardsMain = () => {
                 console.error("Error canceling RSVP:", error);
             });
         } else {
-            setIsGoing (false)
+            setIsGoing (true)
             console.log("User ID being sent:", userId);
             axios.post(`${API_BASE_URL}/events/${eventId}/confirm-rsvp`, {
                 user_id: userId
@@ -204,94 +219,126 @@ const EventCardsMain = () => {
         }
     }
 
-    if (!event) {
-        return <div><EventCardsMainSkeleton/></div>; // Show a loading state while fetching the event
+    {/*Show a loading state while fetching the event*/}
+    if (!event && isGoing===null) {
+        return <div><EventCardsMainSkeleton/></div>;
     }
     return (
-        <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
-
-            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
-            {user?.role !== "student" && (
-                <button
-                    className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                    !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                    }`}
-                    onClick={() => handleRSVPClick(event.event_id)}
-                >
-                    <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                    <label>{!isGoing ? 'Going' : 'RSVP'}</label>
-                </button>
+        <div className='bg-[#F8F9FB]'>
+          <div className='mx-auto sm:max-w-250 sm:w-[80%] h-full flex flex-col items-center justify-center'>
+            {/* Back Button */}
+            <label 
+              className="flex flex-row cursor-pointer sm:pt-0 mt-8 my-5 sm:mb-7 sm:space-x-7 ml-auto w-full font-satoshi-bold text-primary" 
+              onClick={() => navigate("/alumni/events")}
+            >
+              <ArrowLeft />
+              <label className='cursor-pointer'>Go Back</label>
+            </label>
+      
+            {/* Mobile RSVP Button (Absolute positioned) */}
+            {user?.role !== "student" && !event.rsvp_closed && (
+              <button
+                className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 rounded-full shadow-md hover:cursor-pointer ${
+                  isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
+                } hover:scale-115 transform transition-transform duration-200`}
+                onClick={() => handleRSVPClick(event.event_id)}
+              >
+                <label>{isGoing ? <Star className='fill-white' /> : <Star />}</label>
+                <label>{isGoing ? 'Going' : 'Reserve My Spot'}</label>
+              </button>
             )}
-            <div className="sm:max-w-180 sm:w-[80%] w-[90%] h-185 rounded-4xl overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
-                <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl overflow-hidden">
-                    {event.image && (
-                        <img
-                            src={event.image}
-                            alt="Event"
-                            className="w-full h-full object-cover"
-                        />
-                    )}
-                </div>
-                {user?.role !== "student" && (
-                    <button
-                        className={`hidden sm:flex z-10 flex-row space-x-3 absolute right-10 top-80 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
-                        !isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white'
-                        }`}
-                        onClick={() => handleRSVPClick(event.event_id)}
-                    >
-                        <label>{!isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                        <label>{!isGoing ? 'Going' : 'RSVP'}</label>
-                    </button>
+      
+            {/* Event Card */}
+            <div className="relative min-h-215 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-whitey w-full sm:border-gray-200 p-10">
+              {/* Image */}
+              <div className="h-80 bg-primary rounded-2xl overflow-hidden">
+                {event.image && (
+                  <img
+                    src={event.image}
+                    alt="Event"
+                    className="w-full h-full object-cover"
+                  />
                 )}
-                <div className="p-4 mx-5 flex flex-col">
-                    <h1 className="sm:text-3xl text-2xl font-satoshi-bold text-blue-900">{event.title}</h1>
-                    
-                    <label className='text-gray-400 pt-8'>Event Details</label>
-                    
-                    <div className="flex items-center mt-2 text-gray-600 space-x-3">
-                        <MapPinned/>
-                        <label>{event.location}</label>
-                    </div>
-                    <div className="flex items-center mt-2 text-gray-600 space-x-3">
-                        <Calendar />
-                        <div className="flex flex-row w-2/3 overflow-y-scroll max-h-32">
-                            {event.datetimes.map((datetime, index) => (
-                                <label key={index} className='pr-5'>{parseTime(datetime)}/</label>
-                            ))}
-                        </div>
-                    </div>
-                    <div className='flex flex-col mt-5 h-50 overflow-y-scroll'>
-                        <label className='text-gray-400'>Event Description</label>
-                        <label className="text-gray-600 pt-2">{event.description}</label>
-
-                        <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
-                        {event.links.map((link, index) => (
-                                <li key={index}>
-                                    <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                        {link}
-                                    </a>
-                                </li>
-                        ))}
-                    </div>
-                    
-                    <div className="flex flex-row gap-2 mt-5 overflow-x-scroll">
-                        {event.tags.map((tag, index) => (
-                            <span
-                                key={index}
-                                className="bg-blue-100 text-primary text-xs font-satoshi-regular px-3 py-1.5 rounded-lg"
-                            >
-                                {tag}
-                            </span>
-                        ))}
-                        
-                        
-                    </div>
+              </div>
+      
+              {/* Desktop RSVP Elements (Positioned absolutely relative to card) */}
+              {user?.role !== "student" && !event.rsvp_closed && (
+                <div className="hidden sm:flex flex-col items-end absolute right-10 mt-3 top-[360px]">
+                  <button
+                    className={`items-center px-6 py-3 flex flex-row rounded-full shadow-md hover:cursor-pointer ${
+                      isGoing ? 'bg-green-500 text-white' : 'bg-primary text-white font-bold'
+                    } hover:scale-105 transform transition-transform duration-200`}
+                    onClick={() => handleRSVPClick(event.event_id)}
+                  >
+                    <label>{isGoing ? <Star className="fill-white" /> : <Star />}</label>
+                    <label className="text-l font-extrabold">{isGoing ? 'Going' : 'Reserve My Spot'}</label>
+                  </button>
+      
+                  <div className="flex flex-row text-lg items-center text-primary mt-2 font-bold px-4 py-2">
+                    <img src={PersonOutline} className="mr-3" />
+                    <label>{event.going_count} are going</label>
+                  </div>
                 </div>
-                
+              )}
+      
+              {/* Main Content */}
+              <div className="pt-5">
+                <RsvpStatus event={event} />
+              </div>
+      
+              <div className="block py-4 flex flex-col">
+                <h1 className="sm:text-4xl text-2xl font-satoshi-black text-blue-900">{event.title}</h1>
+                <label className='text-gray-400 pt-4'>Event Details</label>
+      
+                {/* Location */}
+                <div className="flex items-center mt-2 text-gray-600 space-x-3">
+                  <MapPinned />
+                  <label>{event.location}</label>
+                </div>
+      
+                {/* Date */}
+                <div className="flex w-full items-center mt-2 text-gray-600 space-x-3">
+                  <Calendar />
+                  {event.datetimes.map((datetime, index) => (
+                    <div key={index} className="flex flex-row max-h-32 flex-shrink-0">
+                      <label className='pr-5'>{parseTime(datetime)}</label>
+                    </div>
+                  ))}
+                </div>
+      
+                {/* Description */}
+                <div className='flex flex-col mt-5'>
+                  <label className='text-gray-400'>Event Description</label>
+                  <label className="text-gray-600 pt-2">{event.description}</label>
+      
+                  {/* Relevant Links */}
+                  <label className='text-gray-400 pt-5 pb-1'>Relevant Links</label>
+                  {event.links.map((link, index) => (
+                    <li key={index}>
+                      <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                        {link}
+                      </a>
+                    </li>
+                  ))}
+                </div>
+      
+                {/* Tags */}
+                <div className="flex flex-row gap-2 mt-5 overflow-x-scroll">
+                  {event.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-primary/80 text-s font-satoshi-medium px-3 py-1.5 rounded-xl"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        
-    );
+      );
+      
 };
 
 export default EventCardsMain;

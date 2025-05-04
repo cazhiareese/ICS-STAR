@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 
 const YearPicker = ({ selectedYear, setSelectedYear}) => {
-  
   // Function to handle the year change
   const handleYearChange = (date) => {
     const yearString = date.getFullYear().toString();
@@ -15,7 +14,7 @@ const YearPicker = ({ selectedYear, setSelectedYear}) => {
     <div className="flex items-center justify-center">
       {/* DatePicker Component */}
       <DatePicker
-        selected={selectedYear}
+        selected={selectedYear === "" ? new Date().getFullYear().toString() : selectedYear}
         onChange={handleYearChange}  // Use the handleYearChange function
         showYearPicker
         dateFormat="yyyy"

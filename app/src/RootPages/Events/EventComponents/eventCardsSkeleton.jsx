@@ -6,7 +6,7 @@ const EventCardsSkeleton = () => {
     return (
         <div className=" mb-10 w-90 h-110 rounded-2xl overflow-hidden shadow-xl bg-white relative border-gray-200 border-1 animate-pulse">
             <div className="h-40 bg-gray-300"></div>
-            <button className="absolute right-3 top-35 bg-gray-400 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-700 w-20 h-7">
+            <button className="absolute right-3 top-35 bg-gray-400 text-white px-4 py-2 rounded-full shadow-md w-20 h-7">
 
             </button>
             <div className="p-4">
