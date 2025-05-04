@@ -60,8 +60,9 @@ def get_event(
     db: Session = Depends(get_db), 
     user: Optional[CurrentUser] = Depends(get_current_user_optional)
 ):
-    user_id = user.user_id if user else None
-    return get_event_by_id(event_id, db, user_id=user_id)
+    if not user:
+        user = None
+    return get_event_by_id(event_id, db, user)
 
 @router.get("/events-visible-to", response_model=List[EventOut])
 def get_visible_events(
@@ -72,6 +73,7 @@ def get_visible_events(
         description='Filter events by date: "today", "tomorrow", "this_weekend", or a date in YYYY-MM-DD format'
     )
 ):
-    user_id = user.user_id if user else None
+    if not user:
+        user = None
     # print(user.user_id)
-    return get_visible_events_for_user(db, user_id, date_filter)
+    return get_visible_events_for_user(db, user, date_filter)

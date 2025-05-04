@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from math import ceil
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import Date, and_, cast, desc, distinct, extract, func
 from sqlalchemy.orm import Session
@@ -464,12 +465,12 @@ def get_top_donation_drive_by_donors(
         percentage_progress=float(drive.percentage_progress)
     )
 
-@router.get("/jobs/top-interested", response_model=List[JobsResponse])
+@router.get("/jobs/top-interested")
 def get_top_interested_jobs(
     time_range: TimeRange = Query(TimeRange.MONTH, description="Time range for job posting data"),
     db: Session = Depends(get_db),
-    skip: int = Query(0, description="Number of records to skip"),
-    limit: int = Query(10, description="Number of records to return")
+    page: int = Query(1, ge=1, description="Page number (starts at 1)"),
+    page_size: int = Query(10, ge=1, le=100, description="Number of records per page")
 ):
     today = datetime.utcnow()
 
@@ -480,9 +481,8 @@ def get_top_interested_jobs(
         start_date = today - timedelta(days=30)
     else:  # time_range == TimeRange.YEAR
         start_date = datetime(today.year - 1, today.month, today.day)
-    
-    # Query to get top 3 job postings with most interest
-    top_jobs = (
+
+    base_query = (
         db.query(
             JobPosting.title,
             JobPosting.company,
@@ -505,15 +505,16 @@ def get_top_interested_jobs(
             JobPosting.date_posted
         )
         .order_by(desc('interested_count'))
-        .all()
     )
 
-    # Apply pagination
-    top_jobs = top_jobs[skip: skip + limit]
-    
-    # Format the results
+    total_results = base_query.count()
+    total_pages = ceil(total_results / page_size)
+    offset = (page - 1) * page_size
+
+    paginated_jobs = base_query.offset(offset).limit(page_size).all()
+
     result = []
-    for job in top_jobs:
+    for job in paginated_jobs:
         result.append({
             "title": job.title,
             "company": job.company,
@@ -521,8 +522,13 @@ def get_top_interested_jobs(
             "link": job.link,
             "interested_count": job.interested_count
         })
-    
-    return result
+
+    return {
+        "page": page,
+        "page_size": page_size,
+        "total_pages": total_pages,
+        "results": result
+    }
 
 # Fetch the top 3 most recent newsletter posts
 @router.get("/newsletters/top-3")
