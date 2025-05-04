@@ -45,13 +45,6 @@ function EditJobPostAlum() {
       };
     
     const handleAddTags = () => {
-        // const newTags = tagInput
-        //   .split(',')
-        //   .map(tag => tag.trim())
-        //   .filter(tag => tag.length > 0 && !tagss.includes(tag));
-    
-        // setTagss(prevTags => [...prevTags, ...newTags]);
-        // setTagInput('');
         setIsTagsModalOpen(false);
     };
 
@@ -63,9 +56,6 @@ function EditJobPostAlum() {
     const handleAddSuggestionTag = (tag) => {
         if (!tagss.includes(tag)) {
           setTagss([...tagss, tag]);
-      
-        //   // Remove tag from suggestions
-        //   setTagSuggestions(prev => prev.filter(t => t !== tag));
         }
     };
       
@@ -223,7 +213,7 @@ function EditJobPostAlum() {
         formData.append('employment_type', employmentType);
         formData.append('mode', employmentMode)
         formData.append('user_id', decoded.sub);
-        
+        console.log(formData)
         if (file != null) {
             formData.append('image', file);
         }
@@ -242,7 +232,7 @@ function EditJobPostAlum() {
             // Store response to summary
             setSummary(response.data);
             setIsSubmitted(true);
-
+            console.log(formData)
             // Optionally reset form fields here
         } catch (error) {
             console.error('Error posting job:', error);
@@ -250,44 +240,6 @@ function EditJobPostAlum() {
             alert("There was an error submitting the job post.");
         }
     };
-
-
-    
-
-    // useEffect(() => {
-    //     setJobTitleInput('Frontend Developer');
-    //     setCompanyInput('OpenAI Inc.');
-    //     setLinkInput('https://www.openai.com/careers/frontend-dev');
-    //     setTagss(['React', 'Tailwind', 'TypeScript']);
-    //     setSalaryInput(20000);
-    //     setDescription('We’re looking for a skilled Frontend Developer to join our AI team and build awesome tools.');
-    // }, []);
-
-    // Get company by id
-
-    // useEffect(() => {
-    //     const token = localStorage.getItem('token'); 
-    //     const decoded = jwtDecode(token);
-    //     console.log(decoded.sub)
-    //     const fetchJobs = async () => {
-        
-    //     try {
-    //         const response = await axios.get(`${API_BASE_URL}/job/get-company-by-id/${decoded.sub}`);
-    //         if (!response.ok) {
-    //         throw new Error('Failed to fetch company');
-    //         }
-            
-    //         console.log(response.data);
-            
-    //     } catch (err) {
-    //         alert(err.message || 'Something went wrong');
-    //     } finally {
-            
-    //     }
-    //     };
-
-    //     fetchJobs();
-    // }, []);
 
 
     useEffect(() => {  
@@ -308,7 +260,6 @@ function EditJobPostAlum() {
                 setSalaryInput(data.salary);
                 setEmploymentMode(data.mode)
                 setEmploymentType(data.employment_type)
-                
             } catch (err) {
               console.error('Failed to load job:', err);
               alert('Could not fetch job details.');
@@ -383,7 +334,9 @@ function EditJobPostAlum() {
                     {/* Input Box */}
                     <div className="relative w-full h-6">
                     <input
+                        
                         onChange={handleSalaryChange}
+                        value = {salaryInput}
                         type="number"
                         step="any"
                         className="bg-white font-satoshi-medium text-md w-full h-10 md:pl-5 pl-5 pr-4 py-2 rounded-2xl text-black border border-neutral-400 focus:border-primary focus:outline-none focus:ring-0"
