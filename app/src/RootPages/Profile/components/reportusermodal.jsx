@@ -24,12 +24,15 @@ const ReportUserModal = ({ isOpen, onClose, userId, name }) => {
   }, []);
 
   useEffect(() => {
+    console.log("reporterId:", reporterId);
+    console.log("userId:", userId);
+    console.log("reason:", reason);
     if (confirmed && reporterId && userId && reason.trim() !== "") {
       const reportUser = async () => {
         try {
           setSubmitting(true);
-          const response = await axios.patch(
-            `${import.meta.env.VITE_BACKEND_URL}/reports/users`,
+          const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/reports/report-user`,
             {
               reporter_id: reporterId,
               reported_user_id: userId,

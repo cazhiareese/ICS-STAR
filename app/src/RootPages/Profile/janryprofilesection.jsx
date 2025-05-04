@@ -177,10 +177,10 @@ function JanryProfileSection({
       // New button shown only when viewing shared profile
 <button
   onClick={() => setShowReportModal(true)}
-  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-gray-300 text-black hover:bg-hover transition"
+  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-satoshimedium bg-error text-whitey hover:bg-red-500 transition cursor-pointer"
 >
   <Pencil size={18} />
-  <span className="hidden sm:inline">Report User</span>
+  <span className="hidden sm:inline font-satoshi-medium">Report User</span>
 </button>
 
     ) : editMode ? (
