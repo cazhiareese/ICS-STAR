@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import axios from 'axios';
 import JobModal from '../../RootPages/AlumniPages/job-posting/jobcomponent/jobmodal';
+import { jwtDecode } from 'jwt-decode';
 
 function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded, setJob}) {
     const [showOptions, setShowOptions] = useState(false);
@@ -21,9 +22,10 @@ function JobExpandedCard({job, currentUserID, mobileExpanded, setMobileExpanded,
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const handleNavigate = () => {
-        // Navigate to the user's profile or desired route
-        //navigate(`/profile/${job.user_id}`); // Update the route as needed
-        console.log("clicked    ");
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    const tokentype = decoded.role;
+    navigate(`/${tokentype}/profile/${job.user_id}`);
       };
 
     const fetchJobs = async () => {
