@@ -58,6 +58,16 @@ function AdminCreateEvent({ purpose }) {
     }
   }
 
+  useEffect(() => {
+    console.log(jobList)
+    console.log(dateList)
+    setFormData((prev) => ({
+      ...prev,
+      batch: formData.isAll ? [] : dateList,
+      job: formData.isAll ? [] : jobList,
+    }));
+  }, [dateList, jobList, formData.isAll]);
+
   function updateLink(index, newValue) {
     const updated = [...formData.links];
     updated[index] = newValue;
@@ -175,6 +185,8 @@ function AdminCreateEvent({ purpose }) {
     console.log('Current formData.links:', formData.links); // Debugging
   }, [formData.links]);
 
+
+
   const handleSubmit = async () => {
     setSubmitLoading(true);
     const payload = new FormData();
@@ -186,6 +198,8 @@ function AdminCreateEvent({ purpose }) {
     if (formData.image && formData.image instanceof File) {
       payload.append('image', formData.image);
     }
+
+    console.log(formData.image)
 
     const dateArray = Array.isArray(formData.date) ? formData.date : [formData.date];
     const timeArray = Array.isArray(formData.time) ? formData.time : [formData.time];
@@ -201,7 +215,7 @@ function AdminCreateEvent({ purpose }) {
     formData.batch.forEach((b) => payload.append('batch', b));
     payload.append('employmentStatus', formData.employmentStatus);
     formData.job.forEach((j) => payload.append('job', j));
-    formData.affiliation.forEach((a) => payload.append('affiliation', a));
+    // formData.affiliation.forEach((a) => payload.append('affiliation', a));
     payload.append('sendEmail', String(formData.sendEmail));
 
     // Log FormData contents
@@ -503,9 +517,9 @@ function AdminCreateEvent({ purpose }) {
           </div>
           <div className="relative inline-block text-left w-72">
           <FilterDropdown 
-              setCareerList={setCareerList} 
+              setCareerList={setJobList} 
               setDateList={setDateList} 
-              setJobList={setJobList} // return lists sa lahat
+              // setJobList={setJobList} // return lists sa lahat
               disabled={allAlumni} 
             />
 
