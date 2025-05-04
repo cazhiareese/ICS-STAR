@@ -57,16 +57,15 @@ async def read_attachments(report_id: UUID, db: Session = Depends(get_db)):
 @router.post("/reports/report-user")
 async def report_user(
     reported_user_id: UUID,
-    reason: str,
     reporter_id: UUID,
-    status: str = "pending",
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    reason: str = Form(...)
     ):
     new_report = Report(
         reporter_id=reporter_id,
         reported_user_id=reported_user_id,
         reason=reason,
-        status=status
+        status="pending"
     )
     db.add(new_report)
     db.commit()
