@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight, Mail, MapPin, Calendar, Link } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
+
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
 import RsvpListTable from '../../../components/AdminComponents/RsvpListTable'
@@ -19,7 +20,9 @@ function AdminEventDetails() {
   const [deleteModal, setDeleteModal] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [transitionComplete, setTransitionComplete] = useState(false)
-
+  const [showEmailModal, setShowEmailModal] = useState(false)
+ const [submitLoading, setSubmitLoading] = useState(false);
+ const [submitSuccess, setSubmitSuccess] = useState(false);
   async function fetchEventDetails (token) {
       const response = await axios.get(`${API_BASE_URL}/api/admin/events/event-by-id/${eventid}`, {headers: {Authorization: `Bearer ${token}`}})
       console.log(response.data.data)
@@ -62,6 +65,12 @@ function AdminEventDetails() {
   
     fetchInitialInformation(token)
   }, [eventid])
+
+  const handleEmailSend = async () =>{
+    const response = axios.post(`${API_BASE_URL}/api/admin/events/send-email/${eventid}`, {},  {headers: {Authorization: `Bearer ${token}`}})
+    console.log(response)
+    navigate(-1)
+  }
 
   return (
     loading ? (
@@ -131,7 +140,9 @@ function AdminEventDetails() {
        <div className="flex flex-row items-center mt-3 font-satoshi-regular w-full">
         {/* Send email invites button */}
         {!eventDetails.is_closed && (
-          <button className="bg-primary h-fix w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer">
+          <button className="bg-primary h-fix w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer"
+            onClick={()=> setShowEmailModal(true)}
+          >
             <Mail />
             Send Email Invites
           </button>
@@ -281,6 +292,57 @@ function AdminEventDetails() {
           </div>
         </div>
       )}
+
+  
+        {showEmailModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 font-satoshi-regular">
+            <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
+              {submitLoading ? (
+                <div className="h-full">
+                  <CircularLoading />
+                </div>
+              ) : submitSuccess ? (
+                <>
+                  <div className="text-success">
+                    <CheckCircle size={48} />
+                  </div>
+                  <p className="text-xl font-satoshi-medium mt-4 text-center">
+                    {purpose === 'create' ? 'Created event!' : 'Saved changes!'}
+                  </p>
+                  <button
+                    className="bg-primary text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
+                    onClick={() => {
+                      setShowEmailModal(false);
+                    }}
+                  >
+                    Close
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-xl font-satoshi-medium text-center mt-4">
+                    
+                      Send email invites?
+                  </p>
+                  <div className="flex gap-3 mt-14 w-full h-full justify-center">
+                    <button
+                      className="border border-primary text-primary font-satoshi-medium px-4 py-2 rounded-3xl w-25 cursor-pointer"
+                      onClick={() => setShowSubmitModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-success font-satoshi-medium text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
+                      onClick={handleEmailSend}
+                    >
+                      Send
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
     </div>
     )
   )
