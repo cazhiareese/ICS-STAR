@@ -388,10 +388,10 @@ const fetchUserProfileData = async () => {
         share={share} // Pass share prop to ProfileSection
         userId={userId} // Pass userId to ProfileSection
       />
-      {userDetails.user_type === "alumni" && !share && (
+      {userDetails.user_type === "alumni" && share && (
         <>
           {/* Navigation Tabs */}
-          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
+          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} admin={true} />
 
           {/* Information Sections */}
         </>
