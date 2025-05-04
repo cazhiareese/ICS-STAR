@@ -366,6 +366,7 @@ function JanryProfileSection({
   isOpen={showReportModal}
   onClose={() => setShowReportModal(false)}
   userId={userId}
+  name={`${userDetails.first_name} ${userDetails.last_name}`}
 />
 
     </div>

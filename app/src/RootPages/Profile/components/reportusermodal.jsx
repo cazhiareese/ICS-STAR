@@ -3,12 +3,13 @@ import { X, Flag, CheckCircle } from "lucide-react";
 import {jwtDecode} from "jwt-decode";
 import axios from "axios";
 
-const ReportUserModal = ({ isOpen, onClose, userId }) => {
+const ReportUserModal = ({ isOpen, onClose, userId, name }) => {
   const [confirmed, setConfirmed] = useState(false);
   const [reporterId, setReporterId] = useState("");
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -91,7 +92,7 @@ const ReportUserModal = ({ isOpen, onClose, userId }) => {
         ) : (
           <>
             <p className="text-gray-600 mt-2 text-center font-satoshi-medium">
-              Please provide a reason for reporting this user (ID: <strong>{userId}</strong>):
+              Please provide a reason for reporting this user (ID: <strong>{name}</strong>):
             </p>
             <textarea
               className="w-full mt-4 p-3 border rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-error"
