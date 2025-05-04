@@ -105,21 +105,41 @@ function MostEngagedJobs() {
                             </tr>
                         </thead>
                         <tbody className="font-satoshi-medium">
-                            {loading ? (
-                                <CircularLoading/>
-                            ) : (
+                        {loading ? (
+                            [...Array(10)].map((_, i) => (
+                            <tr key={i} className="border-b border-gray-300 h-20 animate-pulse">
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-24"></div>
+                                </td>
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-40"></div>
+                                </td>
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-32"></div>
+                                </td>
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-20"></div>
+                                </td>
+                                <td className="py-4 px-6">
+                                <div className="h-4 bg-gray-300 rounded w-10"></div>
+                                </td>
+                            </tr>
+                            ))
+                        ) : (
                             mostInterested.map((job, index) => (
-                                <tr key={index} className="border-b border-gray-300 hover:bg-gray-50 h-20">
-                                    <td className="py-4 px-6 text-gray-500">{job.date_posted}</td>
-                                    <td className="py-4 px-6 text-black">{job.title}</td>
-                                    <td className="py-4 px-6 text-black">{job.company}</td>
-                                    <td className="py-4 px-6 text-gray-500">
-                                        <a target="_blank" rel="noopener noreferrer" href={job.link} className="text-primary underline">Link</a>
-                                    </td>
-                                    <td className="py-4 px-6">{job.interested_count}</td>
-                                </tr>
-                            )))}
+                            <tr key={index} className="border-b border-gray-300 hover:bg-gray-50 h-20">
+                                <td className="py-4 px-6 text-gray-500">{job.date_posted}</td>
+                                <td className="py-4 px-6 text-black">{job.title}</td>
+                                <td className="py-4 px-6 text-black">{job.company}</td>
+                                <td className="py-4 px-6 text-gray-500">
+                                <a target="_blank" rel="noopener noreferrer" href={job.link} className="text-primary underline">Link</a>
+                                </td>
+                                <td className="py-4 px-6">{job.interested_count}</td>
+                            </tr>
+                            ))
+                        )}
                         </tbody>
+
                     </table>
                 </div>
             </div>
