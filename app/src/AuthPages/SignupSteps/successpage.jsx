@@ -6,12 +6,14 @@
     import { useState } from "react";
 
     import Loading from "../../components/LoadingComponents/starloading.jsx"
+    import ModalTemplate from "../modaltemplate.jsx";
 
     function Success(){
         const navigate = useNavigate();
         const {currentSection, setCurrentSection, userData, userType} = useAppContext();
         const [loading, setLoading] = useState(false)
 
+        const [showSuccessModal, setShowSuccessModal] = useState(false)
         const handleNextPage = async(e) => {
             // navigate("/admin/dashboard"); // Navigate to a new page
             setLoading(true)
@@ -59,10 +61,10 @@
         
                 if (response.ok) {
                     localStorage.setItem("token", data.access_token);
-                        alert("Registration Successful!");
-        
+                        // alert("Registration Successful!");
+                        setShowSuccessModal(true)
                         // Redirect based on userType
-                        window.location.href = userType === "alumni" ? "/alumni/dashboard" : "/student/dashboard";
+                        
                         return
                     
                 } else {
@@ -119,6 +121,18 @@
                     </button>
                 )}
                 </div>
+
+                {showSuccessModal && (
+                          <ModalTemplate
+                              onContinue={() => {
+                                  setShowSuccessModal(false);
+                                  window.location.href = userType === "alumni" ? "/alumni/dashboard" : "/student/dashboard";
+                              }}
+                              choicecontinue="Proceed"
+                              header="Congratulations"
+                              information="Successfully Registered!"
+                          />
+                      )}
             </div>
         );
     }
