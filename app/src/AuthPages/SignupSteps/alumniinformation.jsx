@@ -24,7 +24,7 @@ function AlumnInfo(){
     const [loading, setLoading] = useState(false)
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const [termDropdownOpen, setTermDropdownOpen] = useState(false);
-    const terms = ["First Semester", "Second Semester", "Midyear"];
+    const terms = ["1st Semester", "2nd Semester", "Midyear"];
 
 
     // For Year

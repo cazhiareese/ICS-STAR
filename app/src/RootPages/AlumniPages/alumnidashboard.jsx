@@ -50,83 +50,8 @@ if (Usera) {
 
 function AlumniLanding() {
 
-  const navigate = useNavigate();
-  const [userId, setid]= useState(null);
-  const [error, setError] = useState(null); // State to handle errors
-  const [skills, setSkills] = useState([]); // State to manage skills
-  useEffect(() => {
-    const fetchName = async () => {
-      try {
-        const token = localStorage.getItem("token");
-    
-        if (!token) {
-          setError("No token found. Please log in.");
-          return;
-        }
-    
-        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-        const response = await fetch(`https://ics-star-api.vercel.app/users/me`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    
-        if (!response.ok) {
-          if (response.status === 401) {
-            setError("Unauthorized access. Please log in again.");
-            return;
-          }
-          throw new Error("Network response was not ok");
-        }
-    
-        const text = await response.text();
-    
-        let result;
-        try {
-          result = JSON.parse(text);
-        } catch (jsonError) {
-          setError("Failed to parse the server response.");
-          console.error("JSON parsing error: ", jsonError);
-          return;
-        }
-    
-        const id = result.user_id;
-        setid(id); // still set state if needed elsewhere
-        await fetchSkills(id); // pass directly
-      } catch (err) {
-        console.error("Error fetching data: ", err);
-        setError("Failed to load profile data. Please try again.");
-      }
-    };
-    
-    const fetchSkills = async (id) => {
-      try {
-        console.log({ id });
-        const data = await apiFetchPublicProfile({ userId: id });
-        setSkills(data.skills || []);
-    
-        if (!data.skills || data.skills.length === 0) {
-          navigate("/setup");
-        }
-    
-        console.log(data.skills);
-      } catch (err) {
-        setError("Failed to load profile");
-        console.log("SDFDSF Reached here:");
-      }
-    };
-    
-    fetchName(); // runs once
-    
-
-    
-  }, []);
-
   return (
     <div className="relative min-h-screen bg-white overflow-hidden">
-      
-
       {/* Wave Image */}
       <img src={wave} alt="Wave" className="absolute top-0 left-0 w-full h-auto z-0" />
 

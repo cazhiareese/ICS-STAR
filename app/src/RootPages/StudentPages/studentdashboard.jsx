@@ -31,6 +31,7 @@ if (Usera) {
     const decoded = jwtDecode(Usera);
     tokentype = decoded.role;
     userid = decoded.sub;
+    
     console.log("Decoded token:", decoded);
     console.log("User ID:", userid);
     console.log("Token type:", tokentype);
@@ -47,74 +48,35 @@ if (Usera) {
 }
 
 function StudentLanding() {
-  const navigate = useNavigate();
-  const [userId, setid]= useState(null);
-  const [error, setError] = useState(null); // State to handle errors
-  const [skills, setSkills] = useState([]); // State to manage skills
+  
   useEffect(() => {
-    const fetchName = async () => {
-      try {
-        const token = localStorage.getItem("token");
+      function isOnboarded() {
+        const User = localStorage.getItem("token");
+        //const User = true;
+        let tokenType = null;
+        if (User) {
+          const decoded = jwtDecode(User);
+          console.log("Decoded token:", decoded);
+          //tokenType = "admin";
+          //tokenType = "alumni";
+          const onBoarding = decoded.is_onboarded; // Adjust this based on your token structure
+          const verified = decoded.is_verified
+          console.log("Decoded token type:", tokenType);
     
-        if (!token) {
-          setError("No token found. Please log in.");
-          return;
-        }
-    
-        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-        const response = await fetch(`https://ics-star-api.vercel.app/users/me`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    
-        if (!response.ok) {
-          if (response.status === 401) {
-            setError("Unauthorized access. Please log in again.");
-            return;
+          console.log
+          if (onBoarding && verified){    
+            return true
+          } else if (!verified){
+            return true
           }
-          throw new Error("Network response was not ok");
+            return false
+        } else {
+          console.warn("⚠️ No token found in sessionStorage");
         }
-    
-        const text = await response.text();
-    
-        let result;
-        try {
-          result = JSON.parse(text);
-        } catch (jsonError) {
-          setError("Failed to parse the server response.");
-          console.error("JSON parsing error: ", jsonError);
-          return;
-        }
-    
-        const id = result.user_id;
-        setid(id); // still set state if needed elsewhere
-        await fetchSkills(id); // pass directly
-      } catch (err) {
-        console.error("Error fetching data: ", err);
-        setError("Failed to load profile data. Please try again.");
       }
-    };
-    
-    const fetchSkills = async (id) => {
-      try {
-        console.log({ id });
-        const data = await apiFetchPublicProfile({ userId: id });
-        setSkills(data.skills || []);
-    
-        if (!data.skills || data.skills.length === 0) {
-          navigate("/setup");
-        }
-    
-        console.log(data.skills);
-      } catch (err) {
-        setError("Failed to load profile");
-        console.log("SDFDSF Reached here:");
+      if (isOnboarded() == false){
+
       }
-    };
-    
-    fetchName(); // runs once
     
 
     

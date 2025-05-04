@@ -47,37 +47,37 @@ const CustomDropdown = ({ options, value, onChange }) => {
 export const CustomDropdownStanding = ({ options, value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelect = (selectedValue) => {
-    onChange(selectedValue);
+  const handleSelect = (selectedOption) => {
+    onChange(selectedOption);
     setIsOpen(false);
   };
 
   return (
     <div className="relative w-full">
-      {/* Selected value display with arrow */}
       <div
         className="w-full p-4 border border-gray-300 rounded-lg cursor-pointer flex justify-between items-center"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span>{value ? value : 'Select your country'}</span>
+        <span>
+          {options.find(opt => opt.value === value)?.label ?? 'Select your standing'}
+        </span>
         <ChevronDown
           className={`w-4 h-4 ml-2 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </div>
 
-      {/* Dropdown options */}
       {isOpen && (
         <div
-          className="absolute w-full mt-1 max-h-50 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg z-10"
-          style={{ maxHeight: '200px' }}
+          className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10"
+          style={{ maxHeight: '200px', overflowY: 'auto' }}
         >
-          {options.map((country) => (
+          {options.map((option) => (
             <div
-              key={country.value}
+              key={option.value}
               className="p-4 cursor-pointer hover:bg-gray-200"
-              onClick={() => handleSelect(country.label)}
+              onClick={() => handleSelect(option)}
             >
-              {country.label}
+              {option.label}
             </div>
           ))}
         </div>
@@ -85,4 +85,5 @@ export const CustomDropdownStanding = ({ options, value, onChange }) => {
     </div>
   );
 };
+
 export default CustomDropdown;
