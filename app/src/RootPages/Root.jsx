@@ -4,20 +4,30 @@ import Navbar from "../components/navbar";
 import { jwtDecode } from "jwt-decode";
 
 function Root() {
+  const token = localStorage.getItem("token");
 
-  const User = localStorage.getItem("token");
-  const decoded = jwtDecode(User);
-  //const tokentype = "alumni";
-  const tokentype = decoded.role;
-  console.log("Decoded token typee:", tokentype);
+  let tokentype = "guest";
+  let verified = false;
+  let banned = false;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      tokentype = decoded.role || "guest";
+      verified = decoded.is_verified || false;
+      banned = decoded.is_banned || false;
+      console.log("Decoded token type:", tokentype);
+    } catch (error) {
+      console.error("Invalid token:", error);
+      tokentype = "guest";
+    }
+  }
 
   return (
     <div>
-
-{["alumni", "student"].includes(tokentype) && (
-  <Navbar tokentype={tokentype} />
-)}
-
+      {["alumni", "student","guest"].includes(tokentype) && (
+        <Navbar tokentype={tokentype} verified={verified} banned={banned} />
+      )}
       <Outlet context={tokentype} />
     </div>
   );

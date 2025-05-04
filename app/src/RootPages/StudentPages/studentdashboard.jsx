@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Newspaper, Calendar, Briefcase, User } from "lucide-react";
 import CardComponent from "../../components/cardcomponent";
 import star from "../../assets/star.png";
 import wave from "../../assets/wave.png";
+import { jwtDecode } from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 
 import { fetchPublicProfileById as apiFetchPublicProfile } from "../Profile/UserProfileAPI/userProfileApi"; // Assuming this is where the function is defined
 
@@ -18,75 +19,64 @@ const stars = [
   { id: 7, top: "8%", left: "88%", size: "w-4" },
 ];
 
+const Usera = localStorage.getItem("token");
+let tokentype = "guest";
+let userid = true;
+let banned = false;
+let verified = false;
+
+
+if (Usera) {
+  try {
+    const decoded = jwtDecode(Usera);
+    tokentype = decoded.role;
+    userid = decoded.sub;
+    
+    console.log("Decoded token:", decoded);
+    console.log("User ID:", userid);
+    console.log("Token type:", tokentype);
+    banned = decoded.is_banned;
+    console.log("Banned status:", banned);
+    verified = decoded.is_verified;
+    console.log("Verified status:", verified);
+    
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+} else {
+  console.log("No token found, defaulting to guest.");
+}
+
 function StudentLanding() {
-  const navigate = useNavigate();
-  const [userId, setid]= useState(null);
-  const [error, setError] = useState(null); // State to handle errors
-  const [skills, setSkills] = useState([]); // State to manage skills
+  
   useEffect(() => {
-    const fetchName = async () => {
-      try {
-        const token = localStorage.getItem("token");
+      function isOnboarded() {
+        const User = localStorage.getItem("token");
+        //const User = true;
+        let tokenType = null;
+        if (User) {
+          const decoded = jwtDecode(User);
+          console.log("Decoded token:", decoded);
+          //tokenType = "admin";
+          //tokenType = "alumni";
+          const onBoarding = decoded.is_onboarded; // Adjust this based on your token structure
+          const verified = decoded.is_verified
+          console.log("Decoded token type:", tokenType);
     
-        if (!token) {
-          setError("No token found. Please log in.");
-          return;
-        }
-    
-        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-        const response = await fetch(`https://ics-star-api.vercel.app/users/me`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    
-        if (!response.ok) {
-          if (response.status === 401) {
-            setError("Unauthorized access. Please log in again.");
-            return;
+          console.log
+          if (onBoarding && verified){    
+            return true
+          } else if (!verified){
+            return true
           }
-          throw new Error("Network response was not ok");
+            return false
+        } else {
+          console.warn("⚠️ No token found in sessionStorage");
         }
-    
-        const text = await response.text();
-    
-        let result;
-        try {
-          result = JSON.parse(text);
-        } catch (jsonError) {
-          setError("Failed to parse the server response.");
-          console.error("JSON parsing error: ", jsonError);
-          return;
-        }
-    
-        const id = result.user_id;
-        setid(id); // still set state if needed elsewhere
-        await fetchSkills(id); // pass directly
-      } catch (err) {
-        console.error("Error fetching data: ", err);
-        setError("Failed to load profile data. Please try again.");
       }
-    };
-    
-    const fetchSkills = async (id) => {
-      try {
-        console.log({ id });
-        const data = await apiFetchPublicProfile({ userId: id });
-        setSkills(data.skills || []);
-    
-        if (!data.skills || data.skills.length === 0) {
-          navigate("/setup");
-        }
-    
-        console.log(data.skills);
-      } catch (err) {
-        setError("Failed to load profile");
-        console.log("SDFDSF Reached here:");
+      if (isOnboarded() == false){
+
       }
-    };
-    
-    fetchName(); // runs once
     
 
     
@@ -125,11 +115,17 @@ function StudentLanding() {
 
         {/* Cards Section */}
         <div className="flex flex-wrap justify-center gap-4 mt-6">
-          <CardComponent icon={Calendar} text="Look for events to attend" />
-          <CardComponent icon={Newspaper} text="Catch up with ICS" />
-          <CardComponent icon={Briefcase} text="Browse job opportunities" />
-          <CardComponent icon={User} text="Connect with Alumni" />
-        </div>
+  <Link to="/student/events"><CardComponent icon={Calendar} text="Look for events to attend" /></Link>
+  <Link to="/student/newsletter"><CardComponent icon={Newspaper} text="Catch up with ICS" /></Link>
+  
+  {!banned && verified && (
+    <>
+      <Link to="/student/jobPosting"><CardComponent icon={Briefcase} text="Browse job opportunities" /></Link>
+      <Link to="/student/alumnisearch"><CardComponent icon={User} text="Connect with Alumni" /></Link>
+    </>
+  )}
+</div>
+
       </div>
 
       {/* Add CSS for rotation animation */}

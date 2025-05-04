@@ -30,8 +30,10 @@ const NewsletterModal = ({ isOpen, onClose, formData, option, id, onSuccess }) =
         onClose(); // Let parent handle the actual API call
       } else if (option === "delete") {
         // Handle delete logic here
+        const token = localStorage.getItem('token');
         const response = await axios.delete(
-          `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/delete/${id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/delete/${id}`,
+          {headers: {Authorization: `Bearer ${token}`}}
         );
 
         if (response.data.message === "success") {

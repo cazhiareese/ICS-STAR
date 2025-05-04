@@ -182,9 +182,15 @@ function AdminEditNewsletter() {
     }
 
     try {
+      const token = localStorage.getItem('token');
+
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/edit/${newsletter_id}`,
-        payload
+        payload, 
+        {headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        }}
       );
 
       console.log('Newsletter updated:', response.data);
@@ -339,7 +345,7 @@ function AdminEditNewsletter() {
               <ChevronDown size={18} className="text-gray-600" />
             </div>
             {tagDropdownOpen && (
-              <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto font-satoshi-regular">
+              <div className="absolute w-160 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto font-satoshi-regular">
                 {tags.map((tag) => (
                   <label key={tag} className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100">
                     <input
@@ -468,18 +474,18 @@ function AdminEditNewsletter() {
                 <p className="text-xl font-satoshi-medium text-center mt-4">
                   Are you sure you want to update this newsletter?
                 </p>
-                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                <div className="pt-8 font-satoshi-medium flex gap-3 mt-6 w-ful h-full justify-center">
                   <button
-                    className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-300"
+                    className="bg-white text-primary px-4 py-2 rounded-3xl w-25 outline outline-1 outline-primary cursor-pointer"
                     onClick={handleModalClose}
                   >
                     Cancel
                   </button>
                   <button
-                    className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
                     onClick={handleModalConfirm}
                   >
-                    Confirm
+                    Update
                   </button>
                 </div>
               </div>

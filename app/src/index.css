@@ -20,6 +20,14 @@
     --color-bg-disabled: #EFF2F5;
     --color-neutral-c: #788EAB;
 
+    --color-bg-admin: #F9F9FB
+    --color-gray: #5D5D5D
+    --color-neutral-500: #495B74
+    --color-neutral-400: #788EAB
+    --color-neutral-300: #B7C2D2
+    --color-neutral-200: #D6DDE5
+    --color-neutral-100: #EFF2F5
+
     /* 
         Fonts 
         examples of use: font-satoshi-regular, font-satoshi-italic
@@ -40,6 +48,12 @@
 
 /* In your global CSS file */
 @layer utilities {
+
+/* Satoshi as defualt font */
+  html {
+    font-family: 'Satoshi', sans-serif;
+  }
+
   .scrollbar-blue::-webkit-scrollbar {
     width: 8px;
   }
@@ -99,3 +113,24 @@
 }
 
 
+/* Clean minimal scrollbar */
+.thin-scrollbar {
+  scrollbar-width: thin;            /* Firefox */
+  scrollbar-color: #cbd5e1 transparent; /* thumb color, track color */
+}
+
+/* Chrome, Edge, Safari */
+.thin-scrollbar::-webkit-scrollbar {
+  height: 6px;   /* horizontal scrollbar height */
+  width: 6px;    /* vertical scrollbar width */
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Track background */
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* Thumb color (Tailwind slate-300-ish) */
+  border-radius: 10px;
+  border: 2px solid transparent; /* Adds padding inside thumb */
+}

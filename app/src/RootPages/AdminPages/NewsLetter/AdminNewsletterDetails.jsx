@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { MoveLeft, Pencil, Trash2, CalendarDays, Link } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
+import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import NewsletterModal from '../../../components/AdminComponents/Adminnewslettermodal'
 
 function AdminNewsletterDetails() {
@@ -20,9 +21,10 @@ function AdminNewsletterDetails() {
   useEffect(() => {
     const fetchNewsletter = async () => {
       try {
+        const token = localStorage.getItem('token');
         setLoading(true)
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/newsletter/${id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/newsletter/${id}`, {headers: {Authorization: `Bearer ${token}`}}
         )
         setNewsletter(response.data)
         setLoading(false)
@@ -45,8 +47,8 @@ function AdminNewsletterDetails() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen w-full flex items-center justify-center">
-        <p>Loading newsletter...</p>
+      <div className='flex justify-center items-center min-h-screen w-full'>
+        <CircularLoading />
       </div>
     )
   }
@@ -79,14 +81,14 @@ function AdminNewsletterDetails() {
             onClick={() => navigate("edit-newsletter")}
           >
             <Pencil />
-            <p className="font-satoshi-regular text-lg">Edit Newsletter</p>
+            <p className="font-satoshi-regular text-lg">Edit</p>
           </button>
           <button
             className="bg-red-700 rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer"
             onClick={() => setIsModalOpen(true)}
           >
             <Trash2 />
-            <p className="font-satoshi-regular text-lg">Delete Newsletter</p>
+            <p className="font-satoshi-regular text-lg">Delete</p>
           </button>
         </div>
       </div>

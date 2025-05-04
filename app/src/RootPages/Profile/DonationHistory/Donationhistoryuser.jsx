@@ -3,7 +3,9 @@ import SectionHeader from "../components/sectionheader";
 import axios from "axios";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import DonationDetailsModal from "./component/donationmodal";
-import DonationTableHeader from "./component/donationheader";
+import ReactLoading from "react-loading";
+import CircularLoading from "../../../components/LoadingComponents/circularloading";
+import NewLoading from "../../../components/LoadingComponents/cyruscircular";
 
 function DonationHistoryUser({ userDetails }) {
   const [monetaryDonations, setMonetaryDonations] = useState([]);
@@ -13,7 +15,6 @@ function DonationHistoryUser({ userDetails }) {
   const [sortConfigMonetary, setSortConfigMonetary] = useState({ key: null, direction: "asc" });
   const [sortConfigInKind, setSortConfigInKind] = useState({ key: null, direction: "asc" });
   const [selectedType, setSelectedType] = useState("Monetary");
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDonation, setSelectedDonation] = useState(null);
@@ -44,24 +45,28 @@ function DonationHistoryUser({ userDetails }) {
         const [monetaryRes, inKindRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
             headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }),
           axios.get(`${API_BASE_URL}/donation-history/in-kind-donations`, {
             headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }),
         ]);
+        
 
         const monetary = monetaryRes.data.data.map((d) => ({
           ...d,
           type: "Monetary",
+          is_acknowledged: d.is_acknowledged ?? false,
         }));
-        console.log(monetary);  
+        console.log(monetary);
 
         const inKind = inKindRes.data.data.map((d) => ({
           ...d,
           type: "In-Kind",
           amount: 0,
         }));
-        console.log(inKind );  
+        console.log(inKind);
 
         const sortedMonetary = [...monetary].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
         const sortedInKind = [...inKind].sort((a, b) => new Date(b.date_donated) - new Date(a.date_donated));
@@ -81,7 +86,7 @@ function DonationHistoryUser({ userDetails }) {
     };
 
     fetchDonationHistory();
-  }, [token]);
+  }, []);
 
   const handleSort = (key, type) => {
     const currentSortConfig = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
@@ -103,11 +108,12 @@ function DonationHistoryUser({ userDetails }) {
       if (key === "date_donated") {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
-      }
-
-      if (key === "amount") {
+      } else if (key === "amount") {
         aValue = parseFloat(aValue);
         bValue = parseFloat(bValue);
+      } else if (key === "is_acknowledged") {
+        aValue = aValue === null ? 0 : aValue ? 1 : -1; // Handle null, true, false
+        bValue = bValue === null ? 0 : bValue ? 1 : -1;
       }
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1;
@@ -140,14 +146,59 @@ function DonationHistoryUser({ userDetails }) {
         }}
       />
 
-      <DonationTableHeader
-        onSort={handleSort}
-        getSortIcon={getSortIcon}
-        selectedType={selectedType}
-      />
+      {/* Inline DonationTableHeader */}
+      <div className="mt-1 rounded-xl py-2 font-satoshi-bold">
+        <div className="flex font-semibold text-primary">
+          <div
+            className={
+              selectedType === "Monetary"
+                ? "w-1/4 cursor-pointer flex items-center gap-1 text-left"
+                : "w-1/4 cursor-pointer flex items-center gap-1 text-left"
+            }
+            onClick={() => handleSort("date_donated", selectedType)}
+          >
+            Date {getSortIcon("date_donated", selectedType)}
+          </div>
+          <div
+            className={
+              selectedType === "Monetary"
+                ? "w-1/3 text-left px-2 sm:px-6"
+                : "w-1/2 text-left px-2 sm:px-6"
+            }
+          >
+            Donation Drive
+          </div>
+          {selectedType === "Monetary" ? (
+            <>
+              <div
+                className="w-1/4 cursor-pointer flex items-center gap-1 text-left px-2 sm:px-3"
+                onClick={() => handleSort("amount", selectedType)}
+              >
+                Amount {getSortIcon("amount", selectedType)}
+              </div>
+              <div
+                className="w-1/4 cursor-pointer flex justify-center sm:justify-start items-center gap-1 text-left"
+
+              >
+                Status 
+              </div>
+            </>
+          ) : (
+            <div
+              className="w-1/4 cursor-pointer flex justify-center sm:justify-start items-center gap-1 text-left"
+
+            >
+              Status 
+            </div>
+          )}
+        </div>
+      </div>
+
+      {loading && (
+        <div className="flex justify-center items-center p-40"><NewLoading size={50} text={"Please Wait as we fetch your Data"} ts={12}/></div>
 
 
-      {loading && <p className="mt-4">Loading...</p>}
+      )}
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
       {!loading && !error && currentSortedData.length === 0 && (
@@ -157,13 +208,14 @@ function DonationHistoryUser({ userDetails }) {
       {!loading && !error && currentSortedData.length > 0 && (
         <div className="font-satoshi-medium text-[16px] text-black max-h-[525px] overflow-y-auto sm:max-h-[400px] scrollbar-blue">
           {currentSortedData.map((donation) => {
-            const formattedDate = new Date(
-              donation.date_donated
-            ).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            });
+            const formattedDate = new Date(donation.date_donated).toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            );
 
             const formattedAmount = new Intl.NumberFormat("en-PH", {
               style: "currency",
@@ -175,13 +227,70 @@ function DonationHistoryUser({ userDetails }) {
               <div
                 key={donation.donation_id}
                 onClick={() => openModal(donation)}
-                className="border-b py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
+                className="border-b border-disabled py-2 flex justify-between items-center cursor-pointer hover:bg-disabled"
               >
-                <div className="w-1/3">{formattedDate}</div>
-                <div className="w-1/3">{donation.donation_drive_title}</div>
-                <div className="w-1/3 text-right">
-  {selectedType === "Monetary" ? formattedAmount : donation.status}
-</div>
+                <div
+                  className={selectedType === "Monetary" ? "w-1/4" : "w-1/4"}
+                >
+                  {formattedDate}
+                </div>
+                <div
+                  className={
+                    selectedType === "Monetary"
+                      ? "w-1/3 px-2 sm:px-6"
+                      : "w-1/2 px-2 sm:px-6"
+                  }
+                >
+                  {donation.donation_drive_title}
+                </div>
+                {selectedType === "Monetary" ? (
+                  <>
+                    <div className="w-1/4 px-2 sm:px-3 text-left">
+                      {formattedAmount}
+                    </div>
+                    <div className="w-1/4 flex justify-center sm:justify-start items-center">
+                      {/* Text for larger screens (hidden at sm and below) */}
+                      <span className="hidden sm:inline">
+                        {donation.is_acknowledged === null
+                          ? "Pending Acknowledgement"
+                          : donation.is_acknowledged
+                          ? "Acknowledged"
+                          : "Disapproved"}
+                      </span>
+                      {/* Circle for small screens (visible at sm and below) */}
+                      <div
+                        className={`inline-block sm:hidden w-4 h-4 rounded-full ${
+                          donation.is_acknowledged === null
+                            ? "bg-yellow-500"
+                            : donation.is_acknowledged
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
+                      ></div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-1/4 flex justify-center sm:justify-start items-center">
+                    {/* Text for larger screens (hidden at sm and below) */}
+                    <span className="hidden sm:inline">
+                      {donation.is_acknowledged === null
+                        ? "Pending Acknowledgement"
+                        : donation.is_acknowledged
+                        ? "Acknowledged"
+                        : "Disapproved"}
+                    </span>
+                    {/* Circle for small screens (visible at sm and below) */}
+                    <div
+                      className={`inline-block sm:hidden w-4 h-4 rounded-full ${
+                        donation.is_acknowledged === null
+                          ? "bg-yellow-500"
+                          : donation.is_acknowledged
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                        }`}
+                      ></div>
+                    </div>
+                )}
               </div>
             );
           })}

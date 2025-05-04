@@ -7,11 +7,12 @@ from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from config.database import get_db
 from util.donation_util import create_donation_drive, get_donors_csv
 from uuid import UUID
+from util.userutil import require_admin
 
 router = APIRouter()
 
 # Create donation drive
-@router.post("/create-donation-drives")
+@router.post("/create-donation-drives", dependencies=[Depends(require_admin)],)
 async def create_donation_drive_endpoint(
     title: str = Form(...),
     description: str = Form(...),
@@ -29,7 +30,7 @@ async def create_donation_drive_endpoint(
         db=db
     )
     
-@router.get("/get-donors-csv/{drive_id}")
+@router.get("/get-donors-csv/{drive_id}", dependencies=[Depends(require_admin)],)
 def donor_list(
     drive_id: UUID,
     db: Session = Depends(get_db)
@@ -48,7 +49,7 @@ def donor_list(
     )
 
 # Edit the target goal of a donation drive
-@router.put("/edit-donation-drive/goal/{drive_id}")
+@router.put("/edit-donation-drive/goal/{drive_id}", dependencies=[Depends(require_admin)])
 async def edit_donation_drive_goal(
     drive_id: UUID,
     target_cost: float = Form(...),
@@ -64,7 +65,7 @@ async def edit_donation_drive_goal(
     return {"message": "Donation drive goal updated successfully."}
 
 # Edit the description and links of a donation drive
-@router.put("/edit-donation-drive/description-links/{drive_id}")
+@router.put("/edit-donation-drive/description-links/{drive_id}",dependencies=[Depends(require_admin)],)
 async def edit_donation_drive_description_links(
     drive_id: UUID,
     description: str = Form(...),

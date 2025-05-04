@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { LogOut, Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import SidebarItem from "./sidebaritem.jsx";
-import IcsStarLogo from "../icsstar_logo";
+import IcsStarLogo from "../icsstar_logo.jsx";
 
 function Sidebar({ sidebarItems }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,26 +31,31 @@ function Sidebar({ sidebarItems }) {
 
       {/* Sidebar - Sliding Drawer */}
       <div
-        className={`bg-white fixed min-w-3xs z-50 top-0 h-screen w-3/4 lg:w-2/12 shadow-lg lg:static px-4 pt-4 
+        className={`bg-[#FFFFFD] fixed min-w-3xs z-50 top-0 h-screen w-3/4 lg:w-2/12 shadow-lg lg:static pt-4 
           ${isOpen ? "translate-x-0 transition-transform duration-300 ease-in-out" : "-translate-x-full transition-transform duration-300 ease-in-out"} lg:translate-x-0 lg:transition-none`}
       >
-        <div className="mb-10 lg:block">
+        <div className="mt-6 mb-10 ml-4 lg:block">
           <IcsStarLogo />
         </div>
 
         {/* Sidebar Items */}
         {sidebarItems.map((item) => (
-          <Link to={item.path} key={item.id} onClick={() => setIsOpen(false)}>
-            <SidebarItem
-              title={item.title}
-              icon={item.icon}
-              isSelected={location.pathname.startsWith(`/admin/${item.path}`)}
-              />
-          </Link>
+          <SidebarItem
+            key={item.id}
+            title={item.title}
+            icon={item.icon}
+            path={item.path}
+            isSelected={location.pathname.startsWith(`/admin/${item.path}`)}
+            childrenItems={item.children}
+            onClick={() => setIsOpen(false)}
+          />
         ))}
 
         {/* Log Out */}
-        <div className="flex flex-row p-2 rounded-r-3xl items-center ml-2 mt-16 cursor-pointer" onClick={handleLogout}>
+        <div
+          className="flex flex-row p-2 rounded-r-3xl items-center border-l-6 border-transparent hover:bg-gray-100 hover:text-hover mr-3 mt-16 cursor-pointer"
+          onClick={handleLogout}
+        >
           <span className="mr-3">
             <LogOut />
           </span>

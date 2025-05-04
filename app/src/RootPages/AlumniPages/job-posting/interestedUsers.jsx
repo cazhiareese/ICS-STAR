@@ -3,14 +3,20 @@ import { useParams } from "react-router-dom";
 import JobOverviewCard from "./jobcomponent/joboverview";
 import JobSectionHeader from "./jobcomponent/jobsectionheader";
 import BackButton from "../../../components/backbutton";
+import axios from "axios";
+import { MoveLeft, MoveRight } from "lucide-react";
 
 function InterestedUsers() {
-  // const { id } = useParams();
-  const id = "f7a09e35-1e12-4214-9bda-5c87de635416"; // temporary hardcoded ID
+  const did  = useParams();
+  const id = did.jobid;
+  console.log(id);
+    //const id = "f7a09e35-1e12-4214-9bda-5c87de635416"; // temporary hardcoded ID
   const [interestedUsers, setInterestedUsers] = useState([]);
   const [jobOverview, setJobOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); // Assuming you have a total pages state
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -24,31 +30,39 @@ function InterestedUsers() {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/job/interested_in/${id}`, {
-          method: "GET",
+        const page = 1;
+        console.log("hdsd",id);
+        const response = await axios.get(`${API_BASE_URL}/job/interested_in/${id}?page=${page}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (!response.ok) {
-          if (response.status === 401) {
+      
+        const data = response.data;
+        console.log("Interested Users Data:", data.results); // Debugging line
+        if (data.detail) {
+          setError(data.detail); // Show message like "No users found who are interested in this job posting."
+          setInterestedUsers([]); // Clear the list
+        } else {
+          setInterestedUsers(data.results); // Proceed normally
+          console.log("ankue");
+        }
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status === 401) {
             setError("Unauthorized access. Please log in.");
-          } else if (response.status === 404) {
+          } else if (err.response.status === 404) {
             setError("No users found who are interested in this job posting.");
           } else {
-            throw new Error("Failed to fetch interested users");
+            setError("Failed to fetch interested users.");
           }
-          return;
+        } else {
+          setError(err.message || "Network error.");
         }
-
-        const data = await response.json();
-        setInterestedUsers(data);
-      } catch (err) {
-        setError(err.message || "Failed to fetch interested users.");
       } finally {
         setLoading(false);
       }
+      
     };
     const fetchJobOverview = async () => {
       try {
@@ -74,6 +88,9 @@ function InterestedUsers() {
     fetchInterestedUsers();
   }, [id, token]);
 
+    console.log("Idddnterested Users:", interestedUsers); 
+    console.log(loading);
+    console.log(error);// Debugging line
   return (
     <div className="w-full max-w-[1100px] mx-auto p-4">
       <div className="sm:pl-12">
@@ -87,11 +104,37 @@ function InterestedUsers() {
 
       {/* Content */}
       {loading && <p className="text-gray-500 mt-4">Loading...</p>}
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+      {error && <p className="text-primary font-satoshi-bold mt-4 justify-center text-center">{error}</p>}
 
       {/* Large screen table */}
       {!loading && !error && interestedUsers.length > 0 && (
+        
         <>
+              {/* Page controls */}
+      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
+        <div className='w-full lg:w-auto min-w-xs'>
+          
+        </div>
+ 
+        <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
+          <MoveLeft
+            className='cursor-pointer'
+            onClick={{}}
+          />
+          <p> Page </p>
+          <input
+            type='text'
+            value={page}
+            onChange={{}}
+            className='w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold'
+          />
+          <p>of {totalPages}</p>
+          <MoveRight
+            className='cursor-pointer'
+            onClick={{}}
+          />
+        </div>
+      </div>
           {/* Table View (lg and up) */}
           <div className="hidden lg:block overflow-auto mt-4">
   <div className="max-w-[1100px] mx-auto bg-whitey rounded-[10px] shadow border border-disabled p-4">

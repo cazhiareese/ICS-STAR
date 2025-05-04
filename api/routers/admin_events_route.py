@@ -9,6 +9,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from util.admin_events_util import create_event_util, edit_event_util, get_demographics, get_event_by_id_util, send_email_util
+from util.userutil import require_admin
 from config.database import get_db
 
 event_router = APIRouter(
@@ -25,7 +26,7 @@ def clean_input(value):
             return [value[0].strip()] if value[0].strip() else []
     return value
 
-@event_router.post( "/create")
+@event_router.post( "/create", dependencies=[Depends(require_admin)],)
 # INCLUDE TIME
 async def create_event(
     title: str = Form(...),
@@ -97,7 +98,7 @@ async def create_event(
     except Exception as e:
         return {"message": str(e)}
 
-@event_router.put("/edit/{event_id}")
+@event_router.put("/edit/{event_id}", dependencies=[Depends(require_admin)],)
 async def edit_event(
     event_id: UUID,
     title: str = Form(...),
@@ -167,12 +168,12 @@ async def edit_event(
     except Exception as e:
         return {"message": str(e)}
 
-@event_router.get("/event-by-id/{eventId}")
+@event_router.get("/event-by-id/{eventId}", dependencies=[Depends(require_admin)],)
 async def get_event_by_id(eventId: UUID, db:Session=Depends(get_db)):
     return {"message": "success", "data": get_event_by_id_util(eventId=eventId, db=db)
     }
 
-@event_router.put("/close/{event_id}")
+@event_router.put("/close/{event_id}", dependencies=[Depends(require_admin)],)
 async def close_event(event_id: UUID, db: Session = Depends(get_db)):
 
     event = db.query(Event).filter(Event.event_id == event_id).first()
@@ -181,7 +182,7 @@ async def close_event(event_id: UUID, db: Session = Depends(get_db)):
     db.refresh(event)
     return {"message": "success closing event", "id": event.event_id}
 
-@event_router.put("/delete/{event_id}")
+@event_router.put("/delete/{event_id}", dependencies=[Depends(require_admin)],)
 async def delete_event(event_id: UUID, db: Session=Depends(get_db)):
     event = db.query(Event).filter(Event.event_id == event_id).first()
     event.is_deleted= True
@@ -189,7 +190,7 @@ async def delete_event(event_id: UUID, db: Session=Depends(get_db)):
     db.refresh(event)
     return {"message": "success deleting event", "id": event.event_id}
 
-@event_router.get("/getRSVPs/{event_id}")
+@event_router.get("/getRSVPs/{event_id}", dependencies=[Depends(require_admin)],)
 async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=1):
 
     ITEMS_PER_PAGE = 10
@@ -221,9 +222,9 @@ async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=
     
     return {"message":"success", "page": page, "total_pages": total_pages, "data": user_details}
 
-@event_router.get("/all-open-events")
+@event_router.get("/all-open-events", dependencies=[Depends(require_admin)])
 async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db), page:int=1):
-    ITEMS_PER_PAGE = 10
+    ITEMS_PER_PAGE = 8
 
     try:
         query = db.query(
@@ -290,7 +291,7 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
     
     return {"message": "success", "total_pages": total_pages, "page": page, "data": processed_events}
 
-@event_router.get("/all-concluded-events")
+@event_router.get("/all-concluded-events", dependencies=[Depends(require_admin)],)
 async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db), page: int=1):
     ITEMS_PER_PAGE = 10
     try:
@@ -355,7 +356,7 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
     return {"message": "success", "total_pages":total_pages, "page":page, "data": processed_events}
 
 
-@event_router.get("/rsvp-clicks-count/{event_id}")
+@event_router.get("/rsvp-clicks-count/{event_id}", dependencies=[Depends(require_admin)],)
 def rsvp_clicks_count(event_id: UUID, db: Session = Depends(get_db)):
     
     rsvp_count = db.query(EventConfirmedBy.user_id).filter(EventConfirmedBy.event_id == event_id).count()
@@ -363,7 +364,7 @@ def rsvp_clicks_count(event_id: UUID, db: Session = Depends(get_db)):
     
     return {"event": event.title, "rsvp_count": rsvp_count, "user_clicks": event.user_clicks}
 
-@event_router.get("/demographics/{event_id}")
+@event_router.get("/demographics/{event_id}", dependencies=[Depends(require_admin)],)
 def demographics_by_batch(
     event_id: UUID,
     db: Session = Depends(get_db),
@@ -377,7 +378,7 @@ def demographics_by_batch(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@event_router.get("/get-tags")
+@event_router.get("/get-tags", dependencies=[Depends(require_admin)],)
 def get_tags(db: Session = Depends(get_db)):
 
     
