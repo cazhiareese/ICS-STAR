@@ -27,14 +27,26 @@ def logic_search_alumni(
     batch: Optional[str] = None,
     affiliation: Optional[str] = None
 ) -> List[Dict]:
-    # Initial query which will get all alumni users
-    query = db.query(User).filter(User.user_type == UserTypeEnum.alumni)
+    # Initial query with only the fields we need
+    query = db.query(
+        User.user_id,
+        User.first_name,
+        User.last_name,
+        User.student_number,
+        User.graduation_year,
+        User.job_title,
+        User.industry,
+        User.city,
+        User.email,
+        User.image,
+        User.facebook,
+        User.linkedin,
+        User.github
+    ).filter(User.is_onboarded == True, User.user_type == UserTypeEnum.alumni)
 
     # Append appropriate filters to the initial query
     if name:
         # We have to also catch if full name was inputted (e.g. "John Doe" or "John Michael Doe")
-        #
-        # Split the name by space and filter for each part
         name_parts = name.split()
         if len(name_parts) == 1:
             query = query.filter(or_(User.first_name.ilike(f"%{name_parts[0]}%"), User.last_name.ilike(f"%{name_parts[0]}%")))
@@ -47,8 +59,6 @@ def logic_search_alumni(
     
     if job_title:
         # Split the job title string by comma and strip whitespace
-        #
-        # Then, we find all users with job titles that match any of the inputted titles
         job_titles_list = [j.strip() for j in job_title.split(',') if j.strip()]
 
         if job_titles_list:
@@ -69,8 +79,6 @@ def logic_search_alumni(
             # Filter main query to users who have any of the skills
             query = query.filter(User.user_id.in_(db.query(skill_subquery.c.user_id)))
 
-
-
     if industry:
         query = query.filter(User.industry.ilike(f"%{industry}%"))
 
@@ -80,8 +88,6 @@ def logic_search_alumni(
     
     if affiliation:
         # Affiliation is a separate table so we need to join it
-        #
-        # There can also be multiple affiliations so we need to filter for each one
         affiliation_list = [a.strip() for a in affiliation.split(',') if a.strip()]
 
         if affiliation_list:
@@ -92,32 +98,47 @@ def logic_search_alumni(
     # Execute the final query
     results = query.all()
     
-    # If no results, return empty list to flag 404
+    # If no results, return empty list to flag 200 but no results found
     if not results:
         return []
     
+    user_ids = [result.user_id for result in results]
+    
+    # Batch fetch skills for all users
+    all_skills = db.query(UserSkill.user_id, UserSkill.skill).filter(UserSkill.user_id.in_(user_ids)).all()
+    
+    # Organize skills by user_id
+    skills_by_user = {}
+    for user_id, skill in all_skills:
+        if user_id not in skills_by_user:
+            skills_by_user[user_id] = []
+        skills_by_user[user_id].append(skill)
+    
+    # Batch fetch affiliations for all users
+    all_affiliations = db.query(UserAffiliation.user_id, UserAffiliation.affiliation).filter(UserAffiliation.user_id.in_(user_ids)).all()
+    
+    # Organize affiliations by user_id
+    affiliations_by_user = {}
+    for user_id, affiliation in all_affiliations:
+        if user_id not in affiliations_by_user:
+            affiliations_by_user[user_id] = []
+        affiliations_by_user[user_id].append(affiliation)
+    
     alumni_list = []
     for user in results:
-        # Retrieve skills for specific user (if possible)
-        user_skills = db.query(UserSkill).filter(UserSkill.user_id == user.user_id).all()
-        skills_list = [skill.skill for skill in user_skills]
-
-        # Retrieve affiliations for specific user (if possible)
-        user_affiliations = db.query(UserAffiliation).filter(UserAffiliation.user_id == user.user_id).all()
-        affiliations_list = [affiliation.affiliation for affiliation in user_affiliations]
-        
+        user_id = user.user_id
         alumni_entry = {
-            "user_id": str(user.user_id),
+            "user_id": str(user_id),
             "full_name": f"{user.first_name} {user.last_name}",
-            "batch": user.student_number[:4],
+            "batch": user.student_number[:4] if user.student_number else None,
             "graduation_year": user.graduation_year,
             "job_title": user.job_title,
             "industry": user.industry,
-            "skills": skills_list if skills_list else None,
+            "skills": skills_by_user.get(user_id, None),
             "location": user.city,
             "email": user.email,
             "picture": user.image,
-            "affiliations": affiliations_list if affiliations_list else None,
+            "affiliations": affiliations_by_user.get(user_id, None),
             "facebook": user.facebook,
             "linkedin": user.linkedin,
             "github": user.github,

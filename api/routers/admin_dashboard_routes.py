@@ -17,6 +17,8 @@ from models.log import Log
 from schemas.events_schema import UpcomingEventResponse
 from schemas.donation_schema import RecentDonationResponse, TopFundedDriveResponse
 
+from util.userutil import require_admin
+
 router = APIRouter(
     prefix="/admin_dashboard",
     tags=["Admin Dashboard"],
@@ -27,7 +29,7 @@ router = APIRouter(
 )
 
 # Fetch number of unverified users
-@router.get("/unverified_users_count", response_model=Dict[str, int])
+@router.get("/unverified_users_count", dependencies=[Depends(require_admin)], response_model=Dict[str, int])
 async def get_unverified_users_count(
     db: Session = Depends(get_db)
     ):
@@ -38,7 +40,7 @@ async def get_unverified_users_count(
         raise HTTPException(status_code=500, detail=str(e))
     
 # Fetch number of not yet acknowledged donations
-@router.get("/not_yet_acknowledged_donations_count", response_model=Dict[str, int])
+@router.get("/not_yet_acknowledged_donations_count", dependencies=[Depends(require_admin)], response_model=Dict[str, int])
 async def get_not_yet_acknowledged_donations_count(
     db: Session = Depends(get_db)
     ):
@@ -51,7 +53,7 @@ async def get_not_yet_acknowledged_donations_count(
         raise HTTPException(status_code=500, detail=str(e))
     
 # Fetch number of reported posts
-@router.get("/pending-reported-posts/count", response_model=Dict[str, int])
+@router.get("/pending-reported-posts/count", dependencies=[Depends(require_admin)], response_model=Dict[str, int])
 async def get_reported_posts_count(
     db: Session = Depends(get_db)
     ):
@@ -65,7 +67,7 @@ async def get_reported_posts_count(
     return {"pending_reported_posts_count": count}
 
 # Fetch number of reported users
-@router.get("/pending-reported-users/count", response_model=Dict[str, int])
+@router.get("/pending-reported-users/count", dependencies=[Depends(require_admin)], response_model=Dict[str, int])
 async def get_reported_users_count(
     db: Session = Depends(get_db)
     ):
@@ -79,7 +81,21 @@ async def get_reported_users_count(
     
     return {"pending_reported_users_count": count}
 
-@router.get("/upcoming-events", response_model=List[UpcomingEventResponse])
+# Fetch the number of donation drives that are still open
+@router.get("/open-drives/count", dependencies=[Depends(require_admin)], response_model=Dict[str, int])
+async def get_open_drives_count(
+    db: Session = Depends(get_db)
+    ):
+    count = db.query(func.count(DonationDrive.drive_id))\
+        .filter(
+            DonationDrive.is_closed == False,
+            DonationDrive.is_deleted == False
+        )\
+        .scalar()
+    
+    return {"open_drives_count": count}
+
+@router.get("/upcoming-events", dependencies=[Depends(require_admin)], response_model=List[UpcomingEventResponse])
 async def get_upcoming_events(
     db: Session = Depends(get_db)
     ):
@@ -105,7 +121,7 @@ async def get_upcoming_events(
         )
         .group_by(Event.event_id, Event.title, Event.location)
         .order_by("earliest_date")
-        .limit(5)
+        .limit(3)
         .subquery()
     )
     
@@ -133,7 +149,7 @@ async def get_upcoming_events(
     
     return response
 
-@router.get("/recent-donors", response_model=List[RecentDonationResponse])
+@router.get("/recent-donors", dependencies=[Depends(require_admin)], response_model=List[RecentDonationResponse])
 async def get_recent_donations(
     db: Session = Depends(get_db)
     ):
@@ -198,7 +214,7 @@ async def get_recent_donations(
     
     return response
 
-@router.get("/top-funded-drives", response_model=List[TopFundedDriveResponse])
+@router.get("/top-funded-drives", dependencies=[Depends(require_admin)], response_model=List[TopFundedDriveResponse])
 async def get_top_funded_drives(
     db: Session = Depends(get_db)
     ):
@@ -228,7 +244,8 @@ async def get_top_funded_drives(
         )
         .where(
             DonationDrive.is_deleted == False,
-            DonationDrive.is_closed == False
+            DonationDrive.is_closed == False,
+            DonationDrive.is_general == False,
         )
         .group_by(DonationDrive.drive_id, DonationDrive.title, DonationDrive.target_cost)
         .order_by(desc("total_donations"))
@@ -247,20 +264,46 @@ async def get_top_funded_drives(
             percentage = (total / target) * 100
             percentage = round(percentage, 2)  # Round to 2 decimal places
         
+        monetary_donors = set(
+            row[0] for row in db.execute(
+                select(MonetaryDonation.user_id)
+                .where(
+                    MonetaryDonation.drive_id == result.drive_id,
+                    MonetaryDonation.is_acknowledged == True,
+                    MonetaryDonation.user_id.isnot(None)
+                )
+            ).all()
+        )
+        
+        inkind_donors = set(
+            row[0] for row in db.execute(
+                select(InKindDonation.user_id)
+                .where(
+                    InKindDonation.drive_id == result.drive_id,
+                    InKindDonation.is_acknowledged == True,
+                    InKindDonation.user_id.isnot(None)
+                )
+            ).all()
+        )
+        
+        # Combine both sets to get unique donors
+        unique_donors_count = len(monetary_donors.union(inkind_donors))
+        
         response.append({
             "drive_id": result.drive_id,
             "title": result.title,
             "total_donations": total,
             "target_cost": target,
             "acknowledged_donations": result.acknowledged_count or 0,
-            "percentage_funded": percentage
+            "percentage_funded": percentage,
+            "unique_donors_count": unique_donors_count
         })
 
     response.sort(key=lambda x: x["percentage_funded"], reverse=True)
     
     return response
 
-@router.get("/visits", response_model=dict)
+@router.get("/visits", dependencies=[Depends(require_admin)], response_model=dict)
 def get_visits(db: Session = Depends(get_db)):
     today = datetime.utcnow()
     start_date = today - timedelta(days=30)
@@ -297,7 +340,7 @@ def get_visits(db: Session = Depends(get_db)):
         "data": result
     }
 
-@router.get("/user_statistics")
+@router.get("/user_statistics", dependencies=[Depends(require_admin)])
 def get_alumni_statistics(db: Session = Depends(get_db)):
     # Get number of verified alumni users
     verified_alumni_count = db.query(func.count(User.user_id))\

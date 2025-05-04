@@ -8,6 +8,7 @@ import JobCard from '../../../components/AlumniComponents/JobCard';
  import JobExpandedCard from '../../../components/AlumniComponents/JobExpandedCard';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import axios from 'axios';
+import SkeletonJobCard from '../../../components/AlumniComponents/skeletonjobCard';
 
 
 function JobPostingLanding() {
@@ -38,6 +39,7 @@ function JobPostingLanding() {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
+    const [dependencyTrigger, setDependencyTrigger] = useState(false);
     
 
     const toggleWorkType = (workType) => {
@@ -113,31 +115,31 @@ function JobPostingLanding() {
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     // Get all jobs
-    useEffect(() => {
-        const fetchJobs = async () => {
-        console.log(`${API_BASE_URL}/job-postings/?page=${currentPage}`)
-        setLoading(true);
-            try {
-                const response = await fetch(`${API_BASE_URL}/job-postings/?page=${currentPage}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch jobs');
-                }
-                const data = await response.json();
-                setMaxPage(data.total_pages);
-                setJobList(data.result);
+    // useEffect(() => {
+    //     const fetchJobs = async () => {
+    //     // console.log(`${API_BASE_URL}/job-postings/?page=${currentPage}`)
+    //     setLoading(true);
+    //         try {
+    //             const response = await fetch(`${API_BASE_URL}/job-postings/?page=${currentPage}`);
+    //             if (!response.ok) {
+    //                 throw new Error('Failed to fetch jobs');    
+    //             }
+    //             const data = await response.json();
+    //             setMaxPage(data.total_pages);
+    //             setJobList(data.result);
             
-                setLoading(false);
-                setError(false);
-            } catch (err) {
-                console.log(err.message || 'Something went wrong');
-                setLoading(false);
-                setError(true);
-            } 
+    //             setLoading(false);
+    //             setError(false);
+    //         } catch (err) {
+    //             console.log(err.message || 'Something went wrong');
+    //             setLoading(false);
+    //             setError(true);
+    //         } 
 
-        };
+    //     };
 
-        fetchJobs();
-    }, [currentPage]);
+    //     fetchJobs();
+    // }, [currentPage, dependencyTrigger]);
 
     
 
@@ -239,7 +241,7 @@ function JobPostingLanding() {
         setShowFilterModal(false);
         try {
             const apiUrl = search(); // get the full URL based on current filters
-            console.log(apiUrl);
+            // console.log(apiUrl);
             if (!apiUrl) {
                 setLoading(false);
                 return console.log('No valid filters to search.');
@@ -455,6 +457,7 @@ function JobPostingLanding() {
                         maxPage={maxPage}
                         setMaxPage={setMaxPage}
                         setSelectedJobId={setSelectedJobId}
+                        dependencyTrigger={dependencyTrigger}
                     />
                 </div>
 
@@ -472,8 +475,8 @@ function JobPostingLanding() {
 
             </div>
 
-            <div className='flex flex-row mt-10 xl:gap-2 lg:gap-5 gap-10 justify-center  '>
-                <div className='flex flex-col md:w-2/6 w-full'>
+            <div className='flex md:flex-row flex-col mt-10 xl:gap-2 lg:gap-5 gap-10 justify-center  '>
+                <div className='flex flex-col md:w-2/6 w-full items-center'>
                     <div className='flex flex-col items-center mb-6'>
                         {/* Pagination */}
                         <div className='flex flex-row gap-5 font-satoshi-medium text-lg'>
@@ -488,7 +491,7 @@ function JobPostingLanding() {
                         </div>
                     </div>
                     {/* Scrollable wrapper */}
-                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full outline-0'>
+                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full outline-0 flex  justify-center'>
                         
                         {!loading ? (
                             <div className='flex flex-col gap-5 items-center '>
@@ -510,9 +513,10 @@ function JobPostingLanding() {
                                 )}
                             </div>
                         ) : (
-                            <div className='flex flex-row justify-center h-full gap-5 pt-10'>
-                                <h1 className='text-xl font-satoshi-bold text-gray-400'> Loading Jobs</h1>
-                                <CircularLoading />
+                            <div className='flex flex-col gap-5 items-center'>
+                                {[...Array(6)].map((_, i) => (
+                                <SkeletonJobCard key={i} />
+                                ))}
                             </div>
                         )}
                     </div>
@@ -523,12 +527,18 @@ function JobPostingLanding() {
                 {/* Job Preview */} 
                 
                 {!selectedJob || !selectedJob.tags ? (
-                    <div className="md:flex flex-col items-center justify-center w-[800px] outline-0  hidden">
-                        <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200}/></h1>
-                        <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
+                    <div className='flex flex-col items-center justify-center'>
+                        {/* WEBSITE VIEW */}
+                        <div className="md:flex flex-col xl:w-[800px] lg:w-[600px] md:w-[400px] outline-0 gap-5 hidden justify-center items-center">
+                            <h1 className='text-primary opacity-50'><BriefcaseBusiness size={200}/></h1>
+                            <h1 className='text-primary opacity-50 text-3xl font-satoshi-bold'>Select Job Posting</h1>
+                        </div>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} setJob={setSelectedJob} />
+                    <JobExpandedCard job={selectedJob} currentUserID={userId} 
+                    mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} 
+                    setJob={setSelectedJob} setSelectedJobId={setSelectedJobId} 
+                    setDependencyTrigger={setDependencyTrigger}/>
                 )}
                 
             </div>

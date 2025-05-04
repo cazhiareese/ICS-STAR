@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
+import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
 
 function AdminCreateEvent({ purpose }) {
   const navigate = useNavigate();
@@ -41,6 +42,11 @@ function AdminCreateEvent({ purpose }) {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [token, setToken] = useState(null);
+
+    const [careerList, setCareerList] = useState([]);
+    const [dateList, setDateList] = useState([]);
+    const [jobList, setJobList] = useState([]); // Added for sendtoJob field
+    const [allAlumni, setAllAlumni] = useState(false);
 
   function handleAddLink() {
     if (linkInput.trim() !== '') {
@@ -91,8 +97,13 @@ function AdminCreateEvent({ purpose }) {
 
   async function fetchTags() {
     try {
+      const storedToken = localStorage.getItem('token');
+      setToken(storedToken);
+      if (!storedToken) {
+        throw new Error('No authentication token found');
+      }
       const response = await axios.get(`${API_BASE_URL}/api/admin/events/get-tags`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${storedToken}` },
       });
       setTags(response.data.data);
     } catch (error) {
@@ -482,48 +493,22 @@ function AdminCreateEvent({ purpose }) {
               name="isAll"
               className="accent-primary cursor-pointer"
               checked={formData.isAll}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                handleInputChange(e);
+                setAllAlumni(true); //set as true, all alumni na ito
+              }}
+              
             />
             <label>All Alumni</label>
           </div>
-          <div className="relative inline-block text-left">
-            <button
-              onClick={() => setFilterOpen(!filterOpen)}
-              className="flex flex-row justify-between px-4 py-2 rounded-3xl border border-gray-300 text-black cursor-pointer w-80 font-satoshi-regular"
-            >
-              <p>Filter by</p>
-              <span className="ml-2">▾</span>
-            </button>
-            {filterOpen && (
-              <div className="absolute z-50 bottom-full mb-2 w-56 rounded-2xl bg-white shadow-xl border text-gray-900">
-                <ul className="py-4 space-y-2 rounded-2xl relative">
-                  {options.map((option, idx) => (
-                    <li
-                      key={idx}
-                      onClick={() => setActiveFilter(option)}
-                      className="px-4 py-2 hover:bg-primary hover:text-white cursor-pointer relative"
-                    >
-                      {option}
-                    </li>
-                  ))}
-                </ul>
-                {activeFilter != null && (
-                  <div className="absolute left-full top-0 ml-2 w-60 h-full bg-white border shadow-lg rounded-2xl z-50">
-                    {activeFilter === 'Batch' ? (
-                      <h2>Batch of Alumni</h2>
-                    ) : activeFilter === 'Affiliation' ? (
-                      <></>
-                    ) : activeFilter === 'Employment Status' ? (
-                      <></>
-                    ) : activeFilter === 'Job Fields' ? (
-                      <></>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+          <div className="relative inline-block text-left w-72">
+          <FilterDropdown 
+              setCareerList={setCareerList} 
+              setDateList={setDateList} 
+              setJobList={setJobList} // return lists sa lahat
+              disabled={allAlumni} 
+            />
+
           </div>
           <div className="flex items-center gap-2">
             <input

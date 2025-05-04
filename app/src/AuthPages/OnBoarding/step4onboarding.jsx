@@ -80,7 +80,7 @@ export default function Step4Onboarding() {
           const employmentEnum= (employment) =>{
             if (employment === "employed") {
               return "employed";
-            } else if (employment === "self-employed") {
+            } else if (employment === "self_employed") {
               return "self_employed";
             } else if (employment === "unemployed") {
               return "unemployed";
@@ -112,18 +112,17 @@ export default function Step4Onboarding() {
             ...(userData.scholarshipList?.length > 0 && { scholarships: userData.scholarshipList }),
             ...(userData.affiliationList?.length > 0 && { affiliations: userData.affiliationList }),
             ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
-            ...(userData.employmentType === "employed" && userData.industry && { industry: userData.industrySector }),
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.industrySector && { industry: userData.industrySector }),
             ...(userData.employmentType && { employment_status: employmentEnum(userData.employmentType) }),
             ...(userData.employmentType === "unemployed" && userData.reason?.length > 0 && { reasons: reasonsEnum(userData.reason) }),
-            ...(userData.employmentType === "employed" && userData.companyName && { company_name: userData.companyName }),
-            ...(userData.employmentType === "employed" && userData.jobTitle && { job_title: userData.jobTitle }),
-            ...(userData.employmentType === "employed" && userData.workCountry && { country: userData.workCountry }),
-            ...(userData.employmentType === "employed" && userData.workCity && { city: userData.workCity }),
-            ...(userData.employmentType === "employed" && { work_mode: userData.remote ? "Remote" : "Onsite" }),
-            ...(userData.employmentType === "employed" && userData.employerclass && { employer_class: userData.employerclass }),
-            ...(userData.employmentType === "employed" && userData.tenureStatus && { tenured_status: userData.tenureStatus }),
-            ...(userData.employmentType === "employed" && userData.salaryRange && { salary_grade: userData.salaryRange }),
-            // skills:null
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.companyName && { company_name: userData.companyName }),
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.jobTitle && { job_title: userData.jobTitle }),
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.workCountry && { country: userData.workCountry }),
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.workCity && { city: userData.workCity }),
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && { work_mode: userData.remote ? "Onsite" : "Remote" }),
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.employerclass && { employer_class: userData.employerclass }),
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.tenureStatus && { tenured_status: userData.tenureStatus }),
+            ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.salaryRange && { salary_grade: userData.salaryRange }),
             ...(userData.skillsInterests?.length > 0 && { skills: userData.skillsInterests }),
             };
 

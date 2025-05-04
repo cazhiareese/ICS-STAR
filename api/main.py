@@ -24,6 +24,29 @@ from routers import (log_route,
 
 
 app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, FastAPI!"}
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "https://ics-star-app.vercel.app"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
+
+)
+
 app.include_router(log_route.router)
 app.include_router(auth.router)
 app.include_router(reporting.router)
@@ -46,25 +69,3 @@ app.include_router(newsletter_search.router)
 app.include_router(admin_engagement_statistics.router)
 app.include_router(admin_dashboard_routes.router)
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, FastAPI!"}
-
-origins = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-
-)

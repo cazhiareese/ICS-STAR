@@ -16,6 +16,7 @@ import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 import SocialLinksEditModal from "./components/sociallinksmoda";
+import ReportUserModal from "./components/reportusermodal";
 
 function JanryProfileSection({
   activeTab,
@@ -27,7 +28,7 @@ function JanryProfileSection({
   userId,
 }) {
   
-
+  const [showReportModal, setShowReportModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [originalEmail, setOriginalEmail] = useState(userDetails.email);
   const [profilePicture, setProfilePicture] = useState(null);
@@ -174,13 +175,14 @@ function JanryProfileSection({
   <div className="absolute top-4 right-4 z-10 flex flex-col-reverse sm:flex-row-reverse sm:gap-2 gap-1">
     {share ? (
       // New button shown only when viewing shared profile
-      <button
-        onClick={() => alert("This is a shared profile. Actions are limited.")} //dito red report things, replace mo na lang
-        className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-gray-300 text-black cursor-not-allowed"
-      >
-        <Pencil size={18} />
-        <span className="hidden sm:inline">Viewing Only</span>
-      </button>
+<button
+  onClick={() => setShowReportModal(true)}
+  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-satoshimedium bg-error text-whitey hover:bg-red-500 transition cursor-pointer"
+>
+  <Pencil size={18} />
+  <span className="hidden sm:inline font-satoshi-medium">Report User</span>
+</button>
+
     ) : editMode ? (
       <>
         {/* Save Button */}
@@ -360,6 +362,13 @@ function JanryProfileSection({
         onConfirm={handleCancelConfirm}
         onCancel={handleCancelClose}
       />
+<ReportUserModal
+  isOpen={showReportModal}
+  onClose={() => setShowReportModal(false)}
+  userId={userId}
+  name={`${userDetails.first_name} ${userDetails.last_name}`}
+/>
+
     </div>
   );
 }

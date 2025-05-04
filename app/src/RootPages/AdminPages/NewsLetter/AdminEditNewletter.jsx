@@ -182,9 +182,15 @@ function AdminEditNewsletter() {
     }
 
     try {
+      const token = localStorage.getItem('token');
+
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/edit/${newsletter_id}`,
-        payload
+        payload, 
+        {headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        }}
       );
 
       console.log('Newsletter updated:', response.data);

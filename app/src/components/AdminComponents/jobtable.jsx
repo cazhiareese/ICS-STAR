@@ -13,28 +13,32 @@ function JobTable({ data, jobType }) {
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [removeLoading, setRemoveLoading] = useState(false);
     const [removeSuccess, setRemoveSuccess] = useState(false);
-    
-    async function removePost() {
+    const token = localStorage.getItem('token');
+
+
+    async function removePost(token) {
       setRemoveLoading(true);
       try {
-          await axios.delete(`${API_BASE_URL}/delete-job-postings/${selectedJob.post_id}`);
+          await axios.delete(`${API_BASE_URL}/delete-job-postings/${selectedJob.post_id}`, {headers: {Authorization: `Bearer ${token}`}});
           setRemoveLoading(false);
           setRemoveSuccess(true);
+          navigate(-1)
       } catch (error) {
           setRemoveLoading(false);
           console.error("Failed to delete post:", error);
       }
   }
 
-    async function fetchReports(){
-        const response = await axios.get(`${API_BASE_URL}/admin/job-posts/${selectedJob.post_id}/reports`)
+    async function fetchReports(token){
+        const response = await axios.get(`${API_BASE_URL}/admin/job-posts/${selectedJob.post_id}/reports`, {headers: {Authorization: `Bearer ${token}`}})
         console.log(response.data)
         setReports(response.data)
     }
 
     useEffect(() => {
+      const token = localStorage.getItem('token');
       if (selectedJob) {
-          fetchReports();
+          fetchReports(token);
       }
   }, [selectedJob]);
 
@@ -243,7 +247,7 @@ function JobTable({ data, jobType }) {
                     </button>
                     <button
                       className="bg-error text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
-                      onClick={removePost}
+                      onClick={removePost(token)}
                     >
                       Remove
                     </button>

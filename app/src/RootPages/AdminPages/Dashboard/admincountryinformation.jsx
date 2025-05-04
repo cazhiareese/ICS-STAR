@@ -56,23 +56,23 @@ function AdminCountryInformation() {
 
     useEffect(()=>{
       const fetchData = async () =>{
-      
+        const token = localStorage.getItem('token');
       try{
-      const getJobTitles = await axios.get(`${API_BASE_URL}/admin/stats/get_country_top_jobs?country=${selectedCountry}`)
+      const getJobTitles = await axios.get(`${API_BASE_URL}/admin/stats/get_country_top_jobs?country=${selectedCountry}`, {headers: {Authorization: `Bearer ${token}`}})
       setJobTitles(getJobTitles.data.data)
       }catch (error){
         setJobTitles([])
       }
 
       try{
-        const getTopIndustries = await axios.get(`${API_BASE_URL}/admin/stats/get_country_top_industries?country=${selectedCountry}`)
+        const getTopIndustries = await axios.get(`${API_BASE_URL}/admin/stats/get_country_top_industries?country=${selectedCountry}`, {headers: {Authorization: `Bearer ${token}`}})
         setTopIndustries(getTopIndustries.data.data)
         }catch (error){
             setTopIndustries([])
         }
       
         try{
-          const getCities = await axios.get(`${API_BASE_URL}/admin/stats/get_country_cities?country=${selectedCountry}`)
+          const getCities = await axios.get(`${API_BASE_URL}/admin/stats/get_country_cities?country=${selectedCountry}`, {headers: {Authorization: `Bearer ${token}`}})
           setCities(getCities.data.data)
           }catch (error){
             setCities([])
@@ -83,8 +83,10 @@ function AdminCountryInformation() {
           const countryParams = new URLSearchParams();
           countryParams.append('order_by', orderBy);
           const queryString = countryParams.toString();
-          const getCountryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_country_filter?country=${selectedCountry}&${queryString}`)
+          const getCountryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_country_filter?country=${selectedCountry}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
           setCountryUsers(getCountryUsers.data.data)
+
+          console.log(getCountryUsers.data.data)
         }catch (error) {
           setCountryUsers([])
         }
@@ -106,7 +108,8 @@ function AdminCountryInformation() {
 
     useEffect(() => {
     const fetchData = async () =>{
-    const getCountries = await axios.get(`${API_BASE_URL}/get-all-countries`);
+    const token = localStorage.getItem('token');
+    const getCountries = await axios.get(`${API_BASE_URL}/get-all-countries`, {headers: {Authorization: `Bearer ${token}`}});
     console.log(getCountries.data.data)
       setAllCountry(getCountries.data.data);
       setSelectedCountry(getCountries.data.data[0].country)
@@ -118,10 +121,11 @@ function AdminCountryInformation() {
     useEffect (() => {
       const fetchUsers = async () => {
         try {
+            const token = localStorage.getItem('token');
             const countryParams = new URLSearchParams();
             countryParams.append('order_by', orderBy);
             const queryString = countryParams.toString();
-            const getCountryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_country_filter?country=${selectedCountry}&${queryString}`)
+            const getCountryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_country_filter?country=${selectedCountry}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
             setCountryUsers(getCountryUsers.data.data)
           }catch (error) {
             setCountryUsers([])
@@ -332,7 +336,7 @@ function AdminCountryInformation() {
             </div>
           </div>
           <div className='bg-[#FFFFFF] border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
-            <UsersTable data={countryUsers}/>
+            <UsersTable data={countryUsers} userType='alum'/>
           </div>
           </>
         )}

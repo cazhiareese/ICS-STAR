@@ -24,13 +24,13 @@ function AdminNewsletter() {
       try {
         setLoading(true);
         setError(null);
-
+        const token = localStorage.getItem('token');
         let response;
 
         if (query.trim() !== '') {
           // Use search endpoint when query is present
           const searchUrl = `${import.meta.env.VITE_BACKEND_URL}/search-newsletters?title=${encodeURIComponent(query)}&limit=20`;
-          response = await axios.get(searchUrl);
+          response = await axios.get(searchUrl,{headers: {Authorization: `Bearer ${token}`}});
           const news = response.data;
 
           setNewsletters(news);
@@ -39,7 +39,7 @@ function AdminNewsletter() {
           // Default paginated fetch
           const skip = (page - 1) * limit;
           const url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/newsletter/get?skip=${skip}&limit=${limit}`;
-          const result = await axios.get(url);
+          const result = await axios.get(url, {headers: {Authorization: `Bearer ${token}`}});
           const { news, total_count } = result.data;
 
           setNewsletters(news);
@@ -92,27 +92,7 @@ function AdminNewsletter() {
             setFocused={setFocused}
           />
           </div>
-        <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-          <MoveLeft
-            className='cursor-pointer'
-            onClick={() => handlePageChange(page - 1)}
-          />
-          <p> Page </p>
 
-          <input
-            type="text"
-            placeholder="Search"
-            value={query}
-            onChange={(e) => {
-              setPage(1); // Reset to page 1 when searching
-              setQuery(e.target.value);
-            }}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            className={`w-full lg:w-xs px-4 py-2 border rounded-3xl focus:outline-none ${focused ? 'border-primary border-2' : 'border-gray-400'}`}
-          />
-          <Search className={`absolute mr-2 ${focused ? 'text-primary' : 'text-gray-400'}`} size={20} />
-        </div>
         {query.trim() === '' && (
           <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
             <MoveLeft className='cursor-pointer' onClick={() => handlePageChange(page - 1)} />

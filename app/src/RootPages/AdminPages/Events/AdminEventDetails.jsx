@@ -8,6 +8,7 @@ import RsvpListTable from '../../../components/AdminComponents/RsvpListTable'
 
 function AdminEventDetails() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
+  const token = localStorage.getItem('token');
   const navigate = useNavigate()
   const {eventid} = useParams()
   const [eventDetails, setEventDetails] = useState()
@@ -19,37 +20,39 @@ function AdminEventDetails() {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [transitionComplete, setTransitionComplete] = useState(false)
 
-  async function fetchEventDetails () {
-      const response = await axios.get(`${API_BASE_URL}/api/admin/events/event-by-id/${eventid}`)
+  async function fetchEventDetails (token) {
+      const response = await axios.get(`${API_BASE_URL}/api/admin/events/event-by-id/${eventid}`, {headers: {Authorization: `Bearer ${token}`}})
       console.log(response.data.data)
       setEventDetails(response.data.data)
   }
 
-  async function fetchRSVPClicks() {
-    const response = await axios.get(`${API_BASE_URL}/api/admin/events/rsvp-clicks-count/${eventid}`)
+  async function fetchRSVPClicks(token) {
+    const response = await axios.get(`${API_BASE_URL}/api/admin/events/rsvp-clicks-count/${eventid}`, {headers: {Authorization: `Bearer ${token}`}})
     console.log(response.data)
     setRsvpDetails(response.data)
   }
   
-  async function fetchRSVPList() {
-    const response = await axios.get(`${API_BASE_URL}/api/admin/events/getRSVPs/${eventid}`)
+  async function fetchRSVPList(token) {
+    const response = await axios.get(`${API_BASE_URL}/api/admin/events/getRSVPs/${eventid}`, {headers: {Authorization: `Bearer ${token}`}})
     console.log(response.data.data)
     setRsvpList(response.data.data)
   }
 
-  async function deleteEvent(){
-      const response = await axios.put(`${API_BASE_URL}/api/admin/events/delete/${eventid}`)
+  async function deleteEvent(token){
+    console.log(token)
+      const response = await axios.put(`${API_BASE_URL}/api/admin/events/delete/${eventid}`, {}, {headers: {Authorization: `Bearer ${token}`}})
       console.log(response)
       navigate(-1)
   }
 
   useEffect(() => {
-    async function fetchInitialInformation() {
+    const token = localStorage.getItem('token');
+    async function fetchInitialInformation(token) {
       setLoading(true)
       try {
-        await fetchEventDetails()
-        await fetchRSVPClicks()
-        await fetchRSVPList()
+        await fetchEventDetails(token)
+        await fetchRSVPClicks(token)
+        await fetchRSVPList(token)
       } catch (error) {
         console.error(error)
       } finally {
@@ -57,7 +60,7 @@ function AdminEventDetails() {
       }
     }
   
-    fetchInitialInformation()
+    fetchInitialInformation(token)
   }, [eventid])
 
   return (
@@ -90,7 +93,7 @@ function AdminEventDetails() {
           )}
         </div>
         {/* Edit Event and Delete Event */}
-        {eventDetails.is_closed &&
+        {!eventDetails.is_closed &&
           <div className='flex flex-row gap-2 justify-end'>
             {/* Edit event */}
             <button className='bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer' onClick={() => {navigate(`/admin/events/edit-event/${eventid}`)}}>
@@ -127,7 +130,7 @@ function AdminEventDetails() {
        {/* Send email button and list/details toggle */}
        <div className="flex flex-row items-center mt-3 font-satoshi-regular w-full">
         {/* Send email invites button */}
-        {eventDetails.is_closed && (
+        {!eventDetails.is_closed && (
           <button className="bg-primary h-fix w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer">
             <Mail />
             Send Email Invites
@@ -268,7 +271,7 @@ function AdminEventDetails() {
                   </button>
                   <button
                     className="bg-error text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
-                    onClick={() => deleteEvent()}
+                    onClick={() => deleteEvent(token)}
                   >
                     Delete
                   </button>

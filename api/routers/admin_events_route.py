@@ -3,12 +3,13 @@ from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, Query
 from datetime import date, datetime
 import pytz
 from sqlalchemy import asc, desc, func
-from models.usermodel import User
+from models.usermodel import User, UserTypeEnum
 from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, EventTag, EventVisibleTo
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from util.admin_events_util import create_event_util, edit_event_util, get_demographics
+from util.admin_events_util import create_event_util, edit_event_util, get_demographics, get_event_by_id_util, send_email_util
+from util.userutil import require_admin
 from config.database import get_db
 
 event_router = APIRouter(
@@ -25,7 +26,7 @@ def clean_input(value):
             return [value[0].strip()] if value[0].strip() else []
     return value
 
-@event_router.post( "/create")
+@event_router.post( "/create", dependencies=[Depends(require_admin)],)
 # INCLUDE TIME
 async def create_event(
     title: str = Form(...),
@@ -97,7 +98,7 @@ async def create_event(
     except Exception as e:
         return {"message": str(e)}
 
-@event_router.put("/edit/{event_id}")
+@event_router.put("/edit/{event_id}", dependencies=[Depends(require_admin)],)
 async def edit_event(
     event_id: UUID,
     title: str = Form(...),
@@ -147,7 +148,7 @@ async def edit_event(
         tags = clean_input(tags)
         links = clean_input(links)
         job = clean_input(job)
-        affliation = clean_input(affliation)
+        affiliation = clean_input(affiliation)
         event = await edit_event_util(
                 db=db, 
                 event_id=event_id,
@@ -167,53 +168,12 @@ async def edit_event(
     except Exception as e:
         return {"message": str(e)}
 
-@event_router.get("/event-by-id/{eventId}")
+@event_router.get("/event-by-id/{eventId}", dependencies=[Depends(require_admin)],)
 async def get_event_by_id(eventId: UUID, db:Session=Depends(get_db)):
-    try:
-        event = db.query(Event.event_id, Event.title, Event.image, Event.location, Event.description, Event.is_closed, Event.is_concluded).filter(Event.event_id==eventId).first()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Event not found: {e}")
-    
-    try:
-        event_dates = db.query(EventDate.date).filter(EventDate.event_id == event.event_id).all()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Event date not found: {e}")
-    
-    try: 
-        event_links= db.query(EventLink.link).filter(EventLink.event_id == event.event_id).all()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Event link not found: {e}")
-    
-    try: 
-        event_tags = db.query(EventTag.tag).filter(EventTag.event_id == event.event_id).all()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Event link not found: {e}")
+    return {"message": "success", "data": get_event_by_id_util(eventId=eventId, db=db)
+    }
 
-    dates_list = []
-    for date in event_dates:
-        # print(date[0])
-        dt = datetime.fromisoformat(str(date[0]))
-        formatted = dt.strftime("%Y-%m-%d %H:%M")
-        dates_list.append(formatted)
-
-    links_list= [link[0] for link in event_links]
-    tags_list = [tag[0] for tag in event_tags]
-
-
-    return {"message": "success", "data": {
-        "event_id": event.event_id, 
-        "title": event.title, 
-        "image": event.image,
-        "location": event.location, 
-        "description": event.description, 
-        "datetime": dates_list,
-        "links": links_list,
-        "tags": tags_list,
-        "is_closed": event.is_closed,
-        "is_concluded": event.is_concluded
-    }}
-
-@event_router.put("/close/{event_id}")
+@event_router.put("/close/{event_id}", dependencies=[Depends(require_admin)],)
 async def close_event(event_id: UUID, db: Session = Depends(get_db)):
 
     event = db.query(Event).filter(Event.event_id == event_id).first()
@@ -222,7 +182,7 @@ async def close_event(event_id: UUID, db: Session = Depends(get_db)):
     db.refresh(event)
     return {"message": "success closing event", "id": event.event_id}
 
-@event_router.put("/delete/{event_id}")
+@event_router.put("/delete/{event_id}", dependencies=[Depends(require_admin)],)
 async def delete_event(event_id: UUID, db: Session=Depends(get_db)):
     event = db.query(Event).filter(Event.event_id == event_id).first()
     event.is_deleted= True
@@ -230,7 +190,7 @@ async def delete_event(event_id: UUID, db: Session=Depends(get_db)):
     db.refresh(event)
     return {"message": "success deleting event", "id": event.event_id}
 
-@event_router.get("/getRSVPs/{event_id}")
+@event_router.get("/getRSVPs/{event_id}", dependencies=[Depends(require_admin)],)
 async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=1):
 
     ITEMS_PER_PAGE = 10
@@ -246,7 +206,7 @@ async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=
 
     confirm_list = [str(conf[0]) for conf in confirmed]
     if not confirmed:
-        raise HTTPException(status_code=404, detail="No attendees found for this event")
+        return []
 
     user_details = []
     for people in confirm_list:
@@ -262,9 +222,9 @@ async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=
     
     return {"message":"success", "page": page, "total_pages": total_pages, "data": user_details}
 
-@event_router.get("/all-open-events")
+@event_router.get("/all-open-events", dependencies=[Depends(require_admin)])
 async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db), page:int=1):
-    ITEMS_PER_PAGE = 10
+    ITEMS_PER_PAGE = 8
 
     try:
         query = db.query(
@@ -272,9 +232,10 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
             Event.title,
             Event.image,
             Event.location,
-            func.count(EventConfirmedBy.user_id).label("attendee_count"),
-            func.array_agg(EventDate.date).label("event_dates"),
-            func.max(EventDate.date).label("latest_date")
+            func.count(func.distinct(EventConfirmedBy.user_id)).label("attendee_count"),
+            func.array_agg(func.distinct(EventDate.date)).label("event_dates"),
+            func.max(EventDate.date).label("latest_date"),
+            Event.is_closed
         )\
         .filter(Event.is_concluded == False, Event.is_deleted==False, Event.title.ilike(f"%{title}%") )\
         .outerjoin(EventConfirmedBy, Event.event_id == EventConfirmedBy.event_id)\
@@ -324,19 +285,20 @@ async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "
             "image": event.image,
             "location": event.location,
             "datetime": dates_list,
-            "attendees": event.attendee_count
+            "attendees": event.attendee_count, 
+            "is_closed": event.is_closed
         })
     
     return {"message": "success", "total_pages": total_pages, "page": page, "data": processed_events}
 
-@event_router.get("/all-concluded-events")
+@event_router.get("/all-concluded-events", dependencies=[Depends(require_admin)],)
 async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db), page: int=1):
     ITEMS_PER_PAGE = 10
     try:
         query = db.query(
             Event.event_id,
             Event.title,
-            func.count(EventConfirmedBy.user_id).label("attendee_count"),
+            func.count(func.distinct(EventConfirmedBy.user_id)).label("attendee_count"),
             func.array_agg(EventDate.date).label("event_dates"),
             func.array_agg(EventTag.tag).label("event_tags"),
             Event.updated_at.label("Date Concluded")
@@ -394,7 +356,7 @@ async def get_concluded_events(title: Optional[str] = "", order_by: Optional[str
     return {"message": "success", "total_pages":total_pages, "page":page, "data": processed_events}
 
 
-@event_router.get("/rsvp-clicks-count/{event_id}")
+@event_router.get("/rsvp-clicks-count/{event_id}", dependencies=[Depends(require_admin)],)
 def rsvp_clicks_count(event_id: UUID, db: Session = Depends(get_db)):
     
     rsvp_count = db.query(EventConfirmedBy.user_id).filter(EventConfirmedBy.event_id == event_id).count()
@@ -402,7 +364,7 @@ def rsvp_clicks_count(event_id: UUID, db: Session = Depends(get_db)):
     
     return {"event": event.title, "rsvp_count": rsvp_count, "user_clicks": event.user_clicks}
 
-@event_router.get("/demographics/{event_id}")
+@event_router.get("/demographics/{event_id}", dependencies=[Depends(require_admin)],)
 def demographics_by_batch(
     event_id: UUID,
     db: Session = Depends(get_db),
@@ -416,7 +378,7 @@ def demographics_by_batch(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@event_router.get("/get-tags")
+@event_router.get("/get-tags", dependencies=[Depends(require_admin)],)
 def get_tags(db: Session = Depends(get_db)):
 
     
@@ -425,3 +387,33 @@ def get_tags(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No tags to fetch!")
     
     return{"message": "success", "data": [tag[0] for tag in query if tag is not None]}
+
+@event_router.post("/send-email/{event_id}")
+def send_email(event_id: UUID, db: Session=Depends(get_db)):
+    event = db.query(Event.is_all).filter(Event.event_id == event_id).first()
+
+    if event.is_all:
+        details = []
+        users = db.query(User.first_name, User.last_name, User.email).filter(User.user_type == UserTypeEnum.alumni, User.is_verified == True).all()
+        for user in users:
+            details.append({
+                "name": f"{user.first_name} {user.last_name}",
+                "email": user.email
+            })
+    
+    else:
+        user_ids = db.query(EventVisibleTo.user_id).filter(EventVisibleTo.event_id == event_id).all()
+        details = []
+        for user in user_ids:
+            recipients = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
+            details.append({
+                "name": f"{recipients.first_name} {recipients.last_name}",
+                "email": recipients.email
+            })
+
+    try:
+        response = send_email_util(eventId=event_id, recipients=details, db=db)
+        return response 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+    

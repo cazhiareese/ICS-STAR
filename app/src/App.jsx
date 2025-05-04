@@ -8,6 +8,7 @@ import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
 import Unauthorized from "./AuthPages/Unauthorized";
+import OnboardingDashboard from "./AuthPages/OnBoarding/dashboard_onboarding";
 
 
 
@@ -158,6 +159,7 @@ function App() {
             path="setup"
             element={ 
               <OnboardingProvider>
+                
                 <OnBoarding />
               </OnboardingProvider>
             }
@@ -192,15 +194,6 @@ function App() {
             <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
             <Route path="*" element={<LoginPage />} />
-            
-            <Route
-              path="/setup"
-              element={
-                <OnboardingProvider>
-                  <OnBoarding />
-                </OnboardingProvider>
-              }
-              />
 
 
           </Route>
@@ -210,7 +203,7 @@ function App() {
               path="*"
               element={
                 <OnboardingProvider>
-                  <OnBoarding />
+                  <OnboardingDashboard />
                 </OnboardingProvider>
               }
             
@@ -229,6 +222,8 @@ function App() {
             <Route path="student/events" element={<EventsLanding />} />
             <Route path="students/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
+            <Route path="student/profile" element={<UserProfile />} />
+            <Route path="student/profile/:userId" element={<JanryUserProfile />} />
             <Route path="student/newsletter" element={<NewsletterLanding />} />
             <Route path="student/newsletter/:newsletterid" element={<Newsletter />} />
             <Route path="student/jobPosting/interested/:jobid" element={<InterestedUsers />} />
@@ -242,8 +237,9 @@ function App() {
               path="*"
               element={
                 <OnboardingProvider>
-                  <OnBoarding />
+                  <OnboardingDashboard />
                 </OnboardingProvider>
+                
               }
               />
          }
@@ -258,7 +254,7 @@ function App() {
             <Route path="guest/events/:eventid" element={<EventCardsMain />} />
             <Route path="guest/newsletter" element={<NewsletterLanding />} />
             <Route path="guest/newsletter/:newsletterid" element={<Newsletter />} />
-            <Route path="*" element={<LoginPage />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
 
           </Route>
         </>
@@ -316,6 +312,7 @@ function App() {
       {/* Redirect unknown routes */}
       <Route path="*" element={<LoginPage />} />
     </Routes>
+
   );
 }
 

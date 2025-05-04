@@ -16,7 +16,7 @@ function UsersTable({ data, loading = null, userType }) {
     col4: '25%', // Base Location && student number
     col5: '15%', // Job Title && graduating class
     col6: '10%', // Last Update
-    col7: '5%',  // Status
+    col7: '7%',  // Status
   };
 
   return (

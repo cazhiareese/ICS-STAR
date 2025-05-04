@@ -131,7 +131,7 @@ function Step2Onboarding() {
       ];
       
       // Find the selected option object from userData.standing
-      const selectedStanding = standingOptions.find(opt => opt.value === userData.standing);
+      const selectedStanding = standingOptions.find(opt => opt.value === userData.standing) || standingOptions[0];
 
     return (
         <>
@@ -143,7 +143,7 @@ function Step2Onboarding() {
                 </label>
                 <CustomDropdownStanding
                     options={standingOptions}
-                    value="Freshman"  // Not just "freshman" — the whole object
+                    value={userData.standing} // Not just "freshman" — the whole object
                     onChange={(selectedOption) => updateUserData("standing", selectedOption.value)}
                 />
 

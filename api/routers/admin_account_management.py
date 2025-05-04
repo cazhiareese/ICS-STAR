@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from schemas.user import UserOut, UserStandingEnum, UserTypeEnum
@@ -6,22 +7,14 @@ from util.userutil import require_admin
 from models.usermodel import User
 from models.report_model import Report
 from uuid import UUID
-from sqlalchemy import func
+from sqlalchemy import func, update
 
 router = APIRouter()
-
-# Check if user is an admin
-# Arguments: current_user - the current user
-# Returns: True if user is an admin, False otherwise
-def isAdmin(current_user: User = Depends(require_admin)):
-    if current_user.user_type.value != UserTypeEnum.admin:
-        raise HTTPException(status_code=403, detail="You do not have permission to access this resource")
-    return True
 
 # Get all unverified users
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified users
-@router.get("/admin/unverified", dependencies=None, response_model=list[UserOut])
+@router.get("/admin/unverified", dependencies=[Depends(require_admin)])
 async def read_unverified_users(db: Session = Depends(get_db)):
     unverified_users = db.query(
         User.user_id,
@@ -54,7 +47,7 @@ async def read_unverified_users(db: Session = Depends(get_db)):
 # Get unverified alumni
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified alumni
-@router.get("/admin/unverified/alumni", dependencies=None)
+@router.get("/admin/unverified/alumni", dependencies=[Depends(require_admin)])
 async def read_unverified_alumni(db: Session = Depends(get_db)):
     unverified_alum = db.query(
         User.user_id,
@@ -90,7 +83,7 @@ async def read_unverified_alumni(db: Session = Depends(get_db)):
 # Get unverified students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all unverified students
-@router.get("/admin/unverified/students", dependencies=None)
+@router.get("/admin/unverified/students", dependencies=[Depends(require_admin)],)
 async def read_unverified_students(db: Session = Depends(get_db)):
     unverified_students = db.query(
         User.user_id,
@@ -122,55 +115,123 @@ async def read_unverified_students(db: Session = Depends(get_db)):
 # Get the number of unverified alumni 
 # Arguments: db - SQLAlchemy session
 # Returns: the count of unverified alumni
-@router.get("/admin/unverified/alumni/count", dependencies=None)
+@router.get("/admin/unverified/alumni/count", dependencies=[Depends(require_admin)],)
 async def read_unverified_alumni_count(db: Session = Depends(get_db)):
-    unverified_alumni_count = db.query(User).filter(User.user_type == UserTypeEnum.alumni , User.is_verified == False).count()
+    unverified_alumni_count = db.query(User.user_id).filter(User.user_type == UserTypeEnum.alumni , User.is_verified == False).count()
     return {"unverified_alumni_count": unverified_alumni_count}
 
 # Get the number of unverified students
 # Arguments: db - SQLAlchemy session
 # Returns: the count of unverified students
-@router.get("/admin/unverified/students/count", dependencies=None)
+@router.get("/admin/unverified/students/count", dependencies=[Depends(require_admin)],)
 async def read_unverified_students_count(db: Session = Depends(get_db)):
-    unverified_students_count = db.query(User).filter(User.user_type == UserTypeEnum.student, User.is_verified == False).count()
+    unverified_students_count = db.query(User.user_id).filter(User.user_type == UserTypeEnum.student, User.is_verified == False).count()
     return {"unverified_students_count": unverified_students_count}
 
 # Verify and confirm user registration
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the user registration
-@router.put("/admin/confirm/{user_id}", dependencies=None)
+@router.put("/admin/confirm/{user_id}", dependencies=[Depends(require_admin)],)
 async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
-    user = db.query(User).filter(User.user_id == user_id).first()
-    if user is None:
+    result = db.execute(
+        update(User)
+        .where(User.user_id == user_id)
+        .values(is_verified=True)
+        .returning(User.user_id)
+    )
+    
+    # Check if any row was affected
+    affected_user = result.scalar_one_or_none()
+    
+    if affected_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    user.is_verified = True
+        
     db.commit()
     return {"message": "User registration confirmed"}
 
 # Get all graduating students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all graduating students
-@router.get("/admin/graduating", dependencies=None, response_model=list[UserOut])
+@router.get("/admin/graduating", dependencies=[Depends(require_admin)],)
 async def read_graduating_students(db: Session = Depends(get_db)):
-    students = db.query(User).filter(User.user_type == UserTypeEnum.student, User.standing == UserStandingEnum.graduating).all()
-    return [UserOut.model_validate(student) for student in students]
+    graduating_students = db.query(
+        User.user_id,
+        User.first_name, 
+        User.last_name,
+        User.email,
+        User.student_number,
+        func.to_char(User.created_at, 'MM/DD/YYYY').label('date_of_reg'),
+        User.graduation_year,
+        User.graduation_semester,
+        User.image,
+        User.standing
+    ).filter(
+        User.user_type == UserTypeEnum.student,
+        User.is_verified == True,
+        User.standing == UserStandingEnum.graduating
+    ).all()
+
+    # Convert the result to a list of dictionaries
+    graduating_students_list = [
+        {
+            "user_id": student.user_id,
+            "name": f"{student.first_name} {student.last_name}",
+            "email": student.email,
+            "student_number": student.student_number,
+            "grad_class": f"{student.graduation_year} - {student.graduation_semester}",
+            "date_of_reg": student.date_of_reg,
+            "image": student.image,
+            "standing": student.standing.value
+        } for student in graduating_students
+    ]
+
+    return graduating_students_list
 
 # Transition graduating students to alumni
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the transition
-@router.put("/admin/transition/{user_id}", dependencies=None)
+@router.put("/admin/transition/{user_id}", dependencies=[Depends(require_admin)],)
 async def transition_student(db: Session = Depends(get_db), user_id: UUID = None):
-    student = db.query(User).filter(User.user_id == user_id).first()
-    if student is None:
+
+    # Get current date
+    current_date = datetime.today()
+    
+    # If current date is August to December, year = next year
+    if current_date.month >= 8:
+        graduation_year = current_date.year + 1
+    else:
+        graduation_year = current_date.year
+
+    # If current month is August to January, semester = 1
+    if current_date.month >= 8 or current_date.month <= 1:
+        graduation_semester = "1st Semester"
+
+    # If current month is June to July, semester = Midyear
+    elif current_date.month >= 6 and current_date.month <= 7:
+        graduation_semester = "Midyear"
+    else:
+        graduation_semester = "2nd Semester"
+
+    result = db.execute(
+        update(User)
+        .where(User.user_id == user_id)
+        .values(user_type="alumni", standing=None, graduation_year=graduation_year, graduation_semester=graduation_semester, is_onboarded=False)
+        .returning(User.user_id)
+    )
+    
+    # Check if any row was affected
+    affected_user = result.scalar_one_or_none()
+    
+    if affected_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    student.user_type = "alumni"
+        
     db.commit()
     return {"message": "Student transitioned to alumni"}
 
 # Get all students (not transitioned students)
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all students
-@router.get("/admin/students", dependencies=None)
+@router.get("/admin/students", dependencies=[Depends(require_admin)],)
 async def read_students(db: Session = Depends(get_db)):
     students = db.query(
         User.user_id,
@@ -205,7 +266,7 @@ async def read_students(db: Session = Depends(get_db)):
 # Get verified alumni
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all verified alumni
-@router.get("/admin/verified-alumni", dependencies=None)
+@router.get("/admin/verified-alumni", dependencies=[Depends(require_admin)],)
 async def read_verified_alumni(db: Session = Depends(get_db)):
     alumni = db.query(
         User.user_id,
@@ -239,7 +300,7 @@ async def read_verified_alumni(db: Session = Depends(get_db)):
 # Get verified students
 # Arguments: db - SQLAlchemy session
 # Returns: a list of all verified students
-@router.get("/admin/verified-students", dependencies=None)
+@router.get("/admin/verified-students", dependencies=[Depends(require_admin)],)
 async def read_verified_students(db: Session = Depends(get_db)):
     students = db.query(
         User.user_id,
@@ -271,17 +332,17 @@ async def read_verified_students(db: Session = Depends(get_db)):
 # Get user's verification file
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: the verification file of the user
-@router.get("/admin/verification-file/{user_id}", dependencies=None)
+@router.get("/admin/verification-file/{user_id}", dependencies=[Depends(require_admin)],)
 async def read_verification_file(db: Session = Depends(get_db), user_id: UUID = None):
-    user = db.query(User).filter(User.user_id == user_id).first()
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"verification_file": user.verification_file}
+    file = db.query(User.verification_file).filter(User.user_id == user_id).scalar()
+    if file is None:
+        raise HTTPException(status_code=200, detail="Fiie not found")
+    return {"verification_file": file}
 
 # Get user's report logs
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a list of all report logs of the user
-@router.get("/admin/report-logs/{user_id}", dependencies=None)
+@router.get("/admin/report-logs/{user_id}", dependencies=[Depends(require_admin)],)
 async def read_report_logs(db: Session = Depends(get_db), user_id: UUID = None):
     report_logs = db.query(
         Report.report_id,
@@ -308,19 +369,28 @@ async def read_report_logs(db: Session = Depends(get_db), user_id: UUID = None):
 # Ban user
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: a message confirming the ban
-@router.put("/admin/ban/{user_id}", dependencies=None)
+@router.put("/admin/ban/{user_id}", dependencies=[Depends(require_admin)],)
 async def ban_user(db: Session = Depends(get_db), user_id: UUID = None):
-    user = db.query(User).filter(User.user_id == user_id).first()
-    if user is None:
+    result = db.execute(
+        update(User)
+        .where(User.user_id == user_id)
+        .values(is_banned=True)
+        .returning(User.user_id)
+    )
+    
+    # Check if any row was affected
+    affected_user = result.scalar_one_or_none()
+    
+    if affected_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    user.is_banned = True
+        
     db.commit()
     return {"message": "User banned"}
 
 # Get user profile
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: the user profile
-@router.get("/profile/{user_id}", dependencies=None)
+@router.get("/profile/{user_id}", dependencies=[Depends(require_admin)],)
 async def get_profile(
     db: Session = Depends(get_db),
     user_id: UUID = None,
@@ -380,7 +450,7 @@ async def get_profile(
 # Get unverified user
 # Arguments: db - SQLAlchemy session, user_id - the user ID
 # Returns: the unverified user
-@router.get("/admin/unverified/user/{user_id}", dependencies=None)
+@router.get("/admin/unverified/user/{user_id}", dependencies=[Depends(require_admin)],)
 async def read_unverified_user(db: Session = Depends(get_db), user_id: UUID = None):
     user = db.query(
         User.user_id,

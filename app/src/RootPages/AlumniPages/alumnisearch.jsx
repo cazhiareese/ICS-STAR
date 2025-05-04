@@ -17,6 +17,8 @@ import SeeAllLocationModal from "../../components/AlumniComponents/seeAllLocatio
 import SeeAllCareerModal from "../../components/AlumniComponents/seeAllCareerModal";
 import SeeAllIndustryModal from "../../components/AlumniComponents/seeAllIndustryModal";
 import SeeAllSkillsModal from "../../components/AlumniComponents/seeAllSkillsModal";
+import SkeletonAlumniCard from "../../components/AlumniComponents/skeletonalumcard";
+
 
 function AlumniSearch() {
   // State for expanding animations
@@ -195,7 +197,7 @@ function AlumniSearch() {
 
     if (Object.keys(filters).length > 0) {
       let apiUrl = buildSearchUrl(filters);
-      console.log(apiUrl);
+      // console.log(apiUrl);
       return apiUrl;
     }
   };
@@ -219,7 +221,7 @@ function AlumniSearch() {
           }
           return prevList;
         });
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.error("Error fetching alumni data:", error);
         setAlumniList([]);
@@ -692,9 +694,7 @@ function AlumniSearch() {
             >
               Reset All
             </button>
-            <button className="mt-4 cursor-pointer hover:text-primary">
-              <X size={24} />
-            </button>
+           
           </div>
           <div className="flex flex-col shadow-lg mt-14 rounded-lg gap-3 items-center h-auto">
             <div className="flex flex-row py-3 w-11/12" onClick={() => setIsAlumniInfoExpanded(!isALumniInfoExpanded)}>
@@ -901,15 +901,25 @@ function AlumniSearch() {
               ))}
             </div>
           )}
-          {!loading && Array.isArray(alumniList) && (
+          {loading ? (
             <h1 className="md:text-xl text-lg font-satoshi-medium text-gray-500 md:pl-10 py-10 lg:text-left text-center">
-              {alumniList.length} Search Results
-            </h1>
-          )}
-          {loading && (
-            <h1 className="md:text-xl text-lg font-satoshi-medium text-gray-400 pl-10 py-6 lg:text-left text-center">
               Searching...
             </h1>
+          ) : (
+            Array.isArray(alumniList) && (
+              <h1 className="md:text-xl text-lg font-satoshi-medium text-gray-500 md:pl-10 py-10 lg:text-left text-center">
+                {alumniList.length} Search Results
+              </h1>
+            )
+          )}
+
+          {loading && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 items-start justify-start overflow-y-auto py-10 px-4 xl:pr-0 md:pr-10 w-full">
+              {[...Array(6)].map((_, index) => (
+                <SkeletonAlumniCard key={index} />
+              ))}
+            </div>
+          
           )}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 items-start justify-start overflow-y-auto py-10 px-4 xl:pr-0 md:pr-10 w-full">
             {Array.isArray(alumniList) &&

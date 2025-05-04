@@ -1,16 +1,23 @@
-import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, SquareArrowOutUpRight, Star, Trash2, StarOff } from 'lucide-react'
+import { Banknote, BriefcaseBusiness, Ellipsis, FileText, MoveLeft, Pencil, SquareArrowOutUpRight, Star, Trash2, StarOff, Flag } from 'lucide-react'
 import { React, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import axios from 'axios';
 import CircularLoading from '../LoadingComponents/circularloading';
+import JobModal from '../../RootPages/AlumniPages/job-posting/jobcomponent/jobmodal';
+import { jwtDecode } from 'jwt-decode';
 
-function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded, setJob }) {
+
+
+function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded, setJob, setSelectedJobId, setDependencyTrigger }) {
     const [showOptions, setShowOptions] = useState(false);
     const [isInterested, setIsInterested] = useState(false);
     const [starLoading, setStarLoading] = useState(false);
     const modalRef = useRef(null);
     const ellipsisRef = useRef(null);
+
+//cy
+const [showModal, setShowModal] = useState(false);//
 
     const jobId = job.post_id || job.id;
     const navigate = useNavigate();
@@ -18,10 +25,26 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
 
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+    //cy
+    const handleNavigate = () => {
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        const tokentype = decoded.role;
+        const userId = decoded.sub;
+        
+        // Check if the user is navigating to their own profile
+        if (userId === job.user_id) {
+            navigate(`/${tokentype}/profile`);
+        } else {
+            // Navigate to the other user's profile
+            navigate(`/${tokentype}/profile/${job.user_id}`);
+        }
+        };//
+
     const fetchJobs = async () => {
         try {
             const jobRes = await axios.get(`${API_BASE_URL}/job-postings/${jobId}`);
-            console.log("Job Data:", jobRes.data);
+            // console.log("Job Data:", jobRes.data);
             setJob(jobRes.data);
         } catch (err) {
             console.error(err.response?.data?.message || err.message || 'Something went wrong');
@@ -39,6 +62,7 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
             });
             console.log('Success:', response.data);
             await fetchJobs();
+            setDependencyTrigger(prev => !prev);
             setIsInterested(true);
             setStarLoading(false);
             return response.data;
@@ -63,6 +87,7 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
             });
             console.log('Success:', response.data);
             await fetchJobs();
+            setDependencyTrigger(prev => !prev);
             setIsInterested(false);
             setStarLoading(false);
             return response.data;
@@ -89,7 +114,17 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
 
     const navToEditJobPost = () => {
         navigate(`/alumni/jobPosting/edit/${jobId}`);
-    };
+    }
+
+    const handleReport = async () => {
+        navigate(`/alumni/jobPosting/report/${jobId}`);
+    }
+
+
+    const handleModalBack = () => {
+        setMobileExpanded(false)
+        setSelectedJobId("");
+    }
 
     return (
         <div className='flex flex-col items-center'>
@@ -98,38 +133,51 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                 <div className='flex xl:flex-row flex-col gap-2'>
                     {/* Main Card */}
                     <div className='flex flex-col outline-1 outline-neutral-300 xl:w-7/12 w-full rounded-2xl px-8 pt-4 pb-8 cursor'>
-                        {job.user_id === currentUserID && (
+                        {job.user_id === currentUserID ? (
                             <div className="relative ml-auto" ref={ellipsisRef}>
                                 <button className='cursor-pointer' onClick={() => setShowOptions(!showOptions)}>
-                                    <Ellipsis size={30} />
+                                <Ellipsis size={30} />
                                 </button>
                                 {showOptions && (
-                                    <div
-                                        ref={modalRef}
-                                        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+                                <div
+                                    ref={modalRef}
+                                    className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+                                >
+                                    <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer" onClick={() => setShowModal(true)}>
+                                    <Trash2 size={16} />
+                                    Delete Post
+                                    </button>
+                                    <button
+                                    className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => navToEditJobPost()}
                                     >
-                                        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer">
-                                            <Trash2 size={16} />
-                                            Delete Post
-                                        </button>
-                                        <button
-                                            className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
-                                            onClick={navToEditJobPost}
-                                        >
-                                            <Pencil size={16} />
-                                            Edit Post
-                                        </button>
-                                    </div>
+                                    <Pencil size={16} />
+                                    Edit Post
+                                    </button>
+                                </div>
                                 )}
                             </div>
-                        )}
+                            ) : (
+                            <button
+                                className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
+                                onClick={() => handleReport(job.id)} // create this function as needed
+                            >
+                                <Flag size={20} />
+                                Report
+                            </button>
+                            )}
                         <h1 className='font-satoshi-bold text-3xl pt-5 break-words'>{job.title}</h1>
                         <div className="flex items-center gap-2 pt-2">
                             <h1 className='font-satoshi-bold text-lg break-words'>{job.company}</h1>
                         </div>
                         <div className="flex items-center gap-2 pt-1">
                             <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
-                            <h1 className='cursor-pointer font-satoshi-bold'>{job.user_name}</h1>
+                            <button 
+                            onClick={handleNavigate} 
+                            className="cursor-pointer font-satoshi-bold text-left text-primary underline"
+                            >
+                            {job.user_name}
+                            </button>
                         </div>
                         {job.image ? (
                             <img src={job.image} className='w-full rounded-4xl my-3 h-39 object-cover' />
@@ -174,11 +222,11 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                                         onClick={() => navigate(`/alumni/jobPosting/interested/${jobId}`)}
                                         className="text-lg text-primary font-satoshi-bold hover:hover cursor-pointer"
                                     >
-                                        {job.interested_count} are interested
+                                        {job.interested_count ?? job.interested_in} are interested
                                     </button>
                                 ) : (
                                     <span className="text-lg text-primary font-satoshi-bold">
-                                        {job.interested_count} are interested
+                                        {job.interested_count ?? job.interested_in} are interested
                                     </span>
                                 )}
                             </div>
@@ -240,8 +288,7 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                 </div>
             </div>
             {/* MOBILE VIEW */}
-            {mobileExpanded && (
-                <div className="fixed inset-0 flex justify-center sm:mr-0 mr-3 md:hidden z-50">
+                <div className="fixed inset-0 flex justify-center md:hidden z-50">
                     <motion.div
                         className="w-screen bg-gray-50 p-4 shadow-lg rounded-t-2xl overflow-y-auto flex flex-col gap-4"
                         style={{ maxHeight: "100vh", height: "100%" }}
@@ -252,60 +299,56 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                     >
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-col outline-1 outline-neutral-300 w-full rounded-2xl px-6 pt-4 pb-6">
-                                <div className="flex items-center mb-4 cursor-pointer" onClick={() => setMobileExpanded(false)}>
+                                <div className="flex items-center mb-4 cursor-pointer" onClick={handleModalBack}>
                                     <MoveLeft className="text-primary" size={24} />
                                     <p className="text-primary font-satoshi-medium text-base ml-2">Back</p>
                                 </div>
-                                {job.user_id === currentUserID && (
-                                    <div className="relative ml-auto" ref={ellipsisRef}>
-                                        <button
-                                            className="cursor-pointer p-2"
-                                            onClick={() => setShowOptions(!showOptions)}
-                                            aria-label="Post options"
-                                        >
-                                            <Ellipsis size={28} />
+                                {job.user_id === currentUserID ? (
+                                <div className="relative ml-auto" ref={ellipsisRef}>
+                                    <button className="cursor-pointer" onClick={() => setShowOptions(!showOptions)}>
+                                    <Ellipsis size={30} />
+                                    </button>
+                                    {showOptions && (
+                                    <div
+                                        ref={modalRef}
+                                        className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-lg border border-gray-200 z-50"
+                                    >
+                                        <button className="flex items-center gap-2 text-red-600 px-4 py-2 w-full hover:bg-red-50 cursor-pointer" onClick={() => setShowModal(true)}>
+                                        <Trash2 size={16} />
+                                        Delete Post
                                         </button>
-                                        {showOptions && (
-                                            <div
-                                                ref={modalRef}
-                                                className="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-200 z-50"
-                                            >
-                                                <button
-                                                    className="flex items-center gap-2 text-red-600 px-3 py-2 w-full hover:bg-red-50 cursor-pointer text-sm"
-                                                    aria-label="Delete post"
-                                                >
-                                                    <Trash2 size={14} />
-                                                    Delete Post
-                                                </button>
-                                                <button
-                                                    className="flex items-center gap-2 text-black px-3 py-2 w-full hover:bg-gray-100 cursor-pointer text-sm"
-                                                    onClick={navToEditJobPost}
-                                                    aria-label="Edit post"
-                                                >
-                                                    <Pencil size={14} />
-                                                    Edit Post
-                                                </button>
-                                            </div>
-                                        )}
+                                        <button
+                                        className="flex items-center gap-2 text-black px-4 py-2 w-full hover:bg-gray-100 cursor-pointer"
+                                        onClick={() => navToEditJobPost()}
+                                        >
+                                        <Pencil size={16} />
+                                        Edit Post
+                                        </button>
                                     </div>
+                                    )}
+                                </div>
+                                ) : (
+                                <button
+                                    className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
+                                    onClick={() => handleReport()} // Implement handleReport
+                                >
+                                    <Flag size={20} />
+                                    Report
+                                </button>
                                 )}
                                 <h1 className="font-satoshi-bold text-2xl pt-3">{job.title}</h1>
                                 <div className="flex items-center gap-2 pt-2">
                                     <h1 className="font-satoshi-bold text-base">{job.company}</h1>
-                                    <button
-                                        className="cursor-pointer p-2"
-                                        onClick={() => {
-                                            const url = job.link.startsWith("http") ? job.link : `https://${job.link}`;
-                                            window.open(url, "_blank");
-                                        }}
-                                        aria-label="Visit company website"
-                                    >
-                                        <SquareArrowOutUpRight size={18} />
-                                    </button>
+                                    
                                 </div>
                                 <div className="flex items-center gap-2 pt-1">
                                     <h1 className="font-satoshi-medium text-xs">Posted by</h1>
-                                    <h1 className="cursor-pointer font-satoshi-bold text-xs">{job.user_name}</h1>
+                                    <h1 
+                                    className="cursor-pointer font-satoshi-bold text-primary underline" 
+                                    onClick={handleNavigate}
+                                    >
+                                    {job.user_name}
+                                    </h1> 
                                 </div>
                                 {job.image ? (
                                     <img src={job.image} className="w-full rounded-2xl my-3 h-32 object-cover" alt="Job image" />
@@ -354,11 +397,11 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                                                 className="text-sm text-primary font-satoshi-bold hover:underline cursor-pointer"
                                                 aria-label="View interested users"
                                             >
-                                                {job.interested_count} are interested
+                                                {job.interested_count ?? job.interested_in} are interested
                                             </button>
                                         ) : (
                                             <span className="text-sm text-primary font-satoshi-bold">
-                                                {job.interested_count} are interested
+                                                {job.interested_count ?? job.interested_in} are interested
                                             </span>
                                         )}
                                     </div>
@@ -414,9 +457,18 @@ function JobExpandedCard({ job, currentUserID, mobileExpanded, setMobileExpanded
                         </div>
                     </motion.div>
                 </div>
+          
+            {showModal && (
+            <JobModal
+                jobId={jobId}
+                setShowModal={setShowModal}
+                onCancel={() => setShowModal(false)}
+                options={{ type: "delete" }}
+                setDependencyTrigger={setDependencyTrigger}
+            />
             )}
-        </div>
-    );
-}
+                    </div>
+                );
+            }
 
 export default JobExpandedCard

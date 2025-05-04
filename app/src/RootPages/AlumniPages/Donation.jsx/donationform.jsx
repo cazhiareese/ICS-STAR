@@ -20,7 +20,7 @@ function Donationform() {
     const id = useParams(); // Get the drive_id from the URL params
     const drive_id = id.driveid; // Extract the drive_id from the params
     const formattedDate = new Date().toLocaleDateString();
-    console.log(drive_id)
+    // console.log(drive_id)
     // UseState for checking if the buttons are activated
     const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
     const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
@@ -39,7 +39,11 @@ function Donationform() {
     const [driveDetails, setDriveDetails] = useState(null);
     const [searchParams] = useSearchParams();
     const success = searchParams.get("success");
+    const [summaryheader,setSummaryHeader] = useState("Your donation will be reflected once it has been reviewed and verified by our admin team.")
 
+    const [error, setError] = useState(false);
+    const [errorInKind, setErrorInKind] = useState(false);
+    const [paymentError, setPaymentError] = useState(false);
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -76,7 +80,7 @@ function Donationform() {
                 .then((res) => res.json())
                 .then((data) => {
                     setDriveDetails(data);
-                    console.log("Drive details:", data);
+                    // console.log("Drive details:", data);
                 })
                 .catch((err) => {
                     console.error("Error fetching drive details:", err);
@@ -87,10 +91,11 @@ function Donationform() {
     const submitMonetaryDonation = async () => {
         // Ensure that all required fields are not empty
         if (monetaryAmountInput <= 0 || file == null) {
-            alert("Please enter a valid amount and upload a proof of payment.");
+            setError(true);
             return;
         }
         setSubmitting(true);
+        setError(false)
         const formData = new FormData();
         const token = localStorage.getItem("token");
 
@@ -130,10 +135,10 @@ function Donationform() {
 
     const submitMayaDonation = async () => {
         if (monetaryAmountInput <= 0) {
-            alert("Please enter a valid amount.");
+            setPaymentError(true);
             return;
         }
-    
+        setPaymentError(false);
         setSubmitting(true);
         const formData = new FormData();
         const token = localStorage.getItem("token");
@@ -144,9 +149,9 @@ function Donationform() {
         formData.append('amount', String(monetaryAmountInput));
     
         try {
-            for (let pair of formData.entries()) {
-                console.log(`${pair[0]}: ${pair[1]}`);
-            }
+            // for (let pair of formData.entries()) {
+            //     // console.log(`${pair[0]}: ${pair[1]}`);
+            // }
     
             const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
@@ -202,6 +207,7 @@ function Donationform() {
                 setDonationSuccess(true);
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
+                setSummaryHeader("Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.");
                 setMonetaryAmountInput(amount)
                 setIsMonetaryTypeOpen(false);
                 setIsInKindTypeOpen(false);
@@ -223,10 +229,11 @@ function Donationform() {
     const submitInKindDonation = async () => {
         // Ensure that all required fields are not empty
         if (donationDetailsInput == null) {
-            alert("Please enter a donation description.");
+            setErrorInKind(true);
             return;
         }
         setSubmitting(true);
+        setErrorInKind(false);
         const formData = new FormData();
         const token = localStorage.getItem("token");
 
@@ -304,15 +311,11 @@ function Donationform() {
                                 <MonetaryAmountInput
                                     monetaryAmountInput={monetaryAmountInput}
                                     setMonetaryAmountInput={setMonetaryAmountInput}
+                                    paymentError={paymentError}
                                 />
 
-                                <PaymentMode/>
-                                <button
-  onClick={submitMayaDonation}
-  className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
->
-  Donate via Maya
-</button>
+                                <PaymentMode submitMayaDonation={submitMayaDonation}/>
+
 
                                 <DonationInstructions donationType={"monetary"} />
                                 <PaymentProof
@@ -335,6 +338,8 @@ function Donationform() {
                                     )}
                                     
                                 </div>
+
+                                {error && (<h1 className='text-error font-satoshi-regular justify-center w-full flex'>Please fill out all the required fields</h1>)}
                                 
                                 {/* Submit Button */}
                                 {submitting ? (
@@ -372,6 +377,7 @@ function Donationform() {
                                     )}
                                     
                                 </div>
+                                {errorInKind && (<h1 className='text-error font-satoshi-regular justify-center w-full flex'>Please fill out all the required fields</h1>)}
                                 {/* Submit Button */}
                                 
                                 {submitting ? (
@@ -389,7 +395,7 @@ function Donationform() {
                             </div>
                         )}
                     </div>
-                    {/* PLACEHOLDER FOR MAR's COMPONENT */}
+                    {/* donation details */}
                     <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:block hidden">
                         {/* <DonationDeets/> */}
                         {isMonetaryType && (
@@ -410,7 +416,7 @@ function Donationform() {
                         <div className="flex flex-col md:w-10/12 w-11/12 items-center absolute z-10 top-2/3">
                             <img className="w-15 h-15 rounded-full" src={check} alt="check" />
                             <h1 className="font-satoshi-bold text-3xl pt-5 text-center">Donation Submitted</h1>
-                            <p className="font-satoshi-light text-lg pt-5 md:w-2/3 w-full text-center">Your donation will be reflected once it has been reviewed and verified by our admin team.</p>
+                            <p className="font-satoshi-light text-lg pt-5 md:w-2/3 w-full text-center">{summaryheader}</p>
 
                             <div className="flex flex-col w-full items-start mx-10">
                                 <h1 className="font-satoshi-bold md:text-xl text-lg pt-5 md:text-left text-center border-b-1 border-neutral-300 w-full pb-3 ">Donation Summary</h1>

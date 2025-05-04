@@ -57,8 +57,9 @@ function AdminIndustryInformation() {
 
     useEffect(()=>{
       const fetchData = async () =>{
+        const token = localStorage.getItem('token');
       try {
-        const getemploymentClass= await axios.get(`${API_BASE_URL}/admin/stats/industry/employment_class?industry=${selectedIndustry}`);
+        const getemploymentClass= await axios.get(`${API_BASE_URL}/admin/stats/industry/employment_class?industry=${selectedIndustry}`, {headers: {Authorization: `Bearer ${token}`}});
         setEmploymentClassification(getemploymentClass.data?.data || []);
       } catch (error) {
           setEmploymentClassification([]); 
@@ -66,28 +67,28 @@ function AdminIndustryInformation() {
 
      
       try{
-      const getJobTitles = await axios.get(`${API_BASE_URL}/admin/stats/get_industry_jobs?industry=${selectedIndustry}`)
+      const getJobTitles = await axios.get(`${API_BASE_URL}/admin/stats/get_industry_jobs?industry=${selectedIndustry}`, {headers: {Authorization: `Bearer ${token}`}})
       setJobTitles(getJobTitles.data.data)
       }catch (error){
         setJobTitles([])
       }
 
       try{
-        const getTenureStatus = await axios.get(`${API_BASE_URL}/admin/stats/industry/tenured_status?industry=${selectedIndustry}`)
+        const getTenureStatus = await axios.get(`${API_BASE_URL}/admin/stats/industry/tenured_status?industry=${selectedIndustry}`, {headers: {Authorization: `Bearer ${token}`}})
         setTenureStatus(getTenureStatus.data.data)
         }catch (error){
             setTenureStatus([])
         }
       
         try{
-          const getWorkMode = await axios.get(`${API_BASE_URL}/admin/stats/industry/work_type?industry=${selectedIndustry}`)
+          const getWorkMode = await axios.get(`${API_BASE_URL}/admin/stats/industry/work_type?industry=${selectedIndustry}`, {headers: {Authorization: `Bearer ${token}`}})
           setWorkMode(getWorkMode.data.data)
           }catch (error){
             setWorkMode([])
           }
           
           try{
-            const getSalaryGrade = await axios.get(`${API_BASE_URL}/admin/stats/industry/salary_grade?industry=${selectedIndustry}`)
+            const getSalaryGrade = await axios.get(`${API_BASE_URL}/admin/stats/industry/salary_grade?industry=${selectedIndustry}`, {headers: {Authorization: `Bearer ${token}`}})
             setSalaryGrade(getSalaryGrade.data.data)
             }catch (error){
               setSalaryGrade([])
@@ -97,7 +98,7 @@ function AdminIndustryInformation() {
           const industryParams = new URLSearchParams();
           industryParams.append('order_by', orderBy);
           const queryString = industryParams.toString();
-          const getIndustryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_industry_filter?industry=${selectedIndustry}&${queryString}`)
+          const getIndustryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_industry_filter?industry=${selectedIndustry}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
           setIndustryUsers(getIndustryUsers.data.data)
         }catch (error) {
           setIndustryUsers([])
@@ -120,7 +121,8 @@ function AdminIndustryInformation() {
 
     useEffect(() => {
     const fetchData = async () =>{
-    const getIndustries = await axios.get(`${API_BASE_URL}/get-all-industries`);
+      const token = localStorage.getItem('token');
+    const getIndustries = await axios.get(`${API_BASE_URL}/get-all-industries`, {headers: {Authorization: `Bearer ${token}`}});
     console.log(getIndustries.data.data)
       setIndustries(getIndustries.data.data);
       setSelectedIndustry(getIndustries.data.data[0].industry)
@@ -133,10 +135,11 @@ function AdminIndustryInformation() {
 
       const fetchUsers = async () => {
         try {
+          const token = localStorage.getItem('token');
             const industryParams = new URLSearchParams();
             industryParams.append('order_by', orderBy);
             const queryString = industryParams.toString();
-            const getIndustryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_industry_filter?industry=${selectedIndustry}&${queryString}`)
+            const getIndustryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_industry_filter?industry=${selectedIndustry}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
             setIndustryUsers(getIndustryUsers.data.data)
           }catch (error) {
             setIndustryUsers([])
@@ -425,7 +428,7 @@ function AdminIndustryInformation() {
             </div>
           </div>
           <div className='bg-[#FFFFFF] border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
-            <UsersTable data={industryUsers}/>
+            <UsersTable data={industryUsers} userType='alum'/>
           </div>
           </>
         )}

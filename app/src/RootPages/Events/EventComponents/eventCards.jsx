@@ -57,7 +57,6 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
     }
 
-    
     const openEventDetails = (eventId) => {
 
         console.log("RSVP clicked for event ID:", eventId);
@@ -71,7 +70,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
         return lines.slice(0, maxLines).join('\n') + (lines.length > maxLines ? '...' : '...');
     };
 
-    //const truncatedDescription = truncateDescription(event.description, 2);
+    const truncatedDescription = truncateDescription(event.description, 2);
 
     return (
       <div
@@ -90,7 +89,10 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
       {/* Main Content */}
       <div className="flex flex-col flex-grow px-5 pt-3 pb-4">
         <div>
-          <RsvpStatus event={event} />
+        {tokentype !== "guest" && tokentype !== "student" && (
+  <RsvpStatus event={event} />
+)}
+
           <h1 className="text-2xl font-bold text-black mt-3">{event.title}</h1>
           <p className="text-gray-600 pt-2 line-clamp-2">{event.description}</p>
         </div>
@@ -117,7 +119,8 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
           </div>
     
           {/* Tags */}
-          <div className="flex gap-2 overflow-x-scroll mt-4 items-center scrollbar-hidden">
+          {event.tags && event.tags.length > 0 && (
+            <div className="flex gap-2 overflow-x-scroll mt-4 items-center scrollbar-hidden">
             {event.tags.map((tag, index) => (
               <span
                 key={index}
@@ -126,10 +129,11 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
                 {tag}
               </span>
             ))}
-          </div>
-    
+            </div>
+           )}
+
           {/* Going Count */}
-          <div className="flex justify-end items-center text-primary font-extrabold pr-2">
+          <div className="flex justify-end items-center text-primary font-extrabold mt-1 pr-2">
             <img src={PersonOutline} alt="Going" className='h-5 mr-2'/>
             <label>{event.going_count} are going</label>
           </div>

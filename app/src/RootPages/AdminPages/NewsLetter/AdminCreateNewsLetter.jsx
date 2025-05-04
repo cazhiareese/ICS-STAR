@@ -200,7 +200,14 @@ function AdminEditNewsletter() {
       const url = option === "edit" ? `${baseUrl}/edit/${newsletter_id}` : `${baseUrl}/create`;
       const method = option === "edit" ? axios.put : axios.post;
 
-      const response = await method(url, payload);
+      
+      const token = localStorage.getItem('token');
+      const response = await method(url, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
       console.log(`Newsletter ${option === "edit" ? 'updated' : 'created'}:`, response.data);
       setModalSuccess(true); // Show success state

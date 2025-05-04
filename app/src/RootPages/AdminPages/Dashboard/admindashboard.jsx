@@ -22,8 +22,6 @@ function AdminDashboard() {
   const [alumniIndustries, setAlumniIndustries] = useState([]);
   const [alumniLocations, setAlumniLocations] = useState([]);
   const [fullEngagementReport, setFullEngagementReport] = useState([]);
-  const [daysFilter, setDaysFilter] = useState("30days");
-  const [batchFilter, setBatchFilter] = useState("2022");
   const [events, setEvents] = useState([]);
   const [topDonation, setTopDonation] = useState([]);
   const COLORS = ["#0B2B6F", "#2858D6", "#8CA6DB", "#CBD7F1", "#E8F0FF"];
@@ -31,27 +29,27 @@ function AdminDashboard() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (token) => {
       setLoading(true);
       try {
         // Fetch Pending Verifications
-        const pendingVerificationResponse = await axios.get(`${API_BASE_URL}/admin/unverified/count`);
+        const pendingVerificationResponse = await axios.get(`${API_BASE_URL}/admin/unverified/count`, {headers: {Authorization: `Bearer ${token}`}});
         setPendingVerifications(pendingVerificationResponse.data.count);
 
         // Fetch Reports
         const [userReportsResponse, postReportsResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/admin_dashboard/pending-reported-users/count`),
-          axios.get(`${API_BASE_URL}/admin_dashboard/pending-reported-posts/count`)
+          axios.get(`${API_BASE_URL}/admin_dashboard/pending-reported-users/count`, {headers: {Authorization: `Bearer ${token}`}}),
+          axios.get(`${API_BASE_URL}/admin_dashboard/pending-reported-posts/count`, {headers: {Authorization: `Bearer ${token}`}})
         ]);
         setUserReports(userReportsResponse.data.pending_reported_users_count);
         setPostReports(postReportsResponse.data.pending_reported_posts_count);
 
         // Fetch Funding Requests
-        const fundingRequestResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/not_yet_acknowledged_donations_count`);
+        const fundingRequestResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/not_yet_acknowledged_donations_count`, {headers: {Authorization: `Bearer ${token}`}});
         setFundingRequests(fundingRequestResponse.data.not_yet_acknowledged_donations_count);
 
         // Fetch Donors
-        const donorsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/recent-donors`);
+        const donorsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/recent-donors`, {headers: {Authorization: `Bearer ${token}`}});
         const donorsFormat = donorsResponse.data.slice(0, donorsResponse.data.length - 1).map(item => ({
           donation: item.drive_title,
           name: item.donor_name,
@@ -60,11 +58,11 @@ function AdminDashboard() {
         setDonors(donorsFormat);
 
         // Fetch Events
-        const eventsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/upcoming-events`);
+        const eventsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/upcoming-events`, {headers: {Authorization: `Bearer ${token}`}});
         setEvents(formatEvents(eventsResponse.data));
 
         // Fetch Stats
-        const statsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`);
+        const statsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/user_statistics`, {headers: {Authorization: `Bearer ${token}`}});
         setStats(statsResponse.data);
         setRegisteredAlumni(statsResponse.data.verified_alumni_count);
         const formattedIndustries = statsResponse.data.top_alumni_industries.map((item, index) => ({
@@ -80,11 +78,11 @@ function AdminDashboard() {
         setAlumniLocations(formattedLocations);
 
         // Fetch Top Donations
-        const topDonationsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/top-funded-drives`);
+        const topDonationsResponse = await axios.get(`${API_BASE_URL}/admin_dashboard/top-funded-drives`, {headers: {Authorization: `Bearer ${token}`}});
         setTopDonation(topDonationsResponse.data);
 
         // Fetch Engagement
-        const engagementResponse = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter !== 0 ? `&batch=${batchFilter}` : ''}`);
+        const engagementResponse = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=30days`, {headers: {Authorization: `Bearer ${token}`}});
         setFullEngagementReport(engagementResponse.data);
 
       } catch (error) {
@@ -93,8 +91,24 @@ function AdminDashboard() {
         setLoading(false);
       }
     };
-
-    fetchData();
+    const token = localStorage.getItem('token');
+    if (token){
+      fetchData(token);
+    }else{
+      setPendingVerifications(0)
+      setUserReports(0)
+      setPostReports(0)
+      setFundingRequests(0)
+      setDonors([])
+      setStats(null)    
+      setRegisteredAlumni(null)
+      setAlumniIndustries([])
+      setAlumniLocations([])
+      setFullEngagementReport([])
+      setEvents([])
+      setTopDonation([])
+    }
+   
   }, []);
 
   const dashboardCard = "bg-white drop-shadow-sm rounded-2xl p-4 w-full";
