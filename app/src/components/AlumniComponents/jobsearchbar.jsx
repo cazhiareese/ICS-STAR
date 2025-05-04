@@ -39,10 +39,10 @@ const JobSearchBar =
     //creates an object for url making
     const search = () => {
         let filters = {};
-        setSelectedJob({});
-        setSelectedJobId({});
-        setCurrentPage(1);
-        setMaxPage(1);
+        // setSelectedJob({});
+        // setSelectedJobId({});
+        // setCurrentPage(1);
+        // setMaxPage(1);
         if (searchInput != ""){
             filters.title = searchInput;
         }
@@ -68,7 +68,7 @@ const JobSearchBar =
         if (Object.keys(filters).length > 0){
             // Pass filters to buildSearchUrl and make API call
             let apiUrl = buildSearchUrl(filters);
-            // console.log(apiUrl);
+            console.log(apiUrl);
             return apiUrl;
         }
     }
@@ -78,18 +78,18 @@ const JobSearchBar =
         
         try {
             const apiUrl = search(); // get the full URL based on current filters
-            console.log(apiUrl);
+            // console.log(apiUrl);
             if (!apiUrl) {
                 setLoading(false);
                 return console.log('No valid filters to search.');
             }
     
             const response = await axios.get(apiUrl);
-            console.log(response.data);
+            // console.log(response.data);
             setJobList(response.data.result);
             setMaxPage(response.data.total_pages);
         } catch (err) {
-            console.error(err);
+            // console.error(err);
             console.log('Job not found');
             setMaxPage(1);
         } finally {
@@ -97,22 +97,15 @@ const JobSearchBar =
         }
     };
 
+    useEffect(() => {
+        fetchJobs();
+    }, [currentPage, dependencyTrigger]);
+
+    
+
     
     
-    // const fetchJobs = async () => {
-    //     setLoading(true);
-    //     // console.log(`${API_BASE_URL}/admin/job/search?creator_name=${searchInput}`);
-    //     try {
-    //         const response = await axios.get(`${API_BASE_URL}/admin/job/search?creator_name=${searchInput}`);
-    //         console.log(response.data);
-    //         setJobList(response.data);
-    //     } catch (err) {
-    //         console.error(err); 
-    //         alert('Job not found');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+   
 
     
 

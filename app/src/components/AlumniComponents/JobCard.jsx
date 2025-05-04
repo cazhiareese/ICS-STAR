@@ -40,14 +40,13 @@ function JobCard({job, selectedJobId, setSelectedJobId, setMobileExpanded}) {
                         onClick={() => navigate(`/alumni/jobPosting/interested/${job.post_id}`)}
                         className="md:text-lg text-sm text-primary font-satoshi-bold  hover:text-hover cursor-pointer"
                     >
-                        {job.interested_count ?? job.interested_in} are interested
+                        {job.interested_count ?? job.interested_in } are interested
                     </button>
                     ) : (
                     <span className="md:text-lg text-sm text-primary font-satoshi-bold">
-                        {job.interested_count || job.interested_in} are interested
+                        {job.interested_count ?? job.interested_in} are interested
                     </span>
                 )}
-
                     <Star className="w-4 h-4 text-primary" />
                 </div>
             </div>

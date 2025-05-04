@@ -22,24 +22,26 @@ function AdminEngagementReports() {
   // BASE URL ENV
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  async function fetchEngagementStatistics(){
-    setVisitsLoading(true)
-    try {
-      let response = await axios.get(
-        `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`
-      );
-      console.log(response.data);
-      setFullEngagementReport(response.data);
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setVisitsLoading(false)
-    }
-  }
 
   useEffect(() => {
-    fetchEngagementStatistics()
-  }, [batchFilter])
+    const fetchFullEngagementReport = async () => {
+      setFullEngagementReportLoading(true);
+      console.log(`${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`)
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/admin/engagement-statistics/visits?time_range=${daysFilter}${batchFilter != 0 ? `&batch=${batchFilter}` : ''}`
+        );
+        console.log(response.data);
+        setFullEngagementReport(response.data);
+      } catch (err) {
+        console.log(err.message || 'Error fetching engagement report');
+      } finally {
+        setFullEngagementReportLoading(false);
+      }
+    };
+  
+    fetchFullEngagementReport();
+  }, [daysFilter, batchFilter]);
 
   useEffect(() => {
     const fetchData = async () => {

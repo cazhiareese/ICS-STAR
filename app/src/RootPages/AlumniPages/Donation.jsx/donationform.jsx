@@ -20,7 +20,7 @@ function Donationform() {
     const id = useParams(); // Get the drive_id from the URL params
     const drive_id = id.driveid; // Extract the drive_id from the params
     const formattedDate = new Date().toLocaleDateString();
-    console.log(drive_id)
+    // console.log(drive_id)
     // UseState for checking if the buttons are activated
     const [isMonetaryTypeOpen, setIsMonetaryTypeOpen] = useState(true);
     const [isInKindTypeOpen, setIsInKindTypeOpen] = useState(false);
@@ -80,7 +80,7 @@ function Donationform() {
                 .then((res) => res.json())
                 .then((data) => {
                     setDriveDetails(data);
-                    console.log("Drive details:", data);
+                    // console.log("Drive details:", data);
                 })
                 .catch((err) => {
                     console.error("Error fetching drive details:", err);
@@ -149,9 +149,9 @@ function Donationform() {
         formData.append('amount', String(monetaryAmountInput));
     
         try {
-            for (let pair of formData.entries()) {
-                console.log(`${pair[0]}: ${pair[1]}`);
-            }
+            // for (let pair of formData.entries()) {
+            //     // console.log(`${pair[0]}: ${pair[1]}`);
+            // }
     
             const response = await axios.post(`${API_BASE_URL}/make-donation/${drive_id}`, formData, {
                 headers: {
@@ -395,7 +395,7 @@ function Donationform() {
                             </div>
                         )}
                     </div>
-                    {/* PLACEHOLDER FOR MAR's COMPONENT */}
+                    {/* donation details */}
                     <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:block hidden">
                         {/* <DonationDeets/> */}
                         {isMonetaryType && (
