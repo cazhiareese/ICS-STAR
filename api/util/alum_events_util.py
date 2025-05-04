@@ -204,7 +204,7 @@ def get_visible_events_for_user(
             continue
 
         tags = [tag.tag for tag in event.tags]
-        if not user or user.is_verified is False:
+        if not user or user.is_verified is False or user.is_banned is True:
             rsvp_closed = True
         else:
             if event.is_all:
