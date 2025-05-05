@@ -7,7 +7,7 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
   const [showMore, setShowMore] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const workModes = ["Remote", "Onsite", "Hybrid"];
   const employerClasses = ["Government", "NGO", "Private Sector"];

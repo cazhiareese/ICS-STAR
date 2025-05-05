@@ -7,7 +7,7 @@ import ReactLoading from "react-loading";
 import CircularLoading from "../../../components/LoadingComponents/circularloading";
 import NewLoading from "../../../components/LoadingComponents/cyruscircular";
 
-function DonationHistoryUser({ userDetails }) {
+function DonationHistoryUser({ user_id }) {
   const [monetaryDonations, setMonetaryDonations] = useState([]);
   const [inKindDonations, setInKindDonations] = useState([]);
   const [sortedDataMonetary, setSortedDataMonetary] = useState([]);
@@ -19,6 +19,8 @@ function DonationHistoryUser({ userDetails }) {
   const [error, setError] = useState(null);
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
+
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -43,11 +45,11 @@ function DonationHistoryUser({ userDetails }) {
 
       try {
         const [monetaryRes, inKindRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/donation-history/monetary-donations`, {
+          axios.get(`${API_BASE_URL}/donation-history/monetary-donations/${user_id}`, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }),
-          axios.get(`${API_BASE_URL}/donation-history/in-kind-donations`, {
+          axios.get(`${API_BASE_URL}/donation-history/in-kind-donations/${user_id}`, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }),
@@ -89,40 +91,46 @@ function DonationHistoryUser({ userDetails }) {
   }, []);
 
   const handleSort = (key, type) => {
-    const currentSortConfig = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
-    const setSortConfig = type === "Monetary" ? setSortConfigMonetary : setSortConfigInKind;
-    const dataToSort = type === "Monetary" ? [...monetaryDonations] : [...inKindDonations];
-    const setSortedData = type === "Monetary" ? setSortedDataMonetary : setSortedDataInKind;
-
-    let direction = "asc";
-    if (currentSortConfig.key === key && currentSortConfig.direction === "asc") {
-      direction = "desc";
-    }
-
-    setSortConfig({ key, direction });
-
-    const sorted = dataToSort.sort((a, b) => {
-      let aValue = a[key];
-      let bValue = b[key];
-
-      if (key === "date_donated") {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      } else if (key === "amount") {
-        aValue = parseFloat(aValue);
-        bValue = parseFloat(bValue);
-      } else if (key === "is_acknowledged") {
-        aValue = aValue === null ? 0 : aValue ? 1 : -1; // Handle null, true, false
-        bValue = bValue === null ? 0 : bValue ? 1 : -1;
+    setFilterLoading(true);
+  
+    setTimeout(() => {
+      const currentSortConfig = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
+      const setSortConfig = type === "Monetary" ? setSortConfigMonetary : setSortConfigInKind;
+      const dataToSort = type === "Monetary" ? [...monetaryDonations] : [...inKindDonations];
+      const setSortedData = type === "Monetary" ? setSortedDataMonetary : setSortedDataInKind;
+  
+      let direction = "asc";
+      if (currentSortConfig.key === key && currentSortConfig.direction === "asc") {
+        direction = "desc";
       }
-
-      if (aValue < bValue) return direction === "asc" ? -1 : 1;
-      if (aValue > bValue) return direction === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    setSortedData(sorted);
+  
+      setSortConfig({ key, direction });
+  
+      const sorted = dataToSort.sort((a, b) => {
+        let aValue = a[key];
+        let bValue = b[key];
+  
+        if (key === "date_donated") {
+          aValue = new Date(aValue);
+          bValue = new Date(bValue);
+        } else if (key === "amount") {
+          aValue = parseFloat(aValue);
+          bValue = parseFloat(bValue);
+        } else if (key === "is_acknowledged") {
+          aValue = aValue === null ? 0 : aValue ? 1 : -1;
+          bValue = bValue === null ? 0 : bValue ? 1 : -1;
+        }
+  
+        if (aValue < bValue) return direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return direction === "asc" ? 1 : -1;
+        return 0;
+      });
+  
+      setSortedData(sorted);
+      setFilterLoading(false);
+    }, 1000); // 1 second delay
   };
+  
 
   const getSortIcon = (key, type) => {
     const config = type === "Monetary" ? sortConfigMonetary : sortConfigInKind;
@@ -204,8 +212,13 @@ function DonationHistoryUser({ userDetails }) {
       {!loading && !error && currentSortedData.length === 0 && (
         <p className="mt-4 text-gray-500">No donation history found.</p>
       )}
+{filterLoading && (
+  <div className="flex justify-center items-center p-20">
+    <NewLoading size={40} text={"Sorting..."} ts={12} />
+  </div>
+)}
 
-      {!loading && !error && currentSortedData.length > 0 && (
+{!loading && !error && !filterLoading && currentSortedData.length > 0 && (
         <div className="font-satoshi-medium text-[16px] text-black max-h-[525px] overflow-y-auto sm:max-h-[400px] scrollbar-blue">
           {currentSortedData.map((donation) => {
             const formattedDate = new Date(donation.date_donated).toLocaleDateString(

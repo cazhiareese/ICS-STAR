@@ -23,6 +23,9 @@ import {
   addScholarship as apiAddScholarship,
   removeScholarship as apiRemoveScholarship,
 } from "./Profile/UserProfileAPI/userProfileApi"; 
+import PublicUserProfileTabs from "./Profile/components/publicuserprofiletabs";
+import PublicJobPosted from "./Profile/JobPosting/publicJobPosting";
+import PublicWorkSection from "./Profile/Work/publicworksection";
 
 
 
@@ -33,7 +36,8 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function JanryUserProfile() {
   const id = useParams();
-  console.log("naku",id);
+  console.log("his id",id.userId);
+  const userid = id.userId;
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState("About");
   const [skills, setSkills] = useState([]);
@@ -350,14 +354,13 @@ const fetchUserProfileData = async () => {
         share={share} // Pass share prop to ProfileSection
         userId={userId} // Pass userId to ProfileSection
       />
-      {userDetails.user_type === "alumni" && !share && (
-        <>
+     
+        
           {/* Navigation Tabs */}
-          <UserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
+          <PublicUserProfileTabs userDetails={userDetails} editMode = {editMode} activeTab={activeTab} setActiveTab={setActiveTab} share={share} />
 
           {/* Information Sections */}
-        </>
-      )}
+        
       {/* Conditional Rendering Based on Tab Selection */}
       {activeTab === "About" && (
         <>
@@ -396,13 +399,13 @@ const fetchUserProfileData = async () => {
         </>
       )}
       {activeTab === "Work" && (
-        <WorkSection userDetails={userDetails} handleChange={handleChange} isVerified={userDetails?.is_verified} />
+        <PublicWorkSection userDetails={userDetails} handleChange={handleChange} isVerified={userDetails?.is_verified} />
       )}
       {activeTab === "Donation History" && (
         <DonationHistoryUser userDetails={userDetails} />
       )}
       {activeTab === "Job Posted" && (
-        <JobPosted />
+        <PublicJobPosted userId={userid} />
       )}
     </div>
   );

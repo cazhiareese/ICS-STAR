@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../index.css";
 import peersIcon from "../../assets/onBoardingAssets/peersIcon.png"
-import { CirclePlus, ImageOff } from 'lucide-react';
+import { CirclePlus, ImageOff, ChevronLeft } from 'lucide-react';
 import Employed from "../../assets/onBoardingAssets/Employed.png"
 import Unemployed from "../../assets/onBoardingAssets/Unemployed.png"
 import SelfEmployed from "../../assets/onBoardingAssets/SelfEmployed.png"
@@ -13,6 +13,7 @@ import ErrorBox from "../errorbox";
 import Unauthorized from "../Unauthorized";
 import countryList from 'react-select-country-list';
 import CustomDropdown from "./dropdown";
+import { CustomDropdownNoSearch } from "./dropdown";
 import Loading from "../../components/LoadingComponents/circularloading"
 
 function Step3Onboarding() {
@@ -39,6 +40,29 @@ function Step3Onboarding() {
     ];
 
     const countries = countryList().getData();
+    
+    const employer_class = [
+      { label: 'NGO', value: 'NGO' },
+      { label: 'Government', value: 'Government' },
+      { label: 'Private Sector', value: 'Private Sector' },
+      { label: 'Others', value: 'Others' },
+    ]
+
+    const tenure_status = [
+      { label: 'Permanent', value: 'Permanent' },
+      { label: 'Temporary', value: 'Temporary' },
+      { label: 'Internship', value: 'Internship' },
+    ]
+
+    const sal_range = [
+      { label: 'Less than ₱9,100', value: '1' },
+      { label: '₱9,100 to ₱18,199', value: '2' },
+      { label: '₱18,200 to ₱36,399', value: '3' },
+      { label: '₱63,700 to ₱109,199', value: '4' },
+      { label: '₱63,700 to ₱109,199', value: '5' },
+      { label: '₱109,200 to ₱181,999', value: '6' },
+      { label: 'At least ₱182,000 and up', value: '7' },
+    ]
 
     const handleEmployedClick =()=>{
       setEmployed(true)
@@ -224,16 +248,16 @@ function Step3Onboarding() {
       {step==1 ? (<div className="flex flex-col justify-center md:mx-30 mx-10">
         {/* Step 1 check employment type */}
         <img src={peersIcon} className="lg:h-12 lg:w-12 h-10 w-10 xl:mt-0 mb-5 "></img>
-        <label className="font-satoshi-black lg:text-4xl md:text-3xl sm:text-2xl text-xl"> Employment Status</label>
+        <label className="font-satoshi-bold lg:text-4xl md:text-3xl sm:text-2xl text-xl"> Employment Status</label>
         <label className="font-satoshi-light lg:text-2xl md:text-xl sm:text-lg text-md"> Select the option that best describes your current situation.</label>
 
         <div className="flex flex-col flex-wrap items-center justify-center">
-            <div className={`flex flex-row space-x-5 items-center mt-10 md:w-100 w-[100%] border h-25 pl-10 rounded-2xl ${userData.employmentType=="employed" ? "bg-secondary": "bg-white"}`}
+            <div className={`flex flex-row space-x-5 items-center mt-10 md:w-100 w-[100%] border h-25 pl-10 rounded-2xl border border-neutral-300 hover:bg-secondary ${userData.employmentType=="employed" ? "bg-secondary border-primary": "bg-neutral-100"}`}
             onClick={handleEmployedClick}>
               <img className="w-10 h-10" src={Employed}/>
               <label className="font-satoshi-black text-2xl text">Employed</label>
             </div>
-            <div className={`flex flex-row space-x-5 items-center mt-5 md:w-100 w-[100%] border h-25 pl-10 rounded-2xl ${userData.employmentType=="self_employed" ? "bg-secondary": "bg-white"}`}
+            <div className={`flex flex-row space-x-5 items-center mt-5 md:w-100 w-[100%] border h-25 pl-10 rounded-2xl border border-neutral-300 hover:bg-secondary ${userData.employmentType=="self_employed" ? "bg-secondary border-primary": "bg-neutral-100"}`}
             
             onClick={handleSelfemployedClick}>
               <img className="w-10 h-10" src={SelfEmployed}/>
@@ -242,7 +266,7 @@ function Step3Onboarding() {
 
 
             <div className="flex flex-row items-center justify-center flex-wrap w-[100%]">
-              <div className={`flex flex-row items-center space-x-5 mt-5 md:w-100 w-[100%] border h-25  rounded-2xl px-10  ${userData.employmentType=="unemployed" || userData.employmentType=="unemployed_no_exp" ? "bg-secondary": "bg-white"}`}
+              <div className={`flex flex-row items-center space-x-5 mt-5 md:w-100 w-[100%] border h-25  rounded-2xl px-10 border border border-neutral-300 hover:bg-secondary ${userData.employmentType=="unemployed" || userData.employmentType=="unemployed_no_exp" ? "bg-secondary border-primary": "bg-neutral-100"}`}
                     onClick={handleUnemployedClick}>
                 <img className="w-10 h-10 " src={Unemployed}/>
                 <label className="font-satoshi-black text-2xl text">Unemployed</label>
@@ -261,7 +285,7 @@ function Step3Onboarding() {
                   {/* Buttons */}
                   <div className="flex flex-row space-x-5 mt-4">
 
-                    <button className={`bg-white border  text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-primary": "border-gray-300"}`}
+                    <button className={`bg-white border  text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-primary bg-secondary": "border-gray-300"}`}
                     
                             onClick={()=>{
                               updateUserData('employmentType', "unemployed");
@@ -269,7 +293,7 @@ function Step3Onboarding() {
 
                             }}>Yes</button>
 
-                    <button className={`bg-white border text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-gray-300 bg-red-500": "border-primary"}`}
+                    <button className={`bg-white border text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-gray-300": "border-primary bg-secondary"}`}
                     
                             onClick={()=>{
                               updateUserData('employmentType', "unemployed_no_exp");
@@ -280,47 +304,48 @@ function Step3Onboarding() {
               )}
             </div>
         </div>
+        <div className="flex flex-row items-center justify-between mt-10 w-full sticky bottom-0 mb-10">
+                        <button
+                            type="button"
+                            className="flex flex-row items-center justify-center hover:text-hover cursor-pointer group"
+                            onClick={() => setCurrentSection(2)}
+                        >
+                            <ChevronLeft className="text-primary group-hover:text-hover"/>
+                            <span className="font-satoshi-bold text-primary flex items-center w-20 p-2 text-md group-hover:text-hover">
+                                Previous
+                            </span>
+                        </ button>
 
-        <div className="flex flex-row items-center justify-center my-10 lg:space-x-20 w-full">
-          
-          <div className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl md:text-2xl text-xl "
-            onClick = {()=>setCurrentSection(2)}
-          >
-                  <label className="font-satoshi-italic "> &lt; Previous </label>
-          </div> 
-
-          <div className="w-[70%]">
-
-          </div> 
-          <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
-              onClick={()=>{setStep(2)}}
-          >
-                  <label className="font-satoshi-bold cursor-pointer">Proceed</label>
-          </div>
-          
-        </div>
+                        <button
+                            type="button"
+                            className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-20 md:w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
+                            onClick={() => setStep(2)}
+                        >
+                            Proceed
+                        </button>
+                    </div>
         
-      </div>):
-
-        
-        (
+      </div>
+      
+    
+    ) : (
           userData.employmentType == "unemployed" || userData.employmentType == "unemployed_no_exp" ? 
         // Unemployed Part
 
         (<div className="flex flex-col justify-center pt-10 md:mx-30 mx-10">
-          <label className="font-satoshi-black lg:text-5xl md:text-3xl sm:text-2xl text-xl"> Employment Status</label>
-          <label className="font-satoshi-light lg:text-3xl md:text-2xl sm:text-xl text-lg py-8"> Can you tell us why you’re currently not employed? Select all that apply.</label>
+          <label className="font-satoshi-bold lg:text-4xl md:text-3xl sm:text-2xl text-xl"> Employment Status</label>
+          <label className="font-satoshi-light lg:text-2xl md:text-2xl sm:text-xl text-md pt-4 pb-6"> Can you tell us why you’re currently not employed? Select all that apply.</label>
 
           <div className="grid md:grid-cols-2 gap-3 md:pt-7 ">
             {options.map((option) => (
               <label
                 key={option.value}
-                className="flex items-center border font-satoshi-regular md:text-xl border-gray-300 md:p-6 p-3 rounded rounded-2xl"
+                className="flex items-center border font-satoshi-regular md:text-xl border-gray-300 md:p-6 p-3 rounded rounded-2xl bg-neutral-100"
               >
                 <input
                   type="checkbox"
                   value={option.value}
-                  className="mr-2 l"
+                  className="mr-5 w-5 h-5"
                   checked={selectedOptions.includes(option.value)}
                   onChange={() => handleCheckboxChange(option.value)}
                 />
@@ -336,25 +361,26 @@ function Step3Onboarding() {
             <ErrorBox message="Please select atleast one input"/>
           </div>
           
+          <div className="flex flex-row items-center justify-between mt-10 w-full sticky bottom-0 mb-10">
+                        <button
+                            type="button"
+                            className="flex flex-row items-center justify-center hover:text-hover cursor-pointer group"
+                            onClick={() => setStep(1)}
+                        >
+                            <ChevronLeft className="text-primary group-hover:text-hover"/>
+                            <span className="font-satoshi-bold text-primary flex items-center w-20 p-2 text-md group-hover:text-hover">
+                                Previous
+                            </span>
+                        </ button>
 
-          <div className="flex flex-row items-center justify-center my-10 md:space-x-20 w-full">
-        
-              <div className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl md:text-2xl text-xl "
-                    onClick={()=>setStep(1)}
-              >
-                      <label className="font-satoshi-italic" > &lt; Previous </label>
-              </div> 
-
-              <div className="w-[70%]">
-
-              </div> 
-              <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
-                  onClick={()=>(updateEmploymentUnemployed())}
-              >
-                      <label className="font-satoshi-bold cursor-pointer">Proceed</label>
-              </div>
-        
-          </div>
+                        <button
+                            type="button"
+                            className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-20 md:w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
+                            onClick={() => (updateEmploymentUnemployed())}
+                        >
+                            Proceed
+                        </button>
+                    </div>
 
             
             
@@ -365,9 +391,9 @@ function Step3Onboarding() {
 
       (step!=3 ?  (<> <div className="flex flex-col items-center p-15">
           {/* Icon and Title */}
-          <div className="flex flex-col  space-x-2 mb-4 mr-auto">
-            <img src={Location} className="md:w-12 md:h-12 h-6 w-6" alt="" />
-            <h2 className="md:text-4xl text-xl font-semibold pb-10">Where are you currently based?</h2>
+          <div className="flex flex-col space-x-2 mb-4 mr-auto">
+            <img src={Location} className="md:w-12 md:h-12 h-8 w-8" alt="" />
+            <h2 className="md:text-4xl text-xl font-semibold pb-10 pt-5">Where are you currently based?</h2>
           </div>
     
           {/* Input Fields */}
@@ -378,6 +404,7 @@ function Step3Onboarding() {
               options={countries}
               value={userData.baseCountry}
               onChange={(value) => updateUserData('baseCountry', value)}
+              placeholder="Select your country"
             />
             <div className={` mt-3 ${countryError ? "block" : "hidden"}`}>
               <ErrorBox message="Please enter your country"/>
@@ -392,7 +419,7 @@ function Step3Onboarding() {
                 name="cityState"
                 value={userData.baseCity}
                 onChange={(e) => updateUserData("baseCity", e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+                className="w-full p-3 border border-gray-300 rounded-lg bg-neutral-100 focus:outline-primary mt-1"
                 placeholder="Enter your city/state"
               />
             </div>
@@ -402,23 +429,27 @@ function Step3Onboarding() {
             </div>
           </div>
 
-          <div className="flex flex-row items-center justify-center my-10 md:space-x-20 w-full">
-            <div
-              className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
-              onClick={() => setStep(1)}
-            >
-              <label className="font-satoshi-italic"> &lt; Previous </label>
-            </div>
+          <div className="flex flex-row items-center justify-between mt-10 w-full sticky bottom-0 mb-10">
+                        <button
+                            type="button"
+                            className="flex flex-row items-center justify-center hover:text-hover cursor-pointer group"
+                            onClick={() => setStep(1)}
+                        >
+                            <ChevronLeft className="text-primary group-hover:text-hover"/>
+                            <span className="font-satoshi-bold text-primary flex items-center w-20 p-2 text-md group-hover:text-hover">
+                                Previous
+                            </span>
+                        </ button>
 
-            <div className="w-[70%]"></div>
+                        <button
+                            type="button"
+                            className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-20 md:w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
+                            onClick={employedBaseCheck}
+                        >
+                            Proceed
+                        </button>
+                    </div>
 
-            <div
-              className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
-              onClick={employedBaseCheck}
-            >
-              <label className="font-satoshi-bold cursor-pointer">Proceed</label>
-            </div>
-          </div>
         </div>
       </>) : 
       
@@ -441,7 +472,7 @@ function Step3Onboarding() {
               name="jobTitle"
               value={userData.jobTitle}
               onChange={(e)=>updateUserData( "jobTitle", e.target.value)}
-              className="w-full md:p-3 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+              className="w-full md:p-3 p-2 border border-neutral-300 bg-neutral-100 rounded-lg focus:outline-primary mt-1"
             />
             <div className={`${jobtitleerror ? "block" : "hidden"}`}>
               <ErrorBox/>
@@ -457,7 +488,7 @@ function Step3Onboarding() {
               name="industrySector"
               value={industryInput}
               onChange={handleIndustryChange}
-              className="w-full md:p-3 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+              className="w-full md:p-3 p-2 border border-neutral-300 bg-neutral-100 rounded-lg focus:outline-primary mt-1"
             />
             {industryerror && <ErrorBox />}
 
@@ -494,7 +525,7 @@ function Step3Onboarding() {
               name="companyName"
               value={userData.companyName}
               onChange={(e)=>updateUserData( "companyName", e.target.value)}
-              className="w-full md:p-3 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1"
+              className="w-full md:p-3 p-2 border border-neutral-300 bg-neutral-100 rounded-lg focus:outline-primary mt-1"
             />
             
             
@@ -506,7 +537,7 @@ function Step3Onboarding() {
                 name="remote"
                 value={userData.remote}
                 onChange={()=>updateUserData( "remote", !userData.remote)}
-                className="mr-2 md:mt-5 w-6 h-6"
+                className="mr-2 md:mt-5 w-6 h-6 border-1 rounded-lg border-neutral-300 bg-neutral-100 accent-primary rounded focus:outline-primary"
               />
               <label className="text-gray-600 md:mt-5 md:text-md text-sm">I work remotely</label>
           </div>
@@ -517,7 +548,7 @@ function Step3Onboarding() {
             {/* Employment Type */}
             <div className="md:pt-10">
               <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Employer Classification</label>
-              <select
+              {/* <select
                 name="employmentType"
                 value={userData.employerclass}
                 onChange={(e)=>updateUserData("employerclass", e.target.value)}
@@ -527,13 +558,27 @@ function Step3Onboarding() {
                 <option>Government</option>
                 <option>Private Sector</option>
                 <option>Others</option>
-              </select>
+              </select> */}
+
+              {/* <CustomDropdown
+              options={employer_class}
+              value={userData.employerclass}
+              onChange={(value) => updateUserData('employerclass', value)}
+              /> */}
+
+              <CustomDropdownNoSearch
+              options={employer_class}
+              value={userData.employerclass}
+              onChange={(value) => updateUserData('employerclass', value)}
+              placeholder="Select your employer class"
+              />
+
             </div>
 
             {/* Tenure Status */}
             <div className="md:pt-10">
               <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Tenure Status</label>
-              <select
+              {/* <select
                 name="tenureStatus"
                 value={userData.tenureStatus}
                 onChange={(e)=>updateUserData( "tenureStatus", e.target.value)}
@@ -542,13 +587,21 @@ function Step3Onboarding() {
                 <option>Permanent</option>
                 <option>Temporary</option>
                 <option>Internship</option>
-              </select>
+              </select> */}
+
+              <CustomDropdownNoSearch
+              options={tenure_status}
+              value={userData.tenureStatus}
+              onChange={(value) => updateUserData('tenureStatus', value)}
+              placeholder="Select your tenure status"
+              />
+            
             </div>
 
           </div>
 
           {/* Work Location */}
-          <div className="">
+          <div className="md:pt-10">
             <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Work Location</label>
             <div className="flex gap-3">
               <input
@@ -557,7 +610,7 @@ function Step3Onboarding() {
                 value={userData.workCountry}
                 onChange={(e)=>updateUserData("workCountry", e.target.value)}
                 placeholder="Country"
-                className={`w-1/2 md:p-3 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1 ${userData.sameWorkBase ? "bg-gray-200 text-gray-500" : ""}`}
+                className={`w-1/2 md:p-3 p-2 border bg-neutral-100 border-gray-300 rounded-lg focus:outline-primary mt-1 ${userData.sameWorkBase ? "bg-neutral-300 text-gray-500" : ""}`}
                 disabled = {userData.sameWorkBase}
               />
               <input
@@ -566,7 +619,7 @@ function Step3Onboarding() {
                 value={userData.workCity}
                 onChange={(e)=>updateUserData("workCity", e.target.value)}
                 placeholder="City"
-                className={`w-1/2 md:p-3 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-1 ${userData.sameWorkBase ? "bg-gray-200 text-gray-500" : ""}`}
+                className={`w-1/2 md:p-3 p-2 border bg-neutral-100 border-gray-300 rounded-lg focus:outline-primary mt-1 ${userData.sameWorkBase ? "bg-neutral-300 text-gray-500" : ""}`}
                 disabled={userData.sameWorkBase}
               />
             </div>
@@ -589,8 +642,8 @@ function Step3Onboarding() {
           <div className="">
             {/* <label className="text-gray-700 font-satoshi-medium">Salary Range (optional)</label> */}
             <div>
-                <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Tenure Status</label>
-                <select
+                <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Salary Range</label>
+                {/* <select
                   name="tenureStatus"
                   value={userData.salaryRange}
                   onChange={(e)=>updateUserData( "salaryRange", e.target.value)}
@@ -603,29 +656,38 @@ function Step3Onboarding() {
                   <option value = "5">₱63,700 to ₱109,199</option>
                   <option value="6">₱109,200 to ₱181,999</option>
                   <option value="7">At least ₱182,000 and up</option>
-                </select>
+                </select> */}
+
+                <CustomDropdownNoSearch
+                options={sal_range}
+                value={userData.salaryRange}
+                onChange={(value) => updateUserData('salaryRange', value)}
+                placeholder="Select your salary range"
+                />
               </div>
           </div>
         </div>
 
-        <div className="flex flex-row items-center justify-center my-10 md:space-x-20 w-full">
-          
-                <div className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl md:text-2xl text-lg"
-                      onClick={()=>setStep(2)}
-                >
-                        <label className="font-satoshi-italic " > &lt; Previous </label>
-                </div> 
+        <div className="flex flex-row items-center justify-between mt-10 w-full md:sticky bottom-0 mb-10">
+                        <button
+                            type="button"
+                            className="flex flex-row items-center justify-center hover:text-hover cursor-pointer group"
+                            onClick={() => setStep(2)}
+                        >
+                            <ChevronLeft className="text-primary group-hover:text-hover"/>
+                            <span className="font-satoshi-bold text-primary flex items-center w-20 p-2 text-md group-hover:text-hover">
+                                Previous
+                            </span>
+                        </ button>
 
-                <div className="w-[70%]">
-
-                </div> 
-                <div className="w-70 h-17 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-lg cursor-pointer"
-                    onClick = {()=>{updateEmploymentEmployed()}}
-                >
-                    <label className="font-satoshi-bold cursor-pointer">Proceed</label>
-                </div>
-          
-        </div>
+                        <button
+                            type="button"
+                            className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-20 md:w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
+                            onClick={()=>{updateEmploymentEmployed()}}
+                        >
+                            Proceed
+                        </button>
+                    </div>
       </div>
       
       </>))

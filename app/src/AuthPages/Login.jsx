@@ -420,7 +420,7 @@ function LoginPage() {
                             >
                             Login
                             </button>
-                            <button
+                            {/* <button
                                 className="relative bg-white border-1 py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular transition mt-3 cursor-pointer hover:shadow-md hover:scale-[1.001]"
                                 onClick={()=>loginWithGoogle()}
                                 >
@@ -432,7 +432,7 @@ function LoginPage() {
                                         className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6"
                                     />
                                 
-                            </button>
+                            </button> */}
                             </>
                         )}
 
