@@ -708,3 +708,12 @@ def get_job_tag_suggestions_endpoint(
 
 
     return get_tag_suggestions(db, q, limit)
+
+@router.get("/job-postings/tag-suggestions")
+def get_job_tag_suggestions_endpoint(
+    q: str = Query(..., min_length=1, description="Search query text"),
+    limit: Optional[int] = Query(5, ge=1, le=20, description="Maximum number of results"),
+    db: Session = Depends(get_db)):
+
+
+    return get_tag_suggestions(db, q, limit)
