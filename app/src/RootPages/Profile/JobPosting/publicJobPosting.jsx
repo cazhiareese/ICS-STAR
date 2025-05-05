@@ -23,6 +23,7 @@ export default function PublicJobPosted(userID) {
         const [maxPage, setMaxPage] = useState(1);
         const [joblength, setJobLength] = useState(0);
 const [isError, setError] = useState(false);
+        const [dependencyTrigger, setDependencyTrigger] = useState(false);
 
         //For Dummy testing only
 
@@ -151,6 +152,7 @@ const [isError, setError] = useState(false);
           mobileExpanded={mobileExpanded}
           setMobileExpanded={setMobileExpanded}
           setJob={setSelectedJob}
+          setDependencyTrigger={setDependencyTrigger}
         />
       )}
     </div>
@@ -191,6 +193,7 @@ const [isError, setError] = useState(false);
             mobileExpanded={mobileExpanded}
             setMobileExpanded={setMobileExpanded}
             setJob={setSelectedJob}
+            setDependencyTrigger={setDependencyTrigger}
           />
         </div>
       )}
