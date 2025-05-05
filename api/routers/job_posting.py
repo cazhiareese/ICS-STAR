@@ -696,6 +696,10 @@ async def get_comp_by_id(user_id: UUID, db: Session=Depends(get_db)):
 def get_top_4_job_tags_endpoint(db: Session = Depends(get_db)):
     return get_top_4_job_tags(db)
 
+@router.get("/job-postings/top-4-tags")
+def get_top_4_job_tags_endpoint(db: Session = Depends(get_db)):
+    return get_top_4_job_tags(db)
+
 @router.get("/admin/job-postings/tag-suggestions", dependencies=[Depends(require_admin)])
 def get_job_tag_suggestions_endpoint(
     q: str = Query(..., min_length=1, description="Search query text"),
