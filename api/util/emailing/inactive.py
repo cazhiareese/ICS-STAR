@@ -1,4 +1,4 @@
-def invitation(eventId, title, location, description, image, datetime):
+def inactivity(name):
     htmlString = f'''
 <html>
 <head>
@@ -89,34 +89,35 @@ def invitation(eventId, title, location, description, image, datetime):
 
     <!-- Title -->
     <h1 style="color: #1D2939; font-size: 18px; text-align: center;">
-   ICS-STAR Invites You to <br>
+    ICS-STAR Advisory: <br>
     </h1>
     <div class="main-title">   
-     {title}
+     {name} update your details in ICS-STAR
     </div>
 
     <!-- Event Image -->
-    <img src="{image}" alt="Event Image" class="event-image">
-
     <!-- Event Details -->
-    <div class="event-details" style="margin: 15px 0; font-size: 14px; color: #333; line-height: 1.6;">
-      <p style="margin: 5px 0; text-align: left;">
-        <strong>Location:</strong> {location}
-      </p>
-      <p style="margin: 5px 0; text-align: left;">
-        <strong>Date & Time:</strong> {datetime}
-      </p>
-    </div>
+   
 
     <!-- Body Content -->
-    <div class="content">
-      <p>{description}</p>
-    </div>
+    <p>Dear {name},</p>
+
+  <p>We noticed that you haven’t been active on <strong>ICS-STAR</strong> for a while. To ensure uninterrupted access and continued privileges, we kindly ask you to review and update your personal details.</p>
+
+  <p>Keeping your information up to date helps us maintain the integrity and security of our community.</p>
+
+  <p>Please take a moment to log in and confirm or update your profile details.</p>
+
+
+  <p>Thank you for being a part of ICS-STAR.</p>
+
+  <p>Best regards,<br>
+  The ICS-STAR Team</p>
 
     <!-- CTA Button -->
     <div class="button-container">
-      <a href="https://ics-star-app.vercel.app/alumni/events/{eventId}" class="cta-button">RSVP Now</a>
-    </div>
+        <a href="https://ics-star-app.vercel.app/login" class="cta-button">Visit ICS-STAR</a>
+      </div>
 
     <!-- Footer -->
     <div class="footer">

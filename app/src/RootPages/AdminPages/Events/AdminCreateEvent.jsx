@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
-import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
+import EventFilterDropdown from '../../../components/AdminComponents/eventFilter';
 
 function AdminCreateEvent({ purpose }) {
   const navigate = useNavigate();
@@ -43,7 +43,9 @@ function AdminCreateEvent({ purpose }) {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [token, setToken] = useState(null);
 
-    const [careerList, setCareerList] = useState([]);
+    const [affililationList, setAffiliationList] = useState([]);
+    const [employmentStatus, setEmploymentStatus] = useState([]);
+
     const [dateList, setDateList] = useState([]);
     const [jobList, setJobList] = useState([]); // Added for sendtoJob field
     const [allAlumni, setAllAlumni] = useState(false);
@@ -57,6 +59,20 @@ function AdminCreateEvent({ purpose }) {
       setLinkInput('');
     }
   }
+
+  useEffect(() => {
+    console.log(jobList)
+    console.log(dateList)
+    console.log(affililationList)
+    console.log(employmentStatus)
+    setFormData((prev) => ({
+      ...prev,
+      batch: formData.isAll ? [] : dateList,
+      job: formData.isAll ? [] : jobList,
+      affiliation: formData.isAll ? [] : affililationList,
+      employmentStatus: formData.isAll ? null: employmentStatus
+    }));
+  }, [dateList, jobList, affililationList, employmentStatus, formData.isAll]);
 
   function updateLink(index, newValue) {
     const updated = [...formData.links];
@@ -175,6 +191,8 @@ function AdminCreateEvent({ purpose }) {
     console.log('Current formData.links:', formData.links); // Debugging
   }, [formData.links]);
 
+
+
   const handleSubmit = async () => {
     setSubmitLoading(true);
     const payload = new FormData();
@@ -186,6 +204,8 @@ function AdminCreateEvent({ purpose }) {
     if (formData.image && formData.image instanceof File) {
       payload.append('image', formData.image);
     }
+
+    console.log(formData.image)
 
     const dateArray = Array.isArray(formData.date) ? formData.date : [formData.date];
     const timeArray = Array.isArray(formData.time) ? formData.time : [formData.time];
@@ -502,10 +522,12 @@ function AdminCreateEvent({ purpose }) {
             <label>All Alumni</label>
           </div>
           <div className="relative inline-block text-left w-72">
-          <FilterDropdown 
-              setCareerList={setCareerList} 
-              setDateList={setDateList} 
-              setJobList={setJobList} // return lists sa lahat
+          <EventFilterDropdown 
+              setCareerList={setJobList} 
+              setDateList={setDateList}
+              setAffiliationList={setAffiliationList}
+              setEmployment={setEmploymentStatus} 
+              // setJobList={setJobList} // return lists sa lahat
               disabled={allAlumni} 
             />
 

@@ -47,8 +47,9 @@ function AdminDonationDriveDemographics() {
   useEffect(()=>{
 
     const fetchData = async () => {
+      const token = localStorage.getItem('token');
       try{
-        const getDonorsbyBatch = await axios.get(`${API_BASE_URL}/admin/donations/drive-donor-counts?drive_id=${driveid}`);
+        const getDonorsbyBatch = await axios.get(`${API_BASE_URL}/admin/donations/drive-donor-counts?drive_id=${driveid}`, {headers: { Authorization: `Bearer ${token}` }});
         console.log(getDonorsbyBatch.data.top_3)
         setDonorsByBatch(getDonorsbyBatch.data.top_3)
     }catch (error){
@@ -57,7 +58,7 @@ function AdminDonationDriveDemographics() {
     }
 
     try{
-        const getAmountByBatch = await axios.get(`${API_BASE_URL}/admin/donations/top-monetary-donors?drive_id=${driveid}`)
+        const getAmountByBatch = await axios.get(`${API_BASE_URL}/admin/donations/top-monetary-donors?drive_id=${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
         setAmountByBatch(getAmountByBatch.data.top_3)
 
     }catch(error){
@@ -65,7 +66,7 @@ function AdminDonationDriveDemographics() {
     }
 
     try{
-      const getDonationTypeData = await axios.get(`${API_BASE_URL}/admin/donations/donation-totals?drive_id=${driveid}`)
+      const getDonationTypeData = await axios.get(`${API_BASE_URL}/admin/donations/donation-totals?drive_id=${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
       // console.log(getDonationTypeData.data)
       setDonationTypeData(getDonationTypeData.data.slice(0,2))
     }catch (error){
@@ -73,7 +74,7 @@ function AdminDonationDriveDemographics() {
     }
 
     try{
-      const getAmountTimeData = await axios.get(`${API_BASE_URL}/admin/donations/weekly-amounts?drive_id=${driveid}`)
+      const getAmountTimeData = await axios.get(`${API_BASE_URL}/admin/donations/weekly-amounts?drive_id=${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
       setAmountTimeData(getAmountTimeData.data)
 
   }catch(error){
@@ -125,7 +126,7 @@ function AdminDonationDriveDemographics() {
                 <div key={index} className="flex items-center gap-2 text-sm font-satoshi-regular">
                   <div className="w-4 h-4" style={{ backgroundColor: COLORS[index] }} />
                   <p className="">
-                      Batch {entry.batch}: {entry.total_donors} Donors
+                    {entry.batch === 'others' ? 'Others' : `Batch ${entry.batch}`}: {entry.total_donors} Donors
                   </p>
                 </div>
               ))}
