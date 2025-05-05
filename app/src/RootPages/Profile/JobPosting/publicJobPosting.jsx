@@ -10,7 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 import SectionHeader from '../components/sectionheader';
 
 export default function PublicJobPosted(userID) {
-        console.log("MY ID", userID);
+        // console.log("MY ID", userID);
         const [selectedJobId, setSelectedJobId] = useState(""); //the job id will be stored here
         const [selectedJob, setSelectedJob] = useState({});
         const [jobList, setJobList] = useState([]);
@@ -45,7 +45,7 @@ const [isError, setError] = useState(false);
             }, []);
         useEffect(() => {
           const fetchJobs = async () => {
-            console.log(`${API_BASE_URL}/profile/${userID.userId}/job-post-history`);
+            // console.log(`${API_BASE_URL}/profile/${userID.userId}/job-post-history`);
             setLoading(true);
             try {
               const response = await axios.get(`${API_BASE_URL}/profile/${userID.userId}/job-post-history`, {
