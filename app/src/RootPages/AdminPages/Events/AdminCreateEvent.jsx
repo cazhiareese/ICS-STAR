@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
-import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
+import EventFilterDropdown from '../../../components/AdminComponents/eventFilter';
 
 function AdminCreateEvent({ purpose }) {
   const navigate = useNavigate();
@@ -43,7 +43,9 @@ function AdminCreateEvent({ purpose }) {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [token, setToken] = useState(null);
 
-    const [careerList, setCareerList] = useState([]);
+    const [affililationList, setAffiliationList] = useState([]);
+    const [employmentStatus, setEmploymentStatus] = useState([]);
+
     const [dateList, setDateList] = useState([]);
     const [jobList, setJobList] = useState([]); // Added for sendtoJob field
     const [allAlumni, setAllAlumni] = useState(false);
@@ -61,12 +63,16 @@ function AdminCreateEvent({ purpose }) {
   useEffect(() => {
     console.log(jobList)
     console.log(dateList)
+    console.log(affililationList)
+    console.log(employmentStatus)
     setFormData((prev) => ({
       ...prev,
       batch: formData.isAll ? [] : dateList,
       job: formData.isAll ? [] : jobList,
+      affiliation: formData.isAll ? [] : affililationList,
+      employmentStatus: formData.isAll ? null: employmentStatus
     }));
-  }, [dateList, jobList, formData.isAll]);
+  }, [dateList, jobList, affililationList, employmentStatus, formData.isAll]);
 
   function updateLink(index, newValue) {
     const updated = [...formData.links];
@@ -215,7 +221,7 @@ function AdminCreateEvent({ purpose }) {
     formData.batch.forEach((b) => payload.append('batch', b));
     payload.append('employmentStatus', formData.employmentStatus);
     formData.job.forEach((j) => payload.append('job', j));
-    // formData.affiliation.forEach((a) => payload.append('affiliation', a));
+    formData.affiliation.forEach((a) => payload.append('affiliation', a));
     payload.append('sendEmail', String(formData.sendEmail));
 
     // Log FormData contents
@@ -516,9 +522,11 @@ function AdminCreateEvent({ purpose }) {
             <label>All Alumni</label>
           </div>
           <div className="relative inline-block text-left w-72">
-          <FilterDropdown 
+          <EventFilterDropdown 
               setCareerList={setJobList} 
-              setDateList={setDateList} 
+              setDateList={setDateList}
+              setAffiliationList={setAffiliationList}
+              setEmployment={setEmploymentStatus} 
               // setJobList={setJobList} // return lists sa lahat
               disabled={allAlumni} 
             />
