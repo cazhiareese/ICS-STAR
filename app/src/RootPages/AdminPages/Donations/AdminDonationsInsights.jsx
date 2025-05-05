@@ -36,7 +36,7 @@ function AdminDonationsInsights() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
-  async function fetchDonations() {
+  async function fetchDonations(token) {
     setDonationLoading(true)
     try{
       let queryParams = `time_filter=${timeFilter}`
@@ -56,9 +56,10 @@ function AdminDonationsInsights() {
     }
   }
 
-  async function fetchInitialData() {
+  async function fetchInitialData(token) {
     setLoading(true);
     try {
+     
       // Build query params
       let queryParams = `time_filter=${timeFilter}`;
       if (timeFilter === "monthly" && selectedMonth !== null && selectedYear !== null) {
@@ -104,14 +105,15 @@ function AdminDonationsInsights() {
   useEffect(() => {
     setDonationPage(1)
     setTotalDonationPage(1)
-    fetchDonations()
+    fetchDonations(token)
   }, [isAcknowledged, donationPage])
   
 
   useEffect(() => {
+    const tokenStored = localStorage.getItem('token');
     setToken(localStorage.getItem("token"))
-    fetchInitialData()
-    fetchDonations()
+    fetchInitialData(tokenStored)
+    fetchDonations(tokenStored)
   }, [timeFilter])
 
   return (

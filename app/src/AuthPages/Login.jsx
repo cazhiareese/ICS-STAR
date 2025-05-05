@@ -169,6 +169,10 @@ function LoginPage() {
         
     }, [codeError]);
 
+    const loginWithGoogle = async() => {
+        
+    }
+
 
     const [position, setPosition] = useState(0);
   const maxPosition = 700; 
@@ -418,7 +422,7 @@ function LoginPage() {
                             </button>
                             <button
                                 className="relative bg-white border-1 py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular transition mt-3 cursor-pointer hover:shadow-md hover:scale-[1.001]"
-                                // onClick={loginClick}
+                                onClick={()=>loginWithGoogle()}
                                 >
                                 <label className="cursor-pointer">Sign In with Google</label>
                                 

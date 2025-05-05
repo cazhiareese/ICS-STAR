@@ -7,7 +7,8 @@ from sqlalchemy import UUID, func, or_
 from util.emailing.invitation import invitation
 from models.usermodel import User, UserAffiliation, UserTypeEnum
 from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET, brevo_configuration, email_sender
-from fastapi import HTTPException, UploadFile
+from fastapi import HTTPException, UploadFile, logger
+import logging
 from sqlalchemy.orm import Session
 from schemas.events_schema import DemographicsOut
 from models.event_model import Event, EventConfirmedBy, EventDate, EventLink, EventTag, EventVisibleTo
@@ -197,37 +198,71 @@ async def edit_event_util (
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     
-    if image:
+    image_url = event.image  # Preserve existing image URL by default
+    if image is None and event.image:
+    # Case: Image has been explicitly removed by the user
+        try:
+            old_file_path = event.image.replace(STORAGE_STRING, "", 1)
+            
+            if old_file_path and old_file_path != event.image:
+                print("here to old file")
+                print(f"Deleting old image: {old_file_path}")
+                response = supabase_client.storage.from_(SUPABASE_BUCKET).remove([old_file_path])
+                print(f"Deletion response: {response}")
+                image_url = None  # Clear the image URL
+            else:
+                print(f"Invalid or unchanged image path: {event.image}")
+        except Exception as e:
+            print(f"Failed to delete old event image: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to delete existing event image: {str(e)}")
+    elif image:
+        # Case: New image provided
         file = image.file.read()
         if len(file) > MAX_FILE_SIZE:
-            raise HTTPException(status_code=400, detail="File size exceeds the limit of 10MB.")
+            raise HTTPException(status_code=400, detail="File size exceeds the limit of 10MB")
         if image.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
-            raise HTTPException(status_code=400, detail="File type not allowed.")
-        
+            raise HTTPException(status_code=400, detail="File type not allowed")
+
+        # Delete old image if it exists
         if event.image:
             try:
-                old_file_path = event.image.replace(STORAGE_STRING, "")
-                supabase_client.storage.from_(SUPABASE_BUCKET).remove([old_file_path])
+                old_file_path = event.image.replace(STORAGE_STRING, "", 1)  # Remove STORAGE_STRING once
+                if old_file_path:
+                    print(f"Deleting old image: {old_file_path}")
+                    response = supabase_client.storage.from_(SUPABASE_BUCKET).remove([old_file_path])
+                    print(f"Deletion response: {response}")
+                else:
+                    print(f"Invalid old image path: {event.image}")
             except Exception as e:
-                raise HTTPException(status_code=500, detail="Failed to delete old profile picture: {e}")
-            
+                print(f"Failed to delete old event image: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Failed to delete previous event image: {str(e)}")
+
+        # Upload new image
         file_extension = image.filename.split(".")[-1].lower()
         file_name = f"events/{title.replace(' ', '_')}.{file_extension}"
         try:
+            print(f"Uploading new image: {file_name}")
             supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
+            image_url = f"{STORAGE_STRING}{file_name}"
+            print(f"Uploaded image URL: {image_url}")
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to upload image. Error: {str(e)}")
-        
-        image_url = f"{STORAGE_STRING}{file_name}"
+            print(f"Failed to upload image: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
+    # Update event fields
+    print(image_url)
     event.title = title
     event.description = description
     event.location = location
-    event.is_all = isAll 
+    event.is_all = isAll
     event.image = image_url
 
-    db.commit()
-    db.refresh(event)
+    try:
+        db.commit()
+        db.refresh(event)
+    except Exception as e:
+        logger.error(f"Failed to update event in database: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to update event in database")
 
     db.query(EventDate).filter(EventDate.event_id == event.event_id).delete()
     db.query(EventTag).filter(EventTag.event_id == event.event_id).delete()

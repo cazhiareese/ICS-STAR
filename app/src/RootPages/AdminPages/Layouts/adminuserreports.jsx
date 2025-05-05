@@ -48,6 +48,7 @@ function AdminEngagementReports() {
       setFullEngagementReportLoading(true);
       try {
         // First request: Engagement Statistics
+        const token= localStorage.getItem('token');
         let response;
         fetchEngagementStatistics()
         // Second request: Most Donations
