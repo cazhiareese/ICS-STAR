@@ -7,6 +7,8 @@ from fastapi import Depends, HTTPException, status, UploadFile, File, APIRouter,
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct, or_, func
+from sqlalchemy.exc import IntegrityError
+from psycopg2 import errors
 from passlib.context import CryptContext
 from typing import List, Optional
 from schemas.user import CurrentUser
@@ -114,8 +116,16 @@ def process_student_onboarding(
         )
         return {"message": "onboarding details updated successfully", "updated_token": access_token}
         
+    except IntegrityError as e:
+        db.rollback()
+        if isinstance(e.orig, errors.UniqueViolation):
+            raise HTTPException(status_code=409, detail="Data already exist")
+        else:
+            raise HTTPException(status_code=500, detail=f"Database integrity error: {str(e)}")
+
     except Exception as e:
-            raise HTTPException(status_code=500, detail=f'Error updating info {e}')
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f'Error updating info {e}')
         
 
 def process_alumni_onboarding(
@@ -195,8 +205,16 @@ def process_alumni_onboarding(
         )
         return {"message": "onboarding details updated successfully", "updated_token": access_token}
         
+    except IntegrityError as e:
+        db.rollback()
+        if isinstance(e.orig, errors.UniqueViolation):
+            raise HTTPException(status_code=409, detail="Data already exist")
+        else:
+            raise HTTPException(status_code=500, detail=f"Database integrity error: {str(e)}")
+
     except Exception as e:
-            raise HTTPException(status_code=500, detail=f'"Error updating info {e}"')
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f'Error updating info {e}')
 
 
 async def register_user(
