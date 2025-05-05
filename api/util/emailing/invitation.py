@@ -89,7 +89,7 @@ def invitation(eventId, title, location, description, image, datetime):
 
     <!-- Title -->
     <h1 style="color: #1D2939; font-size: 18px; text-align: center;">
-    You're Invited: ICS-STAR Invites You to <br>
+   ICS-STAR Invites You to <br>
     </h1>
     <div class="main-title">   
      {title}

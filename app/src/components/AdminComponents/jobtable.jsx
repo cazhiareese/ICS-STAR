@@ -13,28 +13,32 @@ function JobTable({ data, jobType }) {
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [removeLoading, setRemoveLoading] = useState(false);
     const [removeSuccess, setRemoveSuccess] = useState(false);
-    
-    async function removePost() {
+    const token = localStorage.getItem('token');
+
+
+    async function removePost(token) {
       setRemoveLoading(true);
       try {
-          await axios.delete(`${API_BASE_URL}/delete-job-postings/${selectedJob.post_id}`);
+          await axios.delete(`${API_BASE_URL}/delete-job-postings/${selectedJob.post_id}`, {headers: {Authorization: `Bearer ${token}`}});
           setRemoveLoading(false);
           setRemoveSuccess(true);
+          navigate(-1)
       } catch (error) {
           setRemoveLoading(false);
           console.error("Failed to delete post:", error);
       }
   }
 
-    async function fetchReports(){
-        const response = await axios.get(`${API_BASE_URL}/admin/job-posts/${selectedJob.post_id}/reports`)
+    async function fetchReports(token){
+        const response = await axios.get(`${API_BASE_URL}/admin/job-posts/${selectedJob.post_id}/reports`, {headers: {Authorization: `Bearer ${token}`}})
         console.log(response.data)
         setReports(response.data)
     }
 
     useEffect(() => {
+      const token = localStorage.getItem('token');
       if (selectedJob) {
-          fetchReports();
+          fetchReports(token);
       }
   }, [selectedJob]);
 
@@ -42,7 +46,7 @@ function JobTable({ data, jobType }) {
     <>
       <table className="w-full">
         <thead>
-          <tr className="text-left text-xs text-primary font-satoshi-regular">
+          <tr className="text-left text-sm text-primary font-satoshi-bold border-b border-gray-200">
             <th className="py-2 px-4">Date Posted</th>
             <th className="py-2 px-4">Job Title</th>
             <th className="py-2 px-4">Creator</th>
@@ -53,8 +57,11 @@ function JobTable({ data, jobType }) {
 
         <tbody className="font-satoshi-regular text-md">
           {data.map((job, index) => (
-            <tr key={index}>
-              <td className="py-3 px-4 font-satoshi-bold">{job.date_posted}</td>
+            <tr 
+              key={index}
+              className="border-b border-gray-200 h-10"
+              >
+              <td className="py-3 px-4 font-satoshi-regular">{job.date_posted}</td>
               <td className="py-3 px-4">{job.title}</td>
               <td className="py-3 px-4">{job.user_name}</td>
               <td className="py-3 px-4">{job.interested_count}</td>
@@ -92,7 +99,7 @@ function JobTable({ data, jobType }) {
                     <div className="overflow-auto flex-1 rounded-2xl w-full border border-gray-300">
                         <table className="w-full">
                         <thead>
-                            <tr className=" text-sm text-left text-primary">
+                            <tr className="text-sm text-left text-primary border-b border-gray-200">
                             <th className="py-2 px-3">Date Reported</th>
                             <th className="py-2 px-3">Alumni</th>
                             <th className="py-2 px-3">Reason</th>
@@ -101,7 +108,10 @@ function JobTable({ data, jobType }) {
                         </thead>
                         <tbody className="text-sm">
                             {reports.map((report, i) => (
-                            <tr key={i} className="">
+                            <tr 
+                              key={i} 
+                              className="border-b border-gray-200 h-10"
+                              >
                                 <td className="py-2 px-3">{report.date_reported}</td>
                                 <td className="py-2 px-3">{report.reporter_name}</td>
                                 <td className="py-2 px-3">{report.reason}</td>
@@ -126,7 +136,7 @@ function JobTable({ data, jobType }) {
                     </div>
                     {/* TODO: Add remove post */}
                     <div className="pt-4 flex w-full justify-end">
-                        <button className="bg-red-800 text-white px-6 py-3 rounded-2xl font-satoshi-medium text-lg cursor-pointer" 
+                        <button className="bg-error hover:bg-red-800 text-white px-6 py-2 rounded-3xl font-satoshi-medium text-lg cursor-pointer" 
                         onClick={() => setShowRemoveModal(true)}>
                         Remove Post
                         </button>
@@ -226,20 +236,20 @@ function JobTable({ data, jobType }) {
               ) : (
                 <>
                   <p className="text-xl font-satoshi-medium text-center mt-4">
-                    Are you sure you want to remove this post?
+                    Are you sure you want to remove the posting?
                   </p>
-                  <div className="flex gap-3 mt-6 w-full justify-center">
+                  <div className="pt-8 font-satoshi-medium flex gap-3 mt-6 w-ful h-full justify-center">
                     <button
-                      className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
+                      className="bg-white text-primary px-4 py-2 rounded-3xl w-25 outline outline-1 outline-primary cursor-pointer"
                       onClick={() => setShowRemoveModal(false)}
                     >
                       Cancel
                     </button>
                     <button
-                      className="bg-red-800 text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
-                      onClick={removePost}
+                      className="bg-error text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
+                      onClick={removePost(token)}
                     >
-                      Confirm
+                      Remove
                     </button>
                   </div>
                 </>

@@ -41,7 +41,7 @@ function PaymentProof(
 
     return (
         <div className='outline-2 rounded-3xl outline-neutral-400 py-8 px-8 w-full'>
-            <h1 className='font-satoshi-medium pb-3'>Proof of payment</h1>
+            <h1 className='font-satoshi-medium pb-3'>Proof of payment <span className='text-error'>*</span></h1>
 
             <div
                 className='flex flex-col bg-neutral-100 rounded-3xl justify-center items-center py-10 gap-2'

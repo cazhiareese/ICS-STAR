@@ -4,6 +4,8 @@ import {User}  from 'lucide-react'
 import Camera from "../../assets/onBoardingAssets/camera.png";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import Unathorized from "../Unauthorized";
+import ModalTemplate from "../modaltemplate";
+import CircularLoading from "../../components/LoadingComponents/circularloading";
 function Step1Onboarding() {
   const canvasRef = useRef(null);
   const [file, setFile] = useState(null);
@@ -12,7 +14,7 @@ function Step1Onboarding() {
   const [selectPicture, setSelectPicture] = useState(false)
   
 
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // For Editing of userProfile
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -26,6 +28,8 @@ function Step1Onboarding() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [editImage, setEditImage] = useState(null);  // This will store the ongoing edits
 
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const token = localStorage.getItem("token");
   console.log(token)
@@ -49,7 +53,8 @@ function Step1Onboarding() {
       // updateEditImage(canvasRef.current);
     };
     const handleImageLoad = () => {
-      setImageLoaded(true); // Set imageLoaded state to true when the image is loaded
+      setImageLoaded(true);
+      captureImage();  // Directly update editImage immediately after loading
     };
 
     const handleMouseUp = () => {
@@ -121,54 +126,82 @@ function Step1Onboarding() {
 
     const handleFileChange = (event) => {
       const file = event.target.files[0];
-      if (!file) return; // Prevents errors if no file is selected
-      setFile(file)
-      setSelectPicture(true)
-
+      if (!file) return;
+      setFile(file);
+      setSelectPicture(true);
+    
+      // Reset all states before loading new image
+      setImageLoaded(false);
+      setZoom(1);
+      setPosition({ x: 0, y: 0 });
+      setBrightness(100);
+      setContrast(100);
+      setSaturation(100);
+    
       const reader = new FileReader();
       reader.onloadend = () => {
-        updateUserData("profilePicture", reader.result);
-        updateUserData("profilePictureFile", file)
-        setImageLoaded(true);
+        updateUserData("profilePicture", reader.result);  // Set immediately for preview
+        updateUserData("profilePictureFile", file);
+    
+        // This ensures captureImage() happens **after image is loaded**
+        setTimeout(() => {
+          setImageLoaded(true);  // Triggers captureImage via useEffect
+        }, 100); // Small delay to let image load into DOM first
       };
       reader.readAsDataURL(file);
+    
+      // Force input to reset so same file can be re-selected later
+      event.target.value = null;
+    };
+
+    const dataURLtoFile = (dataurl, filename) => {
+      const arr = dataurl.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, {type: mime});
     };
 
     const handleSave = () => {
       updateUserData("profilePicture", editImage);// Save the edited image to userImage
+      const editedFile = dataURLtoFile(editImage, file.name);  
+      updateUserData("profilePictureFile", editedFile);
       setSelectPicture(false);
     };
 
-
     const submitStep1 = async (e) => {
+      setIsSubmitting(true); // Show loading spinner
+    
       try {
-          const formData = new FormData();
-          formData.append("file", userData.profilePictureFile);
-  
-          const baseURL = "https://ics-star-api.vercel.app/"
-
-          
-          const response = await fetch(`${baseURL}upload-profile-picture`, {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              body: formData, // Send formData directly
-          });
-  
-          const data = await response.json();
-          
-          if (response.ok) {
-              alert("Profile Submission Successful!");
-              setCurrentSection(2)
-          } else {
-              alert(data.message || JSON.stringify(data) || "Registration failed!");
-          }
+        const formData = new FormData();
+        formData.append("file", userData.profilePictureFile);
+        const baseURL = import.meta.env.VITE_BACKEND_URL;
+    
+        const response = await fetch(`${baseURL}/upload-profile-picture`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+          setShowSuccessModal(true);
+          console.log("Passed Image");
+        } else {
+          alert(data.message || JSON.stringify(data) || "Registration failed!");
+        }
       } catch (error) {
-          console.error("Error:", error);
-          alert("Something went wrong!");
+        console.error("Error:", error);
+        alert("Something went wrong!");
+      } finally {
+        setIsSubmitting(false); // Hide spinner no matter what
       }
-  };
+    };
 
     useEffect(() => {
       if (imageLoaded) {
@@ -180,14 +213,17 @@ function Step1Onboarding() {
     <>
 
       <div className="flex flex-col space-y-3 items-center pt-15 sm:mx-30 mx-10">
-        <label className="font-satoshi-bold md:text-5xl sm:text-3xl text-2xl text-left w-full">1. Update your profile</label>
+        <label className="font-satoshi-bold md:text-5xl sm:text-3xl text-3xl text-left w-full">1. Update your profile</label>
         <label className="font-satoshi-light md:text-2xl sm:text-xl text-lg text-left w-full">Add a profile picture</label>
-        <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-120 w-75 h-40">
-            <div className="flex items-center justify-center rounded-full bg-white md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0">
-              <div className="relative w-full h-full flex justify-center items-center">
+        <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-120 w-90 h-40">
+            <div className="relative flex items-center justify-center rounded-full md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0 bg-whitey">
+              <div className="w-full h-full flex justify-center items-center ">
+                <label htmlFor="fileInput" className= "absolute bottom-0 left-0 md:pl-40 pl-30 w-55 cursor-pointer">
+                  <img src={Camera} />
+                </label>
                 {userData.profilePicture==null ? 
                 (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>):
-                <img src={userData.profilePicture} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full" />
+                <img src={userData.profilePicture} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full"onLoad={() => setImageLoaded(true)} />
                 }
               
                 <input 
@@ -198,9 +234,7 @@ function Step1Onboarding() {
                     onChange={handleFileChange}
                 />
 
-                <label htmlFor="fileInput" className= "absolute pt-35 pl-45 w-55 cursor-pointer">
-                  <img src={Camera} />
-                </label>
+                
               </div>
               
 
@@ -230,8 +264,14 @@ function Step1Onboarding() {
               } else {
                 setCurrentSection(2)
               }}}
-          >
-                  <label className="font-satoshi-bold cursor-pointer">Proceed</label>
+          > 
+          
+            {!isSubmitting ? <label className="font-satoshi-bold cursor-pointer">Proceed</label> :
+            
+            <CircularLoading />
+            
+            }
+                  
           
           
           </div>
@@ -473,7 +513,20 @@ function Step1Onboarding() {
               
           </div>
       </div>}
-      
+
+      {showSuccessModal && (
+    <ModalTemplate
+        onClose={() => setShowSuccessModal(false)}
+        onContinue={() => {
+            setShowSuccessModal(false);
+            setCurrentSection(2);
+        }}
+        choiceclose="Close"
+        choicecontinue="Proceed"
+        header="Success!"
+        information="Profile picture successfully submitted"
+    />
+)}
     </>
     
   );

@@ -7,7 +7,7 @@ const AdminNewsletterCard = ({ title, image, date_posted, context, tags = [], id
 
   return (
     <div
-      className="flex w-full bg-whitey border border-disabled shadow-sm p-4 gap-4 h-[179px] cursor-pointer hover:shadow-md transition-shadow"
+      className="flex w-full bg-whitey border border-disabled shadow-sm p-4 gap-4 h-[179px] cursor-pointer hover:shadow-md transition-shadow rounded-sm"
       onClick={() => navigate(`newsletter-details` + '/' + id)}
     >
       {/* Left Side Image */}
@@ -48,7 +48,7 @@ const AdminNewsletterCard = ({ title, image, date_posted, context, tags = [], id
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="bg-blue-100 text-blue-600 text-xs font-medium px-2 py-1 rounded-full"
+              className="bg-blue-100 text-primary text-xs font-medium px-2 py-1 rounded-full"
             >
               {tag}
             </span>

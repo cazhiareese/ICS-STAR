@@ -4,7 +4,7 @@ from models.report_model import Report, ReportAttachment
 from models.report_model import ReportStatusEnum
 from config.config import STORAGE_STRING, SUPABASE_BUCKET, supabase_client
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, distinct
 from fastapi import HTTPException
 from fastapi import UploadFile
 from uuid import UUID
@@ -35,7 +35,7 @@ async def create_job_posting(
             raise HTTPException(status_code=400, detail="File type not allowed.")
         
         file_extension = image.filename.split(".")[-1].lower()
-        file_name = f"job_posting/{job_title.replace(' ', '_')}.{file_extension}"
+        file_name = f"job_posting/{company.replace(' ', '_')}{job_title.replace(' ', '_')}.{file_extension}"
 
         try:
             supabase_client.storage.from_(SUPABASE_BUCKET).upload(file_name, file)
@@ -223,3 +223,12 @@ def get_top_4_job_tags(db: Session):
     )
     
     return [tag[0] for tag in tags]
+
+def get_tag_suggestions(db: Session, query_text: str, limit: int = 4) -> List[str]:
+    results = db.query(distinct(JobPostingTag.tag))\
+                .filter(JobPostingTag.tag.ilike(f"%{query_text}%"))\
+                .order_by(JobPostingTag.tag)\
+                .limit(limit)\
+                .all()
+    
+    return [result[0] for result in results]

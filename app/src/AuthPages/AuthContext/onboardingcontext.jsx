@@ -10,8 +10,11 @@ export function OnboardingProvider({ children }) {
     const [email, setEmail] = useState("___")
     const [userType, setUserType] = useState("___")
 
+    const [scholarships, setScholarships] = useState(false);
+    const [affiliations, setAffiliations] = useState(false);
 
     const [userData, setUserData] = useState({
+        standing: "freshman",
         profilePicture: null,
         scholarshipList: [],
         affiliationList:[],
@@ -21,9 +24,9 @@ export function OnboardingProvider({ children }) {
         industrySector: "",
         workType: "",
         employmentType: "employed",
-        tenureStatus: "",
+        tenureStatus: "Permanent",
         sameAsBase: false,
-        salaryRange: 11,
+        salaryRange: 1,
         remote: false,
         reason: [],
         workCountry: "",
@@ -34,7 +37,7 @@ export function OnboardingProvider({ children }) {
         skillsInterests: [],
         profilePictureFile: null,
         workMode: "Onsite",     // Onsite or Remote
-        employerclass: "",
+        employerclass: "NGO",
         suggestions: [
             "Artificial Intelligence",
             "Cybersecurity",
@@ -44,7 +47,8 @@ export function OnboardingProvider({ children }) {
             "UI/UX Designing",
             "Mobile Development",
             "Frontend Developing",
-        ]
+        ],
+        userUpdatedToken: ""
     });
 
     const updateUserData = (field, value) => {
@@ -55,7 +59,7 @@ export function OnboardingProvider({ children }) {
     };
 
     return (
-        <OnboardingContext.Provider value={{ setUserData, userData, updateUserData, email, setEmail, currentSection, setCurrentSection, name, setName, userType, setUserType}}>
+        <OnboardingContext.Provider value={{ scholarships, setScholarships, affiliations, setAffiliations, setUserData, userData, updateUserData, email, setEmail, currentSection, setCurrentSection, name, setName, userType, setUserType}}>
             {children}
         </OnboardingContext.Provider>
     );

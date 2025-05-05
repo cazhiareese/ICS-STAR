@@ -6,22 +6,32 @@ import AdminModal from '../../../components/AdminComponents/AdminModal';
 import axios from 'axios'
 import CircularLoading from "../../../components/LoadingComponents/circularloading"
 import SkeletonLoading from "../../../components/LoadingComponents/skeletonloading"
-
+import PaginationComponent from "../../../components/AdminComponents/PaginationComponent"
+import SortModal from "../../../components/AdminComponents/sortmodal"
+import OrderToggle from "../../../components/AdminComponents/ordertoggle"
+import CareerFilterModal from '../../../components/AdminComponents/CareerFilter';
 function AdminCareer() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
   const [index, setIndex] = useState(0);
-  const [viewStyle, setViewStyle] = useState('List')
+
   const [jobType, setJobType] = useState('open')
-  const [page, setPage] = useState()
-  const [totalPages, setTotalPages] = useState()
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [topJobs, setTopJobs] = useState([])
   const [topLoading, setTopLoading] = useState(false)
   const [loading, setLoading] = useState(false)
-
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const sorters = [
+    { label: 'Date posted', value: 'date' },
+    { label: 'Interested', value: 'count' },
+  ];
+  const [sortBy, setSortBy] = useState(sorters[0].value);
+  const [sortDirection, setSortDirection] = useState('desc');
+  const [orderBy, setOrderBy] = useState('date_desc');
+  
   const [openCount, setOpenCount] = useState(0)
   const [closedCount, setClosedCount] = useState(0)
   const [reportedCount, setReportedCount] = useState(0)
@@ -30,45 +40,78 @@ function AdminCareer() {
   const prev = () => setIndex((index - 1 + total) % total);
   const next = () => setIndex((index + 1) % total);
 
-  async function fetchJobs(type) {
+  const filters = [
+    {label: 'Creator', value:'creator'}
+  ]
+  const [creatorValue, setCreatorValue] = useState('')
+
+
+  const handleSortFieldChange = (field) => {
+    setSortBy(field);
+    const newParam = `${field}_${sortDirection}`;
+    setOrderBy(newParam);
+  };
+
+  const handleDirectionToggle = (newDirection) => {
+    setSortDirection(newDirection);
+    const newParam = `${sortBy}_${newDirection}`;
+    setOrderBy(newParam);
+  };
+
+  async function fetchJobs(type, token) {
     let endpoint = '';
-    if (type === 'open') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/open`;
-    } else if (type === 'closed') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/closed`;
-    } else if (type === 'reported') {
-      endpoint = `${API_BASE_URL}/admin/job-postings/reported`;
+
+    const params = new URLSearchParams();
+    if (orderBy) {
+      params.append('order_by', orderBy);
     }
-  
+    if (creatorValue && creatorValue.length > 0){
+      params.append('creator', creatorValue)
+    }else{
+      params.delete('creator')
+    }
+
+    const queryString = params.toString();
+
+    if (type === 'open') {
+      endpoint = `${API_BASE_URL}/admin/job-postings/open?page=${page}&${queryString}`;
+    } else if (type === 'closed') {
+      endpoint = `${API_BASE_URL}/admin/job-postings/closed?page=${page}&${queryString}`;
+    } else if (type === 'reported') {
+      endpoint = `${API_BASE_URL}/admin/job-postings/reported?page=${page}&${queryString}`;
+    }
+    
+    console.log(endpoint)
     try {
-      const response = await axios.get(endpoint);
+      const response = await axios.get(endpoint, {headers: {Authorization: `Bearer ${token}`}});
       console.log(response)
-      setJobs(response.data);
+      setTotalPages(response.data.meta.total_pages)
+      setJobs(response.data.items);
     } catch (error) {
       console.error('Failed to fetch jobs:', error);
     }
   }
 ``
 
-  async function fetchJobCounts() {
-    const openResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/open/count`)
+  async function fetchJobCounts(token) {
+    const openResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/open/count`, {headers: {Authorization: `Bearer ${token}`}})
     console.log(openResponse.data)
     setOpenCount(openResponse.data.open_job_postings_count)
 
-    const closedResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/closed/count`)
+    const closedResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/closed/count`, {headers: {Authorization: `Bearer ${token}`}})
     console.log(closedResponse.data)
     setClosedCount(closedResponse.data.closed_job_postings_count)
 
-    const reportedResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/reported/count`)
+    const reportedResponse = await axios.get(`${API_BASE_URL}/admin/job-postings/reported/count`, {headers: {Authorization: `Bearer ${token}`}})
     console.log(reportedResponse.data)
     setReportedCount(reportedResponse.data.reported_job_postings_count)
   }
 
   useEffect(() => {
-    async function fetchTopJobs() {
+    async function fetchTopJobs(token) {
       setTopLoading(true)
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/job-postings/top-4-interested`)
+        const response = await axios.get(`${API_BASE_URL}/admin/job-postings/top-4-interested`, {headers: {Authorization: `Bearer ${token}`}})
         console.log(response)
         setTopJobs(response.data)
       } catch (error) {
@@ -77,28 +120,41 @@ function AdminCareer() {
         setTopLoading(false)
       }
     }
-    fetchTopJobs()
+    const token = localStorage.getItem('token');
+    fetchTopJobs(token)
   }, [])
   
   useEffect(() => {
     async function fetchAllJobs () {
       setLoading(true);
       try {
-        await fetchJobCounts()
-        await fetchJobs(jobType);
+        await fetchJobCounts(token)
+        await fetchJobs(jobType, token);
       } catch (error) {
         console.error('Error fetching jobs:', error);
       } finally {
         setLoading(false);
       }
     };
-  
-    fetchAllJobs();
-  }, [jobType]);
+    const token = localStorage.getItem('token');
+
+    if (token)
+    {
+      fetchAllJobs(token);
+    }else{
+      setTopJobs([])
+      setOpenCount(0)
+      setClosedCount(0)
+      setReportedCount(0)
+      setTotalPages(0)
+      setJobs([])
+    }
+    
+  }, [jobType, page, sortBy, sortDirection, creatorValue]);
   
 
   return (
-    <div className='flex flex-col h-screen p-6 items-center w-full'>
+    <div className='flex flex-col h-screen p-6 items-center w-full bg-gray-100'>
       <h1 className='text-primary font-satoshi-bold text-5xl mb-4 self-start'>Career</h1>
       {/* Card Carousel */}
       {topLoading ? (
@@ -131,7 +187,7 @@ function AdminCareer() {
 
 
       {/* Dots */}
-      <div className='flex gap-1 mt-4'>
+      <div className='mb-3 flex gap-1 mt-4'>
         {topLoading ? (
           <></>
         ) : (
@@ -148,58 +204,50 @@ function AdminCareer() {
         {/* Buttons */}
         <div className='w-full lg:w-auto min-w-xs ml-5'>
           {/* Open button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${jobType === 'open' ? 'border-primary' : 'border-transparent'}`} onClick={() => setJobType('open')}>
-            <p className='text-black font-satoshi-medium text-md'> Open ({openCount}) </p>
+          <button className={`px-3 py-3 cursor-pointer border-b-3 w-1/4 lg:w-auto ${jobType === 'open' ? 'border-primary' : 'border-transparent'}`} onClick={() => setJobType('open')}>
+            <p className='text-black font-satoshi-medium text-sm'> Open ({openCount}) </p>
           </button>
           {/* Closed button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${jobType === 'closed' ? ' border-primary' : 'border-transparent'}`} onClick={() => setJobType('closed')}>
-            <p className='text-black font-satoshi-medium text-md'> Closed ({closedCount}) </p>
+          <button className={`px-3 py-3 cursor-pointer border-b-3 w-1/4 lg:w-auto ${jobType === 'closed' ? ' border-primary' : 'border-transparent'}`} onClick={() => setJobType('closed')}>
+            <p className='text-black font-satoshi-medium text-sm'> Closed ({closedCount}) </p>
           </button>
             {/* Reported button */}
-          <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${jobType === 'reported' ? ' border-primary' : 'border-transparent'}`} onClick={() => setJobType('reported')}>
-              <p className='text-black font-satoshi-medium text-md'> Reported ({reportedCount}) </p>
+          <button className={`px-3 py-3 cursor-pointer border-b-3 w-1/4 lg:w-auto ${jobType === 'reported' ? ' border-primary' : 'border-transparent'}`} onClick={() => setJobType('reported')}>
+              <p className='text-black font-satoshi-medium text-sm'> Reported ({reportedCount}) </p>
           </button>
         </div>
         {/* Sort by */}
         <div className='flex gap-2'>
-          <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
-            <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
-            <p className='font-satoshi-medium text-primary block'>Name</p>
-          </button>
+          {/* TODO: Add function to change sort */}
+          <SortModal
+            filters={sorters}
+            selectedFilter={sortBy}
+            onSelect={handleSortFieldChange}
+          />
+          {/* Order toggle */}
+          <OrderToggle
+            direction={sortDirection}
+            onToggle={handleDirectionToggle}
+          />
           {/* Filter */}
-          <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
+          {/* <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
             <Filter className='text-primary'/>
             <p className='text-primary fsont-satoshi-medium text-sm'> Filter</p>
-          </button>
-          {/* View changer */}
-          <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
-            {/* List View Button */}
-            <button className="px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStyle('List')}}>
-              <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
-            </button>
-            <div className="h-6 w-px bg-disabled"></div>
-            {/* Grid View Button */}
-            <button className="px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStyle('Grid')}}>
-              <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
-            </button>
-          </div>
+          </button> */}
+          <CareerFilterModal 
+              filters = {filters}
+              setterFunction = {setCreatorValue}
+          />
           {/* Page */}
-          {/* <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-            <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-              <p> Page </p>
-            <input
-              type="text"
-              value={page}
-              onChange={() => {}}
-              className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-            />
-            <p>of {totalPages}</p>
-            <MoveRight className='cursor-pointer' onClick={() => {}}/>
-          </div> */}
+          <PaginationComponent
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
       {/* Table for desktop*/}
-      <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full'>
+      <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full bg-white'>
         {loading ? (
           <div className='flex flex-row items-center justify-center h-full'>
             <CircularLoading/>

@@ -96,7 +96,7 @@ async def create_event(
                         job=job  )
         return {"message" : "success", "data": event}
     except Exception as e:
-        return {"message": str(e)}
+        raise HTTPException(status_code=500, detail=f"error submitting: {e}")
 
 @event_router.put("/edit/{event_id}", dependencies=[Depends(require_admin)],)
 async def edit_event(
@@ -149,24 +149,28 @@ async def edit_event(
         links = clean_input(links)
         job = clean_input(job)
         affiliation = clean_input(affiliation)
-        event = await edit_event_util(
-                db=db, 
-                event_id=event_id,
-                title=title, 
-                description=description, 
-                image=image, location=location, 
-                dates=event_datetimes, 
-                tags=tags, 
-                links=links, 
-                isAll=isAll,
-                batch=batch,
-                affliation=affiliation,
-                employmentStatus=employmentStatus,
-                job=job
-        )
-        return {"message": "success", "data": event}
+
+        try:
+            event = await edit_event_util(
+                    db=db, 
+                    event_id=event_id,
+                    title=title, 
+                    description=description, 
+                    image=image, location=location, 
+                    dates=event_datetimes, 
+                    tags=tags, 
+                    links=links, 
+                    isAll=isAll,
+                    batch=batch,
+                    affliation=affiliation,
+                    employmentStatus=employmentStatus,
+                    job=job
+            )
+            return {"message": "success", "data": event}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="error submitting")
     except Exception as e:
-        return {"message": str(e)}
+         raise HTTPException(status_code=500, detail="error submitting")
 
 @event_router.get("/event-by-id/{eventId}", dependencies=[Depends(require_admin)],)
 async def get_event_by_id(eventId: UUID, db:Session=Depends(get_db)):
@@ -224,7 +228,7 @@ async def get_rsvps_by_id(event_id: UUID, db:Session=Depends(get_db), page: int=
 
 @event_router.get("/all-open-events", dependencies=[Depends(require_admin)])
 async def get_open_events(title: Optional[str] = "", order_by: Optional[str] = "", db: Session = Depends(get_db), page:int=1):
-    ITEMS_PER_PAGE = 10
+    ITEMS_PER_PAGE = 8
 
     try:
         query = db.query(
@@ -388,7 +392,7 @@ def get_tags(db: Session = Depends(get_db)):
     
     return{"message": "success", "data": [tag[0] for tag in query if tag is not None]}
 
-@event_router.post("/send-email/{event_id}")
+@event_router.post("/send-email/{event_id}", dependencies=[Depends(require_admin)],)
 def send_email(event_id: UUID, db: Session=Depends(get_db)):
     event = db.query(Event.is_all).filter(Event.event_id == event_id).first()
 

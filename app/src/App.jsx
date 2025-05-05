@@ -8,6 +8,7 @@ import AlumniLanding from "./RootPages/AlumniPages/alumnidashboard";
 import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
 import Unauthorized from "./AuthPages/Unauthorized";
+import OnboardingDashboard from "./AuthPages/OnBoarding/dashboard_onboarding";
 
 
 
@@ -46,11 +47,10 @@ import AdminCareerLayout from "./RootPages/AdminPages/Layouts/admincareerlayout"
 import { jwtDecode } from "jwt-decode";
 import DonationForm from "./RootPages/AlumniPages/Donation.jsx/donationform";
 import AdminDonationDriveDemographics from "./RootPages/AdminPages/Donations/admindonationdrivedemographics";
-import OtherUserProfile from "./RootPages/OtherUserprofile";
+
 
 import InterestedUsers from "./RootPages/AlumniPages/job-posting/interestedUsers";
 import ReportJobPosting from "./RootPages/AlumniPages/job-posting/reportjobposting";
-import EditJobPosting from "./RootPages/AlumniPages/job-posting/editjobposting";
 import CreateJobPostAlum from "./RootPages/AlumniPages/job-posting/createJobPostAlum";
 import EditJobPostAlum from "./RootPages/AlumniPages/job-posting/editJobPostings";
 import JobPostingLanding from "./RootPages/AlumniPages/job-posting/jobPostingLanding";
@@ -79,9 +79,16 @@ import EventsLanding from "./RootPages/Events/eventslanding";
 import EventCardsMain from "./RootPages/Events/eventCardsMain";
 import AdminEventDemographics from "./RootPages/AdminPages/Events/AdminEventDemographics";
 import AdminEditNewsletter from "./RootPages/AdminPages/NewsLetter/AdminEditNewletter";
+import AdminDonationsInsights from "./RootPages/AdminPages/Donations/AdminDonationsInsights";
+import AdminUserReports from "./RootPages/AdminPages/Layouts/adminuserreports";
+import MostEngagedJobs from "./RootPages/AdminPages/Layouts/mostengagedjobs";
 
 
+import GuestLanding from "./RootPages/GuestPages/guestlanding";
+import AccountSettings from "./RootPages/Account/accountsettings";
 //const isSignedIn = !!localStorage.getItem("token");
+import ReddUserProfile from "./RootPages/RedUserProfile";
+import JanryUserProfile from "./RootPages/JanryUserProfile";
 
 
 function App() {
@@ -102,13 +109,42 @@ function App() {
     }
   }
 
+  function isOnboarded() {
+    const User = localStorage.getItem("token");
+    //const User = true;
+    let tokenType = null;
+    if (User) {
+      const decoded = jwtDecode(User);
+      console.log("Decoded token:", decoded);
+      //tokenType = "admin";
+      //tokenType = "alumni";
+      const onBoarding = decoded.is_onboarded; // Adjust this based on your token structure
+      const verified = decoded.is_verified
+      console.log("Decoded token type:", tokenType);
+
+      console.log
+      if (onBoarding && verified){    
+        return true
+      } else if (!verified){
+        return true
+      }
+        return false
+    } else {
+      console.warn("⚠️ No token found in sessionStorage");
+    }
+  }
+
+
   console.log(isSignedIn);
 
   return (
     <Routes>
+      <Route path="/" element={<Navigate to={isSignedIn ? "/login" : "login"} />} />
+
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="login" element={<LoginPage />} />
           <Route
             path="signup"
@@ -123,6 +159,7 @@ function App() {
             path="setup"
             element={ 
               <OnboardingProvider>
+                
                 <OnBoarding />
               </OnboardingProvider>
             }
@@ -132,11 +169,14 @@ function App() {
       
       {isSignedIn && checkType() === "alumni" && (
         <>
+          {isOnboarded()?
+           <>
           <Route path="/" element={<Root />}>
             <Route path="alumni/dashboard" element={<AlumniLanding />} />
+            <Route path="alumni/account/settings" element={<AccountSettings />} />
             <Route path="alumni/alumnisearch" element={<AlumniSearch />} />
             <Route path="alumni/profile" element={<UserProfile />} />
-            <Route path="alumni/profile/:userId" element={<OtherUserProfile />} />
+            <Route path="alumni/profile/:userId" element={<JanryUserProfile />} />
             <Route path="alumni/donations" element={<DonationLanding />} />
             <Route path="alumni/events" element={<EventsLanding />} />
             <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
@@ -145,38 +185,77 @@ function App() {
             <Route path="alumni/donationforms/:driveid" element={<DonationForm />} />
             <Route path="alumni/jobPosting/interested/:jobid" element={<InterestedUsers />} />
             <Route path="alumni/jobPosting/report/:jobid" element={<ReportJobPosting />} />
-            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPosting />} />
             <Route path="alumni/jobPosting" element={<JobPostingLanding />} />
             <Route path="alumni/jobPosting/createJobPosting" element={<CreateJobPostAlum />} />
 
             
-            <Route path="alumni/jobPosting/editJobPosting/:jobId" element={<EditJobPostAlum />} />
+            <Route path="alumni/jobPosting/edit/:jobid" element={<EditJobPostAlum />} />
             <Route path="alumni/newsletter" element={<NewsletterLanding />} />
             <Route path="alumni/newsletter/:newsletterid" element={<Newsletter />} />
 
-            <Route path="*" element={<Unauthorized />} />
+            <Route path="*" element={<LoginPage />} />
 
-            <Route
-            path="setup"
-            element={
-              <OnboardingProvider>
-                <OnBoarding />
-              </OnboardingProvider>
-            }
-            />
+
           </Route>
+          </>
+          :
+          <Route
+              path="*"
+              element={
+                <OnboardingProvider>
+                  <OnboardingDashboard />
+                </OnboardingProvider>
+              }
+            
+            />
+         } 
         </>
       )} 
 
       {isSignedIn && checkType() === "student" && (
         <>
-          <Route path="/" element={<Root />}>
+          {isOnboarded() ?
+          <>
+            <Route path="/" element={<Root />}>
             <Route path="student/dashboard" element={<StudentLanding />} />
+            <Route path="student/account/settings" element={<AccountSettings />} />
             <Route path="student/events" element={<EventsLanding />} />
-            <Route path="alumni/events/:eventid" element={<EventCardsMain />} />
+            <Route path="students/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
-            <Route path="alumni/donations" element={<DonationLanding />} />
-            <Route path="*" element={<UserProfile />} />
+            <Route path="student/profile" element={<UserProfile />} />
+            <Route path="student/profile/:userId" element={<JanryUserProfile />} />
+            <Route path="student/newsletter" element={<NewsletterLanding />} />
+            <Route path="student/newsletter/:newsletterid" element={<Newsletter />} />
+            <Route path="student/jobPosting/interested/:jobid" element={<InterestedUsers />} />
+            <Route path="student/jobPosting/report/:jobid" element={<ReportJobPosting />} />
+            <Route path="student/jobPosting" element={<JobPostingLanding />} />
+            <Route path="*" element={<LoginPage />} />
+          </Route>
+          </>
+           : 
+            <Route
+              path="*"
+              element={
+                <OnboardingProvider>
+                  <OnboardingDashboard />
+                </OnboardingProvider>
+                
+              }
+              />
+         }
+        </>
+      )}
+
+      {!isSignedIn  && (
+        <>
+          <Route path="/" element={<Root />}>
+            <Route path="guest/dashboard" element={<GuestLanding />} />
+            <Route path="guest/events" element={<EventsLanding />} />
+            <Route path="guest/events/:eventid" element={<EventCardsMain />} />
+            <Route path="guest/newsletter" element={<NewsletterLanding />} />
+            <Route path="guest/newsletter/:newsletterid" element={<Newsletter />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+
           </Route>
         </>
       )}
@@ -192,10 +271,12 @@ function App() {
               <Route path="batch-reports/:batch" element={<AdminBatchInformation/>}/>
               <Route path="industry-reports" element={<AdminIndustryInformation/>}/>
               <Route path="country-reports" element={<AdminCountryInformation/>}/>
+              <Route path="user-engagement-reports" element={<AdminUserReports/>}/>
+              <Route path="user-engagement-reports/most-engaged-job-offers" element={<MostEngagedJobs/>}/>
             </Route>
             <Route path="records" element={<AdminRecordsLayout />}>
               <Route index element={<AdminRecords />} />
-              <Route path=":userid" element={<AdminUserDetails />} />
+              <Route path=":userId" element={<ReddUserProfile />} />
               <Route path="pending-verifications" element={<AdminPendingVerifications />}/>
               <Route path="verification-confirmation/:userid"element={<AdminVerificationConfirmation />}/>
             </Route>
@@ -217,6 +298,7 @@ function App() {
             </Route>
             <Route path="donations" element={<AdminDonationsLayout />}> 
               <Route index element={<AdminDonations/>} />
+              <Route path="insights" element={<AdminDonationsInsights/>}/>
               <Route path=":driveid" element={<AdminDonationInformation/>}/>
               <Route path="create-donation-drive" element={<AdminCreateDonationDrive/>}/>
               <Route path="help-ics/" element={<AdminHelpIcs/>}/>
@@ -230,6 +312,7 @@ function App() {
       {/* Redirect unknown routes */}
       <Route path="*" element={<LoginPage />} />
     </Routes>
+
   );
 }
 

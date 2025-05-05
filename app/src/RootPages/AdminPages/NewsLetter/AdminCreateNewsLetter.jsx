@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MoveLeft, Plus, Upload, X, ChevronDown, CheckCircle } from 'lucide-react';
+import { MoveLeft, Plus, Upload, X, ChevronDown, CheckCircle, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
@@ -87,6 +87,15 @@ function AdminEditNewsletter() {
     fetchTags();
   }, []);
 
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0] || e.dataTransfer?.files[0]; // Support both input and drag-and-drop
     setFileError(''); // Reset error
@@ -124,12 +133,14 @@ function AdminEditNewsletter() {
   };
 
   const handleLinkAdd = () => {
-    if (link.trim() !== '') {
+    if (link.trim() !== '' && isValidUrl(link.trim())) {
       setLinkList((prev) => {
         const updatedList = [...prev, link.trim()];
         setLink(''); // Clear the input field after adding the link
         return updatedList;
       });
+    } else {
+      alert('Please enter a valid URL.');
     }
   };
 
@@ -189,7 +200,14 @@ function AdminEditNewsletter() {
       const url = option === "edit" ? `${baseUrl}/edit/${newsletter_id}` : `${baseUrl}/create`;
       const method = option === "edit" ? axios.put : axios.post;
 
-      const response = await method(url, payload);
+      
+      const token = localStorage.getItem('token');
+      const response = await method(url, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
       console.log(`Newsletter ${option === "edit" ? 'updated' : 'created'}:`, response.data);
       setModalSuccess(true); // Show success state
@@ -298,24 +316,24 @@ function AdminEditNewsletter() {
               />
               <button
                 type="button"
-                className="bg-primary text-white rounded-full p-2"
+                className="bg-primary text-white p-2 rounded-full h-10 w-10 text-xl font-bold flex items-center justify-center cursor-pointer hover:bg-hover"
                 onClick={handleLinkAdd}
               >
-                <Plus size={18} />
+                <Plus size={24} className='stroke-2' />
               </button>
             </div>
 
             {/* List of added links */}
-            <div className="mt-4 flex flex-col gap-2">
+            <div className="mt-2 flex flex-col gap-2">
               {linklist.map((item, index) => {
                 const shortItem = item.length > 200 ? item.slice(0, 200) + '...' : item;
                 return (
                   <div
                     key={index}
-                    className="flex items-center justify-between border border-gray-200 rounded-lg p-2"
+                    className="flex gap-2 items-center"
                   >
                     <span
-                      className="text-primary font-satoshi-regular text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[calc(100%-2rem)]"
+                      className="text-black font-satoshi-regular border border-gray-300 rounded-2xl px-3 py-2 w-full overflow-hidden text-ellipsis whitespace-nowrap"
                       title={item} // Full link on hover
                     >
                       {shortItem}
@@ -325,9 +343,9 @@ function AdminEditNewsletter() {
                       onClick={() => {
                         setLinkList((prev) => prev.filter((_, i) => i !== index));
                       }}
-                      className="text-red-500 hover:text-red-700 ml-2"
+                      className="text-primary border border-gray-300 p-2 rounded-full h-10 w-10 text-xl font-bold flex items-center justify-center cursor-pointer hover:bg-gray-300"
                     >
-                      <X size={18} />
+                      <Trash2 size={24} className="stroke-2" />
                     </button>
                   </div>
                 );
@@ -348,7 +366,7 @@ function AdminEditNewsletter() {
               <ChevronDown size={18} className="text-gray-600" />
             </div>
             {tagDropdownOpen && (
-              <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto font-satoshi-regular">
+              <div className="absolute w-160 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto font-satoshi-regular">
                 {tags.map((tag) => (
                   <label key={tag} className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100">
                     <input
@@ -482,18 +500,18 @@ function AdminEditNewsletter() {
                 <p className="text-xl font-satoshi-medium text-center mt-4">
                   Are you sure you want to {option === "edit" ? "update" : "create"} this newsletter?
                 </p>
-                <div className="flex gap-3 mt-6 w-full h-full justify-center">
+                <div className="pt-8 font-satoshi-medium flex gap-3 mt-6 w-ful h-full justify-center">
                   <button
-                    className="border border-gray-300 px-4 py-2 rounded-3xl w-full cursor-pointer text-gray-300"
+                    className="bg-white text-primary px-4 py-2 rounded-3xl w-25 outline outline-1 outline-primary cursor-pointer"
                     onClick={handleModalClose}
                   >
                     Cancel
                   </button>
                   <button
-                    className="bg-success text-white px-4 py-2 rounded-3xl w-full cursor-pointer"
+                    className="bg-success text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
                     onClick={handleModalConfirm}
                   >
-                    Confirm
+                    Create
                   </button>
                 </div>
               </div>
