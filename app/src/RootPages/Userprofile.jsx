@@ -33,7 +33,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function UserProfile() {
   const id = useParams();
-  console.log("naku",id);
+  console.log(id);
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState("About");
   const [skills, setSkills] = useState([]);

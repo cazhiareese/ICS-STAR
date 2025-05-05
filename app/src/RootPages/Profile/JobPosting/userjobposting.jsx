@@ -21,7 +21,8 @@ export default function JobPosted() {
         const [currentPage, setCurrentPage] = useState(1);
         const [maxPage, setMaxPage] = useState(1);
         const [joblength, setJobLength] = useState(0);
-const [isError, setError] = useState(false);
+        const [isError, setError] = useState(false);
+        const [dependencyTrigger, setDependencyTrigger] = useState(false);
 
         //For Dummy testing only
 
@@ -148,6 +149,7 @@ const [isError, setError] = useState(false);
           mobileExpanded={mobileExpanded}
           setMobileExpanded={setMobileExpanded}
           setJob={setSelectedJob}
+          setDependencyTrigger={setDependencyTrigger}
         />
       )}
     </div>
@@ -188,6 +190,7 @@ const [isError, setError] = useState(false);
             mobileExpanded={mobileExpanded}
             setMobileExpanded={setMobileExpanded}
             setJob={setSelectedJob}
+            setDependencyTrigger={setDependencyTrigger}
           />
         </div>
       )}
