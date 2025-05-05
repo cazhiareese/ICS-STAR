@@ -695,3 +695,7 @@ async def get_comp_by_id(user_id: UUID, db: Session=Depends(get_db)):
 @router.get("/admin/job-postings/top-4-tags", dependencies=[Depends(require_admin)])
 def get_top_4_job_tags_endpoint(db: Session = Depends(get_db)):
     return get_top_4_job_tags(db)
+
+@router.get("/job-postings/top-4-tags")
+def get_top_4_job_tags_endpoint(db: Session = Depends(get_db)):
+    return get_top_4_job_tags(db)
