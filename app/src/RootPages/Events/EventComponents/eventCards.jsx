@@ -74,7 +74,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
     return (
       <div
-      className={`max-w-130 ${reservationExclusiveWidth ? "min-w-95 w-100" : "min-w-70 w-full"} h-120 rounded-3xl border border-neutral-200 overflow-hidden shadow-xl bg-white relative border-gray-200 flex flex-col`}
+      className={`max-w-130 ${reservationExclusiveWidth ? "min-w-95 w-100" : "min-w-70 w-full"} h-120 rounded-3xl border border-neutral-200 overflow-hidden shadow-xl bg-white relative border-gray-200 flex flex-col cursor-pointer`}
       onClick={() => { openEventDetails(event.event_id) }}
     >
       {/* Image */}

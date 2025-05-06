@@ -244,12 +244,12 @@ const EventCardsMain = () => {
     return (
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
             
-            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
+            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary cursor-pointer" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label className='cursor-pointer'>Go Back</label></label>
             {user?.role !== "student" && event.rsvp_closed==false && (
 
                 isloading ?
                 <button
-                    className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer ${
+                    className={`sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md cursor-pointer${
                     isGoing ? 'bg-primary text-white' : 'bg-primary text-white'
                     } hover:scale-115 transform transition-transform duration-200`}
                     onClick={() => {
@@ -262,11 +262,11 @@ const EventCardsMain = () => {
                       }}
                     >
                     
-                            <label>{isGoing ? <Star className='fill-white'/> : <Star/>}</label>
-                            <label>{isGoing ? 'Reserve my Spot' : 'Cancel Reservations'}</label>
+                            <span>{isGoing ? <Star className='fill-white'/> : <Star/>}</span>
+                            <span>{isGoing ? 'Reserve my Spot' : 'Cancel Reservations'}</span>
                     
                 </button>:
-                <div className='sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md hover:cursor-pointer'>
+                <div className='sm:hidden z-10 flex flex-row space-x-3 absolute right-10 top-30 px-4 py-2 rounded-full shadow-md'>
                 <CircularLoading/>
                 </div> 
 
@@ -347,7 +347,7 @@ const EventCardsMain = () => {
                     </>
                     )}
                 <div className="p-4 mx-5 flex flex-col">
-                    <h1 className="sm:text-3xl text-2xl font-satoshi-bold text-blue-900">{event.title}</h1>
+                    <h1 className="sm:text-3xl text-2xl font-satoshi-bold text-blue-900 cursor-default">{event.title}</h1>
                     
                     <label className='text-gray-400 pt-8'>Event Details</label>
                     

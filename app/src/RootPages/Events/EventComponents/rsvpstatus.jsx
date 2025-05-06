@@ -13,7 +13,7 @@ function RsvpStatus({ event }) {
   };
 
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 rounded-full text-l font-bold ${colorClasses[color]}`}>
+    <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 rounded-full text-l font-bold cursor-default ${colorClasses[color]}`}>
       {isClosed ? (
         <Lock className="h-4 w-4 "/>
       ) : (
