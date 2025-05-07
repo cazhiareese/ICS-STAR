@@ -96,8 +96,22 @@ function CreateJobPostAlum() {
     ]
 
     useEffect(() => {
-        setTagSuggestions(["UI/UX", "Gamedev", "Software Eng", "QA"]);
-    }, []);
+        const fetchTags = async () => {
+            try {
+                const endpoint = tagInput.trim()
+                    ? `${API_BASE_URL}/job-postings-tags/tag-suggestions?q=${tagInput}&limit=5`
+                    : `${API_BASE_URL}/job-postings-tags/top-4-tags`;
+    
+                const response = await axios.get(endpoint);
+                setTagSuggestions(response.data);
+            } catch (error) {
+                console.error("Error fetching tag suggestions:", error);
+            }
+        };
+    
+        fetchTags();
+    }, [tagInput]);
+    
 
     useEffect(() => {
         if (isTagsModalOpen && tagsRef.current) {
@@ -109,6 +123,7 @@ function CreateJobPostAlum() {
           });
         }
       }, [isTagsModalOpen]);
+      
 
 
     const handleJobTitleChange = (e) => {

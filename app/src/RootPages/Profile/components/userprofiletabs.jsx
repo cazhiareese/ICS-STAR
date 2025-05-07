@@ -3,7 +3,7 @@ import React from "react";
 function UserProfileTabs({ userDetails, editMode, activeTab, setActiveTab, admin }) {
   // Filter tabs based on admin status
   const tabs = ["About", "Work", "Job Posted", "Donation History"].filter(
-    (tab) => !(admin && (tab === "Donation History" || tab === "Job Posted"))
+    (tab) => !(admin && ( tab === "Job Posted"))
   );
 
   return (
