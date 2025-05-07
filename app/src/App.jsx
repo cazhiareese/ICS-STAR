@@ -9,7 +9,7 @@ import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
 import Unauthorized from "./AuthPages/Unauthorized";
 import OnboardingDashboard from "./AuthPages/OnBoarding/dashboard_onboarding";
-
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
 
 // Providers
@@ -92,6 +92,7 @@ import JanryUserProfile from "./RootPages/JanryUserProfile";
 
 
 function App() {
+  const clientId = import.meta.env.VITE_CLIENT_ID
   function checkType() {
     const User = localStorage.getItem("token");
     //const User = true;
@@ -144,14 +145,22 @@ function App() {
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
+       
           <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="login" element={<LoginPage />} />
+          <Route path="login" element={ 
+            <GoogleOAuthProvider clientId={clientId}>
+            <AppProvider>
+              <LoginPage />
+            </AppProvider>
+            </GoogleOAuthProvider>} />
           <Route
             path="signup"
             element={
+              <GoogleOAuthProvider clientId={clientId}>
               <AppProvider>
                 <SignupPage />
               </AppProvider>
+              </GoogleOAuthProvider>
             }
           />
 
@@ -164,6 +173,7 @@ function App() {
               </OnboardingProvider>
             }
           />
+          
         </>
       )}
       
