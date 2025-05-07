@@ -15,6 +15,7 @@ import google from "../assets/google.png"
 import GuestModal from "./guestModal"
 import ModalTemplate from "./modaltemplate"
 import { useLocation } from 'react-router-dom';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
 function LoginPage() {
 
@@ -65,6 +66,19 @@ function LoginPage() {
           localStorage.setItem('lastVisitedPath', currentPath);
         }
       }, [location]);
+
+      const clientId = 'YOUR_GOOGLE_CLIENT_ID';
+
+    const loginWithGoogle = useGoogleLogin({
+        onSuccess: (tokenResponse) => {
+        console.log('Login Success:', tokenResponse);
+        // Handle tokenResponse
+        },
+        onError: (error) => {
+        console.error('Login Failed:', error);
+        },
+        scope: 'email profile',
+    });
       
 
     const login = async (e) => {
@@ -168,10 +182,6 @@ function LoginPage() {
 
         
     }, [codeError]);
-
-    const loginWithGoogle = async() => {
-        
-    }
 
 
     const [position, setPosition] = useState(0);
@@ -420,6 +430,8 @@ function LoginPage() {
                             >
                             Login
                             </button>
+
+                            <GoogleOAuthProvider clientId={clientId}>
                             <button
                                 className="relative bg-white border-1 py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular transition mt-3 cursor-pointer hover:shadow-md hover:scale-[1.001]"
                                 onClick={()=>loginWithGoogle()}
@@ -433,6 +445,7 @@ function LoginPage() {
                                     />
                                 
                             </button>
+                            </GoogleOAuthProvider>
                             </>
                         )}
 
