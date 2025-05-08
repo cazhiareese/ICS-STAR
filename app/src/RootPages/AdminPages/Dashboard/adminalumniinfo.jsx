@@ -376,7 +376,7 @@ function AdminAlumniInfo() {
               className="flex flex-row gap-1 items-center cursor-pointer"
               onClick={() => navigate("/admin/dashboard/industry-reports/")}
             >
-              <p className="font-satoshi-light text-sm">View Industry Breakdown</p>
+              <p className="font-satoshi-light text-sm hover:text-hover">View Industry Breakdown</p>
               <MoveRight />
             </button>
           </div>
