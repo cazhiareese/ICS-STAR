@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight, Mail, MapPin, Calendar, Link } from 'lucide-react'
+import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight, Mail, MapPin, Calendar, Link, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 
@@ -21,8 +21,8 @@ function AdminEventDetails() {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [transitionComplete, setTransitionComplete] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
- const [submitLoading, setSubmitLoading] = useState(false);
- const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   async function fetchEventDetails (token) {
       const response = await axios.get(`${API_BASE_URL}/api/admin/events/event-by-id/${eventid}`, {headers: {Authorization: `Bearer ${token}`}})
       console.log(response.data.data)
@@ -67,9 +67,16 @@ function AdminEventDetails() {
   }, [eventid])
 
   const handleEmailSend = async () =>{
-    const response = axios.post(`${API_BASE_URL}/api/admin/events/send-email/${eventid}`, {},  {headers: {Authorization: `Bearer ${token}`}})
-    console.log(response)
-    navigate(-1)
+    setSubmitLoading(true)
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/admin/events/send-email/${eventid}`, {},  {headers: {Authorization: `Bearer ${token}`}})
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setSubmitLoading(false)
+      setSubmitSuccess(true)
+    }
   }
 
   return (
@@ -140,7 +147,7 @@ function AdminEventDetails() {
        <div className="flex flex-row items-center justify-center mt-3 font-satoshi-regular w-full">
         {/* Send email invites button */}
         {!eventDetails.is_concluded && (
-          <button className="bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer"
+          <button className="bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer hover:bg-hover"
             onClick={()=> setShowEmailModal(true)}
           >
             <Mail />
@@ -307,7 +314,7 @@ function AdminEventDetails() {
                     <CheckCircle size={48} />
                   </div>
                   <p className="text-xl font-satoshi-medium mt-4 text-center">
-                    {purpose === 'create' ? 'Created event!' : 'Saved changes!'}
+                    Successfully sent email invites!
                   </p>
                   <button
                     className="bg-primary text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
@@ -327,7 +334,7 @@ function AdminEventDetails() {
                   <div className="flex gap-3 mt-14 w-full h-full justify-center">
                     <button
                       className="border border-primary text-primary font-satoshi-medium px-4 py-2 rounded-3xl w-25 cursor-pointer"
-                      onClick={() => setShowSubmitModal(false)}
+                      onClick={() => setShowEmailModal(false)}
                     >
                       Cancel
                     </button>
