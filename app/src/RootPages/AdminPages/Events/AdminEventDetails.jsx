@@ -87,11 +87,11 @@ function AdminEventDetails() {
       <div className='flex flex-row justify-between mb-3 items-center'>
         {/* Event title and accepting rsvp */}
         <div className='flex flex-row gap-2 flex-1'>
-          <h1 className='font-satoshi-bold text-4xl text-ellipsis overflow-hidden'>{eventDetails.title}</h1>
+          <h1 className='font-satoshi-bold text-4xl text-ellipsis overflow-x-clip'>{eventDetails.title}</h1>
           {/* Accepting RSVP or closed */}
-          {eventDetails.is_closed ? (
-            <div className='flex flex-row items-center justify-center gap-2 bg-red-400 text-red-700 rounded-3xl min-h-fit self-end px-2 py-1'>
-              <div className='bg-red-400 h-2 w-2 rounded-full'></div>
+          {eventDetails.is_concluded ? (
+            <div className='flex flex-row items-center justify-center gap-2 bg-red-200 text-red-700 rounded-3xl min-h-fit self-end px-2 py-1'>
+              {/* <div className='bg-red-400 h-2 w-2 rounded-full'></div> */}
               <p className='font-satoshi-medium'>Closed</p>
             </div>
           ) : (
@@ -102,7 +102,7 @@ function AdminEventDetails() {
           )}
         </div>
         {/* Edit Event and Delete Event */}
-        {!eventDetails.is_closed &&
+        {!eventDetails.is_concluded &&
           <div className='flex flex-row gap-2 justify-end'>
             {/* Edit event */}
             <button className='bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer' onClick={() => {navigate(`/admin/events/edit-event/${eventid}`)}}>
@@ -140,7 +140,7 @@ function AdminEventDetails() {
        <div className="flex flex-row items-center mt-3 font-satoshi-regular w-full">
         {/* Send email invites button */}
         {!eventDetails.is_closed && (
-          <button className="bg-primary h-fix w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer"
+          <button className="bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer"
             onClick={()=> setShowEmailModal(true)}
           >
             <Mail />
