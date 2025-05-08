@@ -7,6 +7,7 @@ import UsersTable from '../../../components/AdminComponents/userstable';
 import axios from 'axios'
 import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
+import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 
 function AdminCountryInformation() {
     const navigate = useNavigate()
@@ -125,7 +126,8 @@ function AdminCountryInformation() {
             const countryParams = new URLSearchParams();
             countryParams.append('order_by', orderBy);
             const queryString = countryParams.toString();
-            const getCountryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_country_filter?country=${selectedCountry}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
+            const getCountryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_country_filter?country=${selectedCountry}&page=${page}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
+            setTotalPages(getCountryUsers.data.total_pages)
             setCountryUsers(getCountryUsers.data.data)
           }catch (error) {
             setCountryUsers([])
@@ -137,7 +139,7 @@ function AdminCountryInformation() {
 
 
     return (
-    <div className='bg-[#F9F9FB] flex flex-col py-6 px-25 overflow-auto h-screen max-h-screen'>
+    <div className='flex flex-col py-6 px-25 overflow-auto h-screen max-h-screen'>
       {/* Back */}
         <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
         <MoveLeft className='text-primary'/> 
@@ -309,33 +311,14 @@ function AdminCountryInformation() {
             {/* Order by */}
             <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
            
-            {/* View changer */}
-            <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
-              {/* List View Button */}
-              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
-                <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-              <div className="h-6 w-px bg-disabled"></div>
-              {/* Grid View Button */}
-              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
-                <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-            </div>
             {/* Page */}
-            <div className='items-center gap-2 ml-2 text-md font-satoshi-regular hidden lg:flex'>
-              <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-                <p> Page </p>
-                <input
-                  type="text"
-                  value={page}
-                  onChange={() => {}}
-                  className="w-9 text-center bg-[#FFFFFF] border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-                />
-              <p>of {totalPages}</p>
-              <MoveRight className='cursor-pointer' onClick={() => {}}/>
-            </div>
+            <PaginationComponent
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+            />
           </div>
-          <div className='bg-[#FFFFFF] border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
+          <div className='bg-white border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto'>
             <UsersTable data={countryUsers} userType='alum'/>
           </div>
           </>
