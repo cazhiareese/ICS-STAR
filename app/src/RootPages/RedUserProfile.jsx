@@ -437,7 +437,7 @@ const fetchUserProfileData = async () => {
         <WorkSection userDetails={userDetails} handleChange={handleChange} isVerified={userDetails?.is_verified} />
       )}
       {activeTab === "Donation History" && (
-        <DonationHistoryUser userDetails={userDetails} />
+        <DonationHistoryUser userDetails={userDetails} user_id={userId} />
       )}
       {activeTab === "Job Posted" && (
         <JobPosted />
