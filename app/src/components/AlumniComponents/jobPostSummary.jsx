@@ -38,24 +38,24 @@ const JobPostSummary = ({
                     </button>
                     <img src={job.image} className='w-full rounded-4xl my-3 h-50 object-cover'/>
                     
-                    <div className='flex flex-col gap-3 '>
+                    <div className='flex flex-col gap-3 pt-5'>
                         {/* Job Title */}
-                        <div className='flex flex-row gap-5'>
+                        <div className='flex md:flex-row flex-col gap-5 flex-wrap md:text-left text-center'>
                             
-                            <h1 className='font-satoshi-bold text-md text-black'>Job Title:</h1>
-                            <h1 className='font-satoshi-regular text-md text-black ml-auto'>{job.title}</h1>
+                            <h1 className='font-satoshi-bold text-md text-black md:text-left text-center'>Job Title:</h1>
+                            <h1 className='font-satoshi-regular text-md text-black md:ml-auto'>{job.title}</h1>
                         </div>
 
                         {/* Job Company */}
-                        <div className='flex flex-row gap-5'>
-                            <h1 className='font-satoshi-bold text-md text-black'>Company/Agency/Institution:</h1>
-                            <h1 className='font-satoshi-regular text-md text-black ml-auto'>{job.company}</h1>
+                        <div className='flex md:flex-row flex-col gap-5 flex-wrap md:text-left text-center'>
+                            <h1 className='font-satoshi-bold text-md text-black '>Company/Agency/Institution:</h1>
+                            <h1 className='font-satoshi-regular text-md text-black md:ml-auto'>{job.company}</h1>
                         </div>
 
                         {/* Job Link */}
-                        <div className='flex flex-row gap-5'>
+                        <div className='flex md:flex-row flex-col gap-5 flex-wrap md:text-left text-center'>
                             <h1 className='font-satoshi-bold text-md text-black'>Application Link:</h1>
-                            <h1 className='font-satoshi-regular text-md text-black ml-auto'>{job.link}</h1>
+                            <h1 className='font-satoshi-regular text-md text-black md:ml-auto'>{job.link}</h1>
                         </div>
 
                         {/* Job tags */}
@@ -77,15 +77,15 @@ const JobPostSummary = ({
 
 
                         {/* Salary */}
-                        <div className='flex flex-row gap-5'>
+                        <div className='flex md:flex-row flex-col gap-5 flex-wrap md:text-left text-center'>
                             <h1 className='font-satoshi-bold text-md text-black'>Salary/Compensation:</h1>
-                            <h1 className='font-satoshi-regular text-md text-black ml-auto'>PHP {job.salary}</h1>
+                            <h1 className='font-satoshi-regular text-md text-black md:ml-auto'>PHP {job.salary}</h1>
                         </div>
 
                         {/* description */}
-                        <div className='flex flex-col'>
+                        <div className='flex flex-col md:text-left text-center'>
                             <h1 className='font-satoshi-bold text-md text-black pb-5'>Description/Hiring Process:</h1>
-                            <div className='bg-gray-200 p-5 rounded-xl h-'>
+                            <div className='bg-gray-200 p-5 rounded-xl overflow-y-auto max-h-72'>
                                 <p className='font-satoshi-regular text-sm text-black italic text-justify'>
                                     {job.description}
                                 </p>
