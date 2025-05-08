@@ -360,7 +360,7 @@ function AdminBatchInformation() {
         {statsOrUser === 'stats' ? (
         <div className='flex flex-col gap-2 mt-2'>
           {/* Employment Status */}
-          {employmentData && employmentData.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {employmentData && employmentData.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6 bg-white'>
             <h2 className='font-satoshi-bold text-xl'> Employment Status </h2>
             <div className='flex flex-row h-full'>
               {/* Pie chart */}
@@ -400,7 +400,7 @@ function AdminBatchInformation() {
             </div>
           </div> : null}
           {/* Reason for unemployment */}
-          {unemploymentData && unemploymentData.length > 0   ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {unemploymentData && unemploymentData.length > 0   ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6 bg-white'>
             <h2 className='font-satoshi-bold text-xl'> Employment Status </h2>
             <div className='flex flex-row h-full'>
               {/* Pie chart */}
@@ -446,7 +446,7 @@ function AdminBatchInformation() {
             <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
           </div> :  null }
           {/* Top Job Titles */}
-          {jobTitles && jobTitles.length > 0  ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {jobTitles && jobTitles.length > 0  ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6 bg-white'>
             <h2 className='font-satoshi-bold text-xl'> Top Job Titles </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -481,7 +481,7 @@ function AdminBatchInformation() {
           </div> : null
           }
           {/* Top Industries */}
-          { topIndustries && topIndustries.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          { topIndustries && topIndustries.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6 bg-white'>
             <h2 className='font-satoshi-bold text-xl'> Top Industries </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -520,7 +520,7 @@ function AdminBatchInformation() {
           </div> : null }
           {/* Top Counties */}
           {topCountries && topCountries.length > 0? 
-          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6 bg-white'>
             <h2 className='font-satoshi-bold text-xl'> Top Countries </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
