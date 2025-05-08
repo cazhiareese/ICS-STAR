@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 
 function AdminDonationsLayout() {
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 max-w-7xl flex-items-center justify-center mx-auto">
       <Outlet />
     </div>
   )
