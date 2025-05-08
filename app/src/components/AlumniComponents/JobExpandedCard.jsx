@@ -174,7 +174,7 @@ const [showModal, setShowModal] = useState(false);//
                             <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
                             <button 
                             onClick={handleNavigate} 
-                            className="cursor-pointer font-satoshi-bold text-left text-primary underline"
+                            className="cursor-pointer font-satoshi-bold text-left text-primary underline break-words"
                             >
                             {job.user_name}
                             </button>
@@ -336,15 +336,15 @@ const [showModal, setShowModal] = useState(false);//
                                     Report
                                 </button>
                                 )}
-                                <h1 className="font-satoshi-bold text-2xl pt-3">{job.title}</h1>
+                                <h1 className="font-satoshi-bold text-2xl pt-3 break-words">{job.title}</h1>
                                 <div className="flex items-center gap-2 pt-2">
-                                    <h1 className="font-satoshi-bold text-base">{job.company}</h1>
+                                    <h1 className="font-satoshi-bold text-base break-words">{job.company}</h1>
                                     
                                 </div>
                                 <div className="flex items-center gap-2 pt-1">
                                     <h1 className="font-satoshi-medium text-xs">Posted by</h1>
                                     <h1 
-                                    className="cursor-pointer font-satoshi-bold text-primary underline" 
+                                    className="cursor-pointer font-satoshi-bold text-primary underline break-words" 
                                     onClick={handleNavigate}
                                     >
                                     {job.user_name}
