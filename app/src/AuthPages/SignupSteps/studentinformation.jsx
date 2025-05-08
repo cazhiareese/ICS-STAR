@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
 import { ChevronDown } from 'lucide-react';
 import FilePicker from "react-file-picker";
+import ModalTemplate from "../modaltemplate";
 
 function StudentInformation(){
 
@@ -17,7 +18,8 @@ function StudentInformation(){
 
 
     const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
-    
+    const [showFileSizeModal, setShowFileSizeModal] = useState(false);
+
     const [error, setError]= useState(false)
     const [studentNumberError, setStudentNumberError] = useState(false)
     // For Dropbox
@@ -33,18 +35,23 @@ function StudentInformation(){
 
     // For Processing files either from dropping, or adding through click
 
+    const MAX_FILE_SIZE_MB = 5;
+
     const processFile = (selectedFile) => {
         if (selectedFile) {
-            const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
-            updateUserData("selectedFile", selectedFile)
-            updateUserData("fileName", selectedFile.name)
-            updateUserData("fileSize", selectedFile.size)
-            updateUserData("image", "May image na")
-            setImage("MAy image na")
+            const fileSizeMB = selectedFile.size / (1024 * 1024);
+            if (fileSizeMB > MAX_FILE_SIZE_MB) {
+                setShowFileSizeModal(true);
+                return;
+            }
 
+            updateUserData("selectedFile", selectedFile);
+            updateUserData("fileName", selectedFile.name);
+            updateUserData("fileSize", selectedFile.size);
+            updateUserData("image", "May image na");
+            setImage("May image na");
         }
     };
-
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         processFile(file)
@@ -134,7 +141,7 @@ function StudentInformation(){
                 
 
                 <div class="font-satoshi-medium col-span-2">
-                    Upload your Form 5 
+                    Upload your Form 5 (Max 5MB)
                 </div>
                 
                     {!userData.image ? (
@@ -223,6 +230,16 @@ function StudentInformation(){
                         </button>
                     </div>
             </div>
+            {showFileSizeModal && (
+                <ModalTemplate
+                    header="File Too Large"
+                    information="The selected file exceeds the 5MB limit. Please upload a smaller file."
+                    choiceclose="Close"
+                    onClose={() => setShowFileSizeModal(false)}
+                    choicecontinue={null}
+                    onContinue={() => {}}
+                />
+            )}
         </div>
     );
 }
