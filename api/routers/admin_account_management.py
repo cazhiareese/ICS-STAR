@@ -3,11 +3,12 @@ from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from schemas.user import UserOut, UserStandingEnum, UserTypeEnum
 from config.database import get_db
-from util.userutil import require_admin
+from util.userutil import require_admin, send_verification_email
 from models.usermodel import User
 from models.report_model import Report
 from uuid import UUID
 from sqlalchemy import func, update
+from brevo_python.rest import ApiException
 
 router = APIRouter()
 
@@ -145,6 +146,15 @@ async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
     
     if affected_user is None:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    user = db.query(User.user_id, User.first_name, User.last_name, User.email).filter(User.user_id == user_id).first()
+
+    details = {
+        "name": f"{user.first_name} {user.last_name}",
+        "email": user.email
+    }
+
+    send_verification_email(user=details)
         
     db.commit()
     return {"message": "User registration confirmed"}
