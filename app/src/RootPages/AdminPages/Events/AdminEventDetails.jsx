@@ -137,9 +137,9 @@ function AdminEventDetails() {
         </div>
       </div>
        {/* Send email button and list/details toggle */}
-       <div className="flex flex-row items-center mt-3 font-satoshi-regular w-full">
+       <div className="flex flex-row items-center justify-center mt-3 font-satoshi-regular w-full">
         {/* Send email invites button */}
-        {!eventDetails.is_closed && (
+        {!eventDetails.is_concluded && (
           <button className="bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer"
             onClick={()=> setShowEmailModal(true)}
           >
@@ -148,7 +148,7 @@ function AdminEventDetails() {
           </button>
         )}
         {/* RSVP List and Event Details buttons */}
-        <div className="flex flex-row h-fit w-fit ml-auto mr-4">
+        <div className="flex flex-row h-fit w-fit ml-auto mr-4 mt-auto">
           <button
             className={`${
               viewStyle === "rsvpList" ? "bg-primary text-white border-primary" : ""
