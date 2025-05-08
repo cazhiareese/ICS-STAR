@@ -151,7 +151,7 @@ function AdminCareer() {
   
 
   return (
-    <div className='flex flex-col h-screen p-6 items-center w-full bg-gray-100'>
+    <div className='flex flex-col min-h-screen p-6 items-center w-full bg-gray-100'>
       <h1 className='text-primary font-satoshi-bold text-5xl mb-4 self-start'>Career</h1>
       {/* Card Carousel */}
       {loading ? (
@@ -229,14 +229,8 @@ function AdminCareer() {
         </div>
       </div>
       {/* Table for desktop*/}
-      <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full bg-white'>
-        {loading ? (
-          <div className='flex flex-row items-center justify-center h-full'>
-            <CircularLoading/>
-          </div>
-        ) : (
-          <JobTable data={jobs} jobType={jobType} />
-        )}
+      <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block w-full bg-white'>
+        <JobTable data={jobs} jobType={jobType} loading={loading} />
       </div>
     </div>
   );
