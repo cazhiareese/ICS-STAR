@@ -4,6 +4,7 @@ import axios from "axios";
 import Unauthorized from "../Unauthorized";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 import ModalTemplate from "../modaltemplate";
+import { ChevronLeft } from "lucide-react";
 
 
 
@@ -200,7 +201,7 @@ export default function Step4Onboarding() {
         onKeyDown={handleKeyDown}
       />
 
-      <h3 className="text-xl font-satoshi-bold mb-6 mt-4 mr-auto ">Suggestions</h3>
+      <h3 className="text-xl font-satoshi-bold mb-3 mt-6 mr-auto ">Suggestions</h3>
       <div className="flex flex-wrap gap-3 w-[100%] mr-auto pb-3">
         {userData.suggestions.map((skill) => (
           <button
@@ -239,39 +240,35 @@ export default function Step4Onboarding() {
 
       {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
 
-      <div className="flex flex-row items-center justify-center md:my-10 my-5 md:space-x-20 w-full">
-        
-        <div
-          className="w-70 h-20 text-primary flex items-center justify-center rounded-3xl md:text-2xl text-xl "
-          onClick={() => {
-            if (userType === "student"){
-              setCurrentSection(2)
-            } else {
-              setCurrentSection(3)
-            }
-          }}
-        > 
-          <label className="font-satoshi-italic"> &lt; Previous </label>
-        </div>
-
-        <div className="w-[70%]"></div>
-
-        { loading ? (
-          <CircularLoading />
-        ) : (
-          <div
-          className="w-70 md:h-17 h-10 bg-primary text-white flex items-center justify-center rounded-3xl md:text-2xl text-xl  cursor-pointer"
-          onClick={()=>setShowSuccessModal(true)}
-          >
-            
-            <label className="font-satoshi-bold cursor-pointer">Proceed</label>
-          </div>
-        )
-
-        }
-
-        
-      </div>
+      <div className="flex flex-row items-center justify-between mt-10 w-full md:sticky bottom-0 mb-10">
+                        <button
+                            type="button"
+                            className="flex flex-row items-center justify-center hover:text-hover cursor-pointer group"
+                            onClick={() => {
+                              if (userType === "student"){
+                                setCurrentSection(2)
+                              } else {
+                                setCurrentSection(3)
+                              }
+                            }}
+                        >
+                            <ChevronLeft className="text-primary group-hover:text-hover"/>
+                            <span className="font-satoshi-bold text-primary flex items-center w-20 p-2 text-md group-hover:text-hover">
+                                Previous
+                            </span>
+                        </ button>
+                        { loading ? (
+                          <CircularLoading />
+                        ) : (
+                        <button
+                            type="button"
+                            className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-20 md:w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
+                            onClick={()=>setShowSuccessModal(true)}
+                        >
+                            Proceed
+                        </button>
+                        )}
+                    </div>
 
       {showSuccessModal && (
           <ModalTemplate
@@ -282,7 +279,7 @@ export default function Step4Onboarding() {
               }}
               choiceclose="Close"
               choicecontinue="Proceed"
-              header="Final"
+              header="Confirm Entries?"
               information="Please proceed if your entries are final. You may still change them in the profile section afterwards."
           />
       )}

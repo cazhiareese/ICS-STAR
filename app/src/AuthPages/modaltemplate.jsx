@@ -14,7 +14,7 @@ const ModalTemplate = ({ onClose, onContinue, choiceclose, choicecontinue, heade
                 <div className="flex justify-center space-x-10">
                     {choiceclose &&
                         <button
-                        className="px-4 py-2 bg-whitey text-primary border border-primary rounded-full  cursor-pointer"
+                        className="px-6 py-2 bg-neutral-100 border border-neutral-300 text-gray-700 rounded-2xl hover:bg-gray-300 cursor-pointer font-satoshi-bold"
                         onClick={onClose}
                     >
                         {choiceclose}
@@ -22,7 +22,7 @@ const ModalTemplate = ({ onClose, onContinue, choiceclose, choicecontinue, heade
                     }
                     {choicecontinue &&
                         <button
-                            className={`px-4 py-2 ${color} text-white rounded-full cursor-pointer`}
+                            className="px-6 py-2 bg-success text-white rounded-2xl hover:bg-green-600 font-satoshi-bold cursor-pointer"
                             onClick={onContinue}
                         >
                             {choicecontinue}

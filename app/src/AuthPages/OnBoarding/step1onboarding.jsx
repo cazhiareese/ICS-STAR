@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "../../index.css";
-import {User}  from 'lucide-react'
-import Camera from "../../assets/onBoardingAssets/camera.png";
+import { User, Camera } from 'lucide-react'
+// import Camera from "../../assets/onBoardingAssets/camera.png";
 import { useOnboardingContext } from "../AuthContext/onboardingcontext";
 import Unathorized from "../Unauthorized";
 import ModalTemplate from "../modaltemplate";
@@ -211,71 +211,66 @@ function Step1Onboarding() {
 
     return (
     <>
-
-      <div className="flex flex-col space-y-3 items-center pt-15 sm:mx-30 mx-10">
-        <label className="font-satoshi-bold md:text-5xl sm:text-3xl text-3xl text-left w-full">1. Update your profile</label>
-        <label className="font-satoshi-light md:text-2xl sm:text-xl text-lg text-left w-full">Add a profile picture</label>
-        <div className="flex flex-row md:h-50 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-120 w-90 h-40">
-            <div className="relative flex items-center justify-center rounded-full md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0 bg-whitey">
-              <div className="w-full h-full flex justify-center items-center ">
-                <label htmlFor="fileInput" className= "absolute bottom-0 left-0 md:pl-40 pl-30 w-55 cursor-pointer">
-                  <img src={Camera} />
-                </label>
-                {userData.profilePicture==null ? 
-                (<User className="md:w-40 w-20 md:h-40 h-20 text-gray-300 rounded-full"/>):
-                <img src={userData.profilePicture} alt="Profile" className="md:w-55 w-40 md:h-55 h-40 rounded-full"onLoad={() => setImageLoaded(true)} />
+      <div className="flex flex-col space-y-3 items-center pt-15 sm:mx-30 mx-10 bg-white">
+        <label className="font-satoshi-bold md:text-4xl text-2xl text-center md:text-left w-full">Update your profile</label>
+        <label className="font-satoshi-light md:text-2xl text-xl text-center md:text-left w-full">Add a profile picture</label>
+        <div className="relative flex flex-row items-center justify-center md:h-45 mt-20 border border-gray-300 rounded-4xl md:w-155 sm:w-120 w-90 h-30 bg-neutral-100">
+          <div className="absolute -left-1 md:-left-8 flex items-center justify-center rounded-full md:w-55 w-40 md:h-55 h-40 border-2 border-primary md:-mt-3 mt-0 bg-white drop-shadow-lg">
+            <div className="relative inline-block">
+              <div className="w-40 h-40 md:w-55 md:h-55 border-2 border-primary rounded-full overflow-hidden">
+                {userData.profilePicture == null ? 
+                  (<User className="w-full h-full text-gray-300 rounded-full"/>) : 
+                  (<img 
+                    src={userData.profilePicture} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover rounded-full" 
+                    onLoad={() => setImageLoaded(true)}
+                  />)
                 }
-              
-                <input 
-                    type="file" 
-                    accept="image/*" 
-                    className="hidden"
-                    id="fileInput"
-                    onChange={handleFileChange}
-                />
-
-                
               </div>
-              
-
+              <button
+                type="button"
+                className="absolute -bottom-0 -right-0 w-10 h-10 md:w-16 md:h-16 flex items-center justify-center bg-primary rounded-full cursor-pointer"
+                onClick={() => document.getElementById('fileInput').click()}
+              >
+                <Camera className="text-white w-5 h-5 md:w-8 md:h-8"/>
+              </button>
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden"
+                id="fileInput"
+                onChange={handleFileChange}
+              />
             </div>
-           
-            <div className="flex flex-col items-center justify-center flex-1">
-              <label className="font-satoshi-bold md:text-3xl sm:text-2xl text-xl text-center ">{name}</label>
-              <label className="font-satoshi-light text-lg">{email}</label>
-            </div>
-        </div>
-        <div className="flex flex-row items-center justify-center my-20 md:space-x-20 w-full sm:text-2xl text-xl">
-          
-          
-          
-          <div className="md:w-70 h-20 text-primary flex items-center justify-center rounded-3xl "
-            onClick={()=>setCurrentSection(2)}
-          >
-                  <label className="font-satoshi-italic w-40">Skip for now</label>
-          </div> 
-
-          <div className="md:w-[70%]">
-
-          </div> 
-          <div className="w-70 sm:h-17 h-14 bg-primary text-white flex items-center justify-center rounded-3xl cursor-pointer"
-              onClick={()=>{if (file !=null){
-                submitStep1()
-              } else {
-                setCurrentSection(2)
-              }}}
-          > 
-          
-            {!isSubmitting ? <label className="font-satoshi-bold cursor-pointer">Proceed</label> :
-            
-            <CircularLoading />
-            
-            }
-                  
-          
-          
           </div>
-          
+          <div className="w-30 sm:w-40 md:w-45 h-full"></div>
+          <div className="flex flex-col items-center justify-center flex-1">
+            <label className="font-satoshi-bold md:text-3xl sm:text-2xl text-xl text-center ">{name}</label>
+            <label className="font-satoshi-light text-lg">{email}</label>
+          </div>
+        </div>
+        <div className="flex flex-col md:flex-row md:justify-between items-center justify-center my-20 w-full">
+          <button
+            type="button"
+            className="font-satoshi-bold text-white text-sm bg-primary flex items-center justify-center w-40 pl-15 pr-15 pt-3 pb-3 rounded-2xl md:order-2 hover:bg-hover cursor-pointer"
+            onClick={() => { 
+              if (file != null) {
+                submitStep1(); // Submit the profile picture
+              } else {
+                setCurrentSection(2); // Skip to next section if no image selected
+              }
+            }}
+          >
+            {!isSubmitting ? <span>Proceed</span> : (<CircularLoading />)}
+          </button>
+          <button
+            type="button"
+            className="font-satoshi-italic text-primary flex items-center justify-center w-40 p-5 text-sm underline md:order-1 flex-nowrap hover:text-hover cursor-pointer"
+            onClick={() => setCurrentSection(2)}
+             >
+              Skip for now
+          </ button>
         </div>
           
         
@@ -302,7 +297,7 @@ function Step1Onboarding() {
 
               
                 {/* Picture container */}
-                <div className="relative flex flex-col items-center justify-center w-[50%] h-[100%] md:h-[80%] md:max-h-100 max-h-50  rounded-4xl overflow-hidden  bg-black picture-holder"
+                <div className="relative flex flex-col items-center justify-center w-[50%] h-[100%] md:h-[80%] md:max-h-100 max-h-50  rounded-4xl overflow-hidden bg-black picture-holder"
                   ref={containerRef}
                 >
 

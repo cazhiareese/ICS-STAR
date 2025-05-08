@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError, ExpiredSignatureError
 from google.oauth2 import id_token
-from google.auth.transport import requests
+import requests
 import uuid
 from fastapi import Depends, HTTPException, status, UploadFile, File, APIRouter, status, Request
 from fastapi.security import OAuth2PasswordBearer
@@ -246,8 +246,10 @@ async def register_user(
         verification_url = f"{STORAGE_STRING}{verification_name}"
     else:
         verification_url = None
-        
-    hashed_password = hash_password(password)
+    if password:
+        hashed_password = hash_password(password)
+    else:
+        hashed_password = None
     graduation_year = int(graduation_year) if graduation_year else None
     
     new_user = User(
@@ -418,115 +420,128 @@ async def require_admin(user: CurrentUser = Depends(get_current_active_user)):
         raise HTTPException(status_code=403, detail="Forbidden: Admin only")
     return user
 
-async def verify_google_token(token: str):
+def verify_google_access_token(access_token: str):
     try:
-        # Verify the token
-        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        # Validate access token and fetch user info
+        userinfo_url = "https://www.googleapis.com/oauth2/v3/userinfo"
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.get(userinfo_url, headers=headers)
         
-        # Check if the token is issued by Google
-        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise HTTPException(status_code=400, detail="Invalid issuer")
+        if response.status_code != 200:
+            raise HTTPException(status_code=400, detail="Invalid access token")
         
-        # Get user info from the token
-        email = idinfo['email']
-        if not idinfo.get('email_verified', False):
+        user_info = response.json()
+        print("User Info:", user_info)  # Debug log
+
+        # Verify the audience (client_id)
+        if user_info.get("aud") and user_info["aud"] != GOOGLE_CLIENT_ID:
+            raise HTTPException(status_code=400, detail="Invalid audience (client_id mismatch)")
+
+        # Extract required fields
+        email = user_info.get("email")
+        if not email:
+            raise HTTPException(status_code=400, detail="Email not provided")
+        if not user_info.get("email_verified", False):
             raise HTTPException(status_code=400, detail="Email not verified by Google")
-        
-        first_name = idinfo.get('given_name', '')
-        last_name = idinfo.get('family_name', '')
-        
+
+        first_name = user_info.get("given_name", "")
+        last_name = user_info.get("family_name", "")
+
         return {
             "email": email,
             "first_name": first_name,
             "last_name": last_name
         }
-    except ValueError:
-        # Invalid token
-        raise HTTPException(status_code=400, detail="Invalid token")
-    except JWTError:
-        # Token verification failed
-        raise HTTPException(status_code=400, detail="Token verification failed")
+    except requests.RequestException as re:
+        print(f"Request Error: {str(re)}")
+        raise HTTPException(status_code=400, detail=f"Failed to validate access token: {str(re)}")
+    except ValueError as ve:
+        print(f"ValueError: {str(ve)}")
+        raise HTTPException(status_code=400, detail=f"Invalid token: {str(ve)}")
     except Exception as e:
-        # Handle other exceptions
+        print(f"Unexpected Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-    
+
 async def register_with_google(
     token: str,
-    student_number: str,
-    user_type: UserTypeEnum,
-    graduation_year: str = None,
-    graduation_semester: UserGradSemEnum = None,
-    verification_file: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
     # Verify Google token and get user info
-    google_user = await verify_google_token(token)
+    google_user = verify_google_access_token(token)
     
     # Check if email already exists
     try:
         await get_email(google_user["email"], db)
+
+        return{
+            "message": "Sign up with Google",
+
+            "data": {"first_name": google_user['first_name'],
+            "last_name": google_user['last_name'],
+            "email": google_user['email']}
+        }
     except HTTPException:
         # If email exists, we can either return an error or try to log in
         user = get_user(db, google_user["email"])
         if user:
             access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
             access_token = create_access_token(
-                data={"sub": str(user.user_id), "role": user.user_type.value, "is_onboarded": user.is_onboarded}, 
+                data={"sub": str(user.user_id), "role": user.user_type.value, "is_onboarded": user.is_onboarded, "is_verified": user.is_verified, "is_banned": user.is_banned}, 
                 expires_delta=access_token_expires
             )
             return {"message": "Logged in with Google", "access_token": access_token}
         else:
             raise HTTPException(status_code=400, detail="Email already registered but account not found")
     
-    # Check if student number exists
-    await get_studno(student_number, db)
+    # # Check if student number exists
+    # await get_studno(student_number, db)
     
-    # Handle verification file if provided
-    verification_url = None
-    if verification_file:
-        file_content = await verification_file.read()
-        if len(file_content) > MAX_FILE_SIZE or verification_file.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
-            raise HTTPException(status_code=400, detail="Invalid verification file")
+    # # Handle verification file if provided
+    # verification_url = None
+    # if verification_file:
+    #     file_content = await verification_file.read()
+    #     if len(file_content) > MAX_FILE_SIZE or verification_file.filename.split(".")[-1].lower() not in ALLOWED_EXTENSIONS:
+    #         raise HTTPException(status_code=400, detail="Invalid verification file")
 
-        verification_ext = verification_file.filename.split(".")[-1]
-        verification_name = f"verification_files/{uuid.uuid4()}.{verification_ext}"
-        try:
-            supabase_client.storage.from_(SUPABASE_BUCKET).upload(verification_name, file_content)
-        except Exception as e:
-            print("Upload Error:", e)
-        verification_url = f"{STORAGE_STRING}{verification_name}"
+    #     verification_ext = verification_file.filename.split(".")[-1]
+    #     verification_name = f"verification_files/{uuid.uuid4()}.{verification_ext}"
+    #     try:
+    #         supabase_client.storage.from_(SUPABASE_BUCKET).upload(verification_name, file_content)
+    #     except Exception as e:
+    #         print("Upload Error:", e)
+    #     verification_url = f"{STORAGE_STRING}{verification_name}"
     
-    # Google users don't need to remember their passwords since it's SSO
-    random_password = uuid.uuid4().hex
-    hashed_password = hash_password(random_password)
+    # # Google users don't need to remember their passwords since it's SSO
+    # random_password = uuid.uuid4().hex
+    # hashed_password = hash_password(random_password)
     
-    graduation_year = int(graduation_year) if graduation_year else None
+    # graduation_year = int(graduation_year) if graduation_year else None
     
-    new_user = User(
-        user_id=uuid.uuid4(),
-        first_name=google_user["first_name"],
-        last_name=google_user["last_name"],
-        email=google_user["email"],
-        password=hashed_password,
-        student_number=student_number,
-        graduation_year=graduation_year,
-        graduation_semester=graduation_semester,
-        verification_file=verification_url,
-        user_type=user_type,
-    )
+    # new_user = User(
+    #     user_id=uuid.uuid4(),
+    #     first_name=google_user["first_name"],
+    #     last_name=google_user["last_name"],
+    #     email=google_user["email"],
+    #     password=hashed_password,
+    #     student_number=student_number,
+    #     graduation_year=graduation_year,
+    #     graduation_semester=graduation_semester,
+    #     verification_file=verification_url,
+    #     user_type=user_type,
+    # )
     
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    # db.add(new_user)
+    # db.commit()
+    # db.refresh(new_user)
     
-    # Create and return access token
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified, "is_banned": new_user.is_banned}, 
-        expires_delta=access_token_expires
-    )
+    # # Create and return access token
+    # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # access_token = create_access_token(
+    #     data={"sub": str(new_user.user_id), "role": new_user.user_type.value, "is_onboarded": new_user.is_onboarded, "is_verified": new_user.is_verified, "is_banned": new_user.is_banned}, 
+    #     expires_delta=access_token_expires
+    # )
 
-    return {"message": "Account created successfully with Google", "access_token": access_token}
+    # return {"message": "Account created successfully with Google", "access_token": access_token}
 
 def get_personal_info(
         user_id: uuid.UUID,

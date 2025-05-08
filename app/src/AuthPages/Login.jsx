@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "../index.css";
+import { useAppContext } from "./AuthContext/signupcontext.jsx"
 import { PersonStanding } from "lucide-react";
 import loginBg from "../assets/login_gradientbg.jpeg";
 import Constellations from "../assets/constellationLogin.png";
@@ -15,10 +16,13 @@ import google from "../assets/google.png"
 import GuestModal from "./guestModal"
 import ModalTemplate from "./modaltemplate"
 import { useLocation } from 'react-router-dom';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import axios from "axios";
 
 function LoginPage() {
-
+      const {  updateUserData, setCurrentSection } = useAppContext();
     const baseURL = import.meta.env.VITE_BACKEND_URL;
+    const clientId = import.meta.env.VITE_CLIENT_ID;
     const location = useLocation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -65,6 +69,35 @@ function LoginPage() {
           localStorage.setItem('lastVisitedPath', currentPath);
         }
       }, [location]);
+
+
+    const loginWithGoogle = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+        console.log('Login Success:', tokenResponse);
+            const formData = new FormData();
+            formData.append('token', tokenResponse.access_token);
+
+            const response = await axios.post(`${baseURL}/auth/google/register`, formData);
+            
+            if (response.data.message == "Logged in with Google"){
+                localStorage.setItem("token", response.data.access_token);
+                fetchUserData()
+            }else{
+                console.log(response.data.data)
+                updateUserData("firstName", response.data.data.first_name)
+                updateUserData("lastName", response.data.data.last_name)
+                updateUserData("email", response.data.data.email)
+                updateUserData("password", null)
+                setCurrentSection("0");
+                navigate("/signup");
+            }
+
+        },
+        onError: (error) => {
+        console.error('Login Failed:', error);
+        },
+        scope: 'openid email profile',
+    });
       
 
     const login = async (e) => {
@@ -169,10 +202,6 @@ function LoginPage() {
         
     }, [codeError]);
 
-    const loginWithGoogle = async() => {
-        
-    }
-
 
     const [position, setPosition] = useState(0);
   const maxPosition = 700; 
@@ -195,6 +224,7 @@ function LoginPage() {
 
 
   return (
+
     <div className="flex items-center w-screen min-h-screen overflow-y-auto">
         {/* Background
 
@@ -420,19 +450,24 @@ function LoginPage() {
                             >
                             Login
                             </button>
+
+                           
                             <button
+
                                 className="relative bg-white border-1 py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular transition mt-3 cursor-pointer hover:shadow-md hover:scale-[1.001]"
                                 onClick={()=>loginWithGoogle()}
                                 >
-                                <label className="cursor-pointer">Sign In with Google</label>
+                                <label className="cursor-pointer">Continue with Google</label>
                                 
                                     <img 
                                         src={google} 
                                         alt="Google Logo" 
                                         className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6"
                                     />
-                                
+
                             </button>
+
+
                             </>
                         )}
 
@@ -502,7 +537,7 @@ function LoginPage() {
         {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error!"/>}
         
     </div>
-    
+
   );
 }
 

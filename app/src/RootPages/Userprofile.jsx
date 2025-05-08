@@ -33,7 +33,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function UserProfile() {
   const id = useParams();
-  console.log("naku",id);
+  console.log(id);
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState("About");
   const [skills, setSkills] = useState([]);
@@ -42,7 +42,8 @@ function UserProfile() {
   const [error, setError] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [share, setShare] = useState(null)                                     //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
+  const [share, setShare] = useState(null)   
+  const [user_id,setUserId] = useState(null);                                  //palitan nyo ito, lagay sa props kung sino ang user na gusto nyong ipakita
 
   //fetch user details from backend
   useEffect(() => {
@@ -65,6 +66,7 @@ setShare(false);
 
 
 const user_id = loggedInUserId;
+setUserId(user_id);
 console.log("Final user ID:", user_id);
 
 
@@ -395,7 +397,7 @@ const fetchUserProfileData = async () => {
         <WorkSection userDetails={userDetails} handleChange={handleChange} isVerified={userDetails?.is_verified} />
       )}
       {activeTab === "Donation History" && (
-        <DonationHistoryUser userDetails={userDetails} />
+        <DonationHistoryUser userDetails={userDetails} user_id={user_id} />
       )}
       {activeTab === "Job Posted" && (
         <JobPosted />
