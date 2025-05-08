@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight, Mail, MapPin, Calendar, Link } from 'lucide-react'
+import { MoveLeft, Pencil, Trash2, MousePointerClick, SquareArrowOutUpRight, Mail, MapPin, Calendar, Link, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 
@@ -21,8 +21,8 @@ function AdminEventDetails() {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [transitionComplete, setTransitionComplete] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
- const [submitLoading, setSubmitLoading] = useState(false);
- const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   async function fetchEventDetails (token) {
       const response = await axios.get(`${API_BASE_URL}/api/admin/events/event-by-id/${eventid}`, {headers: {Authorization: `Bearer ${token}`}})
       console.log(response.data.data)
@@ -67,9 +67,16 @@ function AdminEventDetails() {
   }, [eventid])
 
   const handleEmailSend = async () =>{
-    const response = axios.post(`${API_BASE_URL}/api/admin/events/send-email/${eventid}`, {},  {headers: {Authorization: `Bearer ${token}`}})
-    console.log(response)
-    navigate(-1)
+    setSubmitLoading(true)
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/admin/events/send-email/${eventid}`, {},  {headers: {Authorization: `Bearer ${token}`}})
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setSubmitLoading(false)
+      setSubmitSuccess(true)
+    }
   }
 
   return (
@@ -87,11 +94,11 @@ function AdminEventDetails() {
       <div className='flex flex-row justify-between mb-3 items-center'>
         {/* Event title and accepting rsvp */}
         <div className='flex flex-row gap-2 flex-1'>
-          <h1 className='font-satoshi-bold text-4xl text-ellipsis overflow-hidden'>{eventDetails.title}</h1>
+          <h1 className='font-satoshi-bold text-4xl text-ellipsis overflow-x-clip'>{eventDetails.title}</h1>
           {/* Accepting RSVP or closed */}
-          {eventDetails.is_closed ? (
-            <div className='flex flex-row items-center justify-center gap-2 bg-red-400 text-red-700 rounded-3xl min-h-fit self-end px-2 py-1'>
-              <div className='bg-red-400 h-2 w-2 rounded-full'></div>
+          {eventDetails.is_concluded ? (
+            <div className='flex flex-row items-center justify-center gap-2 bg-red-200 text-red-700 rounded-3xl min-h-fit self-end px-2 py-1'>
+              {/* <div className='bg-red-400 h-2 w-2 rounded-full'></div> */}
               <p className='font-satoshi-medium'>Closed</p>
             </div>
           ) : (
@@ -102,7 +109,7 @@ function AdminEventDetails() {
           )}
         </div>
         {/* Edit Event and Delete Event */}
-        {!eventDetails.is_closed &&
+        {!eventDetails.is_concluded &&
           <div className='flex flex-row gap-2 justify-end'>
             {/* Edit event */}
             <button className='bg-primary rounded-3xl px-6 py-2 flex flex-row items-center gap-2 justify-center text-white shadow-lg cursor-pointer' onClick={() => {navigate(`/admin/events/edit-event/${eventid}`)}}>
@@ -137,10 +144,10 @@ function AdminEventDetails() {
         </div>
       </div>
        {/* Send email button and list/details toggle */}
-       <div className="flex flex-row items-center mt-3 font-satoshi-regular w-full">
+       <div className="flex flex-row items-center justify-center mt-3 font-satoshi-regular w-full">
         {/* Send email invites button */}
-        {!eventDetails.is_closed && (
-          <button className="bg-primary h-fix w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer"
+        {!eventDetails.is_concluded && (
+          <button className="bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer hover:bg-hover"
             onClick={()=> setShowEmailModal(true)}
           >
             <Mail />
@@ -148,7 +155,7 @@ function AdminEventDetails() {
           </button>
         )}
         {/* RSVP List and Event Details buttons */}
-        <div className="flex flex-row h-fit w-fit ml-auto mr-4">
+        <div className="flex flex-row h-fit w-fit ml-auto mr-4 mt-auto">
           <button
             className={`${
               viewStyle === "rsvpList" ? "bg-primary text-white border-primary" : ""
@@ -210,9 +217,23 @@ function AdminEventDetails() {
                   </div>
                 </div> 
                 {/* Date and time */}
-                <div>
-                  <Calendar/>
-                  {/* <p>{eventDetails.date}</p>  */} 
+                <div className='flex flex-row gap-2'>
+                  <Calendar />
+                  {eventDetails.datetime.map((datetime, index) => (
+                    <p key={index} className='font-satoshi-regular'>
+                      {new Date(datetime).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}{' '}
+                      {new Date(datetime).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                      {index < eventDetails.datetime.length - 1 && ','}
+                    </p>
+                  ))}
                 </div>
                 {/* Divider */}
                 <div className='border-t border-gray-300 w-full my-4'></div>
@@ -307,7 +328,7 @@ function AdminEventDetails() {
                     <CheckCircle size={48} />
                   </div>
                   <p className="text-xl font-satoshi-medium mt-4 text-center">
-                    {purpose === 'create' ? 'Created event!' : 'Saved changes!'}
+                    Successfully sent email invites!
                   </p>
                   <button
                     className="bg-primary text-white px-4 py-2 rounded-3xl w-full mt-6 cursor-pointer"
@@ -327,7 +348,7 @@ function AdminEventDetails() {
                   <div className="flex gap-3 mt-14 w-full h-full justify-center">
                     <button
                       className="border border-primary text-primary font-satoshi-medium px-4 py-2 rounded-3xl w-25 cursor-pointer"
-                      onClick={() => setShowSubmitModal(false)}
+                      onClick={() => setShowEmailModal(false)}
                     >
                       Cancel
                     </button>

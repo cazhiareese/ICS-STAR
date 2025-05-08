@@ -112,7 +112,7 @@ function AdminRecords() {
   return ( 
       <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
         {/* Records, search, view pending */}
-        <div className='justify-between mt-9 lg:mb-8 flex relative'>
+        <div className='justify-between lg:mb-8 flex relative'>
           {/* Records header */}
           <h1 className='text-primary font-satoshi-bold text-5xl hidden lg:block'> Records </h1>
           {/* Search and view pending */}
