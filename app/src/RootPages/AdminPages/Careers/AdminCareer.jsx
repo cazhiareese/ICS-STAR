@@ -229,7 +229,7 @@ function AdminCareer() {
         </div>
       </div>
       {/* Table for desktop*/}
-      <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block w-full bg-white'>
+      <div className='border border-gray-300 rounded-xl p-6 hidden h-fit lg:block w-full bg-white'>
         <JobTable data={jobs} jobType={jobType} loading={loading} />
       </div>
     </div>
