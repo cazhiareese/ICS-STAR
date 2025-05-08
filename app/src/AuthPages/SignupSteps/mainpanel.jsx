@@ -36,7 +36,7 @@ function SignupMain() {
 
     const SetAlumni =()=>{
         setUserType("alumni")
-        if (userData.password === null){
+        if (userData.email && userData.email.length >0){
             setCurrentSection("2")
         }else{
             setCurrentSection("1")
@@ -50,7 +50,7 @@ function SignupMain() {
         setUserType("student")
 
 
-        if (userData.password === null){
+        if (userData.email && userData.email.length >0){
             setCurrentSection("2")
         }else{
             setCurrentSection("1")
