@@ -708,7 +708,7 @@ async def send_verification_email(user: Dict) -> bool:
     api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
     subject = "[ICS-STAR]Your Account has been Verified"
     sender = email_sender
-    html_content = verified(name=user["name"])
+    html_content = verified.verify(name=user["name"])
     to = [{"email": user["email"], "name": user["name"]}]
     send_smtp_email = brevo_python.SendSmtpEmail(
         to=to,

@@ -154,7 +154,7 @@ async def confirm_user(db: Session = Depends(get_db), user_id: UUID = None):
         "email": user.email
     }
 
-    send_verification_email(user=details)
+    await send_verification_email(user=details)
         
     db.commit()
     return {"message": "User registration confirmed"}
