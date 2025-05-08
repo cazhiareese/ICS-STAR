@@ -217,9 +217,23 @@ function AdminEventDetails() {
                   </div>
                 </div> 
                 {/* Date and time */}
-                <div>
-                  <Calendar/>
-                  {/* <p>{eventDetails.date}</p>  */} 
+                <div className='flex flex-row gap-2'>
+                  <Calendar />
+                  {eventDetails.datetime.map((datetime, index) => (
+                    <p key={index} className='font-satoshi-regular'>
+                      {new Date(datetime).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}{' '}
+                      {new Date(datetime).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                      {index < eventDetails.datetime.length - 1 && ','}
+                    </p>
+                  ))}
                 </div>
                 {/* Divider */}
                 <div className='border-t border-gray-300 w-full my-4'></div>
