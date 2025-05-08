@@ -261,7 +261,7 @@ function AlumnInfo(){
                 </div>
 
                 <div class="font-satoshi-medium col-span-2">
-                    Upload your Diploma 
+                    Upload your Diploma (Max 5MB)
                 </div>
                 
                     {!userData.image ? (

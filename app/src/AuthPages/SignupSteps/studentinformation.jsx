@@ -141,7 +141,7 @@ function StudentInformation(){
                 
 
                 <div class="font-satoshi-medium col-span-2">
-                    Upload your Form 5 
+                    Upload your Form 5 (Max 5MB)
                 </div>
                 
                     {!userData.image ? (
