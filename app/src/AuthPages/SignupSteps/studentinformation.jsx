@@ -212,14 +212,14 @@ function StudentInformation(){
 
                 </div>
 
-                <div class=" text-black flex flex-col items-start">
-                        <button
+               <div class=" text-black flex flex-col items-start">
+               {!userData.isGoogle && (<button
                             className="bg-white text-primary py-3 border border-primary rounded-3xl text-base w-4/6 font-bold cursor-pointer"
                             onClick = {()=>{setCurrentSection("1")}}
                         >
                             Back
 
-                        </button>
+                        </button>)}
                     </div>
                 <div class=" text-black flex flex-col items-end">
                         <button
