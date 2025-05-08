@@ -7,6 +7,7 @@ import UsersTable from '../../../components/AdminComponents/userstable';
 import axios from 'axios'
 import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
+import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 
 function AdminBatchInformation() {
     const navigate = useNavigate()
@@ -278,6 +279,9 @@ function AdminBatchInformation() {
       setSelectedYear(batch)
     }, [])
 
+    const [userPage, setUserPage] = useState(1)
+    const [totalUserPages, setTotalUserPages] = useState(1)
+
     useEffect (() => {
 
       const fetchUsers = async () => {
@@ -286,14 +290,15 @@ function AdminBatchInformation() {
           const batchParams = new URLSearchParams();
           batchParams.append('order_by', orderBy);
           const queryString = batchParams.toString();
-          const getBatchUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_batch_filter?batch=${selectedYear}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
+          const getBatchUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_batch_filter?batch=${selectedYear}&page=${userPage}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
+          console.log(getBatchUsers)
           setBatchUsers(getBatchUsers.data.data)
         }catch (error) {
           setBatchUsers([])
         }
       } 
       fetchUsers();
-    }, [sortBy, sortDirection])
+    }, [sortBy, sortDirection, userPage, batch])
     
 
 
@@ -562,31 +567,12 @@ function AdminBatchInformation() {
             {/* Order by */}
             <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
            
-            {/* View changer */}
-            <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
-              {/* List View Button */}
-              <button className="px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
-                <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-              <div className="h-6 w-px bg-disabled"></div>
-              {/* Grid View Button */}
-              <button className="px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
-                <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-            </div>
             {/* Page */}
-            <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
-              <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-                <p> Page </p>
-                <input
-                  type="text"
-                  value={page}
-                  onChange={() => {}}
-                  className="w-9 text-center border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-                />
-              <p>of {totalPages}</p>
-              <MoveRight className='cursor-pointer' onClick={() => {}}/>
-            </div>
+            <PaginationComponent
+              page={userPage}
+              setPage={setUserPage}
+              totalPages={totalUserPages}
+            />
           </div>
           <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
             <UsersTable data={batchUsers} userType='alum'/>
