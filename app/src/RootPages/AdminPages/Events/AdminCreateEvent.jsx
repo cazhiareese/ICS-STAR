@@ -249,11 +249,11 @@ function AdminCreateEvent({ purpose }) {
       console.log('API response:', res.data); // Debugging
       if (res.data.message === 'success') {
         setSubmitSuccess(true);
-        alert(purpose === 'create' ? 'Event created successfully!' : 'Event successfully edited');
+        // alert(purpose === 'create' ? 'Event created successfully!' : 'Event successfully edited');
       }
     } catch (err) {
       console.error('Error submitting event:', err);
-      alert('Something went wrong.');
+      // alert('Something went wrong.');
     } finally {
       setSubmitLoading(false);
     }
