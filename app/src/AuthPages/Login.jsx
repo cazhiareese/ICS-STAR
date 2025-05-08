@@ -20,7 +20,7 @@ import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 
 function LoginPage() {
-      const {  updateUserData, setCurrentSection } = useAppContext();
+    const {  updateUserData, setCurrentSection } = useAppContext();
     const baseURL = import.meta.env.VITE_BACKEND_URL;
     const clientId = import.meta.env.VITE_CLIENT_ID;
     const location = useLocation();
@@ -88,6 +88,7 @@ function LoginPage() {
                 updateUserData("lastName", response.data.data.last_name)
                 updateUserData("email", response.data.data.email)
                 updateUserData("password", null)
+                updateUserData("isGoogle", true)
                 setCurrentSection("0");
                 navigate("/signup");
             }
