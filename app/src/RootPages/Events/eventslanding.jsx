@@ -443,12 +443,13 @@ useEffect(() => {
                             );
                         })
                         ) : (
-                        <div className="flex flex-wrap gap-5">
+                            <>
                             <EventCardsSkeleton />
                             <EventCardsSkeleton />
                             <EventCardsSkeleton />
-                            
-                        </div>
+                            <EventCardsSkeleton />
+                            </>
+                        
                         )}
                     </div>
                 </div>

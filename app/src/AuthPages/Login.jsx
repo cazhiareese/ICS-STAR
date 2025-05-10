@@ -339,11 +339,8 @@ function LoginPage() {
                             min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl sm:min-w-lg 
                             md:min-w-lg lg:bg-[#f9f9fb] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] 
                             lg:rounded-4xl 
-
                             [@media(max-width:800px)]:scale-[1]
                             [@media(max-height:599px)]:scale-[0.8]
-                            
-                            
                             "
                     >
                         <h1 className="hidden lg:block text-6xl pt-4 font-satoshi-regular mb-0 text-[#102E46] cursor-default">Login</h1> 

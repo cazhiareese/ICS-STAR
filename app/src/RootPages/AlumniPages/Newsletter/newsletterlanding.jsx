@@ -263,7 +263,7 @@ const NewsletterLanding = () => {
 
     return (
         <>
-            <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white mb-4">
+            <div className="flex flex-col w-full shadow-md  items-center rounded-b-[35px] bg-white mb-2 h-[100px]">
                 <div className="relative flex flex-col w-full max-w-[350px] sm:max-w-[600px] mt-6">
                     <input
                         type="text"
