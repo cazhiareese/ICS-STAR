@@ -50,7 +50,7 @@ export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick
                     <span
                         key={index}
                         onClick={() => onTagClick(tag)}
-                        className={`sm:px-4 px-2 sm:py-1 py-0.5 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap font-satoshi-light sm:text-md text-sm ${
+                        className={`sm:px-4 px-2 sm:py-1 py-0.5 border rounded-2xl cursor-pointer transition font-satoshi-regular whitespace-nowrap font-satoshi-light sm:text-md text-sm ${
                             selectedTags.includes(tag.name)
                                 ? "bg-primary text-white"
                                 : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
@@ -92,11 +92,31 @@ const NewsletterLanding = () => {
     const URL = import.meta.env.VITE_BACKEND_URL;
 
     const toggleTagSelection = (tagName) => {
-        setSelectedTags((prevSelectedTags) =>
-            prevSelectedTags.includes(tagName)
+        setSelectedTags((prevSelectedTags) => {
+            const isSelected = prevSelectedTags.includes(tagName);
+    
+            // Update selectedTags
+            const updatedSelectedTags = isSelected
                 ? prevSelectedTags.filter((tag) => tag !== tagName)
-                : [...prevSelectedTags, tagName]
-        );
+                : [tagName, ...prevSelectedTags];
+    
+            return updatedSelectedTags;
+        });
+    
+        setTags((prevTags) => {
+            const tagIndex = prevTags.findIndex((tag) => tag.name === tagName);
+            if (tagIndex === -1) return prevTags; // Tag not found
+    
+            const tag = prevTags[tagIndex];
+            const filteredTags = prevTags.filter((t) => t.name !== tagName);
+    
+            // Reinsert selected tag at front if selected, else keep order
+            if (!selectedTags.includes(tagName)) {
+                return [tag, ...filteredTags];
+            } else {
+                return [...filteredTags, tag]; // Push to end if deselected
+            }
+        });
     };
 
     const mockCards = [
@@ -264,12 +284,22 @@ const NewsletterLanding = () => {
                 {card.length > 0 && tags != null ? (
                     <>
                         <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+                            <button
+                                onClick={() => setSelectedTags([])}
+                                className="px-4 py-1 mr-5 rounded-xl cursor-pointer 
+                                transition text-sm sm:text-md md:text-lg
+                                font-satoshi-regular whitespace-nowrap
+                                 bg-white  text-primary hover:bg-primary 
+                                 hover:text-white"
+                            >
+                                Clear all
+                            </button>
                             <div className="flex overflow-x-auto space-x-4 py-4">
                                 {tags.map((tag) => (
                                     <div
                                         key={tag.id}
                                         onClick={() => toggleTagSelection(tag.name)}
-                                        className={`px-4 py-1 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap ${
+                                        className={`px-4 py-1 border rounded-2xl cursor-pointer transition text-xs sm:text-sm md:text-md font-satoshi-regular whitespace-nowrap ${
                                             selectedTags.includes(tag.name)
                                                 ? "bg-primary text-white"
                                                 : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
@@ -280,8 +310,10 @@ const NewsletterLanding = () => {
                                 ))}
                             </div>
                         </div>
+
+                        
                         <div
-                            className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
+                            className="grid flex-1 grid-cols-1 pb-10 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
                             style={{ height: `calc(100vh - 18rem)` }}
                         >
                             {filteredCards.map((item) => (
@@ -303,12 +335,12 @@ const NewsletterLanding = () => {
                     <div className="animate-pulse">
                         <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
                             <div className="flex overflow-x-auto space-x-4 py-4">
-                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
                             </div>
                         </div>
                         <div
