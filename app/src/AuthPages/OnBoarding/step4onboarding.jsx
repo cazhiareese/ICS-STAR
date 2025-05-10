@@ -25,7 +25,7 @@ export default function Step4Onboarding() {
   const [errorMessage, setErrorMessage] = useState(""); // State for error message
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { setCurrentSection, userData, updateUserData, userType } = useOnboardingContext();
@@ -177,6 +177,7 @@ export default function Step4Onboarding() {
         setCurrentSection(5);
         updateUserData("userUpdatedToken", response.data.updated_token)
       } catch (error) {
+        setShowErrorModal(true)
         console.error("Error submitting onboarding information:", error);
       }
 
@@ -184,6 +185,8 @@ export default function Step4Onboarding() {
       console.log("Onboarding information submitted successfully.");
       // setCurrentSection(5);
     } catch (error) {
+      setShowErrorModal(true)
+      
       console.error("Error submitting onboarding information:", error);
     }
   };
@@ -281,6 +284,16 @@ export default function Step4Onboarding() {
               choicecontinue="Proceed"
               header="Confirm Entries?"
               information="Please proceed if your entries are final. You may still change them in the profile section afterwards."
+          />
+      )}
+
+{showErrorModal && (
+          <ModalTemplate
+              onClose={() => {
+                setShowErrorModal(false); setLoading(false)}}
+              choiceclose="Close"
+              header="Error"
+              information="The server cannot be reached. Please try again later and ensure you have a stable internet connection."
           />
       )}
     </div>
