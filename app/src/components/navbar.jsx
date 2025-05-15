@@ -107,7 +107,21 @@ function Navbar({ tokentype, verified, banned }) {
   </>
 )}
 
-          <LogOut className="cursor-pointer hover:text-red-500 transition" size={20} onClick={handleLogout} />
+{tokentype === "guest" ? (
+  <button
+    onClick={() => navigate("/login")}
+    className="text-lg font-satoshi-bold text-primary hover:underline transition cursor-pointer"
+  >
+    Log In
+  </button>
+) : (
+  <LogOut
+    className="cursor-pointer hover:text-red-500 transition"
+    size={20}
+    onClick={handleLogout}
+  />
+)}
+
           <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
