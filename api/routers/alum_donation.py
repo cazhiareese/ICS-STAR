@@ -186,3 +186,59 @@ def maya_callback(
 
     return maya_success(drive, amount, is_anonymous, db, user)
 
+@router.post("/anonymous-donation/{drive_id}")
+async def guest_donation(
+    drive_id: UUID,
+    monetary_donation: bool = Form(...),
+    direct_maya: Optional[bool] = Form(None),
+    amount: Optional[float] = Form(None),
+    proof: Optional[UploadFile] = File(None),
+    is_anonymous: Optional[bool] = Form(None),
+    db: Session = Depends(get_db),
+):
+    
+    drive = db.query(DonationDrive).filter(
+        DonationDrive.drive_id == drive_id,
+        DonationDrive.is_deleted == False,
+        DonationDrive.is_closed == False
+    ).first()
+    
+    
+    if not drive:
+        raise HTTPException(
+            status_code=404,
+            detail="Donation drive not found"
+        )
+    
+    return await anonymous_donation(
+        db, drive, monetary_donation, direct_maya, amount, proof, is_anonymous
+    )
+    
+@router.post("/anonymous-general-donation")
+async def guest_general_donation(
+    monetary_donation: bool = Form(...),
+    direct_maya: Optional[bool] = Form(None),
+    amount: Optional[float] = Form(None),
+    proof: Optional[UploadFile] = File(None),
+    is_anonymous: Optional[bool] = Form(None),
+    is_general: Optional[bool] = Form(None),
+    db: Session = Depends(get_db),
+):
+    
+    if is_general:
+        drive = db.query(DonationDrive).filter(
+            DonationDrive.is_general == True,
+            DonationDrive.is_deleted == False,
+            DonationDrive.is_closed == False
+        ).first()
+    
+    
+    if not drive:
+        raise HTTPException(
+            status_code=404,
+            detail="Donation drive not found"
+        )
+    
+    return await anonymous_donation(
+        db, drive, monetary_donation, direct_maya, amount, proof, is_anonymous
+    )
