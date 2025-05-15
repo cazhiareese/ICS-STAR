@@ -54,46 +54,49 @@ function Navbar({ tokentype, verified, banned }) {
           <span className="font-satoshi-black text-primary text-3xl pl-2 tracking-wide">ICS - STAR</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="font-satoshi-bold hidden md:flex gap-6 font-medium text-xl">
-          <button
-            className={`${isActive(`/${tokentype}/events`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
-            onClick={handleEvents}
-          >
-            Events
-          </button>
-          <button
-            className={`${isActive(`/${tokentype}/newsletter`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
-            onClick={handleNewsletter}
-          >
-            Newsletters
-          </button>
+<div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
+  <div className="flex items-center justify-center gap-6 font-satoshi-bold font-medium text-xl text-center">
+    <button
+      className={`${isActive(`/${tokentype}/events`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+      onClick={handleEvents}
+    >
+      Events
+    </button>
+    <button
+      className={`${isActive(`/${tokentype}/newsletter`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+      onClick={handleNewsletter}
+    >
+      Newsletters
+    </button>
 
-          {tokentype !== "guest" && (
-            <>
-              <button
-                className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
-                onClick={handleCareer}
-              >
-                Career
-              </button>
-              <button
-                className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
-                onClick={handleSearch}
-              >
-                Alumni Search
-              </button>
-              {tokentype !== "student" && (
-                <button
-                  className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary cursor-pointer group"} transition`}
-                  onClick={handleDonation}
-                >
-                  Donations
-                </button>
-              )}
-            </>
-          )}
-        </div>
+    {tokentype !== "guest" && (
+      <>
+        <button
+          className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+          onClick={handleCareer}
+        >
+          Career
+        </button>
+        <button
+          className={`${isActive(`/${tokentype}/alumnisearch`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+          onClick={handleSearch}
+        >
+          Alumni Search
+        </button>
+        {tokentype !== "student" && (
+          <button
+            className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+            onClick={handleDonation}
+          >
+            Donations
+          </button>
+        )}
+      </>
+    )}
+  </div>
+</div>
+
+
 
         {/* Icons and Mobile Menu Button */}
         <div className="flex items-center gap-4">
