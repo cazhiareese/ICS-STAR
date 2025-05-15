@@ -12,6 +12,7 @@ from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from datetime import datetime, timezone
 from typing import Optional, List
 import uuid
+from uuid import UUID
 import math
 from config.config import MAYA_PUBLIC_KEY, MAYA_CANCEL, MAYA_FAIL, MAYA_SUCCESS, MAYA_URL
 import random
@@ -269,7 +270,8 @@ async def make_donation(
                 "date": monetary.date_donated,
                 "user": f"{name.first_name} {name.last_name}" if not is_anonymous else "Anonymous",
                 "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
-                "amount": monetary.amount
+                "amount": monetary.amount,
+                "email": name.email
             }
             send_email(invoice=invoice, message="Your donation will be reflected once it has been reviewed and verified by our admin team." )
             return invoice
@@ -305,14 +307,22 @@ async def make_donation(
         send_email(invoice=invoice, message="Your donation will be reflected once it has been reviewed and verified by our admin team." )
         return invoice
 
-def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session):
-    name = db.query(User.first_name, User.last_name).filter(User.user_id == user_id).first()
+
+
+
+def maya_success(drive: DonationDrive, amount: float, is_anonymous: bool, db: Session, user: Optional[CurrentUser]):
+    
+    if user is not None:
+        name = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
+    else:
+        name = None
     monetary = MonetaryDonation(
                 date_donated = datetime.now(timezone.utc),
                 amount = amount,
                 drive_id = drive.drive_id,
-                user_id = user_id,
-                is_acknowledged = True
+                user_id = user.user_id if not is_anonymous else None,
+                is_acknowledged = True,
+                is_anonymous = is_anonymous
             )
     try:
         db.add(monetary)
@@ -324,12 +334,13 @@ def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session
     invoice = {
         "donation_drive": drive.title,
         "date": monetary.date_donated,
-        "user": f"{name.first_name} {name.last_name}",
+        "user": f"{name.first_name} {name.last_name}" if user else "Anonymous",
         "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
-        "amount": monetary.amount
+        "amount": monetary.amount,
+        "email": name.email if user else "Anonymous"
     }
-
-    send_email(invoice=invoice, message="Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.")
+    if user:
+        send_email(invoice=invoice, message="Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.")
     return invoice
 
 def send_email(invoice, message):
@@ -340,6 +351,7 @@ def send_email(invoice, message):
 
         html_content = invoice_message(
             message=message,
+            status=invoice['status'],
             donation_drive=invoice['donation_drive'],
             date=invoice['date'],
             details=invoice.get('details'),  
