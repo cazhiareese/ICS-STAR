@@ -269,7 +269,8 @@ async def make_donation(
                 "date": monetary.date_donated,
                 "user": f"{name.first_name} {name.last_name}" if not is_anonymous else "Anonymous",
                 "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
-                "amount": monetary.amount
+                "amount": monetary.amount,
+                "email": name.email
             }
             send_email(invoice=invoice, message="Your donation will be reflected once it has been reviewed and verified by our admin team." )
             return invoice
@@ -291,6 +292,7 @@ async def make_donation(
             db.commit()
             db.refresh(in_kind)
         except Exception as e:
+            print(e)
             raise HTTPException(status_code=500, details=e)
 
         invoice = {
@@ -306,7 +308,7 @@ async def make_donation(
         return invoice
 
 def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session):
-    name = db.query(User.first_name, User.last_name).filter(User.user_id == user_id).first()
+    name = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user_id).first()
     monetary = MonetaryDonation(
                 date_donated = datetime.now(timezone.utc),
                 amount = amount,
@@ -326,7 +328,8 @@ def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session
         "date": monetary.date_donated,
         "user": f"{name.first_name} {name.last_name}",
         "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
-        "amount": monetary.amount
+        "amount": monetary.amount,
+        "email" : name.email
     }
 
     send_email(invoice=invoice, message="Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.")
@@ -340,6 +343,7 @@ def send_email(invoice, message):
 
         html_content = invoice_message(
             message=message,
+            status=invoice['status'],
             donation_drive=invoice['donation_drive'],
             date=invoice['date'],
             details=invoice.get('details'),  
@@ -357,4 +361,5 @@ def send_email(invoice, message):
 
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=f"Error: {e}")
