@@ -59,7 +59,7 @@ class User(Base):
    country = Column(String(50))
    marital_status = Column(String(20))
    image = Column(String(255))
-   password = Column(String(255), nullable=False)
+   password = Column(String(255))
    email = Column(String(100), unique=True, nullable=False)
    verification_file = Column(String(255))
    is_verified = Column(Boolean, nullable=False, default=False)

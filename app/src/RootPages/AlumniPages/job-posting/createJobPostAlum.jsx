@@ -85,6 +85,47 @@ function CreateJobPostAlum() {
 
     const [error, setError] = useState(false);
 
+    const dummyJob = {
+        image: 'https://via.placeholder.com/800x400.png?text=Job+Image',
+        title: 'Senior Frontend Engineer - React, TypeScript, and Tailwind CSS for Scalable Web Applications in a Fast-Paced Agile Environment',
+        company: 'Global Tech',
+        link: 'https://jobs.example.com',
+        // tags: [
+        //   'React',
+        //   'TypeScript',
+        //   'Tailwind CSS',
+        //   'Agile',
+        //   'Remote-Friendly',
+        //   'Large-Scale Systems',
+        //   'Micro Frontends',
+        //   'Enterprise Architecture',
+        //   'Cloud Deployment',
+        //   'Unit Testing',
+        // ],
+        salary: '150,000 - 200,000 per month (depending on experience and skillset)',
+        description: `We are seeking a highly skilled and motivated Senior Frontend Engineer to join our dynamic team. The ideal candidate will have extensive experience in building responsive, scalable, and maintainable user interfaces using React, TypeScript, and Tailwind CSS. You will be responsible for leading frontend development efforts, collaborating with cross-functional teams including design, backend, and product management, and ensuring high performance and responsiveness across platforms.
+      
+      Key Responsibilities:
+      - Collaborate closely with UI/UX designers to implement modern, visually appealing interfaces
+      - Write clean, maintainable, and well-documented code using React and TypeScript
+      - Optimize applications for maximum speed and scalability
+      - Participate in code reviews, mentoring junior developers, and ensuring adherence to best practices
+      - Integrate RESTful APIs and work with backend developers to define data models
+      - Contribute to the design and improvement of our design system and reusable component library
+      - Troubleshoot, debug and upgrade existing code to improve performance and maintainability
+      - Stay updated on emerging technologies and propose innovative solutions
+      
+      Hiring Process:
+      1. Initial HR Screening Call
+      2. Technical Interview with Engineering Team
+      3. Coding Challenge (Take-home or Live)
+      4. Final Interview with CTO and Product Lead
+      5. Offer and Onboarding
+      
+      If you're passionate about building excellent web experiences and want to be part of a cutting-edge tech company, we encourage you to apply today.`
+      };
+      
+
     // dummy tags
     const tags = [
         "Artificial Intelligence",
@@ -96,8 +137,22 @@ function CreateJobPostAlum() {
     ]
 
     useEffect(() => {
-        setTagSuggestions(["UI/UX", "Gamedev", "Software Eng", "QA"]);
-    }, []);
+        const fetchTags = async () => {
+            try {
+                const endpoint = tagInput.trim()
+                    ? `${API_BASE_URL}/job-postings-tags/tag-suggestions?q=${tagInput}&limit=5`
+                    : `${API_BASE_URL}/job-postings-tags/top-4-tags`;
+    
+                const response = await axios.get(endpoint);
+                setTagSuggestions(response.data);
+            } catch (error) {
+                console.error("Error fetching tag suggestions:", error);
+            }
+        };
+    
+        fetchTags();
+    }, [tagInput]);
+    
 
     useEffect(() => {
         if (isTagsModalOpen && tagsRef.current) {
@@ -109,6 +164,7 @@ function CreateJobPostAlum() {
           });
         }
       }, [isTagsModalOpen]);
+      
 
 
     const handleJobTitleChange = (e) => {

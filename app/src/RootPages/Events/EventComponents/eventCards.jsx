@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {jwtDecode} from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 import PersonOutline from "../../../assets/personoutline.png"
 import "../../../index.css";
+import axios from 'axios';
 
 import RsvpStatus from './rsvpstatus';
 const EventCards = ({event, reservationExclusiveWidth}) => {
@@ -57,9 +58,17 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
     }
 
-    const openEventDetails = (eventId) => {
+    const openEventDetails = async (eventId) => {
 
         console.log("RSVP clicked for event ID:", eventId);
+        const clicks = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/track-userclicks`, {
+                    event_id: eventId
+                    }, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                    });
+                console.log(clicks.data)
         navigate(`/${tokentype}/events/${eventId}`);
     }
     

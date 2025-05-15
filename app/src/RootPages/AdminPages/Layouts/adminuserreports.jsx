@@ -48,6 +48,7 @@ function AdminEngagementReports() {
       setFullEngagementReportLoading(true);
       try {
         // First request: Engagement Statistics
+        const token= localStorage.getItem('token');
         let response;
         fetchEngagementStatistics()
         // Second request: Most Donations
@@ -242,7 +243,7 @@ function AdminEngagementReports() {
   );
 
   return (
-    <div className="bg-[rgb(243,241,244)] p-6 min-h-screen">
+    <div className="p-6 min-h-screen">
       <AdminBack label={'Back to dashboard'} />
 
       {fullEngagementReportLoading ? (

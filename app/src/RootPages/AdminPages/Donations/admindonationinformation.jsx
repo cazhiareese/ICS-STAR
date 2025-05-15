@@ -40,7 +40,7 @@ function AdminDonationInformation() {
   const [editing, setEditing] = useState(false);
   const [description, setDescription] = useState(donation?.description || '');
   const [links, setLinks] = useState(donation?.links || []);
-
+  const tokenLocal= localStorage.getItem('token');
   useEffect(() => {
     if (donation) {
       setDescription(donation.description || '');
@@ -61,7 +61,7 @@ function AdminDonationInformation() {
     try {
       await axios.put(`${API_BASE_URL}/edit-donation-drive/description-links/${driveid}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` }}
+        { headers: { Authorization: `Bearer ${tokenLocal}` }}
       );
       setDonation({ ...donation, description, links });
       setEditing(false);
@@ -114,7 +114,7 @@ function AdminDonationInformation() {
       await axios.put(
         `${API_BASE_URL}/edit-donation-drive/goal/${driveid}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${tokenLocal}` } }
       );
       setEditGoalModal(false);
       setNewGoal('');
@@ -128,7 +128,7 @@ function AdminDonationInformation() {
     setCloseDonationLoading(true)
   
     try {
-      await axios.put(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      await axios.put(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`,{}, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(response)
   
       // Show success message
@@ -144,11 +144,11 @@ function AdminDonationInformation() {
     setLoading(true)
 
     try {
-      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(donationResponse.data)   
       setDonation(donationResponse.data)
 
-      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       setProgressData([
         { name: "progress", value: percentResponse.data.percent_funded },
         { name: "remaining", value: percentResponse.data.remaining_percent }
@@ -164,7 +164,8 @@ function AdminDonationInformation() {
   async function fetchNextVerifiedPage() {
     setVerifiedDonationLoading(true)
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`, {headers: { Authorization: `Bearer ${token}` }})
+
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(response)
       setTotalVerifiedPages(response.data.total_pages)
       setVerifiedDonations(response.data.data)
@@ -178,7 +179,8 @@ function AdminDonationInformation() {
   async function fetchNextPendingPage() {
     setPendingDonationLoading(true)
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page=${pendingPage}&page_size=5`, {headers: { Authorization: `Bearer ${token}` }})
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page=${pendingPage}&page_size=5`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       console.log(response)
       setTotalPendingPages(response.data.total_pages)
       setPendingDonations(response.data.data)
@@ -210,6 +212,52 @@ function AdminDonationInformation() {
   }, [])
   
 
+  const handleCSVExport = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+  
+      // Make the GET request with responseType set to 'blob' for binary data
+      const response = await axios.get(`${API_BASE_URL}/get-donors-csv/${driveid}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob', // Important for handling binary data
+      });
+  
+      // Create a blob from the response data
+      const blob = new Blob([response.data], { type: 'text/csv' });
+  
+      // Generate a temporary URL for the blob
+      const url = window.URL.createObjectURL(blob);
+  
+      // Create a hidden <a> element to trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+  
+      // Set the filename (use a default or extract from Content-Disposition if available)
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'donors.csv'; // Default filename
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+      link.setAttribute('download', filename);
+  
+      // Append the link to the DOM, trigger the click, and remove it
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  
+      // Clean up the temporary URL
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV file: ' + error.message);
+    }
+  };
   const COLORS = [
     progressData[0]?.value > 100 ? '#27AE60' : '#0B2B8C',
     '#F4F4F4',
@@ -245,11 +293,13 @@ function AdminDonationInformation() {
                 // For closed
                 <>
                   {/* View Details */}
-                  <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
+                  {/* <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
                     <p className='font-satoshi-light'>View Details</p>
-                  </button>
+                  </button> */}
                   {/* Export Donor List */}
-                  <button className='bg-primary hover:bg-hover text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'>
+                  <button className='bg-primary hover:bg-hover text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'
+                    onClick={()=>handleCSVExport()}
+                  >
                     <p className='font-satoshi-light'>Export Donor List</p>
                   </button>
                 </>          

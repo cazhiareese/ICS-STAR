@@ -22,7 +22,7 @@ function AdminVerificationConfirmation() {
   const [showVerificationModal, setShowVerificationModal] = useState(false)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (token) => {
       setLoading(true)
       try {
         const userProfile = await axios.get(`${API_BASE_URL}/admin/unverified/user/${userid}`, {headers: {Authorization: `Bearer ${token}`}})
@@ -50,8 +50,8 @@ function AdminVerificationConfirmation() {
     }
 
     setToken(localStorage.getItem('token'))
-
-    fetchData()
+    const storedToken = localStorage.getItem('token');
+    fetchData(storedToken)
   }, [userid])
 
   useEffect(() => {
@@ -65,7 +65,11 @@ function AdminVerificationConfirmation() {
   async function verifyUser() {
     setVerificationLoading(true)
     try {
-      const response = await axios.put(`${API_BASE_URL}/admin/confirm/${userid}`)
+      const token = localStorage.getItem("token");
+      console.log(token)
+      const response = await axios.put(`${API_BASE_URL}/admin/confirm/${userid}`, {},{
+        headers: { Authorization: `Bearer ${token}` },
+      } )
       console.log(response)
       setVerifyTransition(false)
       setTimeout(() => {

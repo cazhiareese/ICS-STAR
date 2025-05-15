@@ -159,7 +159,7 @@ const [showModal, setShowModal] = useState(false);//
                             </div>
                             ) : (
                             <button
-                                className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
+                                className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold cursor-pointer"
                                 onClick={() => handleReport(job.id)} // create this function as needed
                             >
                                 <Flag size={20} />
@@ -174,7 +174,7 @@ const [showModal, setShowModal] = useState(false);//
                             <h1 className='font-satoshi-medium text-sm'>Posted by</h1>
                             <button 
                             onClick={handleNavigate} 
-                            className="cursor-pointer font-satoshi-bold text-left text-primary underline"
+                            className="cursor-pointer font-satoshi-bold text-left text-primary underline break-words"
                             >
                             {job.user_name}
                             </button>
@@ -190,7 +190,7 @@ const [showModal, setShowModal] = useState(false);//
                                     const url = job.link.startsWith('http') ? job.link : `https://${job.link}`;
                                     window.open(url, '_blank');
                                 }}
-                                className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-32 h-12 cursor-pointer"
+                                className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-32 h-12 cursor-pointer hover:brightness-125"
                             >
                                 Apply Here
                             </button>
@@ -204,14 +204,14 @@ const [showModal, setShowModal] = useState(false);//
                             ) : isInterested ? (
                                 <button
                                     onClick={removeUserInterested}
-                                    className="flex rounded-2xl justify-center items-center bg-primary font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
+                                    className="flex rounded-2xl justify-center items-center bg-primary hover:brightness-125 font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
                                 >
                                     <Star fill="white" size={24} />
                                 </button>
                             ) : (
                                 <button
                                     onClick={addUserInterested}
-                                    className="flex rounded-2xl bg-primary justify-center items-center border-2 border-primary text-white font-satoshi-medium text-md w-12 h-12 cursor-pointer"
+                                    className="flex rounded-2xl bg-primary hover:brightness-125 justify-center items-center border-2 border-primary text-white font-satoshi-medium text-md w-12 h-12 cursor-pointer"
                                 >
                                     <Star size={24} />
                                 </button>
@@ -336,15 +336,15 @@ const [showModal, setShowModal] = useState(false);//
                                     Report
                                 </button>
                                 )}
-                                <h1 className="font-satoshi-bold text-2xl pt-3">{job.title}</h1>
+                                <h1 className="font-satoshi-bold text-2xl pt-3 break-words">{job.title}</h1>
                                 <div className="flex items-center gap-2 pt-2">
-                                    <h1 className="font-satoshi-bold text-base">{job.company}</h1>
+                                    <h1 className="font-satoshi-bold text-base break-words">{job.company}</h1>
                                     
                                 </div>
                                 <div className="flex items-center gap-2 pt-1">
                                     <h1 className="font-satoshi-medium text-xs">Posted by</h1>
                                     <h1 
-                                    className="cursor-pointer font-satoshi-bold text-primary underline" 
+                                    className="cursor-pointer font-satoshi-bold text-primary underline break-words" 
                                     onClick={handleNavigate}
                                     >
                                     {job.user_name}

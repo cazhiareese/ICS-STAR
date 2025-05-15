@@ -43,6 +43,9 @@ const EventCardsMain = () => {
                 });
                 setEvent(response.data);
                 console.log("Event data:", response.data);
+
+
+                
             } catch (error) {
                 console.error('Error fetching event:', error);
             }

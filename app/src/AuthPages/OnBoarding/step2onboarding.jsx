@@ -171,6 +171,7 @@ function Step2Onboarding() {
             ) : (
                 !secondStep ? (
                 <div className="flex flex-col md:mx-30 mx-10">
+
                     <img src={peersIcon} className="lg:h-12 lg:w-12 h-10 w-10 sm:mt-10 mb-5" alt="Peers Icon" />
                     <label className="font-satoshi-bold lg:text-4xl sm:text-3xl text-2xl ">Did you have Affiliations or Scholarships?</label>
                     <label className="font-satoshi-light lg:text-2xl text-md">
