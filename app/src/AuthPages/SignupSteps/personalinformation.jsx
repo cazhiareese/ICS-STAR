@@ -21,6 +21,9 @@ function PersonalInformation(){
     const [emailError, setEmailError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
 
+    const [showPasswordSpecs, setShowPasswordSpecs] = useState(false);
+
+    
     const [loading, setLoading] = useState(false)
 
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -44,7 +47,11 @@ function PersonalInformation(){
             if (userData.firstName == "") setFirstNameError(true); else setFirstNameError(false)
             if (userData.lastName == "") setLastNameError(true); else setLastNameError(false)
             if (userData.email == "" || validateEmail(userData.email) == false) setEmailError(true), console.log(userData.email); else setEmailError(false)
-            if (userData.password == "") setPasswordError(true); else setPasswordError(false)
+            if (userData.password == "" || !Object.values(passwordRules).every(Boolean)) {
+                setPasswordError(true);
+            } else {
+                setPasswordError(false);
+            }
             
         } else if (passMismatch==true){
             console.log("Password Mismatch")
@@ -66,6 +73,13 @@ function PersonalInformation(){
             return false;
         }
     };
+    const [passwordRules, setPasswordRules] = useState({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        specialChar: false
+    });
     
 
 
@@ -79,6 +93,21 @@ function PersonalInformation(){
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     };
+    const validatePassword = (password) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]{8,}$/;
+        return regex.test(password);
+      };
+
+      const updatePasswordRules = (password) => {
+        setPasswordRules({
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password),
+            specialChar: /[^A-Za-z0-9]/.test(password),
+        });
+    };
+
 
 
     useEffect(() => {
@@ -135,12 +164,47 @@ function PersonalInformation(){
                 </div>
                 <div className="flex flex-col font-satoshi-medium ">
                         <label className="2xl font-satoshi-medium pb-2 ">Password <label className="text-red-700">*</label></label>
-                        <input type="password" 
-                               value={userData.password} 
-                               onChange={(e) => {updateUserData("password", e.target.value)}}
-                               className={`font-satoshi-medium pl-3 w-[100%] border-1 rounded-2xl h-10 outline-none focus:outline-primary focus:border focus:border-primary ${passwordError==false ? 'border-[#D9D9D9]':'border-red-600'}`}
+                        <input
+                            type="password"
+                            value={userData.password}
+                            onFocus={() => setShowPasswordSpecs(true)}
+                            onBlur={() => setShowPasswordSpecs(false)}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                updateUserData("password", value);
+                                updatePasswordRules(value);  // ✅ good!
+                              }}
+                            className={`font-satoshi-medium pl-3 w-[100%] border-1 rounded-2xl h-10 outline-none focus:outline-primary focus:border focus:border-primary ${passwordError == false ? 'border-[#D9D9D9]' : 'border-red-600'}`}
                         />
+                        {!(Object.values(passwordRules).every(Boolean)) && showPasswordSpecs && (
+                            <div className="mt-2 text-sm bg-gray-100 border border-gray-300 rounded-xl p-3 text-left text-gray-700">
+                                <p className="mb-1">Password must contain:</p>
+                                <ul className="list-disc ml-5 space-y-1">
+                                    <li className={passwordRules.length ? "text-green-600" : ""}>
+                                        {passwordRules.length ? "✓" : "–"} At least 8 characters
+                                    </li>
+                                    <li className={passwordRules.uppercase ? "text-green-600" : ""}>
+                                        {passwordRules.uppercase ? "✓" : "–"} One uppercase letter
+                                    </li>
+                                    <li className={passwordRules.lowercase ? "text-green-600" : ""}>
+                                        {passwordRules.lowercase ? "✓" : "–"} One lowercase letter
+                                    </li>
+                                    <li className={passwordRules.number ? "text-green-600" : ""}>
+                                        {passwordRules.number ? "✓" : "–"} One number
+                                    </li>
+                                    <li className={passwordRules.specialChar ? "text-green-600" : ""}>
+                                        {passwordRules.specialChar ? "✓" : "–"} One special character
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
+                        <label className={`font-satoshi-medium  italic text-[#C80808] text-sm mt-2 ${passwordError ? '' : 'hidden'}`}>
+                            Password must be at least 8 characters and include uppercase, lowercase, number, and special character.
+                        </label>
                 </div>
+
+                
+                
                 <div className="flex flex-col font-satoshi-medium ">
                         <label className="2xl font-satoshi-medium pb-2 ">Confirm Password <label className="text-red-700">*</label></label>
                         <input type="password" value = {confirmPassword} onChange={updateConfirmPassword} className="pl-3 w-[100%] border-1 border-[#D9D9D9] rounded-2xl h-10 outline-none focus:outline-primary focus:border focus:border-primary"/>

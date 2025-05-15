@@ -40,7 +40,7 @@ export default function DonationCard({driveDetails, driveId}) {
       <div className="relative my-2 h-2 bg-gray-200 rounded font-satoshi-light">
         <div
           className="bg-blue-900 h-full rounded-full transition-all duration-300 "
-          style={{ width: `${driveDetails.fund_percentage}%` }}
+          style={{ width: `${Math.min(driveDetails.fund_percentage, 100)}%` }}
         ></div>
       </div>
 
