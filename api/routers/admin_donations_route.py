@@ -73,7 +73,8 @@ from util.admin_donations_logic import (search_donation_drives,
                                         get_top_performing_drives,
                                         get_all_verified_donations_all_drive,
                                         get_all_pending_donations,
-                                        get_all_verified_donations
+                                        get_all_verified_donations,
+                                        open_donation_drive
                                         )
 from datetime import datetime
 from uuid import UUID
@@ -946,6 +947,18 @@ def close_drive(
     if not results:
         raise HTTPException(status_code=200, detail="Drive not found")
 
+    return results
+
+@router.put("/admin/donations/open-drive/{drive_id}", dependencies=[Depends(require_admin)], response_model=dict)
+def open_drive(
+    drive_id: UUID,
+    db: Session = Depends(get_db)
+):
+    results = open_donation_drive(db, drive_id)
+
+    if not results:
+        raise HTTPException(status_code=200, detail="Invalid donation drive")
+    
     return results
 
 # Get the donor counts per batch for a specific drive
