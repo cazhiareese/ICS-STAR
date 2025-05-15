@@ -314,6 +314,7 @@ def get_donors_csv(
         monetary_donors = (
             db.query(
                 MonetaryDonation.date_donated,
+                MonetaryDonation.is_anonymous,
                 User.first_name,
                 User.last_name,
                 User.email,
@@ -321,19 +322,20 @@ def get_donors_csv(
             )
             .join(MonetaryDonation, MonetaryDonation.user_id == User.user_id)
             .filter(MonetaryDonation.drive_id == drive_id)
-            .group_by(User.user_id, User.first_name, User.last_name, MonetaryDonation.date_donated)
+            .group_by(User.user_id, User.first_name, User.last_name, MonetaryDonation.date_donated, MonetaryDonation.is_anonymous)
+            .order_by(MonetaryDonation.date_donated.asc())
             .all()
         )
 
         for donor in monetary_donors:
-            formatted_date = donor.date_donated.strftime('%Y-%m-%d')
+            formatted_date = donor.date_donated.strftime('%b %d, %Y')
             writer.writerow([
-                f'`{formatted_date}`',
-                donor.first_name,
-                donor.last_name,
-                donor.email,
+                f'{formatted_date}',
+                donor.first_name if not donor.is_anonymous else 'Anonymous',
+                donor.last_name if not donor.is_anonymous else 'N/A',
+                donor.email if not donor.is_anonymous else "N/A",
                 "monetary",
-                f'`{str(donor.total_amount)}`'
+                str(donor.total_amount)
             ])
 
         # In-kind donors
@@ -348,13 +350,14 @@ def get_donors_csv(
             .join(InKindDonation, InKindDonation.user_id == User.user_id)
             .filter(InKindDonation.drive_id == drive_id)
             .group_by(User.user_id, User.first_name, User.last_name, InKindDonation.date_donated)
+            .order_by(InKindDonation.date_donated.asc())
             .all()
         )
 
         for donor in in_kind_donors:
-            formatted_date = donor.date_donated.strftime('%Y-%m-%d')
+            formatted_date = donor.date_donated.strftime('%b %d, %Y')
             writer.writerow([
-                f'`{formatted_date}`',
+                formatted_date,
                 donor.first_name,
                 donor.last_name,
                 donor.email,
