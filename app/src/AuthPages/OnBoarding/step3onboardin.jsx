@@ -345,7 +345,7 @@ function Step3Onboarding() {
                 <input
                   type="checkbox"
                   value={option.value}
-                  className="mr-5 w-5 h-5"
+                  className="mr-5 w-5 h-5 flex-shrink-0"
                   checked={selectedOptions.includes(option.value)}
                   onChange={() => handleCheckboxChange(option.value)}
                 />
