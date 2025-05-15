@@ -11,7 +11,7 @@ from schemas.job_posting_schema import JobPostingOut, PaginatedJobPostingRespons
 from schemas.report_schema import PostReportDetailOut, PaginatedReportedResponse
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn
-from util.job_posting_util import create_job_posting, edit_job_posting, get_top_4_job_tags
+from util.job_posting_util import create_job_posting, edit_job_posting, get_top_4_job_tags, get_tag_suggestions
 from util.userutil import require_admin
 from config.database import get_db
 
@@ -695,3 +695,25 @@ async def get_comp_by_id(user_id: UUID, db: Session=Depends(get_db)):
 @router.get("/admin/job-postings/top-4-tags", dependencies=[Depends(require_admin)])
 def get_top_4_job_tags_endpoint(db: Session = Depends(get_db)):
     return get_top_4_job_tags(db)
+
+@router.get("/job-postings-tags/top-4-tags")
+def get_top_4_job_tags_endpoint(db: Session = Depends(get_db)):
+    return get_top_4_job_tags(db)
+
+@router.get("/admin/job-postings/tag-suggestions", dependencies=[Depends(require_admin)])
+def get_job_tag_suggestions_endpoint(
+    q: str = Query(..., min_length=1, description="Search query text"),
+    limit: Optional[int] = Query(5, ge=1, le=20, description="Maximum number of results"),
+    db: Session = Depends(get_db)):
+
+
+    return get_tag_suggestions(db, q, limit)
+
+@router.get("/job-postings-tags/tag-suggestions")
+def get_job_tag_suggestions_endpoint(
+    q: str = Query(..., min_length=1, description="Search query text"),
+    limit: Optional[int] = Query(5, ge=1, le=20, description="Maximum number of results"),
+    db: Session = Depends(get_db)):
+
+
+    return get_tag_suggestions(db, q, limit)
