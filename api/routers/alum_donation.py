@@ -24,9 +24,11 @@ def get_drive_suggestions(
     return fetch_drive_suggestions(db, q, limit)
 
 @router.get("/donationdrive", response_model=List[DonationDriveOut])
-def get_donation_drives(db: Session = Depends(get_db), user: CurrentUser = Depends(get_current_user)):
-    if user.user_type.value == UserTypeEnum.student:
-        raise HTTPException(status_code=400, detail="For alumni only")
+def get_donation_drives(db: Session = Depends(get_db), user: Optional[CurrentUser] = Depends(get_current_user_optional)):
+    
+    # if user:
+    #     if user.user_type.value == UserTypeEnum.student:
+    #         raise HTTPException(status_code=400, detail="For alumni only")
     
     drives = db.query(DonationDrive).filter(
         and_(
@@ -41,10 +43,10 @@ def get_donation_drives(db: Session = Depends(get_db), user: CurrentUser = Depen
     return donation_data
 
 @router.get("/donationdrive-limit", response_model=List[DonationDriveOut])
-def get_donation_drives(db: Session = Depends(get_db), user: CurrentUser = Depends(get_current_user)):
+def get_donation_drives(db: Session = Depends(get_db), user: Optional[CurrentUser] = Depends(get_current_user_optional)):
     
-    if user.user_type.value == UserTypeEnum.student:
-        raise HTTPException(status_code=400, detail="For alumni only")
+    # if user.user_type.value == UserTypeEnum.student:
+    #     raise HTTPException(status_code=400, detail="For alumni only")
     
     drives = db.query(DonationDrive).filter(
         and_(
@@ -62,10 +64,10 @@ def get_donation_drives(db: Session = Depends(get_db), user: CurrentUser = Depen
 def get_one_drive(
     drive_id: UUID,
     db: Session = Depends(get_db), 
-    user: CurrentUser = Depends(get_current_user)
+    user: Optional[CurrentUser] = Depends(get_current_user_optional)
 ):
-    if user.user_type.value == UserTypeEnum.student:
-        raise HTTPException(status_code=400, detail="For alumni only")
+    # if user.user_type.value == UserTypeEnum.student:
+    #     raise HTTPException(status_code=400, detail="For alumni only")
     
     drive = db.query(DonationDrive).filter(
         and_(
@@ -83,10 +85,10 @@ def get_one_drive(
 @router.get("/gen-donation-drive", response_model=OneDonationDriveOut)
 def get_one_drive(
     db: Session = Depends(get_db), 
-    user: CurrentUser = Depends(get_current_user)
+    user: Optional[CurrentUser] = Depends(get_current_user_optional)
 ):
-    if user.user_type.value == UserTypeEnum.student:
-        raise HTTPException(status_code=400, detail="For alumni only")
+    # if user.user_type.value == UserTypeEnum.student:
+    #     raise HTTPException(status_code=400, detail="For alumni only")
     
     drive = db.query(DonationDrive).filter(
         and_(
