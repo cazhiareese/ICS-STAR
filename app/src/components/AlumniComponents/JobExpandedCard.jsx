@@ -159,7 +159,7 @@ const [showModal, setShowModal] = useState(false);//
                             </div>
                             ) : (
                             <button
-                                className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold"
+                                className="ml-auto text-red-500 hover:text-red-700 transition flex items-center gap-1 font-satoshi-bold cursor-pointer"
                                 onClick={() => handleReport(job.id)} // create this function as needed
                             >
                                 <Flag size={20} />
@@ -190,7 +190,7 @@ const [showModal, setShowModal] = useState(false);//
                                     const url = job.link.startsWith('http') ? job.link : `https://${job.link}`;
                                     window.open(url, '_blank');
                                 }}
-                                className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-32 h-12 cursor-pointer"
+                                className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-32 h-12 cursor-pointer hover:brightness-125"
                             >
                                 Apply Here
                             </button>
@@ -204,14 +204,14 @@ const [showModal, setShowModal] = useState(false);//
                             ) : isInterested ? (
                                 <button
                                     onClick={removeUserInterested}
-                                    className="flex rounded-2xl justify-center items-center bg-primary font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
+                                    className="flex rounded-2xl justify-center items-center bg-primary hover:brightness-125 font-satoshi-medium text-white text-md w-12 h-12 cursor-pointer"
                                 >
                                     <Star fill="white" size={24} />
                                 </button>
                             ) : (
                                 <button
                                     onClick={addUserInterested}
-                                    className="flex rounded-2xl bg-primary justify-center items-center border-2 border-primary text-white font-satoshi-medium text-md w-12 h-12 cursor-pointer"
+                                    className="flex rounded-2xl bg-primary hover:brightness-125 justify-center items-center border-2 border-primary text-white font-satoshi-medium text-md w-12 h-12 cursor-pointer"
                                 >
                                     <Star size={24} />
                                 </button>

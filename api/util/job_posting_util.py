@@ -4,7 +4,7 @@ from models.report_model import Report, ReportAttachment
 from models.report_model import ReportStatusEnum
 from config.config import STORAGE_STRING, SUPABASE_BUCKET, supabase_client
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, distinct
 from fastapi import HTTPException
 from fastapi import UploadFile
 from uuid import UUID
@@ -223,3 +223,12 @@ def get_top_4_job_tags(db: Session):
     )
     
     return [tag[0] for tag in tags]
+
+def get_tag_suggestions(db: Session, query_text: str, limit: int = 4) -> List[str]:
+    results = db.query(distinct(JobPostingTag.tag))\
+                .filter(JobPostingTag.tag.ilike(f"%{query_text}%"))\
+                .order_by(JobPostingTag.tag)\
+                .limit(limit)\
+                .all()
+    
+    return [result[0] for result in results]
