@@ -68,6 +68,14 @@ function Navbar({ tokentype, verified, banned }) {
     >
       Newsletters
     </button>
+        {tokentype !== "student" && (
+          <button
+            className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
+            onClick={handleDonation}
+          >
+            Donations
+          </button>
+        )}
 
     {tokentype !== "guest" && (
       <>
@@ -83,14 +91,7 @@ function Navbar({ tokentype, verified, banned }) {
         >
           Alumni Search
         </button>
-        {tokentype !== "student" && (
-          <button
-            className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
-            onClick={handleDonation}
-          >
-            Donations
-          </button>
-        )}
+
       </>
     )}
   </div>
