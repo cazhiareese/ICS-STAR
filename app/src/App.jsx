@@ -264,6 +264,9 @@ function App() {
             <Route path="guest/events/:eventid" element={<EventCardsMain />} />
             <Route path="guest/newsletter" element={<NewsletterLanding />} />
             <Route path="guest/newsletter/:newsletterid" element={<Newsletter />} />
+            <Route path="guest/donations" element={<DonationLanding />} />
+            <Route path="guest/donations/:driveid" element={<Donation />} />
+            <Route path="guest/donationforms/:driveid" element={<DonationForm />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
 
           </Route>
