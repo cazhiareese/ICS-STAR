@@ -330,14 +330,17 @@ const fetchUserProfileData = async () => {
   return (
     <div className="flex flex-col items-center relative h-[965px] mt-10 gap-y-4 px-4 sm:px-6 lg:px-0">
       
-      {!isLoading && !userDetails?.is_verified && (
-  <div className="flex items-center gap-2 w-full max-w-3xl px-4 py-3 rounded-2xl border border-primary bg-blue-50 text-primary sm:max-w-[1100px]">
-    <Info className="w-5 h-5 flex-shrink-0" />
-    <span className="text-sm sm:text-base font-satoshi-bold text-center sm:text-left">
-      Pending Account Verification
-    </span>
-  </div>
+{isLoading ? null : (
+  userDetails?.is_verified === false && (
+    <div className="flex items-center gap-2 w-full max-w-3xl px-4 py-3 rounded-2xl border border-primary bg-blue-50 text-primary sm:max-w-[1100px]">
+      <Info className="w-5 h-5 flex-shrink-0" />
+      <span className="text-sm sm:text-base font-satoshi-bold text-center sm:text-left">
+        Pending Account Verification
+      </span>
+    </div>
+  )
 )}
+
 
 
       {/* Profile Section */}
