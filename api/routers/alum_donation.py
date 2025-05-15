@@ -5,8 +5,8 @@ from typing import List, Optional
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
 from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from config.database import get_db
-from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation, fetch_drive_suggestions, maya_success
-from util.userutil import get_current_user
+from util.alum_donation_util import get_donation_drive_data, get_one_donation_drive, general_donation_drive, make_donation, fetch_drive_suggestions, anonymous_donation, maya_success
+from util.userutil import get_current_user, get_current_user_optional
 # from models.usermodel import User
 from schemas.user import CurrentUser
 from schemas.user import UserTypeEnum
@@ -175,8 +175,14 @@ async def make_donations(
 def maya_callback(
     drive_id: UUID,
     amount: float = Form(...),
-    user: CurrentUser = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    is_anonymous: bool = Form(...),
+    db: Session = Depends(get_db),
+    user: Optional[CurrentUser] = Depends(get_current_user_optional),
 ):
     drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
-    return maya_success(drive, amount, user.user_id, db)
+    
+    if not user:
+        user = None
+
+    return maya_success(drive, amount, is_anonymous, db, user)
+
