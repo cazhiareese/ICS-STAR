@@ -8,6 +8,7 @@ import DonationCardSkeleton from "./Donationcomponent/DonationCardSkeleton";
 import DonationMainViewSkeleton from "./Donationcomponent/donationmainviewskeleton";
 import DonationCSkeleton from "./Donationcomponent/Donationcskeleton";
 import { Filter, Search } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 
 function DonationLanding() {
   const [donationData, setDonationData] = useState(null); // Initialize as null
@@ -45,37 +46,30 @@ function DonationLanding() {
     console.log("No token found, defaulting to guest.");
   }
   
-  useEffect(() => { 
-      setUserId(userid);
-      setUser(userid);
-      setUserType(tokentype);     
-  },[])
+
 
   useEffect(() => {
+    
     const fetchData = async () => {
-      if (!token) {
-        setError("User not authenticated");
-        setLoading(false);
-        return;
-      }
+
 
       setLoading(true);
       try {
 
         //Fetch both APIs concurrently
-        const [donationResponse, generalResponse] = await Promise.all([
-          fetch(`${API_BASE_URL}/donationdrive`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch(`${API_BASE_URL}/gen-donation-drive`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-        ]);
+const headers = tokentype === "guest" ? {} : { Authorization: `Bearer ${token}` };
+
+const [donationResponse, generalResponse] = await Promise.all([
+  fetch(`${API_BASE_URL}/donationdrive`, {
+    method: "GET",
+    headers,
+  }),
+  fetch(`${API_BASE_URL}/gen-donation-drive`, {
+    method: "GET",
+    headers,
+  }),
+]);
+
 
         // Process donation drives
         let donationDataResult = [];
