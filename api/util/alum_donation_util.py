@@ -293,6 +293,7 @@ async def make_donation(
             db.commit()
             db.refresh(in_kind)
         except Exception as e:
+            print(e)
             raise HTTPException(status_code=500, details=e)
 
         invoice = {
@@ -306,6 +307,7 @@ async def make_donation(
 
         send_email(invoice=invoice, message="Your donation will be reflected once it has been reviewed and verified by our admin team." )
         return invoice
+
 
 async def anonymous_donation(
     db: Session,
@@ -380,6 +382,7 @@ def maya_success(drive: DonationDrive, amount: float, is_anonymous: bool, db: Se
         "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
         "amount": monetary.amount,
         "email": name.email if user else "Anonymous"
+
     }
     if user:
         send_email(invoice=invoice, message="Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.")
@@ -411,4 +414,5 @@ def send_email(invoice, message):
 
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=f"Error: {e}")
