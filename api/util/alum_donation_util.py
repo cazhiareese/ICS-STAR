@@ -297,7 +297,7 @@ async def make_donation(
             "donation_drive": drive.title,
             "date": in_kind.date_donated,
             "user": f"{name.first_name} {name.last_name}",
-            "status": "Pending Acknowledgement",
+            "status": "Pending Acknowledgement" if in_kind.is_acknowledged is None else "Acknowledged" if in_kind.is_acknowledged is True else "Donation Denied",
             "details": in_kind.description,
             "email" : name.email
         }
