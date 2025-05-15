@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ICS-STAR Invoice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #ffffff;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .header img {
+      width: 100%;
+    }
+    .main-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #00369C;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .event-image {
+      width: 100%;
+      height: auto;
+      margin: 20px 0;
+    }
+    .content {
+      font-size: 16px;
+      color: #333333;
+      line-height: 1.5;
+    }
+    .button-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .cta-button {
+      background-color: #00369C;
+      color: white !important;
+      text-decoration: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      font-size: 16px;
+      display: inline-block;
+    }
+    .footer {
+      font-size: 13px;
+      color: #666666;
+      text-align: center;
+      padding: 20px 10px;
+      border-top: 1px solid #dddddd;
+      margin-top: 40px;
+    }
+    .footer-logo {
+      margin-bottom: 10px;
+    }
+    .footer-logo img {
+      width: 120px;
+    }
+    .footer a {
+      color: #00369C;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    .social-icons img {
+      width: 20px;
+      margin: 0 5px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Header with Logo -->
+    <div class="header">
+      <img src="https://rtyworjvisvjmixvxwmc.supabase.co/storage/v1/object/public/128storage/emailing_assets/Email%20Header.png" alt="ICS - STAR Logo">
+    </div>
+
+    <!-- Title -->
+    
+    <div class="main-title">   
+     Thank you for donating to ICS-STAR 
+    </div>
+
+
+
+    <!-- Event Details -->
+  <div class="content">
+      <p>{message}</p>
+    </div>
+    <div class="event-details" style="margin: 15px 0; font-size: 14px; color: #333; line-height: 1.6;">
+        <ul>
+        <li style="margin: 5px 0; text-align: left;">
+            <strong>Donation Drive:</strong> {donation_drive}
+        </li>
+        <li style="margin: 5px 0; text-align: left;">
+            <strong>Date:</strong> {date}
+        </li>
+        <li style="margin: 5px 0; text-align: left;">
+            <strong>Status:</strong> {status}
+        </li>
+        <li style="margin: 5px 0; text-align: left;">
+            <strong>Details:</strong>&#8369; {details}
+        </li>
+        
+      </ul>
+    </div>
+
+
+    <!-- CTA Button -->
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-logo">
+        <img src="https://rtyworjvisvjmixvxwmc.supabase.co/storage/v1/object/public/128storage/emailing_assets/Group%20250.png" alt="ICS-STAR Logo Footer">
+      </div>
+      <p>
+        Institute of Computer Science <br>
+        College of Arts and Sciences, UPLB <br>
+        Los Baños, Laguna, Philippines 4031
+      </p>
+    </div>
+  </div>
+</body>
+</html>
