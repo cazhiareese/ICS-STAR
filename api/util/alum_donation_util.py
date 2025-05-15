@@ -307,7 +307,49 @@ async def make_donation(
         send_email(invoice=invoice, message="Your donation will be reflected once it has been reviewed and verified by our admin team." )
         return invoice
 
-
+async def anonymous_donation(
+    db: Session,
+    drive: DonationDrive,
+    monetary_donation: bool = False,
+    direct_maya: Optional[bool] = None,
+    amount: Optional[float] = None,
+    proof: Optional[UploadFile] = File(None),
+    is_anonymous = Optional[bool],
+):
+    
+    if monetary_donation:
+        if amount is None or amount <= 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid amount"
+                )
+        if not direct_maya:
+            proof_of_payment = await upload_proof(db, proof)
+            
+            monetary = MonetaryDonation(
+                date_donated = datetime.now(timezone.utc),
+                amount = amount,
+                drive_id = drive.drive_id,
+                is_anonymous = is_anonymous if is_anonymous else False,
+                proof = proof_of_payment,
+            )
+            try:
+                db.add(monetary)
+                db.commit()
+                db.refresh(monetary)
+            except Exception as e:
+                raise HTTPException(status_code=500, details=e)
+            
+            invoice = {
+                "donation_drive": drive.title,
+                "date": monetary.date_donated,
+                "user": "Anonymous",
+                "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
+                "amount": monetary.amount
+            }
+            return invoice
+        else:
+            return await maya_donation(drive.drive_id, amount)
 
 
 def maya_success(drive: DonationDrive, amount: float, is_anonymous: bool, db: Session, user: Optional[CurrentUser]):
