@@ -2,7 +2,7 @@
     import Step3 from "../../assets/SignupAssets/step3.png"
     import { useAppContext } from "../AuthContext/signupcontext";
     import { useNavigate } from "react-router-dom";
-
+    import { showToast } from "../../components/ui/Toast"
     import { useState } from "react";
 
     import Loading from "../../components/LoadingComponents/starloading.jsx"
@@ -61,14 +61,19 @@
         
                 if (response.ok) {
                     localStorage.setItem("token", data.access_token);
-                        // alert("Registration Successful!");
-                        setShowSuccessModal(true)
-                        // Redirect based on userType
-                        
-                        return
+                    // alert("Registration Successful!");
+                    showToast("Registration successful!", "success");
+                    setTimeout(() => {
+                        // Force a reload to ensure auth context updates with the new token
+                        window.location.href = userType === "alumni" ? "/alumni/dashboard" : "/student/dashboard";
+                    }, 1000);
+
+                    // setShowSuccessModal(true)
+                    // Redirect based on userType
                     
                 } else {
                     // alert(data.detail || "Registration failed!");
+                    showToast("Registration failed!", "error");
                     console.error("Response Status:", response.status);
                     console.error("Response OK:", response.ok);
                     console.error(data);
@@ -78,6 +83,7 @@
                 console.error("Error:", error);
                 console.log(formData)
                 // alert("Something went wrong!");
+                showToast("Something went wrong!", "error");
             }
         };
         
