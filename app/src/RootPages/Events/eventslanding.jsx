@@ -39,7 +39,7 @@ const EventsLanding = () => {
 
     const [user, setUser] = useState(null);
     const [userType, setUserType] = useState(null);
-
+    
     //cyrus was here
 
 const User = localStorage.getItem("token");
@@ -310,8 +310,12 @@ useEffect(() => {
                                         const eventDate = new Date(event.dates);
                                         return eventDate.toDateString() === today.toDateString();
                                     });
-                                    setSuggestions(filteredEvents);
 
+                                    if (filteredEvents.length === 0) {
+                                        setSuggestions("zero");
+                                    } else {
+                                        setSuggestions(filteredEvents)
+                                    }
                                 }
                                 
                             }}
@@ -335,7 +339,11 @@ useEffect(() => {
                                         const eventDate = new Date(event.dates);
                                         return eventDate.toDateString() === tomorrow.toDateString();
                                     });
-                                    setSuggestions(filteredEvents);
+                                    if (filteredEvents.length === 0) {
+                                        setSuggestions("zero");
+                                    } else {
+                                        setSuggestions(filteredEvents)
+                                    }
                                 }
                             }}
                         >
@@ -360,7 +368,11 @@ useEffect(() => {
                                         const eventDate = new Date(event.dates);
                                         return eventDate >= weekendStart && eventDate <= weekendEnd;
                                     });
-                                    setSuggestions(filteredEvents);
+                                    if (filteredEvents.length === 0) {
+                                        setSuggestions("zero");
+                                    } else {
+                                        setSuggestions(filteredEvents)
+                                    }
 
                                 }
                             }}
@@ -391,7 +403,7 @@ useEffect(() => {
 
                         {/* Calendar pop‑up */}
                         {showCalendar && (
-                            <div className="absolute m-auto z-50 w-full h-full">
+                            <div className="absolute m-auto z-50 w-65 h-100 right-10 pt-20 ">
                                 <DatePicker
                             selected={pickedDate}
                             onChange={(date) => {
@@ -403,7 +415,11 @@ useEffect(() => {
                                 const evDate = new Date(ev.dates).toDateString();
                                 return evDate === date.toDateString();
                             });
-                            setSuggestions(filtered);
+                            if (filtered.length === 0) {
+                                setSuggestions("zero");
+                            } else {
+                                setSuggestions(filteredEvents)
+                            }
                             }}
                             inline          /* renders as a small calendar */
                             minDate={new Date()}           /* optional: no past dates */
@@ -419,7 +435,7 @@ useEffect(() => {
 
                     <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start">
                         
-                        {suggestions!= "none" ? (
+                        {suggestions!= "none" && suggestions!="zero" ? (
                             
                         // <div className="absolute top-full mt-5 bg-white w-full max-w-[600px] border-gray-400 border-2 z-20 rounded-2xl">
                             suggestions.map((event, index) => {
@@ -427,12 +443,18 @@ useEffect(() => {
                             return !isGoing && (
                                 <div key={index} className="flex relative ">
                                 <EventCards event={event} reservationExclusiveWidth={true}/>
-
                                 </div>
                             );
                             })
                         // </div>
-                        ) : allEvents != null ? (
+                        ) 
+                        : suggestions==="zero" ? (<div>
+                            <label className="font-satoshi-light text-primary text-4xl overflow">No events found.</label>
+                        </div>
+                        
+                    
+                        ) 
+                        : allEvents != null ? (
                         allEvents.map((event, index) => {
                             const isGoing = reservations && reservations.some(reservation => reservation.event_id === event.event_id);
                             return !isGoing && (
@@ -453,12 +475,10 @@ useEffect(() => {
                         )}
                     </div>
                 </div>
-
             </div>
             
         </>
     );
-    
 };
 
 export default EventsLanding;

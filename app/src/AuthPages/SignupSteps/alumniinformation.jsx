@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
 import { ChevronDown } from 'lucide-react';
 import Loading from "../../components/LoadingComponents/starloading.jsx"
-
+import ModalTemplate from "../modaltemplate.jsx";
 function AlumnInfo(){
 
     const [image, setImage] = useState(null);
@@ -26,6 +26,7 @@ function AlumnInfo(){
     const [termDropdownOpen, setTermDropdownOpen] = useState(false);
     const terms = ["1st Semester", "2nd Semester", "Midyear"];
 
+    const [showEmailErrorModal, setShowEmailErrorModal] = useState(false);
 
     // For Year
     const handleInputChange = (e) => {
@@ -114,9 +115,10 @@ function AlumnInfo(){
             `${userData.selectedYear}-${userData.value}`
         );
     
-        if (!isAvailable) {
+        if (isAvailable.detail=="Student number already exists" || !isAvailable) {
             // alert("Student Number already taken")
-            setError(true);
+            console.log("Student number is not available");
+            setShowEmailErrorModal(true);
         } else {
             setStudentNumberError(false);
             setTermGraduated(false);
@@ -132,6 +134,7 @@ function AlumnInfo(){
                 `${API_BASE_URL}/get-studno?student_number=${studentNumber}`
             );
             const isAvailable = await response.json(); // Response is boolean directly
+            console.log("Student number availability:", isAvailable);
             return isAvailable;
         } catch (error) {
             console.error("Error checking student number:", error);
@@ -355,6 +358,15 @@ function AlumnInfo(){
                  </div>
                 
             </div>
+
+            {showEmailErrorModal && (
+                <ModalTemplate
+                    onClose={() => setShowEmailErrorModal(false)}
+                    choiceclose="Close"
+                    header="Error"
+                    information="Student number already registered, please check again."
+                />
+            )}
         </div>
     );
 }

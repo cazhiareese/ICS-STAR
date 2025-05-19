@@ -7,6 +7,8 @@ import { ChevronDown } from 'lucide-react';
 import FilePicker from "react-file-picker";
 import ModalTemplate from "../modaltemplate";
 
+import Loading from "../../components/LoadingComponents/starloading.jsx"
+
 function StudentInformation(){
 
     const [image, setImage] = useState(null);
@@ -16,13 +18,20 @@ function StudentInformation(){
     const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
     const { setCurrentSection} = useAppContext();
 
-
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
     const [showFileSizeModal, setShowFileSizeModal] = useState(false);
 
     const [error, setError]= useState(false)
     const [studentNumberError, setStudentNumberError] = useState(false)
     // For Dropbox
+
+
+
+    const [loading, setLoading] = useState(false);
+
+    const [showEmailErrorModal, setShowEmailErrorModal] = useState(false);
+
 
     const handleDrop = (event) => {
         event.preventDefault();
@@ -76,16 +85,48 @@ function StudentInformation(){
 
     // Requirements Checker !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    const checkRequirements = () =>{
+    const checkRequirements = async () =>{
+        setLoading(true)
         if (userData.value &&userData.selectedYear ){
-             setCurrentSection("3")
-            //  console.log("1"+userData.academicYear+"1")
+            //  setCurrentSection("3")
+             console.log("1"+userData.academicYear+"1")
         } else{
             setError(true)
 
             if (userData.selectedYear && userData.value) setStudentNumberError(false); else setStudentNumberError(true)
         }
+
+        // If required fields are filled, now check student number availability
+        const isAvailable = await checkStudentNumberAvailability(
+            `${userData.selectedYear}-${userData.value}`
+        );
+    
+        if (isAvailable.detail=="Student number already exists" || !isAvailable) {
+            // alert("Student Number already taken")
+            console.log("Student number is not available");
+            setShowEmailErrorModal(true);
+        } else {
+            setStudentNumberError(false);
+            setError(false);
+            setCurrentSection("3");
+        }
+        setLoading(false)
     }
+
+
+    const checkStudentNumberAvailability = async (studentNumber) => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/get-studno?student_number=${studentNumber}`
+            );
+            const isAvailable = await response.json(); // Response is boolean directly
+            console.log("Student number availability:", isAvailable);
+            return isAvailable;
+        } catch (error) {
+            console.error("Error checking student number:", error);
+            return false; // Assume taken if error
+        }
+    };
     
     return(
         <div className="flex flex-col w-full items-center pt-40 sm:pt-0 sm:mt-0 mt-10">
@@ -222,12 +263,16 @@ function StudentInformation(){
                         </button>)}
                     </div>
                 <div class=" text-black flex flex-col items-end">
+                        {loading ? (<Loading/>):
+                    
                         <button
                             className="bg-primary text-white py-3 rounded-3xl text-base w-4/6 font-bold hover:bg-blue-700 transition mt-0 cursor-pointer"
                             onClick = {checkRequirements}
                         >
                             Next
                         </button>
+                   
+                        }
                     </div>
             </div>
             {showFileSizeModal && (
@@ -240,6 +285,15 @@ function StudentInformation(){
                     onContinue={() => {}}
                 />
             )}
+
+            {showEmailErrorModal && (
+                            <ModalTemplate
+                                onClose={() => setShowEmailErrorModal(false)}
+                                choiceclose="Close"
+                                header="Error"
+                                information="Student number already registered. Please check again."
+                            />
+                        )}
         </div>
     );
 }

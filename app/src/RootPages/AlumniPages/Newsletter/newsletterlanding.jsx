@@ -5,6 +5,7 @@ import "../../../index.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { set } from "date-fns";
 
 export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selectedTags }) => {
     const navigate = useNavigate();
@@ -45,7 +46,7 @@ export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick
                     </div>
                 </div>
             </div>
-            <div className="flex flex-row sm:mt-4 space-x-2 overflow-x-scroll absolute bottom-2 left-5 right-5 py-3">
+            <div className="flex flex-row sm:mt-4 space-x-2 overflow-x-clip absolute bottom-2 left-5 right-5 py-3">
                 {tags.map((tag, index) => (
                     <span
                         key={index}
@@ -95,28 +96,40 @@ const NewsletterLanding = () => {
         setSelectedTags((prevSelectedTags) => {
             const isSelected = prevSelectedTags.includes(tagName);
     
-            // Update selectedTags
             const updatedSelectedTags = isSelected
                 ? prevSelectedTags.filter((tag) => tag !== tagName)
                 : [tagName, ...prevSelectedTags];
     
+            // Trigger backend filtering
+            fetchFilteredNewsletters(updatedSelectedTags);
+    
             return updatedSelectedTags;
         });
     
+        // Move selected tag to front in tag list
         setTags((prevTags) => {
             const tagIndex = prevTags.findIndex((tag) => tag.name === tagName);
-            if (tagIndex === -1) return prevTags; // Tag not found
+            if (tagIndex === -1) return prevTags;
     
             const tag = prevTags[tagIndex];
             const filteredTags = prevTags.filter((t) => t.name !== tagName);
     
-            // Reinsert selected tag at front if selected, else keep order
-            if (!selectedTags.includes(tagName)) {
-                return [tag, ...filteredTags];
-            } else {
-                return [...filteredTags, tag]; // Push to end if deselected
-            }
+            return !selectedTags.includes(tagName)
+                ? [tag, ...filteredTags]
+                : [...filteredTags, tag];
         });
+    };
+
+
+    const fetchFilteredNewsletters = async (selectedTags) => {
+        try {
+            const tagsParam = selectedTags.join(',');
+            const response = await fetch(`/search-newsletters?tags=${tagsParam}`);
+            const data = await response.json();
+            setFilteredNewsletters(data); // Update newsletter list with filtered result
+        } catch (error) {
+            console.error("Error fetching filtered newsletters:", error);
+        }
     };
 
     const mockCards = [
@@ -201,6 +214,8 @@ const NewsletterLanding = () => {
 
     const [tags, setTags] = useState(null);
 
+    const [skeleton, setSkeleton] = useState(false);
+
     const initializeTags = (tagData) => {
         setTags(
             tagData.map((tag, index) => ({
@@ -219,7 +234,9 @@ const NewsletterLanding = () => {
     // New search handler
     const handleSearch = async (query) => {
         try {
+            setSkeleton(true);
             const response = await axios.get(`${URL}/search-newsletters?title=${query}&limit=20`);
+            
             console.log("Search response:", response.data);
             setCard(response.data.map(item => ({
                 ...item,
@@ -230,9 +247,11 @@ const NewsletterLanding = () => {
                 tags: item.tags
             })));
             console.log("Search results:", response.data);
+            setSkeleton(false);
         } catch (error) {
             console.error("Error searching newsletters:", error);
             setCard([]); // Clear cards on error
+            setSkeleton(false);
         }
     };
 
@@ -261,6 +280,10 @@ const NewsletterLanding = () => {
         fetchTags();
     }, []);
 
+    useEffect(() => {
+        handleSearch(searchQuery, selectedTags);
+    }, [selectedTags]);
+
     return (
         <>
             <div className="flex flex-col w-full shadow-md  items-center rounded-b-[35px] bg-white mb-2 h-[100px]">
@@ -281,7 +304,31 @@ const NewsletterLanding = () => {
                 </div>
             </div>
             <div className={`flex-1 overflow-y-hidden sm:mx-10 md:mx-15 lg:mx-20 mx-3`}>
-                {card.length > 0 && tags != null ? (
+                {skeleton === true ? (
+                    <div className="animate-pulse">
+                        <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+                            <div className="flex overflow-x-auto space-x-4 py-4">
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                            </div>
+                        </div>
+                        <div
+                            className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
+                            style={{ height: `calc(100vh - 20rem)` }}
+                        >
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                        </div>
+                    </div>
+                ) :card.length > 0 && tags != null ? (
                     <>
                         <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
                             <button
@@ -357,6 +404,8 @@ const NewsletterLanding = () => {
                     </div>
                 )}
             </div>
+
+
         </>
     );
 };
