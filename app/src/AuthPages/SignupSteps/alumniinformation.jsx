@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
 import { ChevronDown } from 'lucide-react';
 import Loading from "../../components/LoadingComponents/starloading.jsx"
+import { showToast } from "../../components/ui/Toast"
 
 function AlumnInfo(){
 
@@ -113,10 +114,13 @@ function AlumnInfo(){
         const isAvailable = await checkStudentNumberAvailability(
             `${userData.selectedYear}-${userData.value}`
         );
-    
-        if (!isAvailable) {
+        
+
+
+        if (isAvailable.detail == "Student number already exists") {
             // alert("Student Number already taken")
-            setError(true);
+            showToast("Student number already taken!", "error")
+            // setError(true);
         } else {
             setStudentNumberError(false);
             setTermGraduated(false);

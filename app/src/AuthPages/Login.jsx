@@ -16,8 +16,11 @@ import google from "../assets/google.png"
 import GuestModal from "./guestModal"
 import ModalTemplate from "./modaltemplate"
 import { useLocation } from 'react-router-dom';
+import { showToast } from "../components/ui/Toast"
+
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
+
 
 function LoginPage() {
     const {  updateUserData, setCurrentSection } = useAppContext();
@@ -122,12 +125,14 @@ function LoginPage() {
 
           if (response.ok) {
               localStorage.setItem("token", data.access_token);
-              // alert("Login Successful!");
+            //   alert("Login Successful!");
+              showToast("Login Successful!", "success")
               fetchUserData();
             
           } else {
+              showToast("Invalid email or password!", "error")
 
-              setOpenError(true)
+            //   setOpenError(true)
 
           }
       } catch (error) {
@@ -577,6 +582,7 @@ function LoginPage() {
                         onClick={() => {
                             setOpenModal(false);
                             localStorage.removeItem("token");
+                            showToast("Login Successful!", "success");
                             navigate(`/guest/dashboard`);
                         }}
                     >
@@ -587,8 +593,7 @@ function LoginPage() {
         </div>
         
         }
-
-        {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error!"/>}
+        {/* {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error!"/>} */}
         
     </div>
 
