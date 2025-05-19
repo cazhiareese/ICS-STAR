@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { jwtDecode } from "jwt-decode";
 import ModalTemplate from '../../AuthPages/modaltemplate';
+import { set } from 'date-fns';
 
 const EventsLanding = () => {
 
@@ -40,6 +41,8 @@ const EventsLanding = () => {
     const [user, setUser] = useState(null);
     const [userType, setUserType] = useState(null);
     
+
+    const [skeleton, setSkeleton] = useState(true);
     //cyrus was here
 
 const User = localStorage.getItem("token");
@@ -81,7 +84,26 @@ useEffect(() => {
     //cyrus was here
 
 
-
+    const fetchAllEvents = async (dateFilter = null) => {
+        setSkeleton(true);
+        try {
+          const config = {
+            headers: tokentype === "guest" ? {} : { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+            params: dateFilter ? { date_filter: dateFilter } : {}
+          };
+      
+          const response = await axios.get(`${API_BASE_URL}/events-visible-to`, config);
+          setAllEvents(response.data);
+          setSuggestions("none"); // Reset suggestions
+          if (dateFilter&&response.data.length== 0) {
+            setSuggestions("zero");
+          }
+        } catch (error) {
+          console.error("Error fetching events:", error);
+        }
+        setSkeleton(false);
+      };
     useEffect(() => {
         console.log("SDFSDD")
         console.log(API_BASE_URL)
@@ -103,21 +125,6 @@ useEffect(() => {
           fetchReservations();
           setReservationSignal(false);
           console.log("RESERVATION SIGNAL");
-          
-          const fetchAllEvents = async () => {
-            try {
-              const config = tokentype === "guest"
-                ? {}
-                : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
-          
-              const response = await axios.get(`${API_BASE_URL}/events-visible-to`, config);
-              setAllEvents(response.data);
-              console.log("naku",allEvents);
-            } catch (error) {
-              console.error("Error fetching all events:", error);
-              console.log(allEvents);
-            }
-          };
           
           fetchAllEvents();
           
@@ -195,23 +202,38 @@ useEffect(() => {
         type="text"
         placeholder="Search Available Events"
         className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
-        onChange={(e) => {
-          const value = e.target.value;
-          setSearchInput(value);
-
-          if (value.trim() === "") {
-            setSuggestions("none");
-            return;
-          }
-
-          const matches = allEvents
-            ?.filter((event) =>
-              event.title.toLowerCase().includes(value.toLowerCase())
-            )
-            .slice(0, 5); // limit to 5
-
-          setSuggestions(matches || []);
-        }}
+        onChange={async (e) => {
+            setSkeleton(true);
+            const value = e.target.value;
+            setSearchInput(value);
+          
+            if (value.trim() === "") {
+              setSuggestions("none");
+              return;
+            }
+          
+            try {
+              const response = await axios.get(`${API_BASE_URL}/search-event`, {
+                params: { q: value },
+              });
+          
+              const eventNames = response.data;
+              const matchedEvents = allEvents?.filter(event =>
+                eventNames.includes(event.title)
+              );
+          
+              if (!matchedEvents || matchedEvents.length === 0) {
+                setSuggestions("zero");
+              } else {
+                setSuggestions(matchedEvents);
+              }
+            } catch (error) {
+              console.error("Error fetching search suggestions:", error);
+              setSuggestions("zero");
+            }
+            setSkeleton(false);
+          }}
+          
         value={searchInput}
       />
 
@@ -297,85 +319,42 @@ useEffect(() => {
                         <button
                             className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Today" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
                             onClick={() => {
-                                
-                                // console.log("Today: ", filteredEvents)
-                                if (filterPress=== "Today") {
-                                    setFilterPress("None")
-                                    setSuggestions("none");  
+                                if (filterPress === "Today") {
+                                  setFilterPress("None");
+                                  fetchAllEvents(); // reset to all
+                                } else {
+                                  setFilterPress("Today");
+                                  fetchAllEvents("today");
                                 }
-                                else{
-                                    setFilterPress("Today")
-                                    const today = new Date();
-                                    const filteredEvents = allEvents.filter(event => {
-                                        const eventDate = new Date(event.dates);
-                                        return eventDate.toDateString() === today.toDateString();
-                                    });
-
-                                    if (filteredEvents.length === 0) {
-                                        setSuggestions("zero");
-                                    } else {
-                                        setSuggestions(filteredEvents)
-                                    }
-                                }
-                                
-                            }}
+                              }}
                         >
                             Today
                         </button>
                         <button
                             className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Tomorrow" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
                             onClick={() => {
-                                
-
-                                if (filterPress=== "Tomorrow") {
-                                    setFilterPress("None")
-                                    setSuggestions("none");  
+                                if (filterPress === "Tomorrow") {
+                                  setFilterPress("None");
+                                  fetchAllEvents(); // reset to all
+                                } else {
+                                  setFilterPress("Tomorrow");
+                                  fetchAllEvents("tomorrow");
                                 }
-                                else{
-                                    setFilterPress("Tomorrow")
-                                    const tomorrow = new Date();
-                                    tomorrow.setDate(tomorrow.getDate() + 1);
-                                    const filteredEvents = allEvents.filter(event => {
-                                        const eventDate = new Date(event.dates);
-                                        return eventDate.toDateString() === tomorrow.toDateString();
-                                    });
-                                    if (filteredEvents.length === 0) {
-                                        setSuggestions("zero");
-                                    } else {
-                                        setSuggestions(filteredEvents)
-                                    }
-                                }
-                            }}
+                              }}
                         >
                             Tomorrow
                         </button>
                         <button
                             className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "This Weekend" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
                             onClick={() => {
-                                
-                                
-                                if (filterPress=== "This Weekend") {
-                                    setFilterPress("None")
-                                    setSuggestions("none");  
+                                if (filterPress === "This Weekend") {
+                                  setFilterPress("None");
+                                  fetchAllEvents(); // reset to all
+                                } else {
+                                  setFilterPress("This Weekend");
+                                  fetchAllEvents("this_weekend");
                                 }
-                                else{
-                                    setFilterPress("This Weekend")
-                                    const today = new Date();
-                                    const weekendStart = new Date(today.setDate(today.getDate() + (6 - today.getDay())));
-                                    const weekendEnd = new Date(weekendStart);
-                                    weekendEnd.setDate(weekendStart.getDate() + 1);
-                                    const filteredEvents = allEvents.filter(event => {
-                                        const eventDate = new Date(event.dates);
-                                        return eventDate >= weekendStart && eventDate <= weekendEnd;
-                                    });
-                                    if (filteredEvents.length === 0) {
-                                        setSuggestions("zero");
-                                    } else {
-                                        setSuggestions(filteredEvents)
-                                    }
-
-                                }
-                            }}
+                              }}
                         >
                             This Weekend
                         </button>
@@ -407,19 +386,12 @@ useEffect(() => {
                                 <DatePicker
                             selected={pickedDate}
                             onChange={(date) => {
-                            setPickedDate(date);
-                            setShowCalendar(false);
+                                setPickedDate(date);
+                                setShowCalendar(false);
 
-                            // filter events
-                            const filtered = allEvents.filter(ev => {
-                                const evDate = new Date(ev.dates).toDateString();
-                                return evDate === date.toDateString();
-                            });
-                            if (filtered.length === 0) {
-                                setSuggestions("zero");
-                            } else {
-                                setSuggestions(filteredEvents)
-                            }
+                                setFilterPress("Choose Date");
+                                const formattedDate = date.toISOString().split("T")[0];
+                                fetchAllEvents(formattedDate);
                             }}
                             inline          /* renders as a small calendar */
                             minDate={new Date()}           /* optional: no past dates */
@@ -435,7 +407,14 @@ useEffect(() => {
 
                     <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start">
                         
-                        {suggestions!= "none" && suggestions!="zero" ? (
+                        {skeleton ? (
+                            <>
+                            <EventCardsSkeleton />
+                            <EventCardsSkeleton />
+                            <EventCardsSkeleton />
+                            <EventCardsSkeleton />
+                            </>
+                        ) : suggestions!= "none" && suggestions!="zero" ? (
                             
                         // <div className="absolute top-full mt-5 bg-white w-full max-w-[600px] border-gray-400 border-2 z-20 rounded-2xl">
                             suggestions.map((event, index) => {
