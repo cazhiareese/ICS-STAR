@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
 import { ChevronDown } from 'lucide-react';
 import Loading from "../../components/LoadingComponents/starloading.jsx"
+import { showToast } from "../../components/ui/Toast"
+
 import ModalTemplate from "../modaltemplate.jsx";
 function AlumnInfo(){
 
@@ -118,6 +120,7 @@ function AlumnInfo(){
         if (isAvailable.detail=="Student number already exists" || !isAvailable) {
             // alert("Student Number already taken")
             console.log("Student number is not available");
+            showToast("Student number already taken!", "error")
             setShowEmailErrorModal(true);
         } else {
             setStudentNumberError(false);

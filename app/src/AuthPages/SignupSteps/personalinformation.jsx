@@ -4,7 +4,7 @@ import { useAppContext } from "../AuthContext/signupcontext.jsx"
 import {useState, useEffect } from "react";
 import Loading from "../../components/LoadingComponents/starloading.jsx"
 import ModalTemplate from "../modaltemplate.jsx";
-
+import { showToast } from "../../components/ui/Toast"
 
 function PersonalInformation(){
     const { userData, updateUserData, setUserData, userType } = useAppContext();
@@ -36,10 +36,11 @@ function PersonalInformation(){
         console.log(checker)
         if (checker.detail==="Email already registered") {
             // alert("Email already Registered, please register a new email address")
+            showToast("Email already registered!", "error")
             userData.email=""
             // console.log("HELJDKFDSF", checker)
             setLoading(false)
-            setShowEmailErrorModal(true)
+            // setShowEmailErrorModal(true)
             return
         }
         else if (userData.firstName == "" || userData.lastName== "" || (userData.email=="" || validateEmail(userData.email) == false) || userData.password==""){

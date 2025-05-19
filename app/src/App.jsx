@@ -11,6 +11,7 @@ import Unauthorized from "./AuthPages/Unauthorized";
 import OnboardingDashboard from "./AuthPages/OnBoarding/dashboard_onboarding";
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
+import { Toaster } from "sonner"
 
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
@@ -139,6 +140,8 @@ function App() {
   console.log(isSignedIn);
 
   return (
+     <>
+    <Toaster richColors closeButton position="top-right" />
     <Routes>
       <Route path="/" element={<Navigate to={isSignedIn ? "/login" : "login"} />} />
 
@@ -325,7 +328,7 @@ function App() {
       {/* Redirect unknown routes */}
       <Route path="*" element={<LoginPage />} />
     </Routes>
-
+</>
   );
 }
 
