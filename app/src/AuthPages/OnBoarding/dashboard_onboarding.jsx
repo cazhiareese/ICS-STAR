@@ -102,42 +102,7 @@ function OnboardingDashboard() {
         />
       ))}
 
-      {/* Main header */}
-      <div className="flex flex-col items-center justify-center pt-32 relative z-20">
-        <h1 className="text-center font-satoshi-bold text-[60px] leading-[60px] tracking-[-2%] text-black">
-          Bridging Alumni
-        </h1>
-        <h1 className="text-center font-satoshi-bold text-[60px] leading-[60px] tracking-[-2%] text-primary">
-          Across the Cosmos
-        </h1>
-        <p className="text-center font-satoshi-medium text-[20px] leading-[60px] tracking-[-2%] text-black pt-10">
-          What do you want to view?
-        </p>
 
-        {/* Cards Section */}
-        <div className="flex flex-wrap justify-center gap-4 mt-6">
-  <Link to="/student/events"><CardComponent icon={Calendar} text="Look for events to attend" /></Link>
-  <Link to="/student/newsletter"><CardComponent icon={Newspaper} text="Catch up with ICS" /></Link>
-  
-  {!banned && verified && (
-    <>
-      <Link to="/student/jobPosting"><CardComponent icon={Briefcase} text="Browse job opportunities" /></Link>
-      <Link to="/student/alumnisearch"><CardComponent icon={User} text="Connect with Alumni" /></Link>
-    </>
-  )}
-</div>
-
-      </div>
-
-      {/* Add CSS for rotation animation */}
-      <style>
-        {`
-          @keyframes rotateStar {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
 
     </div>
   );

@@ -13,7 +13,7 @@ import { useAppContext } from "../AuthContext/signupcontext.jsx"
 
 function SignupMain() {
 
-    const {currentSection, setCurrentSection} = useAppContext();
+    const {currentSection, userData, setCurrentSection} = useAppContext();
     const {userType, setUserType} = useAppContext();
 
     const {sectionOnePass, setSectionOnePass} = useAppContext();
@@ -36,11 +36,25 @@ function SignupMain() {
 
     const SetAlumni =()=>{
         setUserType("alumni")
-        setCurrentSection("1")
+        if (userData.isGoogle){
+            setCurrentSection("2")
+        }else{
+            setCurrentSection("1")
+        }
+        
+        
+
+        
     }
     const SetStudent =()=>{
         setUserType("student")
-        setCurrentSection("1")
+
+
+        if (userData.isGoogle){
+            setCurrentSection("2")
+        }else{
+            setCurrentSection("1")
+        }
     }
 
 

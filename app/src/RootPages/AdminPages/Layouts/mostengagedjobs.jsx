@@ -37,7 +37,8 @@ function MostEngagedJobs() {
           // setFullEngagementReportLoading(true);
           setLoading(true);
           try {
-            const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-interested?time_range=${daysFilter}&page=${currentPage}&page_size=10`);
+            const token= localStorage.getItem('token');
+            const response = await axios.get(`${API_BASE_URL}/admin/engagement-statistics/jobs/top-interested?time_range=${daysFilter}&page=${currentPage}&page_size=10`, {headers: {Authorization: `Bearer ${token}`}});
             setMaxPage(response.data.total_pages);
             setMostInterested(response.data.results);
             // const totalPages = Math.ceil(response.data.length / rowsPerPage);

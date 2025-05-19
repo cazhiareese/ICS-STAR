@@ -248,7 +248,7 @@ function AdminAlumniInfo() {
   );
 
   return (
-    <div className="bg-[#f9f9fb] p-6 max-h-screen flex flex-col overflow-auto">
+    <div className="p-6 max-h-screen flex flex-col overflow-auto">
       <AdminBack label={"Back to dashboard"} />
       <h1 className="font-satoshi-bold text-black text-3xl mb-4">User Information Reports</h1>
 
@@ -373,10 +373,10 @@ function AdminAlumniInfo() {
             <div className="flex justify-center align-center">
             </div>
             <button
-              className="flex flex-row gap-1 items-center cursor-pointer"
+              className="flex flex-row gap-1 items-center cursor-pointer hover:text-hover"
               onClick={() => navigate("/admin/dashboard/industry-reports/")}
             >
-              <p className="font-satoshi-light text-sm">View Industry Breakdown</p>
+              <p className="font-satoshi-light text-sm hover:text-hover">View Industry Breakdown</p>
               <MoveRight />
             </button>
           </div>

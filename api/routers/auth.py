@@ -33,7 +33,7 @@ async def register(
     first_name: str = Form(...),
     last_name: str = Form(...),
     email: str = Form(...),
-    password: str = Form(...),
+    password: Optional[str] = Form(None),
     student_number: str = Form(...),
     user_type: str = Form(...),
     verification_file: UploadFile = File(None),
@@ -48,20 +48,10 @@ async def register(
 @router.post("/auth/google/register")
 async def google_register(
     token: str = Form(...),
-    student_number: str = Form(...),
-    user_type: UserTypeEnum = Form(...),
-    graduation_year: Optional[str] = Form(None),
-    graduation_semester: Optional[UserGradSemEnum] = Form(None),
-    verification_file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
     return await register_with_google(
         token=token,
-        student_number=student_number,
-        user_type=user_type,
-        graduation_year=graduation_year,
-        graduation_semester=graduation_semester,
-        verification_file=verification_file,
         db=db
     )
 

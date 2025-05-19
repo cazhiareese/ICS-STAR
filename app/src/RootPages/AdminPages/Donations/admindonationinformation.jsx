@@ -40,7 +40,7 @@ function AdminDonationInformation() {
   const [editing, setEditing] = useState(false);
   const [description, setDescription] = useState(donation?.description || '');
   const [links, setLinks] = useState(donation?.links || []);
-
+  const tokenLocal= localStorage.getItem('token');
   useEffect(() => {
     if (donation) {
       setDescription(donation.description || '');
@@ -61,7 +61,7 @@ function AdminDonationInformation() {
     try {
       await axios.put(`${API_BASE_URL}/edit-donation-drive/description-links/${driveid}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` }}
+        { headers: { Authorization: `Bearer ${tokenLocal}` }}
       );
       setDonation({ ...donation, description, links });
       setEditing(false);
@@ -114,7 +114,7 @@ function AdminDonationInformation() {
       await axios.put(
         `${API_BASE_URL}/edit-donation-drive/goal/${driveid}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${tokenLocal}` } }
       );
       setEditGoalModal(false);
       setNewGoal('');
@@ -128,7 +128,7 @@ function AdminDonationInformation() {
     setCloseDonationLoading(true)
   
     try {
-      await axios.put(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      await axios.put(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`,{}, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(response)
   
       // Show success message
@@ -144,12 +144,11 @@ function AdminDonationInformation() {
     setLoading(true)
 
     try {
-      const token = localStorage.getItem('token');
-      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(donationResponse.data)   
       setDonation(donationResponse.data)
 
-      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       setProgressData([
         { name: "progress", value: percentResponse.data.percent_funded },
         { name: "remaining", value: percentResponse.data.remaining_percent }
@@ -165,8 +164,8 @@ function AdminDonationInformation() {
   async function fetchNextVerifiedPage() {
     setVerifiedDonationLoading(true)
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`, {headers: { Authorization: `Bearer ${token}` }})
+
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(response)
       setTotalVerifiedPages(response.data.total_pages)
       setVerifiedDonations(response.data.data)
@@ -181,7 +180,7 @@ function AdminDonationInformation() {
     setPendingDonationLoading(true)
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page=${pendingPage}&page_size=5`, {headers: { Authorization: `Bearer ${token}` }})
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page=${pendingPage}&page_size=5`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       console.log(response)
       setTotalPendingPages(response.data.total_pages)
       setPendingDonations(response.data.data)
