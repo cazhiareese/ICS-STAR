@@ -247,7 +247,7 @@ function AdminCareer() {
         </div>
       </div>
       {/* Table for desktop*/}
-      <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full bg-white'>
+      <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full bg-[#FFFFFF]'>
         {loading ? (
           <div className='flex flex-row items-center justify-center h-full'>
             <CircularLoading/>

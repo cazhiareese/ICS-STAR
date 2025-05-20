@@ -588,7 +588,7 @@ function AdminBatchInformation() {
               <MoveRight className='cursor-pointer' onClick={() => {}}/>
             </div>
           </div>
-          <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
+          <div className='bg-[#FFFFFF] border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
             <UsersTable data={batchUsers} userType='alum'/>
           </div>
           </>
