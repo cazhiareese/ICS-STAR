@@ -251,10 +251,11 @@ function AdminCreateEvent({ purpose }) {
       if (res.data.message === 'success') {
         setSubmitSuccess(true);
         // alert(purpose === 'create' ? 'Event created successfully!' : 'Event successfully edited');
-        showToast({
-          type: 'success',
-          message: purpose === 'create' ? 'Event created successfully!' : 'Event successfully edited',
-        });
+        if (purpose == 'create') {
+          showToast('Event created successfully!', 'success');
+        } else {
+          showToast('Event successfully edited!', 'success');
+        }
       }
     } catch (err) {
       console.error('Error submitting event:', err);
