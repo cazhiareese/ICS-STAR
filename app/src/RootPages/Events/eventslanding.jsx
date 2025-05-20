@@ -395,7 +395,7 @@ useEffect(() => {
 
                     
 
-                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start">
+                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start py-5">
                         
                         {skeleton ? (
                             <>
