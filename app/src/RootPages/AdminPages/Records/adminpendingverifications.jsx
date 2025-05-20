@@ -85,6 +85,7 @@ function AdminPendingVerifications() {
         
         const queryString = params.toString();        
         const url = `${API_BASE_URL}/admin/filter/unverified/${type}?${queryString}`
+        console.log(url)
         const response = await axios.get(url, {headers: {Authorization: `Bearer ${token}`}}); 
         setTotalPages(response.data.total_pages)
         setPendingUsers(response.data.items);
@@ -152,7 +153,7 @@ function AdminPendingVerifications() {
       }
     
       fetchData()
-    }, [sortBy, sortDirection, query, selectedFilters])
+    }, [sortBy, sortDirection, query, selectedFilters, page])
     
     // Initial fetch
     useEffect(() => {
