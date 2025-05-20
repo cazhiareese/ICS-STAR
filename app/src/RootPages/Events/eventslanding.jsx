@@ -71,15 +71,7 @@ useEffect(() => {
     setUserType(tokentype);     
 },[])
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollTop = window.scrollY;
-            setIsSticky(scrollTop > 100); // adjust the trigger point here
-        };
-    
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+
 
     //cyrus was here
 
@@ -302,8 +294,6 @@ useEffect(() => {
                             </div>
                         )}
                     </div>
-
-
                     )
                     
                     }

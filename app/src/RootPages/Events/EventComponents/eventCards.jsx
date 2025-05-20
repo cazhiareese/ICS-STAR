@@ -109,7 +109,9 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
         <div className="mt-auto">
           {/* Location */}
           <div className="flex items-center mt-3 text-gray-600 space-x-3">
+            <div>
             <MapPinned />
+            </div>
             <div className="">
               <label className="whitespace-nowrap">{event.location}</label>
             </div>
@@ -117,7 +119,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
     
           {/* Dates */}
           <div className="flex items-center mt-1 text-s text-gray-600 space-x-3">
-            <Calendar />
+            <div><Calendar/></div>
             <div className="flex truncate space-x-5">
               {event.dates.map((datetime, index) => (
                 <div key={index} className="flex-shrink-0">
