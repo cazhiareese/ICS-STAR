@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminModal from './AdminModal';
 import { X, CheckCircle } from 'lucide-react';
+import { showToast } from "../ui/Toast"
 import axios from 'axios';
 import CircularLoading from '../LoadingComponents/circularloading';
 
@@ -36,9 +37,11 @@ function JobTable({ data, jobType, loading = false }) {
       });
       setRemoveLoading(false);
       setRemoveSuccess(true);
+      showToast("Reported job removed successfully!", "success")
       navigate(-1);
     } catch (error) {
       setRemoveLoading(false);
+      showToast("Failed to remove reported job!", "error")
       console.error('Failed to delete post:', error);
     }
   }

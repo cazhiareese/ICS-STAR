@@ -38,9 +38,11 @@ const NewsletterModal = ({ isOpen, onClose, formData, option, id, onSuccess }) =
 
         if (response.data.message === "success") {
           setSuccess(true);
+          showToast("Newsletter deleted successfully!", "success");
           if (onSuccess) onSuccess(); // Notify parent of successful deletion
         } else {
           throw new Error('Unexpected response from server');
+          showToast("Failed to delete newsletter", "error");
         }
       }
     } catch (err) {
