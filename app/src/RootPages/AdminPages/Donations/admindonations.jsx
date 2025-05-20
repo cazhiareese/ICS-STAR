@@ -90,7 +90,7 @@ function AdminDonations() {
   }, [sortBy, sortDirection, page, donationType, query]);
 
   return (
-    <div className="flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100">
+    <div className="flex flex-col lg:p-8 h-screen overflow-hidden max-w-7xl mx-auto bg-gray-100">
       {/* Header and add donation button */}
       <div className='flex justify-between items-center mb-4'>
         <h1 className='text-primary text-5xl font-satoshi-bold'>Donations</h1>
@@ -109,7 +109,7 @@ function AdminDonations() {
           <h2 className="font-satoshi-medium">Help ICS</h2>
         </div>
         <div className="border-l border-gray-300"></div>
-        <div className="flex flex-1">
+        <div className="flex flex-2">
           <div className="flex flex-col items-center justify-center flex-1">
             <h3 className="font-satoshi-bold text-2xl text-primary">
               Php {genericDriveDetails.total_amount || 0}
@@ -131,7 +131,7 @@ function AdminDonations() {
           <p className="font-satoshi-medium">Unverified Donations</p>
         </div>
       </div>
-      <div className="flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0">
+      <div className="flex flex-col w-full mt-8 lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0">
         <div className="w-full lg:w-auto min-w-xs">
           <button
             className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${
@@ -150,14 +150,14 @@ function AdminDonations() {
             <p>Closed</p>
           </button>
         </div>
-        <div className="flex gap-2 items-center ">
+        <div className="flex gap-2 items-center">
           <SearchComponent query={query} setQuery={setQuery} focused={focused} setFocused={setFocused} />
           <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy} />
           <OrderToggle direction={sortDirection} onToggle={setSortDirection} />
           <PaginationComponent page={page} setPage={setPage} totalPages={totalPages} />
         </div>
       </div>
-      <div className="border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto bg-white">
+      <div className="border border-gray-400 flex-1 rounded-xl p-6 h-fit hidden lg:block overflow-auto bg-white">
         {loading ? (
           <DonationsTable data={[]} loading={true} />
         ) : donations.length === 0 ? (

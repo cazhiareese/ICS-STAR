@@ -68,7 +68,7 @@ function AdminNewsletter() {
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
   return (
-    <div className='h-screen w-full p-6 flex flex-col'>
+    <div className='h-screen w-full p-8 flex flex-col'>
       {/* Header */}
       <div className='flex flex-row justify-between mb-10'>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Newsletter</h1>
