@@ -5,6 +5,7 @@ import axios from 'axios';
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import EventFilterDropdown from '../../../components/AdminComponents/eventFilter';
+import { showToast } from '../../../components/ui/Toast';
 
 function AdminCreateEvent({ purpose }) {
   const navigate = useNavigate();
@@ -250,10 +251,15 @@ function AdminCreateEvent({ purpose }) {
       if (res.data.message === 'success') {
         setSubmitSuccess(true);
         // alert(purpose === 'create' ? 'Event created successfully!' : 'Event successfully edited');
+        showToast({
+          type: 'success',
+          message: purpose === 'create' ? 'Event created successfully!' : 'Event successfully edited',
+        });
       }
     } catch (err) {
       console.error('Error submitting event:', err);
       // alert('Something went wrong.');
+      showToast("Something went wrong.", "error");
     } finally {
       setSubmitLoading(false);
     }
