@@ -118,7 +118,7 @@ function AdminEventDetails() {
         }
       </div>
       {/* RSVP Details */}
-      <div className='flex flex-row items-center border border-gray-400 bg-white rounded-3xl h-24 px-12 py-6'>
+      <div className='flex flex-row items-center border border-gray-400 bg-[#FFFFFF] rounded-3xl h-24 px-12 py-6'>
         <div className='flex flex-1 items-center gap-12'>
           <h2 className='font-satoshi-bold text-primary text-3xl flex items-center'>{rsvpDetails.rsvp_count} RSVPs</h2>
           <div className='flex flex-row items-center gap-2'>
@@ -168,7 +168,7 @@ function AdminEventDetails() {
         </div>
       </div>
       {/* RSVP List table / Event Details */}
-      <div className='w-full h-full border border-gray-400 bg-white rounded-2xl overflow-auto'>
+      <div className='w-full h-full border border-gray-400 bg-[#FFFFFF] rounded-2xl overflow-auto'>
         {viewStyle == 'rsvpList' ? (
           rsvpList == null ? (
             <div className='flex items-center justify-center w-full h-full'>
@@ -242,7 +242,7 @@ function AdminEventDetails() {
           </div>
         )}
       </div>
-      {/* Close Donation Confirmatino Modal */}
+      {/* Close Donation Confirmation Modal */}
       {deleteModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
           <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">
