@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import CircularLoading from '../../../components/LoadingComponents/circularloading'
 import RsvpListTable from '../../../components/AdminComponents/RsvpListTable'
+import { showToast } from "../../../components/ui/Toast"
+
 
 function AdminEventDetails() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
@@ -42,10 +44,20 @@ function AdminEventDetails() {
   }
 
   async function deleteEvent(token){
-    console.log(token)
-      const response = await axios.put(`${API_BASE_URL}/api/admin/events/delete/${eventid}`, {}, {headers: {Authorization: `Bearer ${token}`}})
-      console.log(response)
-      navigate(-1)
+      try {
+        console.log(token);
+        const response = await axios.put(
+          `${API_BASE_URL}/api/admin/events/delete/${eventid}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log(response);
+        showToast("Event deleted successfully.", "success");
+        navigate(-1);
+      } catch (error) {
+        console.error(error);
+        showToast("Failed to delete event.", "error");
+      }
   }
 
   useEffect(() => {
@@ -71,8 +83,12 @@ function AdminEventDetails() {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/admin/events/send-email/${eventid}`, {},  {headers: {Authorization: `Bearer ${token}`}})
       console.log(response)
+      if (response.status === 200) {
+        showToast("Email invites sent successfully!", "success")
+      }
     } catch (error) {
       console.log(error)
+      showToast("Failed to send email invites.", "error")
     } finally {
       setSubmitLoading(false)
       setSubmitSuccess(true)
