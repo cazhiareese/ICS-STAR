@@ -298,16 +298,16 @@ function AdminBatchInformation() {
 
 
     return (
-    <div className='py-6 px-25 overflow-auto max-h-screen'>
+    <div className='bg-[#F9F9FB] flex flex-col py-6 px-25 overflow-auto h-screen max-h-screen'>
       {/* Back */}
         <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
         <MoveLeft className='text-primary'/> 
         <p className='text-primary font-satoshi-medium text-lg'>Back</p>
       </button>
-      <div className='flex flex-col'>
+      <div className='flex flex-1 pt-5 flex-col'>
         <h2 className='font-satoshi-bold text-2xl text-primary'> Batch Information </h2>
         {/* Batch and count */}
-        <div className='flex flex-row justify-between'>
+        <div className='flex flex-row justify-between py-5'>
           {/* Batch selector */}
           <select
             value={selectedYear}
@@ -315,7 +315,7 @@ function AdminBatchInformation() {
               setSelectedYear(e.target.value);
               navigate(`/admin/dashboard/batch-reports/${e.target.value}`)
             }}
-            className="block w-fit px-4 py-2 text-2xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
+            className="bg-[#FFFFFF] block w-fit pl-2 pr-16 py-2 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
           >
             <option value="" disabled>Select a year</option>
             {years.map((year) => (
@@ -358,7 +358,7 @@ function AdminBatchInformation() {
         </div>
         {/* Statistics */}
         {statsOrUser === 'stats' ? (
-        <div className='flex flex-col gap-2 mt-2'>
+        <div className='flex flex-col gap-4 mt-4'>
           {/* Employment Status */}
           {employmentData && employmentData.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Employment Status </h2>
@@ -518,7 +518,7 @@ function AdminBatchInformation() {
             <h3 className='font-satoshi-medium text-xl'> Brief Location Statistics </h3>
             <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
           </div> : null }
-          {/* Top Counties */}
+          {/* Top Countries */}
           {topCountries && topCountries.length > 0? 
           <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Countries </h2>
@@ -555,7 +555,7 @@ function AdminBatchInformation() {
         </div>
         ) : (
           <>
-          <div className='flex gap-2'>
+          <div className='flex gap-2 mt-4 mb-2 justify-end'>
             
             <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
           
