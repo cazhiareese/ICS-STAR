@@ -249,9 +249,9 @@ function AdminDonationsInsights() {
             )}
           </div>
         </div>
-        <h1 className='text-5xl text-primary font-satoshi-bold mt-4'>Donations</h1>
+        <h1 className='text-5xl text-primary font-satoshi-bold mt-6'>Donations</h1>
         {/* Buttons and filters */}
-        <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
+        <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 mt-1 gap-2 lg:gap-0'>
           <div className='w-full lg:w-auto  min-w-xs'>
             {/* Verified button */}
             <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${isAcknowledged === true ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setIsAcknowledged(true)}>
