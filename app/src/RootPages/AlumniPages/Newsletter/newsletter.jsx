@@ -68,7 +68,7 @@ const Newsletter = () => {
             <div className="lg:mx-20">
                 <BackButton />
             </div>
-            <div className="flex md:flex-row flex-col sm:space-x-5 justify-center lg:mx-20 xl:mx-20 xl:space-x-40">
+            <div className="flex md:flex-row flex-col sm:space-x-5 justify-center lg:mx-20 xl:mx-20 xl:space-x-40 min-h-[75vh]">
             {newsletter ? (
                 <div className="flex flex-col h-full lg:w-[80%] md:w-[70%] rounded-2xl min-w-70 sm:border-gray-200 sm:border sm:shadow-md mt-5 sm:p-5">
                     
@@ -120,9 +120,9 @@ const Newsletter = () => {
                 : (
                     <SkeletonCard />
                 )}
-                <div className="flex-col items-center justify-center md:w-[50%] xl:w-[30%] sm:mt-5 mt-10 md:h-[70vh]">
+                <div className="flex flex-col items-start justify-start md:w-[50%] xl:w-[30%] sm:mt-5 mt-10 h-full">
                     <label className="text-primary font-satoshi-bold text-3xl sm:mx-5">More like this</label>
-                    <div className="mt-5 flex md:flex-col flex-row md:h-[70vh] overflow-y-auto md:space-x-0 space-x-5 py-5">
+                    <div className="mt-5 flex md:flex-col flex-row md:h-[80vh] overflow-y-auto md:space-x-0 space-x-5 py-5">
                         {forYou != null && forYou.length > 0 ? (
                             forYou.map((item) => (
                                 <div key={item.newsletter_id} className="sm:my-3">

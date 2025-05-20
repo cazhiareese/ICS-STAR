@@ -36,11 +36,7 @@ const EventCardsMain = () => {
     useEffect(() => {
         const fetchEvent = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`);
                 setEvent(response.data);
                 console.log("Event data:", response.data);
 
@@ -56,7 +52,6 @@ const EventCardsMain = () => {
     },[]);
 
         useEffect(() => {
-            if (!token) throw new Error("User not authenticated");
     
             const fetchUserId = async () => {
                 try {
@@ -362,7 +357,7 @@ const EventCardsMain = () => {
                         <Calendar />
                         
                             {event.datetimes.map((datetime, index) => (
-                                <div className="flex flex-row overflow-x-scroll max-h-32 flex-shrink-0">
+                                <div className="flex flex-row max-h-32 flex-shrink-0">
                                 <label key={index} className='pr-5'>{parseTime(datetime)}</label>
                                 </div>
                             ))}

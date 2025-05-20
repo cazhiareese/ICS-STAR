@@ -245,10 +245,19 @@ function PersonalInformation(){
             </div>
             {showEmailErrorModal && (
                 <ModalTemplate
-                    onClose={() => setShowSuccessModal(false)}
+                    onClose={() => setShowEmailErrorModal(false)}
                     choiceclose="Close"
                     header="Error"
                     information="Email already registered, please enter another email."
+                />
+            )}
+
+            {showEmailErrorModal && (
+                <ModalTemplate
+                    onClose={() => setShowEmailErrorModal(false)}
+                    choiceclose="Close"
+                    header="Error"
+                    information="Student number already registered, please check again."
                 />
             )}
         </div>

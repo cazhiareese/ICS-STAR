@@ -7,6 +7,7 @@ import { ChevronDown } from 'lucide-react';
 import Loading from "../../components/LoadingComponents/starloading.jsx"
 import { showToast } from "../../components/ui/Toast"
 
+import ModalTemplate from "../modaltemplate.jsx";
 function AlumnInfo(){
 
     const [image, setImage] = useState(null);
@@ -27,6 +28,7 @@ function AlumnInfo(){
     const [termDropdownOpen, setTermDropdownOpen] = useState(false);
     const terms = ["1st Semester", "2nd Semester", "Midyear"];
 
+    const [showEmailErrorModal, setShowEmailErrorModal] = useState(false);
 
     // For Year
     const handleInputChange = (e) => {
@@ -114,13 +116,12 @@ function AlumnInfo(){
         const isAvailable = await checkStudentNumberAvailability(
             `${userData.selectedYear}-${userData.value}`
         );
-        
-
-
-        if (isAvailable.detail == "Student number already exists") {
+    
+        if (isAvailable.detail=="Student number already exists" || !isAvailable) {
             // alert("Student Number already taken")
+            console.log("Student number is not available");
             showToast("Student number already taken!", "error")
-            // setError(true);
+            setShowEmailErrorModal(true);
         } else {
             setStudentNumberError(false);
             setTermGraduated(false);
@@ -136,6 +137,7 @@ function AlumnInfo(){
                 `${API_BASE_URL}/get-studno?student_number=${studentNumber}`
             );
             const isAvailable = await response.json(); // Response is boolean directly
+            console.log("Student number availability:", isAvailable);
             return isAvailable;
         } catch (error) {
             console.error("Error checking student number:", error);
@@ -359,6 +361,15 @@ function AlumnInfo(){
                  </div>
                 
             </div>
+
+            {showEmailErrorModal && (
+                <ModalTemplate
+                    onClose={() => setShowEmailErrorModal(false)}
+                    choiceclose="Close"
+                    header="Error"
+                    information="Student number already registered, please check again."
+                />
+            )}
         </div>
     );
 }
