@@ -139,7 +139,7 @@ function AdminDashboard() {
         </div>
       </div>
       {Array.from({ length: 3 }).map((_, index) => (
-        <div key={index} className="flex items-start gap-3 mb-3">
+        <div key={index} className="flex items-center gap-3 mb-3">
           <div className="h-8 w-24 bg-gray-200 rounded-full"></div>
           <div className="flex-1">
             <div className="flex justify-between">
@@ -410,15 +410,15 @@ function AdminDashboard() {
                   </div>
                   <div className="gap-3 flex flex-col flex-1 mt-3">
                     {events.map((event, index) => (
-                      <div key={index} className="flex items-start gap-3">
+                      <div key={index} className="flex items-center gap-3">
                         <div className="bg-secondary text-black font-medium px-4 py-2 rounded-full text-sm whitespace-nowrap min-w-24 flex items-center justify-center">
                           {event.dateLabel}
                         </div>
-                        <div className="flex flex-col gap-3 flex-1 mt-1">
+                        <div className="flex flex-col gap-3 flex-1 mt-1 w-full">
                           {event.items.map((item, idx) => (
                             <div key={idx} className="flex flex-row justify-between flex-1 text-sm items-center">
-                              <div>{item.title}</div>
-                              <div className="font-satoshi-light">{item.time}</div>
+                              <div className="flex-1">{item.title}</div>
+                              <div className="truncate w-[150px] font-satoshi-light">{item.time}</div>
                             </div>
                           ))}
                         </div>
