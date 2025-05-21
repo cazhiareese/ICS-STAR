@@ -270,17 +270,19 @@ function AdminBatchInformation() {
     fetchUsers();
   }, [sortBy, sortDirection, userPage, selectedYear]);
 
-  return (
-    <div className='py-6 px-25 overflow-auto max-h-screen'>
+
+    return (
+    <div className='bg-[#F9F9FB] flex flex-col py-6 px-25 overflow-auto h-screen max-h-screen'>
       {/* Back */}
-      <AdminBack label={'Back'}/>
-      {loading ? (
-        <AdminBatchInformationSkeleton/>
-      ) : (
-      <div className='flex flex-col'>
+        <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
+        <MoveLeft className='text-primary'/> 
+        <p className='text-primary font-satoshi-medium text-lg'>Back</p>
+      </button>
+      <div className='flex flex-1 pt-5 flex-col'>
+
         <h2 className='font-satoshi-bold text-2xl text-primary'> Batch Information </h2>
         {/* Batch and count */}
-        <div className='flex flex-row justify-between'>
+        <div className='flex flex-row justify-between py-5'>
           {/* Batch selector */}
           <select
             value={selectedYear}
@@ -288,7 +290,7 @@ function AdminBatchInformation() {
               setSelectedYear(e.target.value);
               navigate(`/admin/dashboard/batch-reports/${e.target.value}`);
             }}
-            className="block w-fit px-4 py-2 text-2xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
+            className="bg-[#FFFFFF] block w-fit pl-2 pr-16 py-2 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
           >
             <option value="" disabled>Select a year</option>
             {years.map((year) => (
@@ -331,30 +333,44 @@ function AdminBatchInformation() {
         </div>
         {/* Statistics */}
         {statsOrUser === 'stats' ? (
-          <div className='flex flex-col gap-2 mt-2'>
-            {/* Employment Status */}
-            {employmentData && employmentData.length > 0 ? (
-              <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6 bg-white'>
-                <h2 className='font-satoshi-bold text-xl'> Employment Status </h2>
-                <div className='flex flex-row h-full'>
-                  {/* Pie chart */}
-                  <div className="h-full flex-1">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={employmentData}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius="80%"
-                          dataKey="count"
-                          stroke="none"
-                        >
-                          {employmentData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                          ))}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
+
+        <div className='flex flex-col gap-4 mt-4'>
+          {/* Employment Status */}
+          {employmentData && employmentData.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            <h2 className='font-satoshi-bold text-xl'> Employment Status </h2>
+            <div className='flex flex-row h-full'>
+              {/* Pie chart */}
+              <div className="h-full flex-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={employmentData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius="80%"
+                      dataKey="count"
+                      stroke="none"
+                      >
+                      {employmentData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              {/* Legend */}
+              <div className="flex flex-col flex-1 text-xl gap-2 justify-center">
+                {employmentData.map((entry, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <span
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: COLORS[index] }}
+                      ></span>
+                    <span>
+                      {entry.status}
+                      <span className="text-[#0a3d91] ml-1">({entry.percentage}%)</span>
+                    </span>
+
                   </div>
                   {/* Legend */}
                   <div className="flex flex-col flex-1 text-xl gap-2 justify-center">
@@ -468,46 +484,46 @@ function AdminBatchInformation() {
                       data={topIndustries}
                       margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
                     >
-                      <XAxis type="number" hide />
-                      <YAxis
-                        type="category"
-                        dataKey="industry"
-                        tick={{ fill: "#5A5673", fontSize: 10 }}
-                        axisLine={false}
-                        tickLine={false}
-                      />
-                      <Bar
-                        dataKey="count"
-                        barSize={20}
-                        background={{ fill: "#EAF1FF" }}
-                        radius={[10, 10, 10, 10]}
-                      >
-                        {topIndustries.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10, 10, 10, 10]} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            ) : null}
-            {/* Brief location statistics divider */}
-            {topCountries && topCountries.length > 0 ? (
-              <div className='w-full flex flex-row items-center'>
-                <h3 className='font-satoshi-medium text-xl'> Brief Location Statistics </h3>
-                <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
-              </div>
-            ) : null}
-            {/* Top Countries */}
-            {topCountries && topCountries.length > 0 ? (
-              <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6 bg-white'>
-                <h2 className='font-satoshi-bold text-xl'> Top Countries </h2>
-                <div className='h-full w-full'>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      layout="vertical"
-                      data={topCountries}
-                      margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
+
+                    {topIndustries.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill="#0A2B91" radius={[10,10,10,10]} /> 
+                    ))}
+                    {/* <LabelList dataKey="count" position="right" fill="#000" fontSize={14} /> */}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>: null }
+          {/* Brief location statistics divider */}
+          {topCountries && topCountries.length > 0? <div className='w-full flex flex-row items-center'>
+            <h3 className='font-satoshi-medium text-xl'> Brief Location Statistics </h3>
+            <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
+          </div> : null }
+          {/* Top Countries */}
+          {topCountries && topCountries.length > 0? 
+          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            <h2 className='font-satoshi-bold text-xl'> Top Countries </h2>
+            <div className='h-full w-full '>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  layout="vertical"
+                  data={topCountries}
+                  margin={{ top: 20, right: 80, left: 80, bottom: 20 }}
+                  >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="country"
+                    tick={{ fill: "#5A5673", fontSize:10}}
+                    axisLine={false}
+                    tickLine={false}
+                    />
+                  <Bar
+                    dataKey="count"
+                    barSize={20}
+                    background={{ fill: "#EAF1FF" }}
+                    radius={[10,10,10,10]}
+
                     >
                       <XAxis type="number" hide />
                       <YAxis
@@ -535,18 +551,35 @@ function AdminBatchInformation() {
           </div>
         ) : (
           <>
-            <div className='flex gap-2'>
-              <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange} />
-              <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle} />
-              <PaginationComponent
-                page={userPage}
-                setPage={setUserPage}
-                totalPages={totalUserPages}
-              />
+
+          <div className='flex gap-2 mt-4 mb-2 justify-end'>
+            
+            <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
+          
+            {/* Order by */}
+            <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
+           
+            {/* View changer */}
+            <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
+              {/* List View Button */}
+              <button className="px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
+                <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
+              </button>
+              <div className="h-6 w-px bg-disabled"></div>
+              {/* Grid View Button */}
+              <button className="px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
+                <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
+              </button>
+
             </div>
             <div className='border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block h-fit bg-white'>
               <UsersTable data={batchUsers} userType='alum' />
             </div>
+          </div>
+          <div className='bg-[#FFFFFF] border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
+            <UsersTable data={batchUsers} userType='alum'/>
+          </div>
+
           </>
         )}
       </div>

@@ -103,7 +103,7 @@ function AdminEvents() {
 
 
   return (
-    <div className='h-screen w-full p-6 flex flex-col bg-gray-100'>
+    <div className='h-screen w-full p-10 flex flex-col bg-gray-100'>
       {/* Events header and new event button */}
       <div className='flex flex-row justify-between mb-10'>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Events</h1>

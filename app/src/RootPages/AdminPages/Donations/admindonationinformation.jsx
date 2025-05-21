@@ -329,7 +329,7 @@ function AdminDonationInformation() {
               <div className="w-full flex flex-row justify-end mb-2 mt-2">
                 <button
                   ref={editButtonRef}
-                  className="flex flex-row items-center px-4 py-2 bg-primary shadow-lg rounded-xl text-white mr-2 font-satoshi-regular hover:bg-hover cursor-pointer"
+                  className="flex flex-row items-center px-6 py-2 bg-primary shadow-lg rounded-xl text-white mr-4 font-satoshi-regular hover:bg-hover cursor-pointer"
                   onClick={() => setEditGoalModal(!editGoalModal)}
                 >
                   Edit Goal
@@ -517,7 +517,7 @@ function AdminDonationInformation() {
             )}
           </div>
           {/* Donations and filters */}
-          <div className='flex flex-row justify-between mb-3'>
+          <div className='flex flex-row justify-between mt-2 mb-3'>
             <div className='flex items-end'>
               <h2 className='text-4xl font-satoshi-bold'>Donations</h2>
               <p className='text-lg font-satoshi-light'>/Verified</p>
@@ -589,7 +589,7 @@ function AdminDonationInformation() {
                 </div>
               </div>
             )}
-            {/* Close Donation Confirmatino Modal */}
+            {/* Close Donation Confirmation Modal */}
             {closeDonation && (
               <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
                 <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">

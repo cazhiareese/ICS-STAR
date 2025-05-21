@@ -68,9 +68,9 @@ function AdminNewsletter() {
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
   return (
-    <div className='h-screen w-full p-6 flex flex-col'>
+    <div className='h-screen w-full p-8 flex flex-col'>
       {/* Header */}
-      <div className='flex flex-row justify-between mb-10'>
+      <div className='flex flex-row justify-between mb-10 ml-1'>
         <h1 className='font-satoshi-bold text-5xl text-primary'>Newsletter</h1>
         <button
           className='flex flex-row items-center justify-center gap-2 font-satoshi-bold text-white bg-primary px-6 py-3 rounded-2xl hover:bg-hover cursor-pointer'
@@ -81,7 +81,7 @@ function AdminNewsletter() {
       </div>
 
       {/* Page controls */}
-      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0'>
+      <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-2 gap-2 lg:gap-0'>
         <div className='w-full lg:w-auto min-w-xs'></div>
         <div className='relative flex items-center justify-end flex-1 pr-3'>
 
@@ -94,7 +94,7 @@ function AdminNewsletter() {
           </div>
 
         {query.trim() === '' && (
-          <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex'>
+          <div className='items-center gap-2 text-md font-satoshi-regular hidden lg:flex lg:pr-2'>
             <MoveLeft className='cursor-pointer' onClick={() => handlePageChange(page - 1)} />
             <p> Page </p>
             <input
@@ -114,7 +114,7 @@ function AdminNewsletter() {
 
       {/* Card display section */}
       <div className="flex flex-col items-center w-full mt-4">
-        <div className="flex flex-col w-full max-w-full px-5">
+        <div className="flex flex-col w-full max-w-full px-2">
           {loading ? (
             <div className='flex justify-center items-center min-h-screen w-full'>
               <CircularLoading />

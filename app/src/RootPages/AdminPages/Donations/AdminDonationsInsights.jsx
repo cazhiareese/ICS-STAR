@@ -273,45 +273,51 @@ function AdminDonationsInsights() {
             )}
           </div>
         </div>
-        <h1 className="text-5xl text-primary font-satoshi-bold mt-4">Donations</h1>
-        {donationLoading ? (
-          <>
-            <SkeletonControls />
-            <SkeletonTable />
-          </>
-        ) : (
-          <>
-            <div className="flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0">
-              <div className="w-full lg:w-auto min-w-xs">
-                <button
-                  className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${isAcknowledged === true ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`}
-                  onClick={() => setIsAcknowledged(true)}
-                >
-                  Verified
-                </button>
-                <button
-                  className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${isAcknowledged === false ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`}
-                  onClick={() => setIsAcknowledged(false)}
-                >
-                  Unverified
-                </button>
-              </div>
-              <div className="flex gap-2">
-                <div className="relative flex items-center justify-end flex-1">
-                  <SearchComponent />
-                </div>
-                <PaginationComponent
-                  page={donationPage}
-                  setPage={setDonationPage}
-                  totalPages={totalDonationPage}
-                />
-              </div>
-            </div>
-            <div className="flex-1 border border-gray-300 rounded-3xl bg-white overflow-clip">
-              <InsightsDonationsTable data={donations} loading={donationLoading} />
-            </div>
-          </>
-        )}
+
+        <h1 className='text-5xl text-primary font-satoshi-bold mt-6'>Donations</h1>
+        {/* Buttons and filters */}
+        <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 mt-1 gap-2 lg:gap-0'>
+          <div className='w-full lg:w-auto  min-w-xs'>
+            {/* Verified button */}
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${isAcknowledged === true ? 'border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setIsAcknowledged(true)}>
+               Verified
+            </button>
+            {/* Unverified button */}
+            <button className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${isAcknowledged === false ? ' border-primary font-satoshi-medium' : 'border-transparent font-satoshi-light'}`} onClick={() => setIsAcknowledged(false)}>
+              Unverified
+            </button>
+          </div>
+          {/* Sort by */}
+          <div className='flex gap-2'>
+            {/* <button className='border border-disabled rounded-3xl px-5 py-2 cursor-pointer flex items-center gap-1'>
+              <p className='text-black font-satoshi-light text-sm hidden lg:block'> Sort by </p>
+                <p className='font-satoshi-medium text-primary block'>Name</p>
+            </button> */}
+          <div className='relative flex items-center justify-end flex-1'>
+            <SearchComponent
+            />
+          </div>
+            {/* <SortModal filters={filters} selectedFilter={sortBy} onSelect={setSortBy}/> */}
+            {/* Order Toggle */}
+            {/* <OrderToggle direction={sortDirection} onToggle={setSortDirection}/> */}
+            {/* Filter */}
+            {/* <button className='border border-disabled rounded-3xl px-5 py-2 flex gap-2 items-center cursor-pointer'>
+              <Filter className='text-primary'/>
+              <p className='text-primary font-satoshi-medium text-sm'> Filter</p>
+            </button> */}
+            {/* Page */}
+            <PaginationComponent
+              page={donationPage}
+              setPage={setDonationPage}
+              totalPages={totalDonationPage}
+            />
+          </div>
+        </div>
+        {/* Table of donations */}
+        <div className='flex-1 border border-gray-300 rounded-3xl bg-white overflow-clip'>
+          <InsightsDonationsTable data={donations} loading={donationLoading}/>
+        </div>
+
       </div>
     )
   )

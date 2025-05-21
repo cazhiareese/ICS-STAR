@@ -229,8 +229,16 @@ function AdminCareer() {
         </div>
       </div>
       {/* Table for desktop*/}
-      <div className='border border-gray-300 rounded-xl p-6 hidden h-fit lg:block w-full bg-white'>
-        <JobTable data={jobs} jobType={jobType} loading={loading} />
+
+      <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full bg-[#FFFFFF]'>
+        {loading ? (
+          <div className='flex flex-row items-center justify-center h-full'>
+            <CircularLoading/>
+          </div>
+        ) : (
+          <JobTable data={jobs} jobType={jobType} />
+        )}
+
       </div>
     </div>
   );

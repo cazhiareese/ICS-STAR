@@ -141,7 +141,7 @@ function AdminEventDetails() {
         }
       </div>
       {/* RSVP Details */}
-      <div className='flex flex-row items-center border border-gray-400 bg-white rounded-3xl h-24 px-12 py-6'>
+      <div className='flex flex-row items-center border border-gray-400 bg-[#FFFFFF] rounded-3xl h-24 px-12 py-6'>
         <div className='flex flex-1 items-center gap-12'>
           <h2 className='font-satoshi-bold text-primary text-3xl flex items-center'>{rsvpDetails.rsvp_count} RSVPs</h2>
           <div className='flex flex-row items-center gap-2'>
@@ -160,10 +160,12 @@ function AdminEventDetails() {
         </div>
       </div>
        {/* Send email button and list/details toggle */}
-       <div className="flex flex-row items-center justify-center mt-3 font-satoshi-regular w-full">
+
+       <div className="flex flex-row items-center mt-6 font-satoshi-regular w-full">
         {/* Send email invites button */}
-        {!eventDetails.is_concluded && (
-          <button className="bg-primary h-fit w-fit flex flex-row items-center justify-center text-white rounded-2xl px-6 py-3 mb-2 gap-2 cursor-pointer hover:bg-hover"
+        {!eventDetails.is_closed && (
+          <button className="bg-primary h-fix w-fit flex flex-row items-center justify-center text-white rounded-2xl px-4 py-3 mb-2 gap-2 cursor-pointer"
+
             onClick={()=> setShowEmailModal(true)}
           >
             <Mail />
@@ -171,7 +173,9 @@ function AdminEventDetails() {
           </button>
         )}
         {/* RSVP List and Event Details buttons */}
-        <div className="flex flex-row h-fit w-fit ml-auto mr-4 mt-auto">
+
+        <div className="flex flex-row h-fit w-fit ml-auto mr-4 self-end">
+
           <button
             className={`${
               viewStyle === "rsvpList" ? "bg-primary text-white border-primary" : ""
@@ -191,7 +195,7 @@ function AdminEventDetails() {
         </div>
       </div>
       {/* RSVP List table / Event Details */}
-      <div className='w-full h-full border border-gray-400 bg-white rounded-2xl overflow-auto'>
+      <div className='w-full h-full border border-gray-400 bg-[#FFFFFF] rounded-2xl overflow-auto'>
         {viewStyle == 'rsvpList' ? (
           rsvpList == null ? (
             <div className='flex items-center justify-center w-full h-full'>
@@ -279,7 +283,7 @@ function AdminEventDetails() {
           </div>
         )}
       </div>
-      {/* Close Donation Confirmatino Modal */}
+      {/* Close Donation Confirmation Modal */}
       {deleteModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
           <div className="flex flex-col justify-center items-center bg-white p-6 rounded-3xl shadow-lg w-[400px] min-h-[250px]">

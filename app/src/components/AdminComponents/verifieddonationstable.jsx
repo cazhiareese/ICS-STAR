@@ -37,7 +37,7 @@ function VerifiedDonationsTable({ data, loading }) {
           ) : (
             // Actual Data
             data.map((donation, index) => (
-              <tr key={index} className="hover:bg-secondary cursor-pointer">
+              <tr key={index} className="hover:bg-secondary cursor-text">
                 <td className="py-3 px-4 flex items-center">{donation.donation_date}</td>
                 <td className="py-3 px-4">{donation.name}</td>
                 <td className="py-3 px-4">{donation.type}</td>
