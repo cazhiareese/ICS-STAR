@@ -90,6 +90,7 @@ import AccountSettings from "./RootPages/Account/accountsettings";
 import ReddUserProfile from "./RootPages/RedUserProfile";
 import JanryUserProfile from "./RootPages/JanryUserProfile";
 import { useNavigate } from "react-router-dom";
+import { showToast } from "./components/ui/Toast";
 
 const isSignedIn = () => {
   const navigate = useNavigate();
@@ -99,6 +100,7 @@ const isSignedIn = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("token_expiration");
     navigate("/login");
+    showToast("Session Expired. Please log in again.", "error");
     return false;
   }
   return true;

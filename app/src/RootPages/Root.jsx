@@ -10,15 +10,15 @@ function Root() {
   import.meta.env.VITE_BACKEND_URL;
 
   let tokentype = "guest";
-  let verified = false;
-  let banned = false;
+  let verified = null;
+  let banned = null;
 
   if (token) {
     try {
       const decoded = jwtDecode(token);
       tokentype = decoded.role || "guest";
-      verified = decoded.is_verified || false;
-      banned = decoded.is_banned || false;
+      verified = decoded.is_verified || null;
+      banned = decoded.is_banned || null;
       console.log("Decoded token type:", tokentype);
     } catch (error) {
       console.error("Invalid token:", error);

@@ -15,6 +15,9 @@ function Navbar({ tokentype, verified, banned, google }) {
     window.location.href = "/login";
   }
 
+  console.log("v",verified);
+  console.log("b",banned);
+
   function handleAccount() {
     navigate(`/${tokentype}/account/settings`);
   }
@@ -22,6 +25,7 @@ function Navbar({ tokentype, verified, banned, google }) {
   function handleSearch() {
     navigate(`/${tokentype}/alumnisearch`);
   }
+  
 
   function handleProfileClick() {
     navigate(`/${tokentype}/profile`);
@@ -68,7 +72,7 @@ function Navbar({ tokentype, verified, banned, google }) {
     >
       Newsletters
     </button>
-        {tokentype !== "student" && verified === true && banned === false && (
+        {tokentype !== "student" && verified !== false && banned !== true && (
           <button
             className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
             onClick={handleDonation}
@@ -178,7 +182,7 @@ function Navbar({ tokentype, verified, banned, google }) {
               >
                 Alumni Search
               </button>
-              {tokentype !== "student" && verified === true && banned === false && (
+              {tokentype !== "student" && verified !== false && banned !== true && (
                 <button
                   className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
                   onClick={() => {
