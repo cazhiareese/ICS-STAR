@@ -384,7 +384,7 @@ function Donationform() {
                                     paymentError={paymentError}
                                 />
 
-                                <PaymentMode submitMayaDonation={submitMayaDonation}/>
+                                <PaymentMode submitMayaDonation={submitMayaDonation} tokentype={tokentype}/>
 
 
                                 <DonationInstructions donationType={"monetary"} />
