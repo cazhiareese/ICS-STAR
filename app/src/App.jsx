@@ -9,8 +9,9 @@ import Root from "./RootPages/Root";
 import UserProfile from "./RootPages/Userprofile";
 import Unauthorized from "./AuthPages/Unauthorized";
 import OnboardingDashboard from "./AuthPages/OnBoarding/dashboard_onboarding";
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
-
+import { Toaster } from "sonner"
 
 // Providers
 import { AppProvider } from "./AuthPages/AuthContext/signupcontext";
@@ -92,6 +93,7 @@ import JanryUserProfile from "./RootPages/JanryUserProfile";
 
 
 function App() {
+  const clientId = import.meta.env.VITE_CLIENT_ID
   function checkType() {
     const User = localStorage.getItem("token");
     //const User = true;
@@ -138,20 +140,30 @@ function App() {
   console.log(isSignedIn);
 
   return (
+     <>
+    <Toaster richColors closeButton position="top-right" />
     <Routes>
       <Route path="/" element={<Navigate to={isSignedIn ? "/login" : "login"} />} />
 
       {/* Check if the user is signed in */}
       {!isSignedIn && (
         <>
+       
           <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="login" element={<LoginPage />} />
+          <Route path="login" element={ 
+            <GoogleOAuthProvider clientId={clientId}>
+            <AppProvider>
+              <LoginPage />
+            </AppProvider>
+            </GoogleOAuthProvider>} />
           <Route
             path="signup"
             element={
+              <GoogleOAuthProvider clientId={clientId}>
               <AppProvider>
                 <SignupPage />
               </AppProvider>
+              </GoogleOAuthProvider>
             }
           />
 
@@ -164,6 +176,7 @@ function App() {
               </OnboardingProvider>
             }
           />
+          
         </>
       )}
       
@@ -254,6 +267,9 @@ function App() {
             <Route path="guest/events/:eventid" element={<EventCardsMain />} />
             <Route path="guest/newsletter" element={<NewsletterLanding />} />
             <Route path="guest/newsletter/:newsletterid" element={<Newsletter />} />
+            <Route path="guest/donations" element={<DonationLanding />} />
+            <Route path="guest/donations/:driveid" element={<Donation />} />
+            <Route path="guest/donationforms/:driveid" element={<DonationForm />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
 
           </Route>
@@ -312,7 +328,7 @@ function App() {
       {/* Redirect unknown routes */}
       <Route path="*" element={<LoginPage />} />
     </Routes>
-
+</>
   );
 }
 

@@ -5,6 +5,9 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
 import { ChevronDown } from 'lucide-react';
 import FilePicker from "react-file-picker";
+import ModalTemplate from "../modaltemplate";
+
+import Loading from "../../components/LoadingComponents/starloading.jsx"
 
 function StudentInformation(){
 
@@ -15,12 +18,20 @@ function StudentInformation(){
     const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
     const { setCurrentSection} = useAppContext();
 
-
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
-    
+    const [showFileSizeModal, setShowFileSizeModal] = useState(false);
+
     const [error, setError]= useState(false)
     const [studentNumberError, setStudentNumberError] = useState(false)
     // For Dropbox
+
+
+
+    const [loading, setLoading] = useState(false);
+
+    const [showEmailErrorModal, setShowEmailErrorModal] = useState(false);
+
 
     const handleDrop = (event) => {
         event.preventDefault();
@@ -33,18 +44,23 @@ function StudentInformation(){
 
     // For Processing files either from dropping, or adding through click
 
+    const MAX_FILE_SIZE_MB = 5;
+
     const processFile = (selectedFile) => {
         if (selectedFile) {
-            const fileSize = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB"
-            updateUserData("selectedFile", selectedFile)
-            updateUserData("fileName", selectedFile.name)
-            updateUserData("fileSize", selectedFile.size)
-            updateUserData("image", "May image na")
-            setImage("MAy image na")
+            const fileSizeMB = selectedFile.size / (1024 * 1024);
+            if (fileSizeMB > MAX_FILE_SIZE_MB) {
+                setShowFileSizeModal(true);
+                return;
+            }
 
+            updateUserData("selectedFile", selectedFile);
+            updateUserData("fileName", selectedFile.name);
+            updateUserData("fileSize", selectedFile.size);
+            updateUserData("image", "May image na");
+            setImage("May image na");
         }
     };
-
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         processFile(file)
@@ -69,16 +85,48 @@ function StudentInformation(){
 
     // Requirements Checker !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    const checkRequirements = () =>{
+    const checkRequirements = async () =>{
+        setLoading(true)
         if (userData.value &&userData.selectedYear ){
-             setCurrentSection("3")
-            //  console.log("1"+userData.academicYear+"1")
+            //  setCurrentSection("3")
+             console.log("1"+userData.academicYear+"1")
         } else{
             setError(true)
 
             if (userData.selectedYear && userData.value) setStudentNumberError(false); else setStudentNumberError(true)
         }
+
+        // If required fields are filled, now check student number availability
+        const isAvailable = await checkStudentNumberAvailability(
+            `${userData.selectedYear}-${userData.value}`
+        );
+    
+        if (isAvailable.detail=="Student number already exists" || !isAvailable) {
+            // alert("Student Number already taken")
+            console.log("Student number is not available");
+            setShowEmailErrorModal(true);
+        } else {
+            setStudentNumberError(false);
+            setError(false);
+            setCurrentSection("3");
+        }
+        setLoading(false)
     }
+
+
+    const checkStudentNumberAvailability = async (studentNumber) => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/get-studno?student_number=${studentNumber}`
+            );
+            const isAvailable = await response.json(); // Response is boolean directly
+            console.log("Student number availability:", isAvailable);
+            return isAvailable;
+        } catch (error) {
+            console.error("Error checking student number:", error);
+            return false; // Assume taken if error
+        }
+    };
     
     return(
         <div className="flex flex-col w-full items-center pt-40 sm:pt-0 sm:mt-0 mt-10">
@@ -134,7 +182,7 @@ function StudentInformation(){
                 
 
                 <div class="font-satoshi-medium col-span-2">
-                    Upload your Form 5 
+                    Upload your Form 5 (Max 5MB)
                 </div>
                 
                     {!userData.image ? (
@@ -205,24 +253,47 @@ function StudentInformation(){
 
                 </div>
 
-                <div class=" text-black flex flex-col items-start">
-                        <button
+               <div class=" text-black flex flex-col items-start">
+               {!userData.isGoogle && (<button
                             className="bg-white text-primary py-3 border border-primary rounded-3xl text-base w-4/6 font-bold cursor-pointer"
                             onClick = {()=>{setCurrentSection("1")}}
                         >
                             Back
 
-                        </button>
+                        </button>)}
                     </div>
                 <div class=" text-black flex flex-col items-end">
+                        {loading ? (<Loading/>):
+                    
                         <button
                             className="bg-primary text-white py-3 rounded-3xl text-base w-4/6 font-bold hover:bg-blue-700 transition mt-0 cursor-pointer"
                             onClick = {checkRequirements}
                         >
                             Next
                         </button>
+                   
+                        }
                     </div>
             </div>
+            {showFileSizeModal && (
+                <ModalTemplate
+                    header="File Too Large"
+                    information="The selected file exceeds the 5MB limit. Please upload a smaller file."
+                    choiceclose="Close"
+                    onClose={() => setShowFileSizeModal(false)}
+                    choicecontinue={null}
+                    onContinue={() => {}}
+                />
+            )}
+
+            {showEmailErrorModal && (
+                            <ModalTemplate
+                                onClose={() => setShowEmailErrorModal(false)}
+                                choiceclose="Close"
+                                header="Error"
+                                information="Student number already registered. Please check again."
+                            />
+                        )}
         </div>
     );
 }

@@ -5,6 +5,7 @@ import axios from 'axios';
 import MultiDatePicker from '../../../components/AdminComponents/MultiDatePicker';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import EventFilterDropdown from '../../../components/AdminComponents/eventFilter';
+import { showToast } from '../../../components/ui/Toast';
 
 function AdminCreateEvent({ purpose }) {
   const navigate = useNavigate();
@@ -249,11 +250,17 @@ function AdminCreateEvent({ purpose }) {
       console.log('API response:', res.data); // Debugging
       if (res.data.message === 'success') {
         setSubmitSuccess(true);
-        alert(purpose === 'create' ? 'Event created successfully!' : 'Event successfully edited');
+        // alert(purpose === 'create' ? 'Event created successfully!' : 'Event successfully edited');
+        if (purpose == 'create') {
+          showToast('Event created successfully!', 'success');
+        } else {
+          showToast('Event successfully edited!', 'success');
+        }
       }
     } catch (err) {
       console.error('Error submitting event:', err);
-      alert('Something went wrong.');
+      // alert('Something went wrong.');
+      showToast("Something went wrong.", "error");
     } finally {
       setSubmitLoading(false);
     }
@@ -597,7 +604,7 @@ function AdminCreateEvent({ purpose }) {
                     Not yet
                   </button>
                   <button
-                    className="bg-success font-satoshi-medium text-white px-4 py-2 rounded-3xl w-25 cursor-pointer"
+                    className="bg-success font-satoshi-medium text-white px-4 py-2 rounded-3xl w-25 cursor-pointer flex items-center justify-center"
                     onClick={handleSubmit}
                   >
                     {purpose === 'create' ? 'Create' : 'Save'}

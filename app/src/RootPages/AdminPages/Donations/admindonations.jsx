@@ -104,6 +104,7 @@ function AdminDonations() {
         className="border border-gray-300 rounded-xl flex py-4 cursor-pointer hover:border-primary bg-white"
         onClick={() => navigate('/admin/donations/help-ics')}
       >
+        {/* Generic drive details */}
         <div className="flex flex-row text-2xl items-center justify-center flex-1 gap-2">
           <HandCoins />
           <h2 className="font-satoshi-medium">Help ICS</h2>
@@ -111,24 +112,51 @@ function AdminDonations() {
         <div className="border-l border-gray-300"></div>
         <div className="flex flex-2">
           <div className="flex flex-col items-center justify-center flex-1">
-            <h3 className="font-satoshi-bold text-2xl text-primary">
-              Php {genericDriveDetails.total_amount || 0}
-            </h3>
-            <p className="font-satoshi-light">Monetary Donations</p>
+            {loading ? (
+              <div className="animate-pulse">
+                <div className="h-8 w-24 bg-gray-200 rounded"></div>
+                <div className="h-4 w-32 bg-gray-200 rounded mt-2"></div>
+              </div>
+            ) : (
+              <>
+                <h3 className="font-satoshi-bold text-2xl text-primary">
+                  Php {genericDriveDetails.total_amount || 0}
+                </h3>
+                <p className="font-satoshi-light">Monetary Donations</p>
+              </>
+            )}
           </div>
           <div className="flex flex-col items-center justify-center flex-1">
-            <h3 className="font-satoshi-bold text-2xl text-primary">
-              {genericDriveDetails.total_in_kind || 0}
-            </h3>
-            <p className="font-satoshi-light">In-kind Donations</p>
+            {loading ? (
+              <div className="animate-pulse">
+                <div className="h-8 w-24 bg-gray-200 rounded"></div>
+                <div className="h-4 w-32 bg-gray-200 rounded mt-2"></div>
+              </div>
+            ) : (
+              <>
+                <h3 className="font-satoshi-bold text-2xl text-primary">
+                  {genericDriveDetails.total_in_kind || 0}
+                </h3>
+                <p className="font-satoshi-light">In-kind Donations</p>
+              </>
+            )}
           </div>
         </div>
         <div className="border-l border-gray-300"></div>
         <div className="flex flex-col items-center justify-center flex-1">
-          <h3 className="font-satoshi-bold text-2xl text-primary">
-            {genericDriveDetails.number_of_unverified || 0}
-          </h3>
-          <p className="font-satoshi-medium">Unverified Donations</p>
+          {loading ? (
+            <div className="animate-pulse">
+              <div className="h-8 w-24 bg-gray-200 rounded"></div>
+              <div className="h-4 w-32 bg-gray-200 rounded mt-2"></div>
+            </div>
+          ) : (
+            <>
+              <h3 className="font-satoshi-bold text-2xl text-primary">
+                {genericDriveDetails.number_of_unverified || 0}
+              </h3>
+              <p className="font-satoshi-medium">Unverified Donations</p>
+            </>
+          )}
         </div>
       </div>
       <div className="flex flex-col w-full mt-8 lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0">
@@ -171,4 +199,3 @@ function AdminDonations() {
 }
 
 export default AdminDonations;
-

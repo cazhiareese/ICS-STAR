@@ -71,8 +71,6 @@ function JobPostingLanding() {
         //     [name]: Number(value),
         // });
     };
-    
-    
 
     const workTypeOptions = [
         // { label: "All", value: "all" },
@@ -83,6 +81,11 @@ function JobPostingLanding() {
         { label: "Internship", value: "internship" },
         { label: "Apprenticeship", value: "apprenticeship" },
     ];
+
+    const selectedLabels = workTypeOptions
+        .filter(option => selectedWorkTypes.includes(option.value))
+        .map(option => option.label)
+        .join(', ');
     
 
     const remoteOptions = [
@@ -279,14 +282,14 @@ function JobPostingLanding() {
 
     return (
         <div className='flex flex-col mb-16'>
-            <div className="flex flex-row w-full mt-8 shadow-md pb-8  rounded-full md:px-8 px-4">
+            <div className="flex flex-row w-full mt-8 shadow-md pb-8 z-40 rounded-full md:px-8 px-4">
                 {/* Filter Button aligned to the left */}
                 {(selectedWorkTypes.length > 0 ||
                 salaryRange.max > 0 ||
                 selectedRemoteOption.length > 0) ? (
                     <button  
                         onClick={() => setShowFilterModal(!showFilterModal)}
-                        className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12 text-white border-primary bg-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                        className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12 text-white border-primary bg-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer hover:brightness-125"
                     >
                         <Filter />
                         <h1 className='hidden md:block'>Filters</h1>
@@ -294,7 +297,7 @@ function JobPostingLanding() {
                 ) : (
                     <button  
                         onClick={() => setShowFilterModal(!showFilterModal)}
-                        className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12 text-primary border-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                        className="flex items-center gap-2 md:w-32 w-12 md:h-14 h-12 text-primary border-primary border-1 font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer hover:bg-neutral-100"
                     >
                         <Filter />
                         <h1 className='hidden md:block'>Filters</h1>
@@ -305,15 +308,21 @@ function JobPostingLanding() {
 
                 {/* Filters */}
                 {showFilterModal && (
-                    <div className="absolute mt-20 md:ml-6 flex flex-col md:flex-row gap-4 bg-white shadow-md rounded-3xl py-4 px-6 w-[90vw] max-w-5xl z-50">
+                    <div className="absolute mt-22 md:ml-6 flex flex-col md:flex-row gap-4 bg-white shadow-md rounded-3xl py-4 px-6 w-[90vw] max-w-5xl z-50 border border-neutral-300">
                         {/* Dropdown 1 */}
                         <button 
                         onClick={() => setShowWorkTypeDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
                             <div className="flex flex-row items-center">
                                 <span className="truncate">
-                                    {selectedWorkTypes.length > 0
+                                    {/* {selectedWorkTypes.length > 0
                                     ? selectedWorkTypes.slice(0, 5).join(", ") + (selectedWorkTypes.length > 2 ? "..." : "")
+                                    : "Work Type"} */}
+                                    {selectedWorkTypes.length > 0
+                                    ? workTypeOptions
+                                        .filter(option => selectedWorkTypes.includes(option.value))
+                                        .map(option => option.label)
+                                        .join(', ') + (selectedWorkTypes.length > 2 ? "..." : "")
                                     : "Work Type"}
                                 </span>
                                 <h1 className="ml-auto"><ChevronDown size={30} /></h1>
@@ -321,11 +330,11 @@ function JobPostingLanding() {
                            
                             {/* dropDown for work type */}
                             {showWorkTypeDropdown && (
-                                <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
+                                <div onClick={(e) => e.stopPropagation()} className="absolute top-16 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60 border border-neutral-300">
                                 {workTypeOptions.map((type) => (
                                     <label
                                         key={type.value}
-                                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
+                                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-neutral-200 rounded-lg px-2"
                                     >
                                         <input
                                         type="checkbox"
@@ -346,21 +355,27 @@ function JobPostingLanding() {
                         {/* Dropdown 2 */}
                         <button 
                         onClick={() => setShowRemoteDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
                             <div className="flex flex-row items-center">
                                 <span className="truncate">
-                                    {selectedRemoteOption.length > 0
+                                    {/* {selectedRemoteOption.length > 0
                                     ? selectedRemoteOption.slice(0, 5).join(", ") + (selectedRemoteOption.length > 2 ? "..." : "")
+                                    : "Work Mode"} */}
+                                    {selectedRemoteOption.length > 0
+                                    ? remoteOptions
+                                        .filter(option => selectedRemoteOption.includes(option.value))
+                                        .map(option => option.label)
+                                        .join(', ') + (selectedRemoteOption.length > 2 ? "..." : "")
                                     : "Work Mode"}
                                 </span>
                                 <h1 className="ml-auto"><ChevronDown size={30} /></h1>
                             </div>
                             {showRemoteOptionDropdown && (
-                            <div onClick={(e) => e.stopPropagation()} className="absolute md:top-16 top-30 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
+                            <div onClick={(e) => e.stopPropagation()} className="absolute md:top-16 top-30 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60 border border-neutral-300">
                                 {remoteOptions.map((option) => (
                                     <label
                                         key={option.value}
-                                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2"
+                                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-neutral-200 rounded-lg px-2"
                                     >
                                         <input
                                         type="checkbox"
@@ -381,14 +396,14 @@ function JobPostingLanding() {
                         {/* Dropdown 3 */}
                         <button 
                         onClick={() => setShowSalaryRangeDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
                             <div className='flex flex-row'>
                                 PHP {salaryRange.min} - PHP {salaryRange.max}
                                 <h1 className='ml-auto'><ChevronDown size={30} /></h1>
                             </div>
                             
                             {showSalaryRangeDropdown && (
-                                <div onClick={(e) => e.stopPropagation()} className="absolute md:top-16 top-46 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60">
+                                <div onClick={(e) => e.stopPropagation()} className="absolute md:top-16 top-46 bg-white rounded-2xl shadow-md p-4 w-[80vw] md:w-60 border border-neutral-300">
                                     <div className="flex flex-col">
                                         <label className="text-left font-satoshi-medium text-gray-600 text-sm mb-1">Minimum Salary</label>
                                         <input
@@ -466,7 +481,7 @@ function JobPostingLanding() {
                 {usertype !== "student" && (
                     <button  
                         onClick={navToCreateJobPost}
-                        className="flex items-center gap-2 md:w-56 w-12 md:h-14 h-12 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer"
+                        className="flex items-center gap-2 md:w-56 w-12 md:h-14 h-12 ml-6 bg-primary text-white font-satoshi-medium text-md rounded-3xl justify-center cursor-pointer hover:brightness-125"
                     >
                         <PlusCircle />
                         <h1 className='md:block hidden'>Create Job Posting</h1>
@@ -475,7 +490,7 @@ function JobPostingLanding() {
 
             </div>
 
-            <div className='flex md:flex-row flex-col mt-10 xl:gap-2 lg:gap-5 gap-10 justify-center  '>
+            <div className='flex md:flex-row flex-col mt-7 xl:gap-2 lg:gap-5 gap-10 justify-center'>
                 <div className='flex flex-col md:w-2/6 w-full items-center'>
                     <div className='flex flex-col items-center mb-6'>
                         {/* Pagination */}
@@ -491,7 +506,7 @@ function JobPostingLanding() {
                         </div>
                     </div>
                     {/* Scrollable wrapper */}
-                    <div className='h-[660px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full outline-0 flex  justify-center'>
+                    <div className='h-[1200px] overflow-y-scroll overflow-x-hidden pt-1 scrollbar-left w-full outline-0 flex  justify-center'>
                         
                         {!loading ? (
                             <div className='flex flex-col gap-5 items-center '>
@@ -535,10 +550,12 @@ function JobPostingLanding() {
                         </div>
                     </div>
                 ) : (
-                    <JobExpandedCard job={selectedJob} currentUserID={userId} 
-                    mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} 
-                    setJob={setSelectedJob} setSelectedJobId={setSelectedJobId} 
-                    setDependencyTrigger={setDependencyTrigger}/>
+                    <div className="overflow-y-auto px-2 py-2">
+                        <JobExpandedCard job={selectedJob} currentUserID={userId} 
+                        mobileExpanded={mobileExpanded} setMobileExpanded={setMobileExpanded} 
+                        setJob={setSelectedJob} setSelectedJobId={setSelectedJobId} 
+                        setDependencyTrigger={setDependencyTrigger}/>
+                    </div>
                 )}
                 
             </div>

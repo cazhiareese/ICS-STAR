@@ -5,7 +5,8 @@ function PaymentProof(
     {fileInputRef,
     fileName,
     setFileName,
-    onFileSubmit
+    onFileSubmit,
+    
     }
 ) {
 

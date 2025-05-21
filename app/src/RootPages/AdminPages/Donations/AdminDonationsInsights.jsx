@@ -7,7 +7,7 @@ import OrderToggle from '../../../components/AdminComponents/ordertoggle'
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 import InsightsDonationsTable from '../../../components/AdminComponents/InsightsDonationsTable'
 import DatePicker from 'react-multi-date-picker'
-import SearchComponent from '../../../components//AdminComponents/SearchComponent'
+import SearchComponent from '../../../components/AdminComponents/SearchComponent'
 
 function AdminDonationsInsights() {
   const [token, setToken] = useState(null)
@@ -35,18 +35,15 @@ function AdminDonationsInsights() {
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-
   async function fetchDonations(token) {
     setDonationLoading(true)
-    try{
+    try {
       let queryParams = `time_filter=${timeFilter}`
       if (timeFilter === "monthly" && selectedMonth !== null && selectedYear !== null) {
         queryParams += `&month=${selectedMonth}&year=${selectedYear}`;
       }
       queryParams += `&isAcknowledged=${isAcknowledged}&page=${donationPage}`
-      console.log(queryParams)
-      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations?${queryParams}`,{headers: {Authorization: `Bearer ${token}`}})
-      console.log(donationResponse)
+      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations?${queryParams}`, { headers: { Authorization: `Bearer ${token}` } })
       setDonations(donationResponse.data.data)
       setTotalDonationPage(donationResponse.data.total_pages)
     } catch (error) {
@@ -59,44 +56,22 @@ function AdminDonationsInsights() {
   async function fetchInitialData(token) {
     setLoading(true);
     try {
-     
-      // Build query params
       let queryParams = `time_filter=${timeFilter}`;
       if (timeFilter === "monthly" && selectedMonth !== null && selectedYear !== null) {
         queryParams += `&month=${selectedMonth}&year=${selectedYear}`;
       }
 
-      console.log(queryParams)
-  
-    // Fetch top performing drives
-    const topDrivesResponse = await axios.get(
-      `${API_BASE_URL}/admin/donations/top-performing-drives?${queryParams}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    console.log(topDrivesResponse.data);
+      const [topDrivesResponse, driveGoalsReachedResponse] = await Promise.all([
+        axios.get(`${API_BASE_URL}/admin/donations/top-performing-drives?${queryParams}`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API_BASE_URL}/admin/donations/top-drives-with-goals-reached?${queryParams}`, { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
 
-    // Check if it's an array or an error message
-    if (Array.isArray(topDrivesResponse.data)) {
-      setTopPerformingDrives(topDrivesResponse.data);
-    } else {
-      setTopPerformingDrives([]); // Empty array if no data
-    }
-
-    // Fetch drives with goals reached
-    const driveGoalsReachedResponse = await axios.get(
-      `${API_BASE_URL}/admin/donations/top-drives-with-goals-reached?${queryParams}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    console.log(driveGoalsReachedResponse);
-
-    if (Array.isArray(driveGoalsReachedResponse.data)) {
-      setDrivesWithGoalsReached(driveGoalsReachedResponse.data);
-    } else {
-      setDrivesWithGoalsReached([]);
-    }
-
+      setTopPerformingDrives(Array.isArray(topDrivesResponse.data) ? topDrivesResponse.data : []);
+      setDrivesWithGoalsReached(Array.isArray(driveGoalsReachedResponse.data) ? driveGoalsReachedResponse.data : []);
     } catch (error) {
       console.log(error);
+      setTopPerformingDrives([]);
+      setDrivesWithGoalsReached([]);
     } finally {
       setLoading(false);
     }
@@ -107,26 +82,84 @@ function AdminDonationsInsights() {
     setTotalDonationPage(1)
     fetchDonations(token)
   }, [isAcknowledged, donationPage])
-  
 
   useEffect(() => {
     const tokenStored = localStorage.getItem('token');
-    setToken(localStorage.getItem("token"))
+    setToken(tokenStored)
     fetchInitialData(tokenStored)
     fetchDonations(tokenStored)
   }, [timeFilter])
 
+  // Skeleton components
+  const SkeletonHeader = () => (
+    <div className="h-12 w-1/3 bg-gray-200 rounded-md animate-pulse mb-3"></div>
+  );
+
+  const SkeletonFilterButton = () => (
+    <div className="h-8 w-24 bg-gray-200 rounded-md animate-pulse"></div>
+  );
+
+  const SkeletonDriveCard = () => (
+    <div className="flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl bg-white animate-pulse">
+      <div className="h-6 w-1/3 bg-gray-200 rounded mb-3"></div>
+      {[...Array(3)].map((_, index) => (
+        <div key={index} className="flex flex-row justify-between h-12 items-center">
+          <div className="flex flex-row flex-1 gap-2">
+            <div className="h-4 w-8 bg-gray-200 rounded"></div>
+            <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <div className="h-4 w-12 bg-gray-200 rounded"></div>
+            <div className="h-3 w-24 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const SkeletonTable = () => (
+    <div className="flex-1 border border-gray-300 rounded-3xl bg-white overflow-clip animate-pulse">
+      <div className="p-4">
+        <div className="h-6 w-1/4 bg-gray-200 rounded mb-4"></div>
+        {[...Array(5)].map((_, index) => (
+          <div key={index} className="h-10 w-full bg-gray-200 rounded mb-2"></div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const SkeletonControls = () => (
+    <div className="flex flex-col w-full lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0 animate-pulse">
+      <div className="w-full lg:w-auto min-w-xs flex gap-2">
+        <div className="h-10 w-1/4 bg-gray-200 rounded-md"></div>
+        <div className="h-10 w-1/4 bg-gray-200 rounded-md"></div>
+      </div>
+      <div className="flex gap-2">
+        <div className="h-10 w-48 bg-gray-200 rounded-md"></div>
+        <div className="h-10 w-24 bg-gray-200 rounded-md"></div>
+      </div>
+    </div>
+  );
+
   return (
     loading ? (
-      <div className="flex justify-center items-center min-h-screen w-full">
-        <CircularLoading/>
+      <div className="flex flex-col p-6 h-screen w-full overflow-auto">
+        <div className="flex flex-row relative justify-between">
+          <SkeletonHeader />
+          <SkeletonFilterButton />
+        </div>
+        <div className="flex flex-row gap-4 h-1/3 mt-2">
+          <SkeletonDriveCard />
+          <SkeletonDriveCard />
+        </div>
+        <SkeletonHeader />
+        <SkeletonControls />
+        <SkeletonTable />
       </div>
     ) : (
-      <div className='flex flex-col p-6 h-screen w-full overflow-auto'>
-      <div className="flex flex-row relative justify-between">
-          {/* header */}
-        <h1 className='text-primary text-5xl font-satoshi-bold mb-3'>General Insights</h1>
-        {/* Filter */}
+      <div className="flex flex-col p-6 h-screen w-full overflow-auto">
+        <div className="flex flex-row relative justify-between">
+          <h1 className="text-primary text-5xl font-satoshi-bold mb-3">General Insights</h1>
           <button
             className="flex flex-row items-center border border-gray-300 w-fit h-fit place-self-end px-3 py-1 rounded-md bg-white cursor-pointer"
             onClick={() => setFilterOpen(!filterOpen)}
@@ -152,15 +185,12 @@ function AdminDonationsInsights() {
                         } else {
                           setTimeFilter(filter);
                           setFilterOpen(false);
-                          // fetchInitialData();
                         }
                       }}
                     />
                     <span>{formatFilter(filter)}</span>
                   </label>
                 ))}
-
-                {/* Show date pickers if Custom is selected */}
                 {timeFilter === "Custom" && (
                   <div className="flex flex-col gap-2 mt-4">
                     <div className="flex flex-col">
@@ -181,8 +211,6 @@ function AdminDonationsInsights() {
                         containerClassName="w-full"
                       />
                     </div>
-
-                    {/* Submit button */}
                     <button
                       className="mt-2 bg-primary text-white py-1 px-2 rounded-md hover:bg-hover cursor-primary font-satoshi-regular"
                       onClick={() => {
@@ -190,7 +218,7 @@ function AdminDonationsInsights() {
                           return;
                         }
                         setFilterOpen(false);
-                        fetchInitialData(); // Now fetch after both dates are selected
+                        fetchInitialData();
                       }}
                     >
                       Apply Filter
@@ -200,55 +228,52 @@ function AdminDonationsInsights() {
               </div>
             </div>
           )}
-
         </div>
-        {/* Top performing drives and drives with goals reached */}
-        <div className='flex flex-row gap-4 h-1/3 mt-2'>
-          {/* Top performing drives */}
-          <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl bg-white'>
-            <h2 className='font-satoshi-medium text-2xl'>Top Performing Drives</h2>
+        <div className="flex flex-row gap-4 h-1/3 mt-2">
+          <div className="flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl bg-white">
+            <h2 className="font-satoshi-medium text-2xl">Top Performing Drives</h2>
             {topPerformingDrives.length === 0 ? (
-              <div className='flex justify-center items-center h-full'>
+              <div className="flex justify-center items-center h-full">
                 <p> No top performing drives :( </p>
               </div>
             ) : (
-            topPerformingDrives.map((drive) => (
-              <div key={drive.drive_id} className="flex flex-row justify-between h-full items-center">
-                <div className='flex flex-row flex-1 gap-2'>
-                  <h2 className='font-satoshi-bold text-primary'>#{drive.rank} </h2>
-                  <h2 className='font-satoshi-bold text-left'> {drive.title} </h2>
+              topPerformingDrives.map((drive) => (
+                <div key={drive.drive_id} className="flex flex-row justify-between h-full items-center">
+                  <div className="flex flex-row flex-1 gap-2">
+                    <h2 className="font-satoshi-bold text-primary">#{drive.rank} </h2>
+                    <h2 className="font-satoshi-bold text-left"> {drive.title} </h2>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <h2 className="text-primary font-satoshi-bold text-lg">{drive.percent_increase}%</h2>
+                    <p className="font-satoshi-light text-xs text-black">increase during time period</p>
+                  </div>
                 </div>
-                <div className='flex flex-col items-end'>
-                  <h2 className='text-primary font-satoshi-bold text-lg'>{drive.percent_increase}%</h2>
-                  <p className='font-satoshi-light text-xs text-black'>increase during time period</p>
-                </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
           </div>
-          {/* Drives with goals reached */}
-          <div className='flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl bg-white'>
-            <h2 className='font-satoshi-medium text-2xl'>Drives with Goals Reached</h2>
+          <div className="flex flex-col flex-1 border border-gray-300 p-3 rounded-2xl bg-white">
+            <h2 className="font-satoshi-medium text-2xl">Drives with Goals Reached</h2>
             {drivesWithGoalsReached.length === 0 ? (
-              <div className='flex justify-center items-center h-full'>
+              <div className="flex justify-center items-center h-full">
                 <p> No drives with goals reached :( </p>
               </div>
             ) : (
               drivesWithGoalsReached.map((drive, index) => (
                 <div key={drive.drive_id} className="flex flex-row justify-between h-full items-center">
-                  <div className='flex flex-row flex-1 gap-2'>
-                  <h2 className='font-satoshi-bold text-primary'>#{index+1} </h2>
-                  <h2 className='font-satoshi-bold text-left '> {drive.title} </h2>
+                  <div className="flex flex-row flex-1 gap-2">
+                    <h2 className="font-satoshi-bold text-primary">#{index + 1} </h2>
+                    <h2 className="font-satoshi-bold text-left "> {drive.title} </h2>
                   </div>
-                  <div className='flex flex-col items-end'>
-                  <h2 className='text-primary font-satoshi-bold text-lg'>{drive.percent_funded}%</h2>
-                  <p className='font-satoshi-light text-xs text-black'>of goal reached</p>
+                  <div className="flex flex-col items-end">
+                    <h2 className="text-primary font-satoshi-bold text-lg">{drive.percent_funded}%</h2>
+                    <p className="font-satoshi-light text-xs text-black">of goal reached</p>
                   </div>
                 </div>
               ))
             )}
           </div>
         </div>
+
         <h1 className='text-5xl text-primary font-satoshi-bold mt-6'>Donations</h1>
         {/* Buttons and filters */}
         <div className='flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 mt-1 gap-2 lg:gap-0'>
@@ -292,6 +317,7 @@ function AdminDonationsInsights() {
         <div className='flex-1 border border-gray-300 rounded-3xl bg-white overflow-clip'>
           <InsightsDonationsTable data={donations} loading={donationLoading}/>
         </div>
+
       </div>
     )
   )

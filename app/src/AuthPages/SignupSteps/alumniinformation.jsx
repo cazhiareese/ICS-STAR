@@ -5,7 +5,9 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
 import { ChevronDown } from 'lucide-react';
 import Loading from "../../components/LoadingComponents/starloading.jsx"
+import { showToast } from "../../components/ui/Toast"
 
+import ModalTemplate from "../modaltemplate.jsx";
 function AlumnInfo(){
 
     const [image, setImage] = useState(null);
@@ -26,6 +28,7 @@ function AlumnInfo(){
     const [termDropdownOpen, setTermDropdownOpen] = useState(false);
     const terms = ["1st Semester", "2nd Semester", "Midyear"];
 
+    const [showEmailErrorModal, setShowEmailErrorModal] = useState(false);
 
     // For Year
     const handleInputChange = (e) => {
@@ -114,9 +117,11 @@ function AlumnInfo(){
             `${userData.selectedYear}-${userData.value}`
         );
     
-        if (!isAvailable) {
+        if (isAvailable.detail=="Student number already exists" || !isAvailable) {
             // alert("Student Number already taken")
-            setError(true);
+            console.log("Student number is not available");
+            showToast("Student number already taken!", "error")
+            setShowEmailErrorModal(true);
         } else {
             setStudentNumberError(false);
             setTermGraduated(false);
@@ -132,6 +137,7 @@ function AlumnInfo(){
                 `${API_BASE_URL}/get-studno?student_number=${studentNumber}`
             );
             const isAvailable = await response.json(); // Response is boolean directly
+            console.log("Student number availability:", isAvailable);
             return isAvailable;
         } catch (error) {
             console.error("Error checking student number:", error);
@@ -261,7 +267,7 @@ function AlumnInfo(){
                 </div>
 
                 <div class="font-satoshi-medium col-span-2">
-                    Upload your Diploma 
+                    Upload your Diploma (Max 5MB)
                 </div>
                 
                     {!userData.image ? (
@@ -333,13 +339,13 @@ function AlumnInfo(){
                 </div>
 
                 <div class=" text-black flex flex-col items-start">
-                        <button
+                {!userData.isGoogle && (<button
                             className="bg-white text-primary py-3 border border-primary rounded-3xl text-base w-4/6 font-bold cursor-pointer"
                             onClick = {()=>{setCurrentSection("1")}}
                         >
                             Back
 
-                        </button>
+                        </button>)}
                     </div>
                     <div class=" text-black flex flex-col items-end">
                 {loading ? (<Loading/>):
@@ -355,6 +361,15 @@ function AlumnInfo(){
                  </div>
                 
             </div>
+
+            {showEmailErrorModal && (
+                <ModalTemplate
+                    onClose={() => setShowEmailErrorModal(false)}
+                    choiceclose="Close"
+                    header="Error"
+                    information="Student number already registered, please check again."
+                />
+            )}
         </div>
     );
 }

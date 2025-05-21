@@ -5,6 +5,7 @@ import "../../../index.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { set } from "date-fns";
 
 export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick, selectedTags }) => {
     const navigate = useNavigate();
@@ -45,12 +46,12 @@ export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick
                     </div>
                 </div>
             </div>
-            <div className="flex flex-row sm:mt-4 space-x-2 overflow-x-scroll absolute bottom-2 left-5 right-5 py-3">
+            <div className="flex flex-row sm:mt-4 space-x-2 overflow-x-clip absolute bottom-2 left-5 right-5 py-3">
                 {tags.map((tag, index) => (
                     <span
                         key={index}
                         onClick={() => onTagClick(tag)}
-                        className={`sm:px-4 px-2 sm:py-1 py-0.5 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap font-satoshi-light sm:text-md text-sm ${
+                        className={`sm:px-4 px-2 sm:py-1 py-0.5 border rounded-2xl cursor-pointer transition font-satoshi-regular whitespace-nowrap font-satoshi-light sm:text-md text-sm ${
                             selectedTags.includes(tag.name)
                                 ? "bg-primary text-white"
                                 : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
@@ -92,11 +93,43 @@ const NewsletterLanding = () => {
     const URL = import.meta.env.VITE_BACKEND_URL;
 
     const toggleTagSelection = (tagName) => {
-        setSelectedTags((prevSelectedTags) =>
-            prevSelectedTags.includes(tagName)
+        setSelectedTags((prevSelectedTags) => {
+            const isSelected = prevSelectedTags.includes(tagName);
+    
+            const updatedSelectedTags = isSelected
                 ? prevSelectedTags.filter((tag) => tag !== tagName)
-                : [...prevSelectedTags, tagName]
-        );
+                : [tagName, ...prevSelectedTags];
+    
+            // Trigger backend filtering
+            fetchFilteredNewsletters(updatedSelectedTags);
+    
+            return updatedSelectedTags;
+        });
+    
+        // Move selected tag to front in tag list
+        setTags((prevTags) => {
+            const tagIndex = prevTags.findIndex((tag) => tag.name === tagName);
+            if (tagIndex === -1) return prevTags;
+    
+            const tag = prevTags[tagIndex];
+            const filteredTags = prevTags.filter((t) => t.name !== tagName);
+    
+            return !selectedTags.includes(tagName)
+                ? [tag, ...filteredTags]
+                : [...filteredTags, tag];
+        });
+    };
+
+
+    const fetchFilteredNewsletters = async (selectedTags) => {
+        try {
+            const tagsParam = selectedTags.join(',');
+            const response = await fetch(`/search-newsletters?tags=${tagsParam}`);
+            const data = await response.json();
+            setFilteredNewsletters(data); // Update newsletter list with filtered result
+        } catch (error) {
+            console.error("Error fetching filtered newsletters:", error);
+        }
     };
 
     const mockCards = [
@@ -181,6 +214,8 @@ const NewsletterLanding = () => {
 
     const [tags, setTags] = useState(null);
 
+    const [skeleton, setSkeleton] = useState(false);
+
     const initializeTags = (tagData) => {
         setTags(
             tagData.map((tag, index) => ({
@@ -199,7 +234,9 @@ const NewsletterLanding = () => {
     // New search handler
     const handleSearch = async (query) => {
         try {
+            setSkeleton(true);
             const response = await axios.get(`${URL}/search-newsletters?title=${query}&limit=20`);
+            
             console.log("Search response:", response.data);
             setCard(response.data.map(item => ({
                 ...item,
@@ -210,9 +247,11 @@ const NewsletterLanding = () => {
                 tags: item.tags
             })));
             console.log("Search results:", response.data);
+            setSkeleton(false);
         } catch (error) {
             console.error("Error searching newsletters:", error);
             setCard([]); // Clear cards on error
+            setSkeleton(false);
         }
     };
 
@@ -241,9 +280,13 @@ const NewsletterLanding = () => {
         fetchTags();
     }, []);
 
+    useEffect(() => {
+        handleSearch(searchQuery, selectedTags);
+    }, [selectedTags]);
+
     return (
         <>
-            <div className="flex flex-col w-full shadow-md pb-8 items-center rounded-b-[35px] bg-white mb-4">
+            <div className="flex flex-col w-full shadow-md  items-center rounded-b-[35px] bg-white mb-2 h-[100px]">
                 <div className="relative flex flex-col w-full max-w-[350px] sm:max-w-[600px] mt-6">
                     <input
                         type="text"
@@ -261,15 +304,49 @@ const NewsletterLanding = () => {
                 </div>
             </div>
             <div className={`flex-1 overflow-y-hidden sm:mx-10 md:mx-15 lg:mx-20 mx-3`}>
-                {card.length > 0 && tags != null ? (
+                {skeleton === true ? (
+                    <div className="animate-pulse">
+                        <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+                            <div className="flex overflow-x-auto space-x-4 py-4">
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                            </div>
+                        </div>
+                        <div
+                            className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
+                            style={{ height: `calc(100vh - 20rem)` }}
+                        >
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                            <SkeletonCards />
+                        </div>
+                    </div>
+                ) :card.length > 0 && tags != null ? (
                     <>
                         <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
+                            <button
+                                onClick={() => setSelectedTags([])}
+                                className="px-4 py-1 mr-5 rounded-xl cursor-pointer 
+                                transition text-sm sm:text-md md:text-lg
+                                font-satoshi-regular whitespace-nowrap
+                                 bg-white  text-primary hover:bg-primary 
+                                 hover:text-white"
+                            >
+                                Clear all
+                            </button>
                             <div className="flex overflow-x-auto space-x-4 py-4">
                                 {tags.map((tag) => (
                                     <div
                                         key={tag.id}
                                         onClick={() => toggleTagSelection(tag.name)}
-                                        className={`px-4 py-1 border rounded-2xl cursor-pointer transition font-satoshi-main-regular whitespace-nowrap ${
+                                        className={`px-4 py-1 border rounded-2xl cursor-pointer transition text-xs sm:text-sm md:text-md font-satoshi-regular whitespace-nowrap ${
                                             selectedTags.includes(tag.name)
                                                 ? "bg-primary text-white"
                                                 : "bg-white border-primary text-primary hover:bg-primary hover:text-white"
@@ -280,8 +357,10 @@ const NewsletterLanding = () => {
                                 ))}
                             </div>
                         </div>
+
+                        
                         <div
-                            className="grid flex-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
+                            className="grid flex-1 grid-cols-1 pb-10 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-8 overflow-y-auto"
                             style={{ height: `calc(100vh - 18rem)` }}
                         >
                             {filteredCards.map((item) => (
@@ -303,12 +382,12 @@ const NewsletterLanding = () => {
                     <div className="animate-pulse">
                         <div className={`h-7 flex flex-row items-center justify-start mt-7`}>
                             <div className="flex overflow-x-auto space-x-4 py-4">
-                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
-                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-main-regular`}></div>
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-50 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-30 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
+                                <div className={`px-4 py-4 w-40 border border-gray-300 bg-gray-300 rounded-2xl cursor-pointer transition font-satoshi-regular`}></div>
                             </div>
                         </div>
                         <div
@@ -325,6 +404,8 @@ const NewsletterLanding = () => {
                     </div>
                 )}
             </div>
+
+
         </>
     );
 };
