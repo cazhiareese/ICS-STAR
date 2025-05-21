@@ -13,6 +13,7 @@ import Curve from "../../../assets/curve.png";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
 import PaymentMode from "../../../components/AlumniComponents/DonationComponents/paymentmode";
+import { jwtDecode } from "jwt-decode";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
@@ -286,6 +287,7 @@ function Donationform() {
         }
     };
 
+    console.log("cy",tokentype);
     return (
         <>
             {!donationSuccess ? (
