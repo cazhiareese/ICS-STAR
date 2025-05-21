@@ -724,3 +724,6 @@ async def send_verification_email(user: Dict) -> bool:
     except ApiException as e:
         print(f"Failed to send email to {user['email']}: {e}")
         return False
+    
+async def check_password_null(user: CurrentUser):
+    return user.password is None
