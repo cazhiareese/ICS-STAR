@@ -13,7 +13,7 @@ function InsightsDonationsTable({ data, loading = false }) {
     const dataRows = data.slice(0, rowsPerPage).map((donation, index) => (
       <tr
         key={`data-${index}`}
-        className="hover:bg-secondary cursor-pointer border-b border-gray-200"
+        className="hover:bg-secondary cursor-text border-b border-gray-200"
         // onClick={() => navigate(`/admin/donations/${donation.drive_id}`)}
         style={{ minHeight: '48px' }}
       >
