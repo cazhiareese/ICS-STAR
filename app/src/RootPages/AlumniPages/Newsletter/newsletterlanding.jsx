@@ -30,7 +30,7 @@ export const Cards = ({ id, title, date, description, imageUrl, tags, onTagClick
     }
 
     return (
-        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative border-gray-300 border shadow-md p-5">
+        <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 relative border-gray-300 border shadow-md p-5 cursor-pointer">
             <div className=" " onClick={() => navigate(`/${tokentype}/newsletter/${id}`)}>
                 <div className="flex flex-col h-full ">
                     <div className="w-full h-45 bg-primary rounded-lg overflow-hidden">

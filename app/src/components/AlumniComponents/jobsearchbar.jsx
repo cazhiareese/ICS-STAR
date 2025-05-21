@@ -116,7 +116,7 @@ const JobSearchBar =
             <div className="flex flex-row items-center relative h-14 w-full">
                 <input
                     type="search"
-                    className="bg-gray-100 font-satoshi-medium text-lg w-full h-full px-4 py-2 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
+                    className="bg-[#FFFFFF] font-satoshi-medium text-lg w-full h-full px-4 py-2 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
                     placeholder="Enter Job"
                     value={searchInput}
                     onKeyDown={(e) => {

@@ -106,12 +106,12 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
           <p className="text-gray-600 pt-2 line-clamp-2">{event.description}</p>
         </div>
     
-        <div className="mt-auto">
+        <div className="w-full mt-auto">
           {/* Location */}
-          <div className="flex items-center mt-3 text-gray-600 space-x-3">
+          <div className="flex w-full items-center mt-3 text-gray-600 space-x-3">
             <MapPinned />
-            <div className="">
-              <label className="whitespace-nowrap">{event.location}</label>
+            <div className="w-full overflow-hidden text-ellipsis">
+              <label className="w-full whitespace-nowrap">{event.location}</label>
             </div>
           </div>
     
