@@ -8,7 +8,7 @@ function Navbar({ tokentype, verified, banned }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const id = "0ed168b4-344b-4760-bb68-0b7c5c3a9252";
-
+  console.log(verified);
   function handleLogout() {
     sessionStorage.removeItem("User");
     localStorage.removeItem("token");
@@ -68,7 +68,7 @@ function Navbar({ tokentype, verified, banned }) {
     >
       Newsletters
     </button>
-        {tokentype !== "student" && (
+        {tokentype !== "student" && verified === true && banned === false && (
           <button
             className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
             onClick={handleDonation}
@@ -77,7 +77,7 @@ function Navbar({ tokentype, verified, banned }) {
           </button>
         )}
 
-    {tokentype !== "guest" && (
+    {tokentype !== "guest" && verified === true && banned === false && (
       <>
         <button
           className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
@@ -151,7 +151,7 @@ function Navbar({ tokentype, verified, banned }) {
             Newsletters
           </button>
 
-          {tokentype !== "guest" && (
+          {tokentype !== "guest" && verified === true && banned === false && (
             <>
               <button
                 className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
@@ -171,7 +171,7 @@ function Navbar({ tokentype, verified, banned }) {
               >
                 Alumni Search
               </button>
-              {tokentype !== "student" && (
+              {tokentype !== "student" && verified === true && banned === false && (
                 <button
                   className={`${isActive(`/${tokentype}/donations`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}
                   onClick={() => {
