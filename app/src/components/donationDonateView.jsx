@@ -32,7 +32,7 @@ export default function DonationCard({driveDetails, driveId}) {
 
   const handledonationform = () => {
     console.log("cytrus",tokentype);
-    navigate(`/alumni/donationforms/${driveId}`);
+    navigate(`/${tokentype}/donationforms/${driveId}`);
     //window.location.href = `/alumni/donationforms/${driveId.driveid}`;
   }
 
