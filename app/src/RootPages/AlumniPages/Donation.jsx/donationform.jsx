@@ -78,7 +78,7 @@ function Donationform() {
 
     const navigate = useNavigate();
     const handleClick = () => {
-        navigate(`/alumni/donations`);
+        navigate(`/${tokentype}/donations`);
     };
 
     useEffect(() => {
@@ -421,11 +421,12 @@ function Donationform() {
                                     </div>
                                 ) : (
                                     <button
-                                        onClick={submitMonetaryDonation}
-                                        className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer"
+                                    onClick={tokentype === "guest" ? submitAnonymousDonation : submitMonetaryDonation}
+                                    className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer"
                                     >
-                                        Submit
+                                    Submit
                                     </button>
+
                                 )}
                             </div>
                         )}
