@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Check } from "lucide-react"; 
 import SectionHeader from "../components/sectionheader"; 
 import SaveWorkModal from "../components/saveworkmodal";
+import { showToast } from "../../../components/ui/Toast"; // Adjust the import path as necessary
 
 function WorkSection({ userDetails, handleChange, isVerified }) {
   const [showMore, setShowMore] = useState(false);
@@ -91,8 +92,10 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
         setShowSaveModal(false);
         setSaveSuccess(false);
       }, 1500);
+      showToast("Successfully saved work information", "success");
     } catch (err) {
       console.error("❌", err);
+      showToast("Failed to save work information", "error");
     }
   };
   
@@ -121,7 +124,8 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
                 type="text"
                 value={userDetails.job_title || ""}
                 onChange={(e) => handleChange(e, "job_title")}
-                className="w-[250px] h-[30px] py-1 text-[23px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2"
+                placeholder="Enter job title"
+                className="placeholder:text-gray-400 placeholder:font-satoshi-medium placeholder:text-[19px] w-[250px] h-[30px] py-1 text-[23px] font-satoshi-black text-primary bg-white border border-gray-300 rounded-[12px] px-2"
               />
             ) : (
               <h3 className="text-[23px] text-primary font-satoshi-black">
@@ -161,7 +165,8 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
             type="text"
             value={userDetails.company_name || ""}
             onChange={(e) => handleChange(e, "company_name")}
-            className="text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px]"
+            placeholder="Enter company name"
+            className="placeholder:text-gray-400 placeholder:text-[19px] text-black text-[20px] font-satoshi-medium bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px]"
           />
         ) : (
           <p className="text-black text-[20px] font-satoshi-medium">
@@ -176,7 +181,8 @@ function WorkSection({ userDetails, handleChange, isVerified }) {
               type="text"
               value={userDetails.work_location || ""}
               onChange={(e) => handleChange(e, "work_location")}
-              className="text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px]"
+              placeholder="Enter work location"
+              className="placeholder:text-gray-400 placeholder:text-[19px] text-black font-satoshi-medium text-[20px] bg-white border border-gray-300 rounded-[12px] px-2 w-[200px] h-[30px] py-1 mt-1 sm:w-[250px]"
             />
           ) : (
             <p className="text-black font-satoshi-medium text-[20px]">
