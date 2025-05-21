@@ -108,6 +108,51 @@ function Donationform() {
                 });
         }, [drive_id]);
 
+
+    const submitAnonymousDonation = async () => {
+        // Ensure that all required fields are not empty
+        if (monetaryAmountInput <= 0 || file == null) {
+            setError(true);
+            return;
+        }
+        setSubmitting(true);
+        setError(false)
+        const formData = new FormData();
+        const token = localStorage.getItem("token");
+
+        formData.append('monetary_donation', true);
+        formData.append('direct_maya', false); 
+        formData.append('amount', monetaryAmountInput);
+        formData.append('is_anonymous', true);
+
+        if (file != null) {
+            formData.append('proof', file);
+        }
+
+        try {
+            const response = await axios.post(`${API_BASE_URL}/anonymous-donation/${drive_id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                setDonationSuccess(true);
+                setSummaryLoading(true); // Start loading for the summary
+                setSummary(response.data); // Set summary after successful donation
+                setIsMonetaryTypeOpen(false);
+                setIsInKindTypeOpen(false);
+                setSubmitting(false);
+            } else {
+                setSubmitting(false);
+            }
+        } catch (error) {
+            console.error("Error submitting donation:", error);
+            setSubmitting(false);
+        }
+    };
+
     // Submitting Monetary Donations
     const submitMonetaryDonation = async () => {
         // Ensure that all required fields are not empty
