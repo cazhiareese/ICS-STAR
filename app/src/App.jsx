@@ -233,7 +233,7 @@ function App() {
             <Route path="student/dashboard" element={<StudentLanding />} />
             <Route path="student/account/settings" element={<AccountSettings />} />
             <Route path="student/events" element={<EventsLanding />} />
-            <Route path="students/events/:eventid" element={<EventCardsMain />} />
+            <Route path="student/events/:eventid" element={<EventCardsMain />} />
             <Route path="student/alumnisearch" element={<AlumniSearch />} />
             <Route path="student/profile" element={<UserProfile />} />
             <Route path="student/profile/:userId" element={<JanryUserProfile />} />
