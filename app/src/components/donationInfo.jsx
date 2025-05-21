@@ -31,10 +31,12 @@ function DonationInfo({generalDrive, general }) {
 
     if (!driveDetails) {
         return (
-          <NewLoading
-            size={32}
-            text={general ? "Fetching General ICS Donation Drive" : "Fetching Donation Drive Details"}
-          />
+            <div className='w-screen h-screen flex items-center justify-center'>
+                <NewLoading
+                    size={32}
+                    text={general ? "Fetching General ICS Donation Drive" : "Fetching Donation Drive Details"}
+                />
+            </div>
         );
       }
 

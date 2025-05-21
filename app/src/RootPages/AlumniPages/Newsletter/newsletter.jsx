@@ -121,8 +121,8 @@ const Newsletter = () => {
                     <SkeletonCard />
                 )}
                 <div className="flex-col items-center justify-center md:w-[50%] xl:w-[30%] sm:mt-5 mt-10 md:h-[70vh]">
-                    <label className="text-primary font-satoshi-bold text-3xl sm:mx-5">More like this</label>
-                    <div className="mt-5 flex md:flex-col flex-row md:h-[70vh] overflow-y-auto md:space-x-0 space-x-5 py-5">
+                    <label className="text-primary font-satoshi-bold text-3xl lg:mx-0 sm:mx-5">More like this</label>
+                    <div className="mt-3 flex md:flex-col flex-row md:h-[70vh] overflow-y-auto md:space-x-0 space-x-5 py-3">
                         {forYou != null && forYou.length > 0 ? (
                             forYou.map((item) => (
                                 <div key={item.newsletter_id} className="sm:my-3">
