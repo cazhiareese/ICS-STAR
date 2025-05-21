@@ -102,8 +102,10 @@ const JobSearchBar =
     }, [currentPage, dependencyTrigger]);
 
     
-
-    
+    const fetchJobsWrapper = () => {
+        setCurrentPage(1);
+        fetchJobs();
+    }
     
    
 
@@ -121,12 +123,12 @@ const JobSearchBar =
                     value={searchInput}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            fetchJobs();
+                            fetchJobsWrapper();
                         }
                     }}
                     onChange={(e) => setSearchInput(e.target.value)}
                 />
-                <button  onClick={fetchJobs} className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
+                <button  onClick={fetchJobsWrapper} className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
                     <Search size={20} />
                 </button>
             </div>
