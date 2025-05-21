@@ -22,7 +22,7 @@ Base = declarative_base()
 Base.metadata.create_all(bind=engine)
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
-ACCESS_TOKEN_EXPIRE_MINUTES = 5
+ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
 STORAGE_URL = os.getenv("STORAGE_URL")
 STORAGE_STRING = os.getenv("STORAGE_STRING")
