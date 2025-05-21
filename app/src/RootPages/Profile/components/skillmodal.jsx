@@ -123,7 +123,7 @@ const AddSkillsModal = ({ isOpen, onClose, onSave, existingSkills }) => {
     value={skillInput}
     onChange={handleInputChange}
     onKeyDown={handleKeyDown}
-    className="w-full border-2 border-disabled px-4 py-3 rounded-2xl text-lg sm:text-sm"
+    className="w-full border-2 border-disabled px-4 py-3 rounded-2xl text-lg sm:text-sm placeholder:font-satoshi-medium placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary"
     placeholder="Enter skills..."
     style={{ height: "50px" }}
   />
