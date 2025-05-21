@@ -316,7 +316,7 @@ function AlumniSearch() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-screen">
       {/* See all modals */}
       <SeeAllAffiliationModal
         isOpen={isSeeAllAffiliationOpen}
@@ -673,7 +673,7 @@ function AlumniSearch() {
         </div>
       </div>
       {/* Desktop */}
-      <div className="flex flex-row md:justify-left justify-center">
+      <div className="flex flex-1 flex-row md:justify-left justify-center">
         <div className={`hidden lg:flex flex-col pr-6 border-r-1 border-gray-300 xl:w-1/4 w-1/2 pt-16 xl:pl-0 pl-14 ${isSkillsExpanded ? 'pb-16' : ''}`}>
           <div className="flex flex-row">
             <h1 className="font-satoshi-bold text-4xl flex-4/12">Filters</h1>
