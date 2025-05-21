@@ -4,9 +4,11 @@ import Start from "./SignupSteps/mainpanel.jsx"
 import Logo from "../assets/SignupAssets/logo.png"
 import Constellation from "../assets/SignupAssets/constellationMain.png"
 import { useNavigate } from "react-router-dom";
+import { useAppContext } from "./AuthContext/signupcontext.jsx";
 function SignupPage() {
 
     const navigate = useNavigate();
+    const { setCurrentSection } = useAppContext();  // Accessing user data from context
 
     const goToLogin = () => {
         navigate("/login");  // Redirects to the Login page
@@ -29,7 +31,12 @@ function SignupPage() {
                 Already have an account?{' '}
                 <button 
                     className="text-primary font-satoshi-bold underline cursor-pointer"
-                    onClick={goToLogin}
+                    onClick={()=>{
+                        goToLogin();
+                        setCurrentSection("0");
+                        // It is here
+                    }
+                    }
                 >
                     Login here
                 </button>
