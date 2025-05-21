@@ -312,7 +312,7 @@ function JobPostingLanding() {
                         {/* Dropdown 1 */}
                         <button 
                         onClick={() => setShowWorkTypeDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
+                        className="bg-[#FFFFFF] border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
                             <div className="flex flex-row items-center">
                                 <span className="truncate">
                                     {/* {selectedWorkTypes.length > 0
@@ -355,7 +355,7 @@ function JobPostingLanding() {
                         {/* Dropdown 2 */}
                         <button 
                         onClick={() => setShowRemoteDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
+                        className="bg-[#FFFFFF] border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
                             <div className="flex flex-row items-center">
                                 <span className="truncate">
                                     {/* {selectedRemoteOption.length > 0
@@ -396,7 +396,7 @@ function JobPostingLanding() {
                         {/* Dropdown 3 */}
                         <button 
                         onClick={() => setShowSalaryRangeDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
+                        className="bg-[#FFFFFF] border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer hover:bg-neutral-100">
                             <div className='flex flex-row'>
                                 PHP {salaryRange.min} - PHP {salaryRange.max}
                                 <h1 className='ml-auto'><ChevronDown size={30} /></h1>
