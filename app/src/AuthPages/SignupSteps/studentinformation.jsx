@@ -15,7 +15,7 @@ function StudentInformation(){
 
     const {setUserData, userData, updateUserData} = useAppContext();
 
-    const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
+    const years = Array.from({ length: 2025 - 1983 + 1 }, (_, i) => 1983 + i);
     const { setCurrentSection} = useAppContext();
 
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;

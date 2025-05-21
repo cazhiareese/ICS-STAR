@@ -18,7 +18,8 @@ function AlumnInfo(){
     const [academicYearDropdownOpen, setAcademicYearDropdownOpen] = useState(false);
     // const years = ["AY 2024–2025", "AY 2023–2024", "AY 2022–2023", "AY 2021–2022"];
     const {setUserData, userData, updateUserData} = useAppContext();
-    const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
+    const years = Array.from({ length: 2025 - 1983 + 1 }, (_, i) => 1983 + i);
+    const yearsGraduated = Array.from({ length: 2025 - 1987 + 1 }, (_, i) => 1987 + i);
     const { setCurrentSection} = useAppContext();
     const [studentNumberError, setStudentNumberError] = useState(false)
     const [termGraduated, setTermGraduated] = useState(false)
@@ -146,6 +147,11 @@ function AlumnInfo(){
     };
     
     
+    const filteredStudentYears = userData.academicYear
+  ? years.filter((year) => year <= userData.academicYear && year >= userData.academicYear - 4)
+  : years;
+
+
     return(
         <div className="flex flex-col w-full items-center overflow-auto pt-40 sm:pt-0 sm:mt-0 mt-10">
              <div className = "flex flex-row z-10 space-x-8 mt-20">
@@ -175,7 +181,11 @@ function AlumnInfo(){
 
                     {yearDropdownOpen && (
                         <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
-                        {years.map((year) => (
+                        {years
+                        .filter((year) => {
+                            return !userData.academicYear || year <= userData.academicYear - 4;
+                        })
+                        .map((year) => (
                             <li
                             key={year}
                             onClick={() => {
@@ -248,7 +258,12 @@ function AlumnInfo(){
 
                             {academicYearDropdownOpen && (
                             <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
-                                {years.map((year) => (
+                                {yearsGraduated
+                                    .filter((year) => {
+                                        // Only show years at least 4 years after the student number year
+                                        return !userData.selectedYear || year >= userData.selectedYear + 4;
+                                    })
+                                    .map((year) => (
                                 <li
                                     key={year}
                                     onClick={() => {
