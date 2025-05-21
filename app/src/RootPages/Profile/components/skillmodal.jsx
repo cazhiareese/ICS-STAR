@@ -184,7 +184,7 @@ const AddSkillsModal = ({ isOpen, onClose, onSave, existingSkills }) => {
           {/* Suggested Skills */}
           <div className="flex flex-col gap-2">
             <h3 className="text-black font-satoshi-medium">Suggestions</h3>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-3">
+            <div className="font-satoshi-medium grid grid-cols-3 gap-2 sm:grid-cols-3 text-[12px] sm:text-[17px]">
               {suggestedSkills
                 .filter((skill) => !existingSkills.includes(skill))
                 .map((skill, index) => (

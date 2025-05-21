@@ -101,7 +101,7 @@ const PersonalInfoSection = ({ editMode, userDetails, handleChange }) => {
             </div>
             {editMode ? (
               <input
-                type="text"
+                type="number"
                 value={userDetails.mobile_number}
                 onChange={(e) => handleChange(e, "mobile_number")}
                 className="text-primary font-satoshi-bold bg-white border border-disabled rounded-[12px] px-2 py-1 w-full"

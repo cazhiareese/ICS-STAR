@@ -170,7 +170,7 @@ function ProfileSection({
               {/* Save Button (on right) */}
               <button
                 onClick={() => setShowModal(true)}
-                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-primary text-white hover:bg-hover transition"
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-satoshi-medium bg-primary text-white hover:bg-hover transition"
               >
                 <Check size={18} className="text-white" />
                 <span className="hidden sm:inline text-neutral">Save Profile</span>
@@ -179,10 +179,11 @@ function ProfileSection({
               {/* Cancel Button (on left at desktop) */}
               <button
                 onClick={handleCancel}  // Call handleCancel here
-                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-medium bg-bg-disabled text-black border border-primary hover:bg-disabled transition "
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] sm:text-[16px] font-satoshi-medium bg-bg-disabled text-black border border-primary hover:bg-disabled transition "
               >
                 <X size={18} className="text-error " />
                 <span className="hidden sm:inline">Cancel Edit</span>
+
               </button>
             </>
           ) : (
