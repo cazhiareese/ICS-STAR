@@ -535,7 +535,7 @@ function AdminBatchInformation() {
           </div>
         ) : (
           <>
-            <div className='flex gap-2 mt-4 mb-2 justify-end'>
+            <div className='flex gap-2 my-2 w-full justify-end'>
               <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange} />
               <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle} />
               <PaginationComponent
