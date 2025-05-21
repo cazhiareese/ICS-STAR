@@ -148,8 +148,8 @@ function Step3Onboarding() {
       setEmployed(false)
       setUnemployed(false)
       setSelfemployed(true)
-      setTypeEmployed("self-employed")
-      updateUserData("employmentType", "self-employed")
+      setTypeEmployed("self_employed")
+      updateUserData("employmentType", "self_employed")
     }
 
   const handleCheckboxChange = (value) => {
@@ -628,7 +628,7 @@ const industryOptions = [
                 name="sameAsBase"
                 checked={userData.sameWorkBase}
                 onChange={()=>updateUserData("sameWorkBase", !userData.sameWorkBase)}
-                className="mr-2"
+                className="mr-2 border-neutral-300 bg-neutral-100 accent-primary rounded focus:outline-primary"
               />
               <label className="text-gray-600 md:text-md text-sm">Same as base</label>
             </div>

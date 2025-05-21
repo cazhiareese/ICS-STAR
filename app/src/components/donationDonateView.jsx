@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export default function DonationCard({driveDetails, driveId}) {
   const User = localStorage.getItem("token");
   let tokentype = "guest";
   let userid = true;
+  
   
   
   if (User) {
@@ -21,7 +23,7 @@ export default function DonationCard({driveDetails, driveId}) {
   } else {
     console.log("No token found, defaulting to guest.");
   }
-
+  console.log("hello");
   console.log(driveDetails)
   // const  driveId  = useParams();
 
@@ -29,6 +31,7 @@ export default function DonationCard({driveDetails, driveId}) {
   const navigate = useNavigate();
 
   const handledonationform = () => {
+    console.log("cytrus",tokentype);
     navigate(`/${tokentype}/donationforms/${driveId}`);
     //window.location.href = `/alumni/donationforms/${driveId.driveid}`;
   }

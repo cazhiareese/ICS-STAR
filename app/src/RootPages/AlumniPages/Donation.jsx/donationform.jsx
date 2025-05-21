@@ -13,6 +13,7 @@ import Curve from "../../../assets/curve.png";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
 import PaymentMode from "../../../components/AlumniComponents/DonationComponents/paymentmode";
+import { jwtDecode } from "jwt-decode";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
@@ -46,6 +47,26 @@ function Donationform() {
     const [paymentError, setPaymentError] = useState(false);
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      const User = localStorage.getItem("token");
+      let tokentype = "guest";
+      let userid = true;
+      
+      
+      if (User) {
+        try {
+          const decoded = jwtDecode(User);
+          tokentype = decoded.role;
+          userid = decoded.sub;
+          console.log("Decoded token:", decoded);
+          console.log("User ID:", userid);
+          console.log("Token type:", tokentype);
+        } catch (error) {
+          console.error("Invalid token:", error);
+        }
+      } else {
+        console.log("No token found, defaulting to guest.");
+      }
 
     const formatDate = (date) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -190,9 +211,9 @@ function Donationform() {
         const amount = localStorage.getItem("maya_donation_amount");
     
         console.log("Maya Callback triggered with amount:", amount);
-    
         const formData = new FormData();
         formData.append("amount", amount);  // Append the amount as form data
+
     
         try {
             const response = await axios.post(`${API_BASE_URL}/maya-callback?drive_id=${drive_id}`, formData, {
@@ -266,6 +287,7 @@ function Donationform() {
         }
     };
 
+    console.log("cy",tokentype);
     return (
         <>
             {!donationSuccess ? (
@@ -295,8 +317,9 @@ function Donationform() {
                                 setIsMonetaryType={setIsMonetaryType}
                             />
 
-                            {/* In-kind Donation Type Button */}
-                            <DonationType donationType={"inKind"}
+                            {tokentype !== "guest" && (
+                            <DonationType
+                                donationType={"inKind"}
                                 isInKindTypeOpen={isInKindTypeOpen}
                                 isMonetaryTypeOpen={isMonetaryTypeOpen}
                                 setIsInKindTypeOpen={setIsInKindTypeOpen}
@@ -304,6 +327,8 @@ function Donationform() {
                                 setIsInKindType={setIsInKindType}
                                 setIsMonetaryType={setIsMonetaryType}
                             />
+                            )}
+
                         </div>
 
                         {isMonetaryTypeOpen && (
@@ -324,7 +349,10 @@ function Donationform() {
                                     setFileName={setFileName}
                                     onFileSubmit={handleFileSubmit}
                                 />
-                                <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous} />
+{tokentype !== "guest" && (
+  <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous} />
+)}
+
                                 
                                 {/* Small screen support */}
                                 <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:hidden block">

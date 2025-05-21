@@ -4,6 +4,8 @@ import DonationMainView from "./donationMainView";
 import { useParams } from "react-router-dom";
 import NewLoading from "./LoadingComponents/cyruscircular";
 import BackButton from "./backbutton";
+import { jwtDecode } from "jwt-decode";
+
 function DonationInfo({generalDrive, general }) {
     const idUser = useParams(); // <- destructure directly if param is named 'driveid'
     const driveid = idUser.driveid; 
@@ -54,10 +56,12 @@ fetch(`${API_BASE_URL}/one-donation-drive/${driveid}`, {
 
     if (!driveDetails) {
         return (
-          <NewLoading
-            size={32}
-            text={general ? "Fetching General ICS Donation Drive" : "Fetching Donation Drive Details"}
-          />
+          <div className='w-screen h-screen flex items-center justify-center'>
+                <NewLoading
+                    size={32}
+                    text={general ? "Fetching General ICS Donation Drive" : "Fetching Donation Drive Details"}
+                />
+            </div>
         );
       }
 

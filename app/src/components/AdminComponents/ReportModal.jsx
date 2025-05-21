@@ -34,7 +34,7 @@ function ReportModal({ isOpen, onClose, reports, onLimitAccess, isLoading, isCom
       <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
         <div className="flex flex-col border items-center bg-white p-6 rounded-3xl shadow-lg max-w-xl h-2/5">
           {isLoading ? (
-            <div className="h-full flex items-center justify-center">
+            <div className="h-full w-xl flex items-center justify-center">
               <CircularLoading />
             </div>
           ) : isComplete ? (

@@ -71,15 +71,7 @@ useEffect(() => {
     setUserType(tokentype);     
 },[])
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollTop = window.scrollY;
-            setIsSticky(scrollTop > 100); // adjust the trigger point here
-        };
-    
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+
 
     //cyrus was here
 
@@ -194,7 +186,14 @@ useEffect(() => {
         <>
         <div className="flex flex-col items-center bg-[#F8F9FB]">
         <div className="flex flex-col w-full bg-whitey shadow-md  items-center rounded-b-[35px] bg-white">
-        <div className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center ${isSticky ? 'fixed top-0 shadow-md' : 'relative'}`}>
+        <div className='h-25  w-full'></div>
+        <div
+          className={`w-full z-40 transition-all duration-800 ease-in-out flex justify-center fixed top-0 shadow-md bg-white rounded-2xl items-end h-45 pb-1`}
+
+        >
+
+        
+
         <div className="flex items-center justify-center w-full max-w-[1200px] px-4 py-4 mt-2">
     <div className="relative flex w-full max-w-[350px] sm:max-w-[600px]">
       {/* Search Input */}
@@ -203,36 +202,43 @@ useEffect(() => {
         placeholder="Search Available Events"
         className="bg-gray-100 font-satoshi-medium text-lg w-full px-4 py-3 pr-14 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
         onChange={async (e) => {
-            setSkeleton(true);
-            const value = e.target.value;
-            setSearchInput(value);
-          
-            if (value.trim() === "") {
-              setSuggestions("none");
-              return;
-            }
-          
-            try {
-              const response = await axios.get(`${API_BASE_URL}/search-event`, {
-                params: { q: value },
-              });
-          
-              const eventNames = response.data;
-              const matchedEvents = allEvents?.filter(event =>
-                eventNames.includes(event.title)
-              );
-          
-              if (!matchedEvents || matchedEvents.length === 0) {
-                setSuggestions("zero");
-              } else {
-                setSuggestions(matchedEvents);
-              }
-            } catch (error) {
-              console.error("Error fetching search suggestions:", error);
+          setSkeleton(true);
+          const value = e.target.value;
+          setSearchInput(value);
+        
+          if (value.trim() === "") {
+            setSuggestions("none");
+            return;
+          }
+        
+          try {
+            const response = await axios.get(`${API_BASE_URL}/search-event`, {
+              params: { q: value },
+            });
+        
+            const eventNames = response.data;
+            const matchedEvents = allEvents?.filter(event =>
+              eventNames.includes(event.title)
+            );
+        
+            if (!matchedEvents || matchedEvents.length === 0) {
               setSuggestions("zero");
+            } else {
+              setSuggestions(matchedEvents);
+        
+              // Scroll to Explore Events if user is an alumni
+              if (userType === "alumni" && exploreRef.current) {
+                exploreRef.current.scrollIntoView({ behavior: "smooth" });
+              }
             }
-            setSkeleton(false);
-          }}
+          } catch (error) {
+            console.error("Error fetching search suggestions:", error);
+            setSuggestions("zero");
+          }
+        
+          setSkeleton(false);
+        }}
+        
           
         value={searchInput}
       />
@@ -302,20 +308,18 @@ useEffect(() => {
                             </div>
                         )}
                     </div>
-
-
                     )
                     
                     }
                     
                 </div>
 
-                <div className="flex flex-col mt-10 w-full mb-10 sm:px-15">
+                <div className="flex flex-col mt-10 w-full mb-2 sm:px-15">
                     <div className="flex md:flex-row flex-col wrap items-center sm:justify-start justify-center space-x-5">
                         <label ref={exploreRef} className="text-3xl text-primary font-satoshi-bold lg:text-4xl">
                             Explore Events
                         </label>
-                        <div className="flex flex-row  space-x-3 md:ml-auto md:pt-0 pt-5">
+                        <div className="flex flex-row  space-x-3 md:ml-auto md:pt-0 pt-5 md:px-0 px-5 md:text-md text-sm">
                         <button
                             className={`px-2 lg:px-4 py-2 rounded-full border ${filterPress=== "Today" ? 'border-gray-300 text-white bg-primary': 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white'} `}
                             onClick={() => {
@@ -370,6 +374,7 @@ useEffect(() => {
                             setFilterPress("None");
                             setShowCalendar(false);
                             setSuggestions("none");          // clear filter
+                            fetchAllEvents()
                             } else {
                             // toggle on
                             setFilterPress("Choose Date");
@@ -405,7 +410,9 @@ useEffect(() => {
 
                     
 
-                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start">
+
+                    <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start py-5">
+
                         
                         {skeleton ? (
                             <>
@@ -428,7 +435,7 @@ useEffect(() => {
                         // </div>
                         ) 
                         : suggestions==="zero" ? (<div>
-                            <label className="font-satoshi-light text-primary text-4xl overflow">No events found.</label>
+                            <div className="font-satoshi-light text-primary">No events found.</div>
                         </div>
                         
                     
