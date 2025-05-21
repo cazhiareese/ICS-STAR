@@ -177,7 +177,6 @@ async def make_donations(
 def maya_callback(
     drive_id: UUID,
     amount: float = Form(...),
-    is_anonymous: bool = Form(...),
     db: Session = Depends(get_db),
     user: Optional[CurrentUser] = Depends(get_current_user_optional),
 ):
@@ -186,7 +185,7 @@ def maya_callback(
     if not user:
         user = None
 
-    return maya_success(drive, amount, is_anonymous, db, user)
+    return maya_success(drive, amount, db, user)
 
 @router.post("/anonymous-donation/{drive_id}")
 async def guest_donation(
