@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { LogOut, User, Globe, Menu, X, Settings } from "lucide-react";
 import logo from "../assets/Subtract.png";
 
-function Navbar({ tokentype, verified, banned }) {
+function Navbar({ tokentype, verified, banned, google }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -104,7 +104,14 @@ function Navbar({ tokentype, verified, banned }) {
         {tokentype !== "guest" && (
   <>
     <User className="cursor-pointer hover:text-primary transition" size={20} onClick={handleProfileClick} />
-    <Settings className="cursor-pointer hover:text-primary transition" size={20} onClick={handleAccount} />
+{google === false && (
+  <Settings
+    className="cursor-pointer hover:text-primary transition"
+    size={20}
+    onClick={handleAccount}
+  />
+)}
+
   </>
 )}
 

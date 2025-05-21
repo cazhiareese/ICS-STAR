@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/navbar";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 function Root() {
   const token = localStorage.getItem("token");
+  const [google,setGoogle] = useState(null);
+  import.meta.env.VITE_BACKEND_URL;
 
   let tokentype = "guest";
   let verified = false;
@@ -23,10 +26,30 @@ function Root() {
     }
   }
 
+  useEffect(() => {
+    const checkPasswordNull = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/check-password-null`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setGoogle(response.data); // adjust based on your response structure
+      } catch (error) {
+        console.error("Error checking password null:", error);
+      }
+    };
+
+    checkPasswordNull();
+  }, []);
+
   return (
     <div>
       {["alumni", "student","guest"].includes(tokentype) && (
-        <Navbar tokentype={tokentype} verified={verified} banned={banned} />
+        <Navbar tokentype={tokentype} verified={verified} banned={banned} google={google} />
       )}
       <Outlet context={tokentype} />
     </div>
