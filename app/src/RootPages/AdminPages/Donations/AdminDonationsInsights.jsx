@@ -274,7 +274,7 @@ function AdminDonationsInsights() {
           </div>
         </div>
         <h1 className="text-5xl text-primary font-satoshi-bold mt-4">Donations</h1>
-        {donationLoading ? (
+        {loading ? (
           <>
             <SkeletonControls />
             <SkeletonTable />
