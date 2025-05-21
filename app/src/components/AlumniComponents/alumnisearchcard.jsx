@@ -34,7 +34,7 @@ function AlumniSearchCard({
       :(<img src={defaultimage} alt="Avatar" className="w-24 h-24 rounded-full border border-gray-300 shadow-sm" />)
       }
       
-      <h1 className='text-xl font-satoshi-bold pt-3'>{full_name}</h1>
+      <h1 className='text-xl font-satoshi-bold pt-3 text-center px-3'>{full_name} </h1>
       <h2 className='text-sm font-satoshi-medium pt-1'>{email}</h2>
 
       {/* Further Details */}
