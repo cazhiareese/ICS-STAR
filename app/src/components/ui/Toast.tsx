@@ -22,7 +22,7 @@ export function showToast(message: string, type: ToastType = "success") {
         {message}
       </span>
       <button
-        onClick={() => toast.dismiss(t.id)}
+        // onClick={() => toast.dismiss(t.id)}
         className="text-gray-400 hover:text-gray-600"
       >
         <X className="w-5 h-5 cursor-pointer" />

@@ -109,9 +109,12 @@ export default function Step4Onboarding() {
             });
             };
             const alumPayload = {
-            ...(userData.scholarshipList?.length > 0 && { scholarships: userData.scholarshipList }),
-            ...(userData.affiliationList?.length > 0 && { affiliations: userData.affiliationList }),
-            ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
+            // ...(userData.scholarshipList?.length > 0 && { scholarships: userData.scholarshipList }),
+            // ...(userData.affiliationList?.length > 0 && { affiliations: userData.affiliationList }),
+            // ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
+            scholarships: userData.scholarshipList || [],
+            affiliations: userData.affiliationList || [],
+            roles: userData.roleList || [],
             ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.industrySector && { industry: userData.industrySector }),
             ...(userData.employmentType && { employment_status: employmentEnum(userData.employmentType) }),
             ...(userData.employmentType === "unemployed" && userData.reason?.length > 0 && { reasons: reasonsEnum(userData.reason) }),
@@ -133,6 +136,8 @@ export default function Step4Onboarding() {
               ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
               ...(userData.skillsInterests?.length > 0 && { skills: userData.skillsInterests }),
             };
+            console.log("Alum Payload:");
+            console.log(Array.isArray(userData.skillsInterests), userData.skillsInterests);
 
           function objectToFormData(obj) {
             const formData = new FormData();
@@ -155,7 +160,6 @@ export default function Step4Onboarding() {
           const alumFormData = objectToFormData(alumPayload);
           const studentFormData = objectToFormData(studentPayload);
 
-          
           const payload = userType === "student" ? studentFormData : alumFormData;
 
 
@@ -180,9 +184,6 @@ export default function Step4Onboarding() {
         setShowErrorModal(true)
         console.error("Error submitting onboarding information:", error);
       }
-
-
-      console.log("Onboarding information submitted successfully.");
       // setCurrentSection(5);
     } catch (error) {
       setShowErrorModal(true)
