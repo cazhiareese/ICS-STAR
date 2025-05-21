@@ -74,7 +74,7 @@ export default function MultiDatePicker({ onApply, initialDates = '' }) {
         sort
         onFocusedDateChange={setFocusedDate}
         onClose={() => setFocusedDate(undefined)}
-        format="MM/DD/YYYY HH:mm A"
+        format="MM/DD/YYYY HH:mm"
         minDate={today} // <-- Add this prop here
         plugins={[
           <TimePicker hideSeconds position="bottom" />,
@@ -90,14 +90,6 @@ export default function MultiDatePicker({ onApply, initialDates = '' }) {
                color: "white"
              }
           }
-
-          // You might want to add a different style for disabled dates (optional)
-          // This styling is separate from the disabling logic itself provided by minDate
-          // if (date < today) {
-          //   props.style = { color: "#ccc", pointerEvents: "none" }; // Example graying out
-          //   props.disabled = true; // minDate handles actual disabling, but this reinforces it
-          // }
-
           return props
         }}
         numberOfMonths={1}
@@ -105,17 +97,14 @@ export default function MultiDatePicker({ onApply, initialDates = '' }) {
         animations={[transition()]}
 
         render={(value, openCalendar) => (
-          // Display the currently selected dates (from 'dates' state, after apply)
-          // Or you might prefer to display tempDates while the calendar is open
-          // Let's stick to 'dates' for the display outside the picker for consistency
           <div className="w-full" onClick={openCalendar}>
             <div
               className="w-full overflow-hidden text-ellipsis whitespace-nowrap border border-gray-300 px-3 py-2 rounded-2xl"
               // Display formatted dates from the 'dates' state for the input value
-              title={dates.map(d => format(d, "MM/dd/yyyy HH:mm A")).join(", ")}
+              title={dates.map(d => format(d, "MM/dd/yyyy HH:mm")).join(", ")}
             >
               {/* Display formatted dates or placeholder */}
-              {dates.length > 0 ? dates.map(d => format(d, "MM/dd/yyyy HH:mm A")).join(", ") : "Select date and time"}
+              {dates.length > 0 ? dates.map(d => format(d, "MM/dd/yyyy HH:mm")).join(", ") : "Select date and time"}
             </div>
           </div>
         )}
