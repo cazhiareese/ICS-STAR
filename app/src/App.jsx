@@ -10,6 +10,7 @@ import UserProfile from "./RootPages/Userprofile";
 import Unauthorized from "./AuthPages/Unauthorized";
 import OnboardingDashboard from "./AuthPages/OnBoarding/dashboard_onboarding";
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import { useEffect } from "react";
 
 import { Toaster } from "sonner"
 
@@ -69,10 +70,8 @@ import AdminCreateNewsletter from "./RootPages/AdminPages/NewsLetter/AdminCreate
 import AdminNewsletterDetails from "./RootPages/AdminPages/NewsLetter/AdminNewsletterDetails";
 
 
-const isSignedIn = !!localStorage.getItem("token");
-//const isSignedIn = true;
 
-console.log("isSignedIn:", isSignedIn);
+
 
 
 
@@ -90,6 +89,59 @@ import AccountSettings from "./RootPages/Account/accountsettings";
 //const isSignedIn = !!localStorage.getItem("token");
 import ReddUserProfile from "./RootPages/RedUserProfile";
 import JanryUserProfile from "./RootPages/JanryUserProfile";
+import { useNavigate } from "react-router-dom";
+
+const isSignedIn = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+  if (isTokenExpired()) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("token_expiration");
+    navigate("/login");
+    return false;
+  }
+  return true;
+};
+
+const isTokenExpired = () => {
+  const expiration = localStorage.getItem("token_expiration");
+  if (!expiration) return true; // no expiration means invalid
+  const now = new Date().getTime();
+  return now > parseInt(expiration, 10);
+};
+
+function TokenTimeChecker() {
+  useEffect(() => {
+    const checkTokenExpiration = () => {
+      const expiration = localStorage.getItem("token_expiration");
+      if (!expiration) {
+        console.log("No token expiration time stored.");
+        return;
+      }
+
+      const now = Date.now();
+      const expirationTime = parseInt(expiration, 10);
+      const diffMs = expirationTime - now;
+
+      if (diffMs <= 0) {
+        console.log("⛔ Token has expired.");
+      } else {
+        const diffMinutes = Math.floor(diffMs / 60000);
+        const diffSeconds = Math.floor((diffMs % 60000) / 1000);
+        console.log(`⏳ Token expires in ${diffMinutes}m ${diffSeconds}s`);
+      }
+    };
+
+    checkTokenExpiration(); // Run immediately on mount
+    const intervalId = setInterval(checkTokenExpiration, 60000); // Every 1 min
+
+    return () => clearInterval(intervalId); // Cleanup
+  }, []);
+
+  return null; // Doesn't render anything
+}
+
 
 
 function App() {
@@ -135,18 +187,20 @@ function App() {
       console.warn("⚠️ No token found in sessionStorage");
     }
   }
+  const signedIn = isSignedIn();
 
+  console.log("Is signed in:", signedIn);
 
-  console.log(isSignedIn);
 
   return (
     <>
       <Toaster richColors closeButton position="top-right" />
+      <TokenTimeChecker />
       <Routes>
         <Route path="/" element={<Navigate to={isSignedIn ? "/login" : "login"} />} />
 
         {/* Check if the user is signed in */}
-        {!isSignedIn && (
+        {!signedIn && (
           <>
 
             <Route path="/" element={<Navigate to="/login" />} />
@@ -176,7 +230,7 @@ function App() {
           </>
         )}
 
-        {isSignedIn && checkType() === "alumni" && (
+        {signedIn && checkType() === "alumni" && (
           <>
             {isOnboarded() ?
               <>
@@ -221,7 +275,7 @@ function App() {
           </>
         )}
 
-        {isSignedIn && checkType() === "student" && (
+        {signedIn && checkType() === "student" && (
           <>
             {isOnboarded() ?
               <>
@@ -255,7 +309,7 @@ function App() {
           </>
         )}
 
-        {!isSignedIn && (
+        {!signedIn && (
           <>
             <Route path="/" element={<Root />}>
               <Route path="guest/dashboard" element={<GuestLanding />} />
@@ -272,7 +326,7 @@ function App() {
           </>
         )}
 
-        {isSignedIn && checkType() === "admin" && (
+        {signedIn && checkType() === "admin" && (
           <>
             {/* Admin Routes */}
             <Route path="admin" element={<AdminRoot />}>
