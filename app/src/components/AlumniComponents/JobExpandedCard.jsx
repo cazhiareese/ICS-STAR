@@ -6,6 +6,7 @@ import axios from 'axios';
 import CircularLoading from '../LoadingComponents/circularloading';
 import JobModal from '../../RootPages/AlumniPages/job-posting/jobcomponent/jobmodal';
 import { jwtDecode } from 'jwt-decode';
+import { showToast } from '../ui/Toast';
 
 
 
@@ -61,6 +62,7 @@ const [showModal, setShowModal] = useState(false);//
                 }
             });
             console.log('Success:', response.data);
+            showToast('Added this job to interests!', 'success');
             await fetchJobs();
             setDependencyTrigger(prev => !prev);
             setIsInterested(true);
@@ -68,6 +70,7 @@ const [showModal, setShowModal] = useState(false);//
             return response.data;
         } catch (error) {
             console.error('Error adding user interest:', error);
+            showToast('Failed to add to interests.', 'error');
             setStarLoading(false);
             throw error;
         }
@@ -86,6 +89,7 @@ const [showModal, setShowModal] = useState(false);//
                 }
             });
             console.log('Success:', response.data);
+            showToast('Removed from interests.', 'success');
             await fetchJobs();
             setDependencyTrigger(prev => !prev);
             setIsInterested(false);
@@ -93,6 +97,7 @@ const [showModal, setShowModal] = useState(false);//
             return response.data;
         } catch (error) {
             console.error('Error removing user interest:', error);
+            showToast('Failed to remove from interests.', 'error');
             setStarLoading(false);
             throw error;
         }
