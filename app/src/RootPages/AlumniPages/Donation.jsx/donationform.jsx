@@ -315,8 +315,9 @@ function Donationform() {
                                 setIsMonetaryType={setIsMonetaryType}
                             />
 
-                            {/* In-kind Donation Type Button */}
-                            <DonationType donationType={"inKind"}
+                            {tokentype !== "guest" && (
+                            <DonationType
+                                donationType={"inKind"}
                                 isInKindTypeOpen={isInKindTypeOpen}
                                 isMonetaryTypeOpen={isMonetaryTypeOpen}
                                 setIsInKindTypeOpen={setIsInKindTypeOpen}
@@ -324,6 +325,8 @@ function Donationform() {
                                 setIsInKindType={setIsInKindType}
                                 setIsMonetaryType={setIsMonetaryType}
                             />
+                            )}
+
                         </div>
 
                         {isMonetaryTypeOpen && (
