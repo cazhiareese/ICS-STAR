@@ -144,6 +144,7 @@ const Newsletter = () => {
                 : (
                     <SkeletonCard />
                 )}
+
                 <div
                 className="flex flex-col items-start justify-start md:w-[50%] xl:w-[50%] md:mt-0 mt-10 h-full md:px-0 sm:px-5"
                 >
@@ -152,6 +153,7 @@ const Newsletter = () => {
                         ref={moreLikeThisRef}
                         className="mt-5 flex md:flex-col flex-row overflow-y-auto md:space-x-0 space-x-5 py-5 md:w-auto w-full"
                     >
+
 
                         {forYou != null && forYou.length > 0 ? (
                             forYou.map((item) => (

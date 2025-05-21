@@ -314,7 +314,7 @@ useEffect(() => {
                     
                 </div>
 
-                <div className="flex flex-col mt-10 w-full mb-10 sm:px-15">
+                <div className="flex flex-col mt-10 w-full mb-2 sm:px-15">
                     <div className="flex md:flex-row flex-col wrap items-center sm:justify-start justify-center space-x-5">
                         <label ref={exploreRef} className="text-3xl text-primary font-satoshi-bold lg:text-4xl">
                             Explore Events
@@ -410,7 +410,9 @@ useEffect(() => {
 
                     
 
+
                     <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 mt-10 gap-5 h-10/12 overflow-auto justify-start sm:mx-0 mx-10 sm:justify-start py-5">
+
                         
                         {skeleton ? (
                             <>

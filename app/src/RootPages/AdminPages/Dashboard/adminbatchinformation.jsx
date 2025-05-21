@@ -280,7 +280,7 @@ function AdminBatchInformation() {
       <div className='flex flex-col'>
         <h2 className='font-satoshi-bold text-2xl text-primary'> Batch Information </h2>
         {/* Batch and count */}
-        <div className='flex flex-row justify-between'>
+        <div className='flex flex-row justify-between py-5'>
           {/* Batch selector */}
           <select
             value={selectedYear}
@@ -288,7 +288,7 @@ function AdminBatchInformation() {
               setSelectedYear(e.target.value);
               navigate(`/admin/dashboard/batch-reports/${e.target.value}`);
             }}
-            className="block w-fit px-4 py-2 text-2xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
+            className="bg-[#FFFFFF] block w-fit pl-2 pr-16 py-2 text-2xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
           >
             <option value="" disabled>Select a year</option>
             {years.map((year) => (
@@ -535,7 +535,7 @@ function AdminBatchInformation() {
           </div>
         ) : (
           <>
-            <div className='flex gap-2'>
+            <div className='flex gap-2 mt-4 mb-2 justify-end'>
               <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange} />
               <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle} />
               <PaginationComponent
