@@ -30,8 +30,8 @@ export default function DonationCard({driveDetails, driveId}) {
   const navigate = useNavigate();
 
   const handledonationform = () => {
-    console.log(tokentype);
-    navigate(`/${tokentype}/donationforms/${driveId}`);
+    console.log("c",tokentype);
+    navigate(`alumni/donationforms/${driveId}`);
     //window.location.href = `/alumni/donationforms/${driveId.driveid}`;
   }
 

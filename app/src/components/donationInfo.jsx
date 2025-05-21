@@ -4,6 +4,8 @@ import DonationMainView from "./donationMainView";
 import { useParams } from "react-router-dom";
 import NewLoading from "./LoadingComponents/cyruscircular";
 import BackButton from "./backbutton";
+import { jwtDecode } from "jwt-decode";
+
 function DonationInfo({generalDrive, general }) {
     const idUser = useParams(); // <- destructure directly if param is named 'driveid'
     const driveid = idUser.driveid; 
