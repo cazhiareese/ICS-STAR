@@ -117,7 +117,7 @@ const EventCardsMain = () => {
         
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`, config);
                 setEvent(response.data);
-                console.log("Event data:", response.data);
+                console.log("Event data Here:", response.data);
             } catch (error) {
                 console.error('Error fetching event:', error);
             }
