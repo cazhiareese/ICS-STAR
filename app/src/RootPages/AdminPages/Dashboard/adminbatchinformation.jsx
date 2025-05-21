@@ -360,7 +360,7 @@ function AdminBatchInformation() {
         {statsOrUser === 'stats' ? (
         <div className='flex flex-col gap-4 mt-4'>
           {/* Employment Status */}
-          {employmentData && employmentData.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {employmentData && employmentData.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Employment Status </h2>
             <div className='flex flex-row h-full'>
               {/* Pie chart */}
@@ -446,7 +446,7 @@ function AdminBatchInformation() {
             <div className='border-t-1 flex-1 ml-2 border-gray-300'></div>
           </div> :  null }
           {/* Top Job Titles */}
-          {jobTitles && jobTitles.length > 0  ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {jobTitles && jobTitles.length > 0  ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Job Titles </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -481,7 +481,7 @@ function AdminBatchInformation() {
           </div> : null
           }
           {/* Top Industries */}
-          { topIndustries && topIndustries.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          { topIndustries && topIndustries.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Industries </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -520,7 +520,7 @@ function AdminBatchInformation() {
           </div> : null }
           {/* Top Countries */}
           {topCountries && topCountries.length > 0? 
-          <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Countries </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -565,12 +565,12 @@ function AdminBatchInformation() {
             {/* View changer */}
             <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
               {/* List View Button */}
-              <button className="px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
+              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
                 <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
               </button>
               <div className="h-6 w-px bg-disabled"></div>
               {/* Grid View Button */}
-              <button className="px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
+              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
                 <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
               </button>
             </div>

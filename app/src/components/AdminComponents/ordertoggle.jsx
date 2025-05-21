@@ -9,7 +9,7 @@ function OrderToggle({ direction, onToggle}) {
   return (
     <button
       onClick={() => onToggle(isAscending ? 'desc' : 'asc')}
-      className="px-2 w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-hover hover:shadow-md cursor-pointer bg-white"
+      className="px-2 w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-hover hover:shadow-md cursor-pointer bg-[#FFFFFF]"
     >
       {isAscending ? (
         <ArrowUp className="text-primary" />
