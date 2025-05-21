@@ -47,6 +47,26 @@ function Donationform() {
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+      const User = localStorage.getItem("token");
+      let tokentype = "guest";
+      let userid = true;
+      
+      
+      if (User) {
+        try {
+          const decoded = jwtDecode(User);
+          tokentype = decoded.role;
+          userid = decoded.sub;
+          console.log("Decoded token:", decoded);
+          console.log("User ID:", userid);
+          console.log("Token type:", tokentype);
+        } catch (error) {
+          console.error("Invalid token:", error);
+        }
+      } else {
+        console.log("No token found, defaulting to guest.");
+      }
+
     const formatDate = (date) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         return new Date(date).toLocaleDateString(undefined, options);
@@ -324,7 +344,10 @@ function Donationform() {
                                     setFileName={setFileName}
                                     onFileSubmit={handleFileSubmit}
                                 />
-                                <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous} />
+{tokentype !== "guest" && (
+  <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous} />
+)}
+
                                 
                                 {/* Small screen support */}
                                 <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:hidden block">
