@@ -447,6 +447,7 @@ function AdminProfileSection({
         onLimitAccess={limitAccountAccess}
         isLoading={limitAccessLoading}
         isComplete={limitAccessComplete}
+        isBanned={userDetails?.is_banned}
       />
 
 
