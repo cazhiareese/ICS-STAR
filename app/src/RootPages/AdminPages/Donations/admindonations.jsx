@@ -110,7 +110,7 @@ function AdminDonations() {
           <h2 className="font-satoshi-medium">Help ICS</h2>
         </div>
         <div className="border-l border-gray-300"></div>
-        <div className="flex flex-1">
+        <div className="flex flex-2">
           <div className="flex flex-col items-center justify-center flex-1">
             {loading ? (
               <div className="animate-pulse">
@@ -159,7 +159,7 @@ function AdminDonations() {
           )}
         </div>
       </div>
-      <div className="flex flex-col w-full lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0">
+      <div className="flex flex-col w-full mt-6 lg:w-auto lg:flex-row items-center lg:justify-between lg:ml-5 gap-2 lg:gap-0">
         <div className="w-full lg:w-auto min-w-xs">
           <button
             className={`px-12 py-3 cursor-pointer border-b-3 w-1/2 lg:w-auto ${
@@ -185,7 +185,7 @@ function AdminDonations() {
           <PaginationComponent page={page} setPage={setPage} totalPages={totalPages} />
         </div>
       </div>
-      <div className="border border-gray-400 rounded-xl p-6 h-fit hidden lg:block overflow-auto bg-white">
+      <div className="border border-gray-400 rounded-xl p-6 h-full hidden lg:block overflow-auto bg-white">
         {loading ? (
           <DonationsTable data={[]} loading={true} />
         ) : donations.length === 0 ? (
