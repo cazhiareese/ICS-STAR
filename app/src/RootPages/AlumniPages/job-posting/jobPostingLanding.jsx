@@ -279,7 +279,7 @@ function JobPostingLanding() {
 
     return (
         <div className='flex flex-col mb-16'>
-            <div className="flex flex-row w-full mt-8 shadow-md pb-8  rounded-full md:px-8 px-4">
+            <div className="flex flex-row w-full mt-8 shadow-md pb-8 rounded-full md:px-8 px-4">
                 {/* Filter Button aligned to the left */}
                 {(selectedWorkTypes.length > 0 ||
                 salaryRange.max > 0 ||
@@ -309,7 +309,7 @@ function JobPostingLanding() {
                         {/* Dropdown 1 */}
                         <button 
                         onClick={() => setShowWorkTypeDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full bg-[#FFFFFF] md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
                             <div className="flex flex-row items-center">
                                 <span className="truncate">
                                     {selectedWorkTypes.length > 0
@@ -346,7 +346,7 @@ function JobPostingLanding() {
                         {/* Dropdown 2 */}
                         <button 
                         onClick={() => setShowRemoteDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                        className="border border-gray-300 rounded-2xl bg-[#FFFFFF] px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
                             <div className="flex flex-row items-center">
                                 <span className="truncate">
                                     {selectedRemoteOption.length > 0
@@ -381,7 +381,7 @@ function JobPostingLanding() {
                         {/* Dropdown 3 */}
                         <button 
                         onClick={() => setShowSalaryRangeDropdown((prev) => !prev)}
-                        className="border border-gray-300 rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
+                        className="border border-gray-300 bg-[#FFFFFF] rounded-2xl px-4 py-2 w-full md:min-w-[180px] text-center font-satoshi-medium text-gray-700 cursor-pointer">
                             <div className='flex flex-row'>
                                 PHP {salaryRange.min} - PHP {salaryRange.max}
                                 <h1 className='ml-auto'><ChevronDown size={30} /></h1>
