@@ -279,8 +279,8 @@ function AdminIndustryInformation() {
                         </div>
                       </div>
                     </div> : null}
-            <div className={`bg-[#FFFFFF] grid grid-cols-2 gap-8 flex-1`}>
-            {tenureStatus &&tenureStatus.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            <div className={`grid grid-cols-2 gap-8 flex-1`}>
+            {tenureStatus &&tenureStatus.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
                 <h2 className='font-satoshi-bold text-xl'> Tenure Status </h2>
                 <div className='flex flex-row h-full'>
                 {/* Pie chart */}
@@ -319,7 +319,7 @@ function AdminIndustryInformation() {
                 </div>
                 </div>
             </div> : null}
-            {workMode &&workMode.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            {workMode &&workMode.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
                 <h2 className='font-satoshi-bold text-xl'> Work Mode </h2>
                 <div className='flex flex-row h-full'>
                 {/* Pie chart */}
