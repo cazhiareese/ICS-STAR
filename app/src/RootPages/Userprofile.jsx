@@ -12,6 +12,7 @@ import JobPosted from "./Profile/JobPosting/userjobposting";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 import { useParams } from "react-router-dom";
+import { showToast } from "../components/ui/Toast";
 
 
 import {
@@ -257,8 +258,10 @@ const fetchUserProfileData = async () => {
       await apiAddSkills(newSkills); // Call the API function to add skills
       console.log("Skills added successfully");
       setSkills([...skills, ...newSkills]);
+      showToast("Successfully added skills", "success");
     } catch (err) {
       setError("Failed to add skills");
+      showToast("Failed to add skills", "error");
     }
   };
 
@@ -268,8 +271,10 @@ const fetchUserProfileData = async () => {
       console.log("Skill removed successfully");
       // Update the UI by filtering out the removed skill
       setSkills(skills.filter((skill) => skill !== skillToRemove));
+      showToast("Successfully removed skill", "success");
     } catch (err) {
       setError("Failed to remove skill");
+      showToast("Failed to remove skill", "error");
     }
   };
 
@@ -284,8 +289,10 @@ const fetchUserProfileData = async () => {
         )
         
       );
+      showToast("Successfully removed affiliation", "success");
     } catch (err) {
       setError("Failed to remove affiliation");
+      showToast("Failed to remove affiliation", "error");
     }
   };
 
@@ -298,8 +305,10 @@ const fetchUserProfileData = async () => {
           (scholarship) => scholarship !== scholarshipToRemove
         )
       );
+      showToast("Successfully removed scholarship", "success");
     } catch (err) {
       setError("Failed to remove scholarship");
+      showToast("Failed to remove scholarship", "error");
     }
   };
 
@@ -308,8 +317,10 @@ const fetchUserProfileData = async () => {
       await apiAddAffiliation(newAffiliation); // Call the API function to add affiliation
       console.log("Affiliation added successfully");
       setAffiliations([...affiliations, newAffiliation]);
+      showToast("Successfully added new affiliation", "success");
     } catch (err) {
       setError("Failed to add affiliation");
+      showToast("Failed to add affiliation", "error");
     }
   };
 
@@ -318,8 +329,10 @@ const fetchUserProfileData = async () => {
       await apiAddScholarship(newScholarship); // Call the API function to add scholarship
       console.log("Scholarship added successfully");
       setScholarships([...scholarships, newScholarship]);
+      showToast("Successfully added new scholarship", "success");
     } catch (err) {
       setError("Failed to add scholarship");
+      showToast("Failed to add scholarship", "error");
     }
   };
 

@@ -16,6 +16,7 @@ import defaultimage from "../../assets/defaultimage.jpg";
 import ImageUploadModal from "./components/imageuploadmodal";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 import SocialLinksEditModal from "./components/sociallinksmoda";
+import { showToast } from "../../components/ui/Toast";
 
 function ProfileSection({
   activeTab,
@@ -127,9 +128,11 @@ function ProfileSection({
       const result = await response.json();
       console.log(result.message);
       setEditMode(false);
+      showToast("Successfully updated profile", "success");
     } catch (err) {
       console.error(err);
       setError("Failed to update profile");
+      showToast("Failed to update profile", "error");
     }
   };
 
