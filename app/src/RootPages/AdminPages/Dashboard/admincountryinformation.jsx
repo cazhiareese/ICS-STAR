@@ -224,7 +224,7 @@ function AdminCountryInformation() {
             </div>
           </div> : null
           }
-          {topIndustries && topIndustries.length > 0  ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {topIndustries && topIndustries.length > 0  ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
             <h2 className='font-satoshi-bold text-xl'> Top Industries </h2>
             <div className='h-full w-full '>
               <ResponsiveContainer width="100%" height="100%">
@@ -259,7 +259,7 @@ function AdminCountryInformation() {
           </div> : null
           }
           
-          {cities && cities.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+          {cities && cities.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
                       <h2 className='font-satoshi-bold text-xl'> Cities </h2>
                       <div className='flex flex-row h-full'>
                         {/* Pie chart */}
