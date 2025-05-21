@@ -8,6 +8,7 @@ export default function DonationCard({driveDetails, driveId}) {
   let userid = true;
   
   
+  
   if (User) {
     try {
       const decoded = jwtDecode(User);
@@ -22,7 +23,7 @@ export default function DonationCard({driveDetails, driveId}) {
   } else {
     console.log("No token found, defaulting to guest.");
   }
-
+  console.log("hello");
   console.log(driveDetails)
   // const  driveId  = useParams();
 
@@ -30,8 +31,8 @@ export default function DonationCard({driveDetails, driveId}) {
   const navigate = useNavigate();
 
   const handledonationform = () => {
-    console.log("c",tokentype);
-    navigate(`alumni/donationforms/${driveId}`);
+    console.log("cytrus",tokentype);
+    navigate(`/alumni/donationforms/${driveId}`);
     //window.location.href = `/alumni/donationforms/${driveId.driveid}`;
   }
 

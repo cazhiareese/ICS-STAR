@@ -211,9 +211,10 @@ function Donationform() {
         const amount = localStorage.getItem("maya_donation_amount");
     
         console.log("Maya Callback triggered with amount:", amount);
-    
+        console.log("Is Anonymous:", isAnonymous);
         const formData = new FormData();
         formData.append("amount", amount);  // Append the amount as form data
+        formData.append('is_anonymous', isAnonymous);
     
         try {
             const response = await axios.post(`${API_BASE_URL}/maya-callback?drive_id=${drive_id}`, formData, {
