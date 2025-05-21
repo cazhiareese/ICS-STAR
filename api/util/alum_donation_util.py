@@ -354,7 +354,7 @@ async def anonymous_donation(
             return await maya_donation(drive.drive_id, amount)
 
 
-def maya_success(drive: DonationDrive, amount: float, is_anonymous: bool, db: Session, user: Optional[CurrentUser]):
+def maya_success(drive: DonationDrive, amount: float, db: Session, user: Optional[CurrentUser]):
     
     if user is not None:
         name = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
@@ -364,9 +364,9 @@ def maya_success(drive: DonationDrive, amount: float, is_anonymous: bool, db: Se
                 date_donated = datetime.now(timezone.utc),
                 amount = amount,
                 drive_id = drive.drive_id,
-                user_id = user.user_id if not is_anonymous else None,
+                user_id = user.user_id if user else None,
                 is_acknowledged = True,
-                is_anonymous = is_anonymous
+                is_anonymous = True if not user else False
             )
     try:
         db.add(monetary)
