@@ -8,6 +8,7 @@ import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 import AdminBack from '../../../components/AdminComponents/AdminBack';
+import { showToast } from "../../../components/ui/Toast"
 
 function AdminDonationInformation() {
   const navigate = useNavigate()
@@ -121,6 +122,20 @@ function AdminDonationInformation() {
       fetchData();
     } catch (error) {
       console.error("Failed to update donation goal:", error);
+    }
+  }
+
+  async function handleOpenDrive() {
+    
+    try {
+      const response = await axios.put(`${API_BASE_URL}/admin/donations/open-drive/${driveid}`,{}, {headers: {Authorization: `Bearer ${tokenLocal}`}})
+      console.log(response)
+      showToast("Drive open successful!", "success")
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);   
+    } catch (error){
+        console.error("Failed to open drive", error)
     }
   }
 
@@ -292,10 +307,12 @@ function AdminDonationInformation() {
               {donation.is_closed ? (
                 // For closed
                 <>
-                  {/* View Details */}
-                  {/* <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
-                    <p className='font-satoshi-light'>View Details</p>
-                  </button> */}
+                  {/* Reopen Drive */}
+                  <button className='bg-primary hover:bg-hover text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'
+                    onClick={()=>{handleOpenDrive()}}
+                  >
+                    <p className='font-satoshi-light'>Open Drive</p>
+                  </button>
                   {/* Export Donor List */}
                   <button className='bg-primary hover:bg-hover text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'
                     onClick={()=>handleCSVExport()}

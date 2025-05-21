@@ -273,8 +273,8 @@ function AdminDonationsInsights() {
             )}
           </div>
         </div>
-        <h1 className="text-5xl text-primary font-satoshi-bold mt-6">Donations</h1>
-        {donationLoading ? (
+        <h1 className="text-5xl text-primary font-satoshi-bold mt-4">Donations</h1>
+        {loading ? (
           <>
             <SkeletonControls />
             <SkeletonTable />
