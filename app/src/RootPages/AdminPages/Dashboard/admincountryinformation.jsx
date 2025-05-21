@@ -216,26 +216,33 @@ function AdminCountryInformation() {
           </>
         ) : (
           <>
-
-          <div className='flex gap-2 mt-4 mb-2 justify-end'>
-            
-            <SortModal filters={sorters} selectedFilter={sortBy} onSelect={handleSortFieldChange}/>
-          
-            {/* Order by */}
-            <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
-           
-            {/* View changer */}
-            <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
-              {/* List View Button */}
-              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
-                <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-              <div className="h-6 w-px bg-disabled"></div>
-              {/* Grid View Button */}
-              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
-                <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-
+            <h2 className="font-satoshi-bold text-2xl text-primary"> Countries </h2>
+            <div className="flex flex-row justify-between py-4">
+              <select
+                value={selectedCountry}
+                onChange={(e) => {
+                  setSelectedCountry(e.target.value);
+                }}
+                className="bg-[#FFFFFF] block w-fit px-4 py-2 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black font-satoshi-bold"
+              >
+                {allCountry.map((country) => (
+                  <option key={country.country} value={country.country}>
+                    {country.country}
+                  </option>
+                ))}
+              </select>
+              <div className="flex flex-row gap-15">
+                <div className="flex flex-col items-center">
+                  <p className="font-satoshi-bold text-3xl">
+                    {" "}
+                    {countryTotalCount}{" "}
+                  </p>
+                  <p className="font-satoshi-light text-sm text-primary">
+                    {" "}
+                    Total Count
+                  </p>
+                </div>
+              </div>
             </div>
             <div>
               <div className="w-full lg:w-auto min-w-xs">

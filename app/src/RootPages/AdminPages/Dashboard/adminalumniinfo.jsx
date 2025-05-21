@@ -412,7 +412,7 @@ function AdminAlumniInfo() {
             <div className="h-1/2 flex flex-row p-4 mt-3">
               <div className="h-full flex-1 text-center flex flex-col items-center justify-center">
                 <h3 className="text-2xl font-satoshi-bold">Employment Status</h3>
-                <ResponsiveContainer width="80%" height="80%">
+                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={employmentStatusData}
@@ -433,21 +433,10 @@ function AdminAlumniInfo() {
                     />
                   </PieChart>
                 </ResponsiveContainer>
-                 <div className='flex gap-2 justify-center flex-wrap'>
-               {employmentStatusData.map((entry, index) => (
-                   <div key={index} className="flex items-center gap-2 text-gray-800">
-                     <span
-                       className="inline-block min-w-3 min-h-3 rounded-full"
-                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                     ></span>
-                     <span className="text-sm">{entry.status}</span>
-                   </div>
-                 ))}
-               </div>
               </div>
-               <div className='h-full flex-1 text-center flex flex-col items-center justify-start'>
+              <div className="h-full flex-1 text-center flex flex-col items-center justify-center">
                 <h3 className="text-2xl font-satoshi-bold">Employer Classification</h3>
-                <ResponsiveContainer width="80%" height="80%">
+                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={employerClassificationData}
@@ -468,21 +457,10 @@ function AdminAlumniInfo() {
                     />
                   </PieChart>
                 </ResponsiveContainer>
-                 <div className='flex gap-2 justify-center flex-wrap'>
-              {employerClassificationData.map((entry, index) => (
-                  <div key={index} className="flex items-center gap-2 text-gray-800">
-                    <span
-                      className="inline-block min-w-3 min-h-3 rounded-full"
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                    ></span>
-                    <span className="text-sm">{entry.class}</span>
-                  </div>
-                ))}
               </div>
-              </div>
-               <div className="h-full w-full flex-1 text-center flex flex-col items-center justify-start">
+              <div className="h-full w-full flex-1 text-center flex flex-col items-center justify-center">
                 <h3 className="text-2xl font-satoshi-bold">Salary Grade</h3>
-                <ResponsiveContainer width="125%" height="100%">
+                <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={salaryGradeData}
                     layout="vertical"
