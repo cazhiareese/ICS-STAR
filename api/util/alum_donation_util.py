@@ -43,11 +43,16 @@ async def maya_donation(drive_id: uuid, value: float):
         },
         "requestReferenceNumber": f'ICS-{ref_num}'
     }
-
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url, headers=headers, json=payload)
-        response.raise_for_status()
-        return response.json()
+    try:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+            response = await client.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+    except httpx.ReadTimeout:
+        return HTTPException(status_code=500, detail="The request timed out.")
+    except httpx.HTTPStatusError:
+        return HTTPException(status_code=500, detail="Server error in Maya")
+        
 
 def fetch_drive_suggestions(db: Session, query_text: str, limit: int = 5) -> List[DonationDriveOut]:
     drives = (
