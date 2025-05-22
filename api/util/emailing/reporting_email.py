@@ -90,10 +90,10 @@ def reported_notice(user_name, email):
 
         <!-- Title -->
         <h1 style="color: #1D2939; font-size: 18px; text-align: center;">
-            ICS-STAR Advisory: <br>
+            ICS-STAR Management: <br>
         </h1>
         <div class="main-title">
-            User Exceeded Report Threshold
+            User Received Multiple Reports
         </div>
 
         <!-- Event Image -->
