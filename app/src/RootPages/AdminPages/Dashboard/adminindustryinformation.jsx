@@ -7,6 +7,8 @@ import UsersTable from '../../../components/AdminComponents/userstable';
 import axios from 'axios'
 import SortModal from '../../../components/AdminComponents/sortmodal';
 import OrderToggle from '../../../components/AdminComponents/ordertoggle';
+import PaginationComponent from '../../../components/AdminComponents/PaginationComponent';
+import AdminBack from '../../../components/AdminComponents/AdminBack'
 
 function AdminIndustryInformation() {
     const navigate = useNavigate()
@@ -16,7 +18,7 @@ function AdminIndustryInformation() {
 
     const [viewStyle, setViewStye] = useState('List')
     const [page, setPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(48)
+    const [totalPages, setTotalPages] = useState(1)
 
     const[jobTitles, setJobTitles] = useState([])
     const [industries, setIndustries] = useState([])
@@ -139,24 +141,23 @@ function AdminIndustryInformation() {
             const industryParams = new URLSearchParams();
             industryParams.append('order_by', orderBy);
             const queryString = industryParams.toString();
-            const getIndustryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_industry_filter?industry=${selectedIndustry}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
+            const getIndustryUsers = await  axios.get(`${API_BASE_URL}/admin/stats/alumni_industry_filter?industry=${selectedIndustry}&page=${page}&${queryString}`, {headers: {Authorization: `Bearer ${token}`}})
+            console.log(getIndustryUsers)
+            setTotalPages(getIndustryUsers.data.total_pages)
             setIndustryUsers(getIndustryUsers.data.data)
           }catch (error) {
             setIndustryUsers([])
           }
       } 
       fetchUsers();
-    }, [sortBy, sortDirection])
+    }, [sortBy, sortDirection, page])
     
 
 
     return (
-    <div className='bg-[#F9F9FB] flex flex-col py-6 px-25 overflow-auto h-screen max-h-screen'>
+    <div className='flex flex-col py-6 px-25 overflow-auto h-screen max-h-screen'>
       {/* Back */}
-      <button className="flex gap-2 mb-3 flex-row items-center cursor-pointer" onClick={() => navigate(-1)}>
-        <MoveLeft className='text-primary'/> 
-        <p className='text-primary font-satoshi-medium text-lg'>Back</p>
-      </button>
+      <AdminBack label={'Back'}/>
       <div className='flex flex-1 pt-5 flex-col'>
         <h2 className='font-satoshi-bold text-2xl text-primary'> Industries </h2>
         {/* Batch and count */}
@@ -278,8 +279,8 @@ function AdminIndustryInformation() {
                         </div>
                       </div>
                     </div> : null}
-            <div className={`bg-[#FFFFFF] grid grid-cols-2 gap-8 flex-1`}>
-            {tenureStatus &&tenureStatus.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            <div className={`grid grid-cols-2 gap-8 flex-1`}>
+            {tenureStatus &&tenureStatus.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
                 <h2 className='font-satoshi-bold text-xl'> Tenure Status </h2>
                 <div className='flex flex-row h-full'>
                 {/* Pie chart */}
@@ -318,7 +319,7 @@ function AdminIndustryInformation() {
                 </div>
                 </div>
             </div> : null}
-            {workMode &&workMode.length > 0 ? <div className='border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
+            {workMode &&workMode.length > 0 ? <div className='bg-[#FFFFFF] border border-gray-300 w-full h-80 shadow-lg rounded-xl p-6'>
                 <h2 className='font-satoshi-bold text-xl'> Work Mode </h2>
                 <div className='flex flex-row h-full'>
                 {/* Pie chart */}
@@ -401,31 +402,12 @@ function AdminIndustryInformation() {
             {/* Order by */}
             <OrderToggle direction={sortDirection} onToggle={handleDirectionToggle}/>
            
-            {/* View changer */}
-            <div className="flex items-center border border-disabled rounded-3xl overflow-hidden">
-              {/* List View Button */}
-              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-primary" onClick={() => {setViewStye('List')}}>
-                <List className={`${viewStyle === 'List' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-              <div className="h-6 w-px bg-disabled"></div>
-              {/* Grid View Button */}
-              <button className="bg-[#FFFFFF] px-5 py-2 flex gap-2 cursor-pointer text-disabled" onClick={() => {setViewStye('Grid')}}>
-                <LayoutGrid className={`${viewStyle === 'Grid' ? 'text-primary' : 'text-disabled'}`} />
-              </button>
-            </div>
             {/* Page */}
-            <div className='items-center gap-2 ml-2 text-md font-satoshi-regular hidden lg:flex'>
-              <MoveLeft className='cursor-pointer' onClick={() => {}}/>
-                <p> Page </p>
-                <input
-                  type="text"
-                  value={page}
-                  onChange={() => {}}
-                  className="w-9 text-center bg-[#FFFFFF] border border-disabled rounded-md outline-none text-primary font-satoshi-bold"
-                />
-              <p>of {totalPages}</p>
-              <MoveRight className='cursor-pointer' onClick={() => {}}/>
-            </div>
+            <PaginationComponent
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+            />
           </div>
           <div className='bg-[#FFFFFF] border border-gray-400 rounded-xl p-6 flex-1 hidden lg:block overflow-auto'>
             <UsersTable data={industryUsers} userType='alum'/>

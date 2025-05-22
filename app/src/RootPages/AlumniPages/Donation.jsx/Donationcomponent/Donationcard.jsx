@@ -1,12 +1,31 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import {jwtDecode} from "jwt-decode";
 
 function DonationCards({ drive, loading }) {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-
-const token = localStorage.getItem("token");
-console.log(token);
+  const token = localStorage.getItem("token");
+  const User = localStorage.getItem("token");
+  let tokentype = "guest";
+  let userid = true;
+  
+  
+  if (User) {
+    try {
+      const decoded = jwtDecode(User);
+      tokentype = decoded.role;
+      userid = decoded.sub;
+      console.log("Decoded token:", decoded);
+      console.log("User ID:", userid);
+      console.log("Token type:", tokentype);
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
+  } else {
+    console.log("No token found, defaulting to guest.");
+  }
+  console.log(token);
   const progress = Math.min(
     (drive.total_amount_donated / drive.target_cost) * 100,
     100
@@ -15,7 +34,7 @@ console.log(token);
   const handleClick = () => {
     console.log(`Card clicked! ${drive.drive_id}`);
     //window.location.href = `/alumni/donations/${drive.drive_id}`; 
-    navigate(`/alumni/donations/${drive.drive_id}`);
+    navigate(`/${tokentype}/donations/${drive.drive_id}`);
     //window.location.href = `/alumni/donationforms/${drive.drive_id}`; mar to janry
   }
   return (

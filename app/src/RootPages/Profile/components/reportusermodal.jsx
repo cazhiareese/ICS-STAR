@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { X, Flag, CheckCircle } from "lucide-react";
 import {jwtDecode} from "jwt-decode";
 import axios from "axios";
+import { showToast } from "../../../components/ui/Toast";
 
 const ReportUserModal = ({ isOpen, onClose, userId, name }) => {
   const [confirmed, setConfirmed] = useState(false);
@@ -48,8 +49,10 @@ const ReportUserModal = ({ isOpen, onClose, userId, name }) => {
   
           console.log("Report submitted:", response.data);
           setSuccess(true);
+          showToast("Successfully reported user", "success");
         } catch (error) {
           console.error("Error reporting user:", error);
+          showToast("Failed to report user", "error");
         } finally {
           setSubmitting(false);
           setConfirmed(false);

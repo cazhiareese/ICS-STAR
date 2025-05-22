@@ -243,7 +243,7 @@ function AdminEngagementReports() {
   );
 
   return (
-    <div className="bg-[rgb(243,241,244)] p-6 min-h-screen">
+    <div className="p-6 min-h-screen">
       <AdminBack label={'Back to dashboard'} />
 
       {fullEngagementReportLoading ? (

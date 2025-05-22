@@ -5,7 +5,9 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "../AuthContext/signupcontext";
 import { ChevronDown } from 'lucide-react';
 import Loading from "../../components/LoadingComponents/starloading.jsx"
+import { showToast } from "../../components/ui/Toast"
 
+import ModalTemplate from "../modaltemplate.jsx";
 function AlumnInfo(){
 
     const [image, setImage] = useState(null);
@@ -16,7 +18,8 @@ function AlumnInfo(){
     const [academicYearDropdownOpen, setAcademicYearDropdownOpen] = useState(false);
     // const years = ["AY 2024–2025", "AY 2023–2024", "AY 2022–2023", "AY 2021–2022"];
     const {setUserData, userData, updateUserData} = useAppContext();
-    const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
+    const years = Array.from({ length: 2025 - 1983 + 1 }, (_, i) => 1983 + i);
+    const yearsGraduated = Array.from({ length: 2025 - 1987 + 1 }, (_, i) => 1987 + i);
     const { setCurrentSection} = useAppContext();
     const [studentNumberError, setStudentNumberError] = useState(false)
     const [termGraduated, setTermGraduated] = useState(false)
@@ -26,6 +29,7 @@ function AlumnInfo(){
     const [termDropdownOpen, setTermDropdownOpen] = useState(false);
     const terms = ["1st Semester", "2nd Semester", "Midyear"];
 
+    const [showEmailErrorModal, setShowEmailErrorModal] = useState(false);
 
     // For Year
     const handleInputChange = (e) => {
@@ -114,9 +118,11 @@ function AlumnInfo(){
             `${userData.selectedYear}-${userData.value}`
         );
     
-        if (!isAvailable) {
+        if (isAvailable.detail=="Student number already exists" || !isAvailable) {
             // alert("Student Number already taken")
-            setError(true);
+            console.log("Student number is not available");
+            showToast("Student number already taken!", "error")
+            setShowEmailErrorModal(true);
         } else {
             setStudentNumberError(false);
             setTermGraduated(false);
@@ -132,6 +138,7 @@ function AlumnInfo(){
                 `${API_BASE_URL}/get-studno?student_number=${studentNumber}`
             );
             const isAvailable = await response.json(); // Response is boolean directly
+            console.log("Student number availability:", isAvailable);
             return isAvailable;
         } catch (error) {
             console.error("Error checking student number:", error);
@@ -140,6 +147,11 @@ function AlumnInfo(){
     };
     
     
+    const filteredStudentYears = userData.academicYear
+  ? years.filter((year) => year <= userData.academicYear && year >= userData.academicYear - 4)
+  : years;
+
+
     return(
         <div className="flex flex-col w-full items-center overflow-auto pt-40 sm:pt-0 sm:mt-0 mt-10">
              <div className = "flex flex-row z-10 space-x-8 mt-20">
@@ -169,7 +181,11 @@ function AlumnInfo(){
 
                     {yearDropdownOpen && (
                         <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
-                        {years.map((year) => (
+                        {years
+                        .filter((year) => {
+                            return !userData.academicYear || year <= userData.academicYear - 4;
+                        })
+                        .map((year) => (
                             <li
                             key={year}
                             onClick={() => {
@@ -242,7 +258,12 @@ function AlumnInfo(){
 
                             {academicYearDropdownOpen && (
                             <ul className="absolute z-10 w-full mt-1 max-h-30 overflow-y-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
-                                {years.map((year) => (
+                                {yearsGraduated
+                                    .filter((year) => {
+                                        // Only show years at least 4 years after the student number year
+                                        return !userData.selectedYear || year >= userData.selectedYear + 4;
+                                    })
+                                    .map((year) => (
                                 <li
                                     key={year}
                                     onClick={() => {
@@ -261,7 +282,7 @@ function AlumnInfo(){
                 </div>
 
                 <div class="font-satoshi-medium col-span-2">
-                    Upload your Diploma 
+                    Upload your Diploma (Max 5MB)
                 </div>
                 
                     {!userData.image ? (
@@ -333,13 +354,13 @@ function AlumnInfo(){
                 </div>
 
                 <div class=" text-black flex flex-col items-start">
-                        <button
+                {!userData.isGoogle && (<button
                             className="bg-white text-primary py-3 border border-primary rounded-3xl text-base w-4/6 font-bold cursor-pointer"
                             onClick = {()=>{setCurrentSection("1")}}
                         >
                             Back
 
-                        </button>
+                        </button>)}
                     </div>
                     <div class=" text-black flex flex-col items-end">
                 {loading ? (<Loading/>):
@@ -352,9 +373,19 @@ function AlumnInfo(){
                         </button>
                    
                 }
+                
                  </div>
                 
             </div>
+
+            {showEmailErrorModal && (
+                <ModalTemplate
+                    onClose={() => setShowEmailErrorModal(false)}
+                    choiceclose="Close"
+                    header="Error"
+                    information="Student number already registered, please check again."
+                />
+            )}
         </div>
     );
 }

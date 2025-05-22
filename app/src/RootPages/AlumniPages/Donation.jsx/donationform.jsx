@@ -13,6 +13,8 @@ import Curve from "../../../assets/curve.png";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
 import PaymentMode from "../../../components/AlumniComponents/DonationComponents/paymentmode";
+import { jwtDecode } from "jwt-decode";
+import { showToast } from "../../../components/ui/Toast";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
@@ -47,6 +49,26 @@ function Donationform() {
     // BASE URL ENV
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+      const User = localStorage.getItem("token");
+      let tokentype = "guest";
+      let userid = true;
+      
+      
+      if (User) {
+        try {
+          const decoded = jwtDecode(User);
+          tokentype = decoded.role;
+          userid = decoded.sub;
+          console.log("Decoded token:", decoded);
+          console.log("User ID:", userid);
+          console.log("Token type:", tokentype);
+        } catch (error) {
+          console.error("Invalid token:", error);
+        }
+      } else {
+        console.log("No token found, defaulting to guest.");
+      }
+
     const formatDate = (date) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         return new Date(date).toLocaleDateString(undefined, options);
@@ -57,7 +79,7 @@ function Donationform() {
 
     const navigate = useNavigate();
     const handleClick = () => {
-        navigate(`/alumni/donations`);
+        navigate(`/${tokentype}/donations`);
     };
 
     useEffect(() => {
@@ -86,6 +108,53 @@ function Donationform() {
                     console.error("Error fetching drive details:", err);
                 });
         }, [drive_id]);
+
+
+    const submitAnonymousDonation = async () => {
+        // Ensure that all required fields are not empty
+        if (monetaryAmountInput <= 0 || file == null) {
+            setError(true);
+            return;
+        }
+        setSubmitting(true);
+        setError(false)
+        const formData = new FormData();
+        const token = localStorage.getItem("token");
+
+        formData.append('monetary_donation', true);
+        formData.append('direct_maya', false); 
+        formData.append('amount', monetaryAmountInput);
+        formData.append('is_anonymous', true);
+
+        if (file != null) {
+            formData.append('proof', file);
+        }
+
+        try {
+            const response = await axios.post(`${API_BASE_URL}/anonymous-donation/${drive_id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                setDonationSuccess(true);
+                showToast('Donation submitted successfully!', 'success');
+                setSummaryLoading(true); // Start loading for the summary
+                setSummary(response.data); // Set summary after successful donation
+                setIsMonetaryTypeOpen(false);
+                setIsInKindTypeOpen(false);
+                setSubmitting(false);
+            } else {
+                setSubmitting(false);
+            }
+        } catch (error) {
+            console.error("Error submitting donation:", error);
+            showToast('Error submitting donation. Please try again.', 'error');
+            setSubmitting(false);
+        }
+    };
 
     // Submitting Monetary Donations
     const submitMonetaryDonation = async () => {
@@ -119,6 +188,7 @@ function Donationform() {
 
             if (response.status === 200) {
                 setDonationSuccess(true);
+                showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setIsMonetaryTypeOpen(false);
@@ -129,6 +199,7 @@ function Donationform() {
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
+            showToast('Error submitting donation. Please try again.', 'error');
             setSubmitting(false);
         }
     };
@@ -163,13 +234,14 @@ function Donationform() {
             if (response.status === 200 && response.data.redirectUrl) {
                 // ✅ Automatically redirect
                 localStorage.setItem("maya_donation_amount", String(monetaryAmountInput));
-
+                showToast('Donation submitted successfully!', 'success');
                 window.location.href = response.data.redirectUrl;
             } else {
                 console.warn("No redirect URL found in response");
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
+            showToast('Error submitting donation. Please try again.', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -190,9 +262,9 @@ function Donationform() {
         const amount = localStorage.getItem("maya_donation_amount");
     
         console.log("Maya Callback triggered with amount:", amount);
-    
         const formData = new FormData();
         formData.append("amount", amount);  // Append the amount as form data
+
     
         try {
             const response = await axios.post(`${API_BASE_URL}/maya-callback?drive_id=${drive_id}`, formData, {
@@ -205,6 +277,7 @@ function Donationform() {
             if (response.status === 200) {
                 console.log("Donation acknowledged:", response.data);
                 setDonationSuccess(true);
+                showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setSummaryHeader("Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.");
@@ -219,6 +292,7 @@ function Donationform() {
             }
         } catch (error) {
             console.error("Error in Maya callback:", error);
+            showToast('Error processing donation. Please try again.', 'error');
         }
     };
     
@@ -252,6 +326,7 @@ function Donationform() {
 
             if (response.status === 200) {
                 setDonationSuccess(true);
+                showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setIsMonetaryTypeOpen(false);
@@ -262,10 +337,12 @@ function Donationform() {
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
+            showToast('Error processing donation. Please try again.', 'error');
             setSubmitting(false);
         }
     };
 
+    console.log("cy",tokentype);
     return (
         <>
             {!donationSuccess ? (
@@ -295,8 +372,9 @@ function Donationform() {
                                 setIsMonetaryType={setIsMonetaryType}
                             />
 
-                            {/* In-kind Donation Type Button */}
-                            <DonationType donationType={"inKind"}
+                            {tokentype !== "guest" && (
+                            <DonationType
+                                donationType={"inKind"}
                                 isInKindTypeOpen={isInKindTypeOpen}
                                 isMonetaryTypeOpen={isMonetaryTypeOpen}
                                 setIsInKindTypeOpen={setIsInKindTypeOpen}
@@ -304,6 +382,8 @@ function Donationform() {
                                 setIsInKindType={setIsInKindType}
                                 setIsMonetaryType={setIsMonetaryType}
                             />
+                            )}
+
                         </div>
 
                         {isMonetaryTypeOpen && (
@@ -314,7 +394,7 @@ function Donationform() {
                                     paymentError={paymentError}
                                 />
 
-                                <PaymentMode submitMayaDonation={submitMayaDonation}/>
+                                <PaymentMode submitMayaDonation={submitMayaDonation} tokentype={tokentype}/>
 
 
                                 <DonationInstructions donationType={"monetary"} />
@@ -324,7 +404,10 @@ function Donationform() {
                                     setFileName={setFileName}
                                     onFileSubmit={handleFileSubmit}
                                 />
-                                <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous} />
+{tokentype !== "guest" && (
+  <DonationOptions isAnonymous={isAnonymous} setIsAnonymous={setIsAnonymous} />
+)}
+
                                 
                                 {/* Small screen support */}
                                 <div className="outline-2 rounded-3xl outline-neutral-400 p-3 lg:w-1/3 w-full h-full lg:hidden block">
@@ -348,11 +431,12 @@ function Donationform() {
                                     </div>
                                 ) : (
                                     <button
-                                        onClick={submitMonetaryDonation}
-                                        className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer"
+                                    onClick={tokentype === "guest" ? submitAnonymousDonation : submitMonetaryDonation}
+                                    className="rounded-2xl justify-center bg-primary font-satoshi-medium text-white text-md w-1/3 h-12 ml-auto cursor-pointer"
                                     >
-                                        Submit
+                                    Submit
                                     </button>
+
                                 )}
                             </div>
                         )}

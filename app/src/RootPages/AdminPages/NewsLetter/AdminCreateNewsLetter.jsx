@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MoveLeft, Plus, Upload, X, ChevronDown, CheckCircle, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { showToast } from "../../../components/ui/Toast"
 import axios from 'axios';
 import FilterDropdown from '../../../components/AdminComponents/newsletterfilterdropdown';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
@@ -211,6 +212,7 @@ function AdminEditNewsletter() {
 
       console.log(`Newsletter ${option === "edit" ? 'updated' : 'created'}:`, response.data);
       setModalSuccess(true); // Show success state
+      showToast("Newsletter created successfully!", "success");
     } catch (err) {
       const errorMsg = err.response?.status === 404
         ? 'Newsletter not found'
@@ -223,6 +225,7 @@ function AdminEditNewsletter() {
         : `Failed to ${option === "edit" ? 'update' : 'create'} newsletter`;
       console.error('Error:', err.message, err.response?.data);
       setErrorMessage(errorMsg);
+      showToast("Failed to create newsletter", "error");
       setIsModalOpen(false); // Close modal on error
     } finally {
       setModalLoading(false);

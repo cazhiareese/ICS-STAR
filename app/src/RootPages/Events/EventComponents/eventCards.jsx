@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {jwtDecode} from "jwt-decode"; // Import jwtDecode for decoding JWT tokens
 import PersonOutline from "../../../assets/personoutline.png"
 import "../../../index.css";
+import axios from 'axios';
 
 import RsvpStatus from './rsvpstatus';
 const EventCards = ({event, reservationExclusiveWidth}) => {
@@ -57,9 +58,17 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
     }
 
-    const openEventDetails = (eventId) => {
+    const openEventDetails = async (eventId) => {
 
         console.log("RSVP clicked for event ID:", eventId);
+        const clicks = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/track-userclicks`, {
+                    event_id: eventId
+                    }, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                    });
+                console.log(clicks.data)
         navigate(`/${tokentype}/events/${eventId}`);
     }
     
@@ -74,7 +83,7 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
 
     return (
       <div
-      className={`max-w-130 ${reservationExclusiveWidth ? "min-w-95 w-100" : "min-w-70 w-full"} h-120 rounded-3xl border border-neutral-200 overflow-hidden shadow-xl bg-white relative border-gray-200 flex flex-col`}
+      className={`max-w-130 ${reservationExclusiveWidth ? "min-w-95 w-100" : "min-w-70 w-full"} h-130 rounded-3xl border border-neutral-200 overflow-hidden shadow-xl bg-white relative border-gray-200 flex flex-col`}
       onClick={() => { openEventDetails(event.event_id) }}
     >
       {/* Image */}
@@ -93,34 +102,42 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
   <RsvpStatus event={event} />
 )}
 
-          <h1 className="text-2xl font-bold text-black mt-3">{event.title}</h1>
-          <p className="text-gray-600 pt-2 line-clamp-2">{event.description}</p>
+          <h1 className="text-2xl font-bold text-black mt-3 line-clamp-2 leading-snug h-[4rem]">{event.title}</h1>
+          <p className="text-gray-600 pt-4 line-clamp-2">{event.description}</p>
         </div>
     
-        <div className="mt-auto">
+        <div className="w-full mt-auto">
           {/* Location */}
+
           <div className="flex items-center mt-3 text-gray-600 space-x-3">
+            <div>
             <MapPinned />
-            <div className="">
+            </div>
+            <div className="flex truncate space-x-5 text-sm">
               <label className="whitespace-nowrap">{event.location}</label>
+
             </div>
           </div>
     
           {/* Dates */}
           <div className="flex items-center mt-1 text-s text-gray-600 space-x-3">
-            <Calendar />
+            <div><Calendar/></div>
             <div className="flex truncate space-x-5">
               {event.dates.map((datetime, index) => (
                 <div key={index} className="flex-shrink-0">
-                  <label>{parseTime(datetime)}</label>
+                  <label className='text-sm'>{parseTime(datetime)}</label>
                 </div>
               ))}
             </div>
           </div>
     
           {/* Tags */}
+
+          <div className='h-[2rem] mt-4'>
+
+          
           {event.tags && event.tags.length > 0 && (
-            <div className="flex gap-2 overflow-x-scroll mt-4 items-center scrollbar-hidden">
+            <div className="flex gap-2 overflow-x-scroll items-center scrollbar-hidden ">
             {event.tags.map((tag, index) => (
               <span
                 key={index}
@@ -131,9 +148,10 @@ const EventCards = ({event, reservationExclusiveWidth}) => {
             ))}
             </div>
            )}
+           </div>
 
           {/* Going Count */}
-          <div className="flex justify-end items-center text-primary font-extrabold mt-1 pr-2">
+          <div className="flex justify-end items-center text-primary font-extrabold mt-4 pr-2">
             <img src={PersonOutline} alt="Going" className='h-5 mr-2'/>
             <label>{event.going_count} are going</label>
           </div>

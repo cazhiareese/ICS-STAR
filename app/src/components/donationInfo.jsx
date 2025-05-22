@@ -4,21 +4,46 @@ import DonationMainView from "./donationMainView";
 import { useParams } from "react-router-dom";
 import NewLoading from "./LoadingComponents/cyruscircular";
 import BackButton from "./backbutton";
+import { jwtDecode } from "jwt-decode";
+
 function DonationInfo({generalDrive, general }) {
     const idUser = useParams(); // <- destructure directly if param is named 'driveid'
     const driveid = idUser.driveid; 
     const [driveDetails, setDriveDetails] = useState(null);
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
     useEffect(() => {
-        const token = localStorage.getItem("token");
+
         console.log(`${API_BASE_URL}/${driveid}`)
         console.log(driveid)
-        // console.log("SDFDSF")
-        fetch(`${API_BASE_URL}/one-donation-drive/${driveid}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
+  const token = localStorage.getItem("token");
+  const User = localStorage.getItem("token");
+  let tokentype = "guest";
+  let userid = true;
+  
+  
+  if (User) {
+    try {
+      const decoded = jwtDecode(User);
+      tokentype = decoded.role;
+      userid = decoded.sub;
+      console.log("Decoded token:", decoded);
+      console.log("User ID:", userid);
+      console.log("Token type:", tokentype);
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
+  } else {
+    console.log("No token found, defaulting to guest.");
+  }
+
+  
+const headers = tokentype === "guest" ? {} : { Authorization: `Bearer ${token}` };
+
+fetch(`${API_BASE_URL}/one-donation-drive/${driveid}`, {
+  method: "GET",
+  headers,
+})
+
             .then((res) => res.json())
             .then((data) => {
                 setDriveDetails(data);
@@ -31,10 +56,12 @@ function DonationInfo({generalDrive, general }) {
 
     if (!driveDetails) {
         return (
-          <NewLoading
-            size={32}
-            text={general ? "Fetching General ICS Donation Drive" : "Fetching Donation Drive Details"}
-          />
+          <div className='w-screen h-screen flex items-center justify-center'>
+                <NewLoading
+                    size={32}
+                    text={general ? "Fetching General ICS Donation Drive" : "Fetching Donation Drive Details"}
+                />
+            </div>
         );
       }
 

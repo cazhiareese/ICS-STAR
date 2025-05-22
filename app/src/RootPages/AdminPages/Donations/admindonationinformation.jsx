@@ -8,6 +8,7 @@ import axios from 'axios';
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import PaginationComponent from '../../../components/AdminComponents/PaginationComponent'
 import AdminBack from '../../../components/AdminComponents/AdminBack';
+import { showToast } from "../../../components/ui/Toast"
 
 function AdminDonationInformation() {
   const navigate = useNavigate()
@@ -40,7 +41,7 @@ function AdminDonationInformation() {
   const [editing, setEditing] = useState(false);
   const [description, setDescription] = useState(donation?.description || '');
   const [links, setLinks] = useState(donation?.links || []);
-
+  const tokenLocal= localStorage.getItem('token');
   useEffect(() => {
     if (donation) {
       setDescription(donation.description || '');
@@ -61,7 +62,7 @@ function AdminDonationInformation() {
     try {
       await axios.put(`${API_BASE_URL}/edit-donation-drive/description-links/${driveid}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` }}
+        { headers: { Authorization: `Bearer ${tokenLocal}` }}
       );
       setDonation({ ...donation, description, links });
       setEditing(false);
@@ -114,7 +115,7 @@ function AdminDonationInformation() {
       await axios.put(
         `${API_BASE_URL}/edit-donation-drive/goal/${driveid}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${tokenLocal}` } }
       );
       setEditGoalModal(false);
       setNewGoal('');
@@ -124,11 +125,25 @@ function AdminDonationInformation() {
     }
   }
 
+  async function handleOpenDrive() {
+    
+    try {
+      const response = await axios.put(`${API_BASE_URL}/admin/donations/open-drive/${driveid}`,{}, {headers: {Authorization: `Bearer ${tokenLocal}`}})
+      console.log(response)
+      showToast("Drive open successful!", "success")
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);   
+    } catch (error){
+        console.error("Failed to open drive", error)
+    }
+  }
+
   async function handleCloseDrive() {
     setCloseDonationLoading(true)
   
     try {
-      await axios.put(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      await axios.put(`${API_BASE_URL}/admin/donations/close-drive/${driveid}`,{}, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(response)
   
       // Show success message
@@ -144,12 +159,11 @@ function AdminDonationInformation() {
     setLoading(true)
 
     try {
-      const token = localStorage.getItem('token');
-      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      const donationResponse = await axios.get(`${API_BASE_URL}/admin/donations/view/${driveid}`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(donationResponse.data)   
       setDonation(donationResponse.data)
 
-      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`, {headers: { Authorization: `Bearer ${token}` }})
+      const percentResponse = await axios.get(`${API_BASE_URL}/admin/donations/percent-funded/${driveid}`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       setProgressData([
         { name: "progress", value: percentResponse.data.percent_funded },
         { name: "remaining", value: percentResponse.data.remaining_percent }
@@ -165,8 +179,8 @@ function AdminDonationInformation() {
   async function fetchNextVerifiedPage() {
     setVerifiedDonationLoading(true)
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`, {headers: { Authorization: `Bearer ${token}` }})
+
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-verified-donations/${driveid}?page=${verifiedPage}&page_size=10`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       // console.log(response)
       setTotalVerifiedPages(response.data.total_pages)
       setVerifiedDonations(response.data.data)
@@ -181,7 +195,7 @@ function AdminDonationInformation() {
     setPendingDonationLoading(true)
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page=${pendingPage}&page_size=5`, {headers: { Authorization: `Bearer ${token}` }})
+      const response = await axios.get(`${API_BASE_URL}/admin/donations/get-all-pending-donations/${driveid}?page=${pendingPage}&page_size=5`, {headers: { Authorization: `Bearer ${tokenLocal}` }})
       console.log(response)
       setTotalPendingPages(response.data.total_pages)
       setPendingDonations(response.data.data)
@@ -293,10 +307,12 @@ function AdminDonationInformation() {
               {donation.is_closed ? (
                 // For closed
                 <>
-                  {/* View Details */}
-                  {/* <button className='bg-primary text-white px-7 py-2 shadow-lg rounded-2xl hover:bg-hover cursor-pointer' onClick={() => {setViewDetailsModal(true)}}>
-                    <p className='font-satoshi-light'>View Details</p>
-                  </button> */}
+                  {/* Reopen Drive */}
+                  <button className='bg-primary hover:bg-hover text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'
+                    onClick={()=>{handleOpenDrive()}}
+                  >
+                    <p className='font-satoshi-light'>Open Drive</p>
+                  </button>
                   {/* Export Donor List */}
                   <button className='bg-primary hover:bg-hover text-white px-7 py-2 shadow-lg rounded-2xl cursor-pointer'
                     onClick={()=>handleCSVExport()}
@@ -330,7 +346,7 @@ function AdminDonationInformation() {
               <div className="w-full flex flex-row justify-end mb-2 mt-2">
                 <button
                   ref={editButtonRef}
-                  className="flex flex-row items-center px-4 py-2 bg-primary shadow-lg rounded-xl text-white mr-2 font-satoshi-regular hover:bg-hover cursor-pointer"
+                  className="flex flex-row items-center px-6 py-2 bg-primary shadow-lg rounded-xl text-white mr-4 font-satoshi-regular hover:bg-hover cursor-pointer"
                   onClick={() => setEditGoalModal(!editGoalModal)}
                 >
                   Edit Goal
@@ -518,7 +534,7 @@ function AdminDonationInformation() {
             )}
           </div>
           {/* Donations and filters */}
-          <div className='flex flex-row justify-between mb-3'>
+          <div className='flex flex-row justify-between mt-2 mb-3'>
             <div className='flex items-end'>
               <h2 className='text-4xl font-satoshi-bold'>Donations</h2>
               <p className='text-lg font-satoshi-light'>/Verified</p>
