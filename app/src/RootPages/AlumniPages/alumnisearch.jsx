@@ -205,15 +205,20 @@ function AlumniSearch() {
  
 
   useEffect(() => {
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      return;
-    }
+    // if (!hasMounted.current) {
+    //   hasMounted.current = true;
+    //   return;
+    // }
 
     const fetchData = async () => {
       let searchAPIURL = search();
+      console.log("MY API:", searchAPIURL);
       setLoading(true);
       try {
+        // If no filters are applied, fetch the first 10 alumni
+        if (!searchAPIURL) {
+          searchAPIURL = `${API_BASE_URL}/alumni/search-first-10`;
+        }
         const response = await axios.get(searchAPIURL);
         setAlumniList((prevList) => {
           if (JSON.stringify(prevList) !== JSON.stringify(response.data)) {
@@ -903,7 +908,7 @@ function AlumniSearch() {
           )}
           {loading ? (
             <h1 className="md:text-xl text-lg font-satoshi-medium text-gray-500 md:pl-10 py-10 lg:text-left text-center">
-              Searching...
+              Finding Alumni...
             </h1>
           ) : (
             Array.isArray(alumniList) && (
