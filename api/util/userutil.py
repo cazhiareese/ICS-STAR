@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 import brevo_python
 from brevo_python.rest import ApiException
 from jose import jwt, JWTError, ExpiredSignatureError
+from util.emailing.inactive import inactivity  
 from google.oauth2 import id_token
 import requests
 import uuid
@@ -723,4 +724,25 @@ async def send_verification_email(user: Dict) -> bool:
         return True
     except ApiException as e:
         print(f"Failed to send email to {user['email']}: {e}")
+        return False
+
+async def send_inactive_email(inactive: Dict) -> bool:
+    api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
+    subject = "Inactivity Notice"
+    sender = email_sender
+    html_content = inactivity(name=inactive["name"])
+    to = [{"email": inactive["email"], "name": inactive["name"]}]
+    send_smtp_email = brevo_python.SendSmtpEmail(
+        to=to,
+        html_content=html_content,
+        sender=sender,
+        subject=subject
+    )
+
+    try:
+        api_response = api_instance.send_transac_email(send_smtp_email)
+        print(f"Email sent to {inactive['email']}: {api_response}")
+        return True
+    except ApiException as e:
+        print(f"Failed to send email to {inactive['email']}: {e}")
         return False
