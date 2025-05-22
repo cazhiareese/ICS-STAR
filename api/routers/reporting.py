@@ -81,7 +81,7 @@ async def report_user(
     ).count()
 
     if existing_reports_count >= 3:
-        email_util(reported_user_id) 
+        email_util(reported_user_id, db=db) 
 
     return {"message": "User reported", "report_id": new_report.report_id}
 
