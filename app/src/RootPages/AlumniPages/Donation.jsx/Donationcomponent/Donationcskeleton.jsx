@@ -2,47 +2,34 @@ import React from 'react';
 
 export default function DonationCSkeleton() {
   return (
-    <div className="w-[115%] sm:w=[115%] md:w-[115%] md:mt-0 my-10 max-w-sm h-100 rounded-2xl p-4 font-sans px-10 bg-disabled animate-pulse">
-
-      {/* Top Row: Percentage Funded and Status Pill */}
-      <div className="flex items-center justify-center w-30 h-10 mt-2 font-satoshi-black bg-gray-400 text-gray-600 text-md rounded-full px-5 ml-auto">
-        <div className="h-4 bg-gray-400 animate-pulse w-[60%] rounded-full"></div>
+    <div className="w-full h-110 rounded-2xl m-auto max-w-100 min-w-70 border border-gray-200 shadow-md p-5 animate-pulse">
+      {/* Status pill */}
+      <div className="flex justify-end mb-4">
+        <div className="h-4 bg-gray-300 w-24 rounded-full"></div>
       </div>
 
-      {/* Fund Percentage Skeleton */}
-      <div className="flex justify-between items-center mb-2 pt-5">
-        <div className="h-6 bg-gray-400 animate-pulse w-[40%] rounded-lg"></div>
+      {/* Fund percentage */}
+      <div className="h-6 bg-gray-300 w-2/5 rounded-lg mb-3"></div>
+
+      {/* Raised amount */}
+      <div className="h-4 bg-gray-300 w-3/4 rounded-lg mb-2"></div>
+
+      {/* Progress bar */}
+      <div className="relative my-2 h-2 bg-gray-200 rounded">
+        <div className="h-full bg-gray-300 rounded-full w-full" />
       </div>
 
-      {/* Raised Amount Skeleton */}
-      <p className="font-medium text-primary font-satoshi-light">
-        <span className="h-4 bg-gray-400 animate-pulse w-[70%] rounded-lg mb-2"></span>
-      </p>
+      {/* Donation count */}
+      <div className="h-4 bg-gray-300 w-1/3 rounded-lg mb-4 ml-auto"></div>
 
-      {/* Progress Bar Skeleton */}
-      <div className="relative my-2 h-2 bg-gray-200 rounded font-satoshi-light w-full">
-        <div className="h-full bg-gray-400 animate-pulse rounded-full w-[100%]" />
+      {/* Info row */}
+      <div className="flex items-start gap-2 mt-7 mb-10">
+        <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+        <div className="h-4 bg-gray-300 w-4/5 rounded-lg"></div>
       </div>
 
-      {/* Donation Count Skeleton */}
-      <p className="text-sm text-primary mb-4 ml-auto w-25">
-        <span className="h-4 bg-gray-400 animate-pulse w-[40%] rounded-lg"></span>
-      </p>
-
-      {/* Info Section Skeleton */}
-      <div className="flex items-start gap-2 mb-10 mt-7">
-        <div className="w-6 h-6 bg-gray-400 rounded-full flex justify-center items-center font-bold cursor-pointer">
-          <span className="h-4 bg-gray-400 animate-pulse w-3/4 rounded-full"></span>
-        </div>
-        <p className="text-sm text-gray-600">
-          <span className="h-4 bg-gray-400 animate-pulse w-[80%] rounded-lg"></span>
-        </p>
-      </div>
-
-      {/* Donation Button Skeleton */}
-      <button className="w-full bg-gray-400 text-white text-base py-3 rounded-lg cursor-pointer">
-        <span className="h-4 bg-gray-400 animate-pulse w-[80%] rounded-lg mx-auto"></span>
-      </button>
+      {/* Donate button */}
+      <div className="w-full bg-gray-300 h-10 rounded-lg"></div>
     </div>
   );
 }
