@@ -1671,8 +1671,7 @@ def verify_monetary_donation(db: Session, donation_id: UUID, choice: str) -> Mon
         amount = donation.amount,
         drive_id = donation.drive_id,
         user_id = donation.user_id,
-        is_acknowledged = donation.is_acknowledged,
-        proof = donation.proof
+        is_acknowledged = donation.is_acknowledged
     )
 
 def verify_inkind_donation(db: Session, donation_id: UUID, choice: str) -> InKindDonationOut:
