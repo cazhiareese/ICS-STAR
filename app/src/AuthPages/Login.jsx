@@ -84,7 +84,7 @@ function LoginPage() {
             
             if (response.data.message == "Logged in with Google"){
                 localStorage.setItem("token", response.data.access_token);
-                const expiresInMinutes = 5;
+                const expiresInMinutes = 15;
                 const expirationTime = new Date().getTime() + expiresInMinutes * 60 * 1000;
                 localStorage.setItem("token_expiration", expirationTime.toString());
                 fetchUserData()
@@ -128,7 +128,7 @@ function LoginPage() {
 
           if (response.ok) {
               localStorage.setItem("token", data.access_token);
-                const expiresInMinutess = 5;
+                const expiresInMinutess = 15;
                 const expirationTimes = new Date().getTime() + expiresInMinutess * 60 * 1000;
                 localStorage.setItem("token_expiration", expirationTimes.toString());
             //   alert("Login Successful!");
