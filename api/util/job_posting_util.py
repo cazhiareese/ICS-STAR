@@ -173,6 +173,7 @@ async def create_report_with_attachment(
     db.commit()
     db.refresh(new_report)
     
+    
     return new_report
 
 async def handle_attachment_upload(
