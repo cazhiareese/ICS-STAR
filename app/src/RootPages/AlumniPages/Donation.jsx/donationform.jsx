@@ -14,6 +14,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DonationMainView from "../../../components/donationMainView";
 import PaymentMode from "../../../components/AlumniComponents/DonationComponents/paymentmode";
 import { jwtDecode } from "jwt-decode";
+import { showToast } from "../../../components/ui/Toast";
 // import DonationDeets from "../../../components/donationMainView.jsx";
 
 function Donationform() {
@@ -139,6 +140,7 @@ function Donationform() {
 
             if (response.status === 200) {
                 setDonationSuccess(true);
+                showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setIsMonetaryTypeOpen(false);
@@ -149,6 +151,7 @@ function Donationform() {
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
+            showToast('Error submitting donation. Please try again.', 'error');
             setSubmitting(false);
         }
     };
@@ -185,6 +188,7 @@ function Donationform() {
 
             if (response.status === 200) {
                 setDonationSuccess(true);
+                showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setIsMonetaryTypeOpen(false);
@@ -195,6 +199,7 @@ function Donationform() {
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
+            showToast('Error submitting donation. Please try again.', 'error');
             setSubmitting(false);
         }
     };
@@ -229,13 +234,14 @@ function Donationform() {
             if (response.status === 200 && response.data.redirectUrl) {
                 // ✅ Automatically redirect
                 localStorage.setItem("maya_donation_amount", String(monetaryAmountInput));
-
+                showToast('Donation submitted successfully!', 'success');
                 window.location.href = response.data.redirectUrl;
             } else {
                 console.warn("No redirect URL found in response");
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
+            showToast('Error submitting donation. Please try again.', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -271,6 +277,7 @@ function Donationform() {
             if (response.status === 200) {
                 console.log("Donation acknowledged:", response.data);
                 setDonationSuccess(true);
+                showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setSummaryHeader("Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.");
@@ -285,6 +292,7 @@ function Donationform() {
             }
         } catch (error) {
             console.error("Error in Maya callback:", error);
+            showToast('Error processing donation. Please try again.', 'error');
         }
     };
     
@@ -318,6 +326,7 @@ function Donationform() {
 
             if (response.status === 200) {
                 setDonationSuccess(true);
+                showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setIsMonetaryTypeOpen(false);
@@ -328,6 +337,7 @@ function Donationform() {
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
+            showToast('Error processing donation. Please try again.', 'error');
             setSubmitting(false);
         }
     };
