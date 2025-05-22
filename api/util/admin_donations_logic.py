@@ -1421,7 +1421,7 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> tuple[lis
             donation_time=donation_time,
             name=f"{donation[1]} {donation[2]}" if donation.is_anonymous == False else "Anonymous Donor",
             donation_details=donation[3] or 0,
-            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided.",
+            proof=f"{donation[5]}" if donation[5] else "No proof provided.",
             type="Monetary"
         )
         pending_donations_list.append(pending_out)
@@ -1589,7 +1589,7 @@ def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[Sho
             donation_time=donation_time,
             name=f"{donation[2]} {donation[3]}" if donation.is_anonymous == False else "Anonymous Donor",
             donation_details=donation[4] or 0,
-            proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided.",
+            proof=f"{donation[5]}" if donation[5] else "No proof provided.",
             type="Monetary"
         )
         verified_donations_list.append(verified_out)
@@ -1644,7 +1644,7 @@ def donation_drive_overview(db: Session, drive_id: UUID) -> AdminOverviewDonatio
     return AdminOverviewDonationDrive(
         drive_id = drive.drive_id,
         title = drive.title,
-        image = f"{STORAGE_STRING}{drive.image}" if drive.image else None,
+        image = f"{drive.image}" if drive.image else None,
         created_at = date_started,
         description = drive.description,
         links = drive_links
