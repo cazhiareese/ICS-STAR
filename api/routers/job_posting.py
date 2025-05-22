@@ -11,7 +11,7 @@ from schemas.job_posting_schema import JobPostingOut, PaginatedJobPostingRespons
 from schemas.report_schema import PostReportDetailOut, PaginatedReportedResponse
 from models.report_model import Report, ReportAttachment
 from models.job_posting_model import JobPosting, JobPostingTag, JobPostingInterestedIn
-from util.job_posting_util import create_job_posting, edit_job_posting, get_top_4_job_tags, get_tag_suggestions
+from util.job_posting_util import create_job_posting, edit_job_posting, get_top_4_job_tags, get_tag_suggestions, send_email
 from util.userutil import require_admin
 from config.database import get_db
 
@@ -101,6 +101,20 @@ def delete_job_posting_endpoint(
     db: Session = Depends(get_db)
 ):
     job_posting = db.query(JobPosting).filter(JobPosting.post_id == job_posting_id).first()
+
+    user = db.query(
+        User.first_name,
+        User.last_name,
+        User.email
+    ).filter(User.user_id == job_posting.user_id).first()
+
+    # Find the reason of the report of job posting
+    reason = db.query(Report.reason).filter(JobPosting.post_id == Report.reported_post_id).first()
+
+    # Get the full name of the user
+    full_name = f"{user.first_name} {user.last_name}"
+
+    send_email(full_name, user.email, reason[0])
     
     if not job_posting:
         raise HTTPException(status_code=404, detail="Job posting not found")
