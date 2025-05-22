@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from typing import List, Optional
 
-from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships, get_user_job_post_history, get_user_job_posting, get_user_work
+from util.userutil import upload_profile, get_current_user, verify_password, hash_password, get_org_suggestion, process_student_onboarding, process_alumni_onboarding, get_personal_info, get_user_skills, get_user_affiliations, get_user_scholarships, get_user_job_post_history, get_user_job_posting, get_user_work, send_inactive_email
 from util.donation_util import get_user_monetary_donations, get_user_in_kind_donations, get_user_donations, get_user_in_kind_donations_acknowledged, get_user_monetary_donations_acknowledged, get_user_donation_history_details
 from models.usermodel import User, UserScholarship, UserAffiliation, UserSkill, UnemploymentReason
 from models.job_posting_model import JobPosting
@@ -876,3 +876,22 @@ async def get_user_status_by_id(
             "user_type": status[2]
         }
     }
+    
+@router.post("/manual-inactive-email/{user_id}")
+async def manual_inactive(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    user = db.query(User.email, User.first_name, User.last_name).filter(User.user_id == user_id).first()
+    
+    if not user:
+        return {"message": "User not found"}
+    else:
+        user_dict = {
+            "user_id": user_id,
+            "email": user.email,
+            "name": f"{user.first_name} {user.last_name}"
+        }
+    
+    return await send_inactive_email(user_dict)
+    
