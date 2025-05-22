@@ -1,9 +1,14 @@
 from typing import Optional
 from uuid import UUID
+from util.emailing.reporting_email import reported_notice
 from sqlalchemy.orm import Session
+import brevo_python
+from brevo_python.rest import ApiException
+from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET, brevo_configuration, email_sender
 from util.job_posting_util import create_report_with_attachment
 from schemas.report_schema import ReportOut, ReportAttachmentOut
 from models.report_model import Report, ReportAttachment
+from models.usermodel import User
 from config.database import get_db
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, File
 from util.userutil import get_current_active_user
@@ -70,6 +75,14 @@ async def report_user(
     db.add(new_report)
     db.commit()
     db.refresh(new_report)
+
+    existing_reports_count = db.query(Report).filter(
+        Report.reported_user_id == reported_user_id
+    ).count()
+
+    if existing_reports_count >= 3:
+        email_util(reported_user_id) 
+
     return {"message": "User reported", "report_id": new_report.report_id}
 
 # Report a post
@@ -109,3 +122,25 @@ async def add_attachment(
     db.commit()
     db.refresh(new_attachment)
     return {"message": "Attachment added", "attachment_id": new_attachment.attachment_id}
+
+def email_util(reported_user_id: UUID, db: Session):
+    try:
+        user = db.query(User.user_id, User.first_name, User.last_name, User.email, User.user_type).filter(User.user_id == reported_user_id).first()
+
+    except Exception as e:
+        raise HTTPException(status_code = 404, detail="Reported user not found")
+    
+
+    api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
+    subject = f"ICS-STAR Management: User Reported Several Times"
+    sender = email_sender
+    html_content = reported_notice(user_name= f"{user.first_name} {user.last_name}", email=user.email)
+    to = [{"name": "ICS-STAR", "email": "clleva@up.edu.ph"}]
+    send_smtp_email = brevo_python.SendSmtpEmail(to=to, html_content=html_content, sender=sender, subject=subject)
+
+    try:
+        print("before execute")
+        api_response = api_instance.send_transac_email(send_smtp_email)
+        return {"message": api_response}
+    except ApiException as e:
+        print(f"Error: {e}")
