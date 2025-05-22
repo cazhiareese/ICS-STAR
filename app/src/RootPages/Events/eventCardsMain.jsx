@@ -231,7 +231,7 @@ const EventCardsMain = () => {
     return (
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
             
-            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
+            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate(-1)}}><ArrowLeft/> <label>Go Back</label></label>
             {user?.role !== "student" && event.rsvp_closed==false && (
 
                 isloading ?

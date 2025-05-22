@@ -588,7 +588,6 @@ function LoginPage() {
                         onClick={() => {
                             setOpenModal(false);
                             localStorage.removeItem("token");
-                            showToast("Login Successful!", "success");
                             navigate(`/guest/dashboard`);
                         }}
                     >
