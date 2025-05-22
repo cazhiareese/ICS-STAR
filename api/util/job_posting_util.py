@@ -1,12 +1,15 @@
 from typing import List, Optional
+from util.emailing.deleted_post import deleted_job
 from models.job_posting_model import JobPosting, JobPostingTag
 from models.report_model import Report, ReportAttachment
 from models.report_model import ReportStatusEnum
-from config.config import STORAGE_STRING, SUPABASE_BUCKET, supabase_client
+from config.config import STORAGE_STRING, SUPABASE_BUCKET, supabase_client, brevo_configuration, email_sender
 from sqlalchemy.orm import Session
 from sqlalchemy import func, distinct
 from fastapi import HTTPException
 from fastapi import UploadFile
+import brevo_python
+from brevo_python.rest import ApiException
 from uuid import UUID
 
 ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "pdf"}
@@ -233,3 +236,29 @@ def get_tag_suggestions(db: Session, query_text: str, limit: int = 4) -> List[st
                 .all()
     
     return [result[0] for result in results]
+
+
+def send_email(name: str, email:str, reason:str):
+    try:
+        api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
+        subject = f"Your Job Posting has been deleted"
+        sender = email_sender
+
+        html_content = deleted_job(
+            name = name,
+            reason = reason
+        )
+        to = [{"email": email, 'name': name}]
+        send_smtp_email = brevo_python.SendSmtpEmail(to=to, html_content=html_content, sender=sender, subject=subject)
+
+        try:
+            print("before execute")
+            api_response = api_instance.send_transac_email(send_smtp_email)
+            return {"message": api_response}
+        except ApiException as e:
+            print(f"Error: {e}")
+
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=f"Error: {e}")

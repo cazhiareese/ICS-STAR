@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ICS-STAR Event Invitation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .header img {
+            width: 100%;
+        }
+
+        .main-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00369C;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .event-image {
+            width: 100%;
+            height: auto;
+            margin: 20px 0;
+        }
+
+        .content {
+            font-size: 16px;
+            color: #333333;
+            line-height: 1.5;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .cta-button {
+            background-color: #00369C;
+            color: white !important;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .footer {
+            font-size: 13px;
+            color: #666666;
+            text-align: center;
+            padding: 20px 10px;
+            border-top: 1px solid #dddddd;
+            margin-top: 40px;
+        }
+
+        .footer-logo {
+            margin-bottom: 10px;
+        }
+
+        .footer-logo img {
+            width: 120px;
+        }
+
+        .footer a {
+            color: #00369C;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .social-icons img {
+            width: 20px;
+            margin: 0 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <!-- Header with Logo -->
+        <div class="header">
+            <img src="https://rtyworjvisvjmixvxwmc.supabase.co/storage/v1/object/public/128storage/emailing_assets/Email%20Header.png"
+                alt="ICS - STAR Logo">
+        </div>
+
+        <!-- Title -->
+        <h1 style="color: #1D2939; font-size: 18px; text-align: center;">
+            ICS-STAR Advisory: <br>
+        </h1>
+        <div class="main-title">
+            {name} update your details in ICS-STAR
+        </div>
+
+        <!-- Event Image -->
+        <!-- Event Details -->
+
+
+        <!-- Body Content -->
+        <p>Dear {name},</p>
+
+        <p>We would like to inform you that your job posting on <strong>ICS-STAR</strong> has been removed after
+            receiving multiple reports.</p>
+
+        <p>The reason provided for this action is as follows:</p>
+
+        <p><strong>{reason}</strong></p>
+
+        <p>If you believe this was a mistake or would like further information, feel free to reach out to our support
+            team.</p>
+
+        <p>Thank you for your attention to this matter.</p>
+
+        <p>Best regards,<br>
+            The ICS-STAR Team</p>
+
+        <!-- CTA Button -->
+        <div class="button-container">
+            <a href="https://ics-star-app.vercel.app/login" class="cta-button">Visit ICS-STAR</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-logo">
+                <img src="https://rtyworjvisvjmixvxwmc.supabase.co/storage/v1/object/public/128storage/emailing_assets/Group%20250.png"
+                    alt="ICS-STAR Logo Footer">
+            </div>
+            <p>
+                Institute of Computer Science <br>
+                College of Arts and Sciences, UPLB <br>
+                Los Baños, Laguna, Philippines 4031
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
