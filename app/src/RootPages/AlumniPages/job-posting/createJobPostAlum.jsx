@@ -6,6 +6,7 @@ import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import CircularLoading from '../../../components/LoadingComponents/circularloading';
 import JobPostSummary from '../../../components/AlumniComponents/jobPostSummary';
+import { showToast } from '../../../components/ui/Toast';
 
 
 function CreateJobPostAlum() {
@@ -301,9 +302,9 @@ function CreateJobPostAlum() {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            // console.log('Job successfully posted:', response.data);
+            console.log('Job successfully posted:', response.data);
             // alert("Job successfully submitted!");
-
+            showToast('Job successfully posted!', 'success');
             setSubmitting(false);
             // Store response to summary
             setSummary(response.data);
@@ -314,8 +315,9 @@ function CreateJobPostAlum() {
             // Optionally reset form fields here
         } catch (error) {
             console.error('Error posting job:', error);
+            showToast('There was an error submitting the job post.', 'error');
             setSubmitting(false);
-            alert("There was an error submitting the job post.");
+            // alert("There was an error submitting the job post.");
         }
     };
 
