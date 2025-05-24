@@ -1,8 +1,29 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export default function DonationCard({driveDetails, driveId}) {
-  console.log("malupey");
+  const User = localStorage.getItem("token");
+  let tokentype = "guest";
+  let userid = true;
+  
+  
+  
+  if (User) {
+    try {
+      const decoded = jwtDecode(User);
+      tokentype = decoded.role;
+      userid = decoded.sub;
+      console.log("Decoded token:", decoded);
+      console.log("User ID:", userid);
+      console.log("Token type:", tokentype);
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
+  } else {
+    console.log("No token found, defaulting to guest.");
+  }
+  console.log("hello");
   console.log(driveDetails)
   // const  driveId  = useParams();
 
@@ -10,7 +31,8 @@ export default function DonationCard({driveDetails, driveId}) {
   const navigate = useNavigate();
 
   const handledonationform = () => {
-    navigate(`/alumni/donationforms/${driveId}`);
+    console.log("cytrus",tokentype);
+    navigate(`/${tokentype}/donationforms/${driveId}`);
     //window.location.href = `/alumni/donationforms/${driveId.driveid}`;
   }
 
@@ -40,7 +62,7 @@ export default function DonationCard({driveDetails, driveId}) {
       <div className="relative my-2 h-2 bg-gray-200 rounded font-satoshi-light">
         <div
           className="bg-blue-900 h-full rounded-full transition-all duration-300 "
-          style={{ width: `${driveDetails.fund_percentage}%` }}
+          style={{ width: `${Math.min(driveDetails.fund_percentage, 100)}%` }}
         ></div>
       </div>
 

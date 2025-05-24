@@ -109,15 +109,12 @@ function AdminCareer() {
 
   useEffect(() => {
     async function fetchTopJobs(token) {
-      setTopLoading(true)
       try {
         const response = await axios.get(`${API_BASE_URL}/admin/job-postings/top-4-interested`, {headers: {Authorization: `Bearer ${token}`}})
         console.log(response)
         setTopJobs(response.data)
       } catch (error) {
         console.log(error)
-      } finally {
-        setTopLoading(false)
       }
     }
     const token = localStorage.getItem('token');
@@ -154,41 +151,26 @@ function AdminCareer() {
   
 
   return (
-    <div className='flex flex-col h-screen p-6 items-center w-full bg-gray-100'>
+    <div className='flex flex-col min-h-screen p-6 items-center w-full bg-gray-100'>
       <h1 className='text-primary font-satoshi-bold text-5xl mb-4 self-start'>Career</h1>
       {/* Card Carousel */}
-      {topLoading ? (
-        <div className='flex items-center gap-4 w-full justify-center'>
-          <div className='flex flex-row justify-between items-center w-full cursor-pointer' onClick={() => {}}>
-            {/* Role, Location */}
-            <div className='flex flex-col'>
-              <SkeletonLoading/>
-            </div>
-
-            {/* Interested, Date, Person */}
-            <div className='flex flex-col'>
-              <div className='flex flex-row gap-2'>
-                <SkeletonLoading/>
-              </div>
-              <div className='flex flex-row gap-2'>
-                <SkeletonLoading/>
-              </div>
-            </div>
-          </div>
-        </div>
+      {loading ? (
+        <AdminCareerCard
+          job={{ title: '', company: '', location: '', interested_count: 0, date_posted: '', user_name: '' }}
+          onPrev={prev}
+          onNext={next}
+          loading={true}
+        />
       ) : topJobs.length > 0 ? (
         <div className='flex items-center gap-4 w-full justify-center' onClick={() => setSelectedJob(topJobs[index])}>
-          <AdminCareerCard job={topJobs[index]} onPrev={prev} onNext={next} />
+          <AdminCareerCard job={topJobs[index]} onPrev={prev} onNext={next} loading={false} />
         </div>
       ) : (
         <p className="text-center text-gray-500 mt-8">No jobs available.</p>
       )}
-
-
-
       {/* Dots */}
       <div className='mb-3 flex gap-1 mt-4'>
-        {topLoading ? (
+        {loading ? (
           <></>
         ) : (
           topJobs.map((_, i) => (
@@ -247,14 +229,8 @@ function AdminCareer() {
         </div>
       </div>
       {/* Table for desktop*/}
-      <div className='border border-gray-300 rounded-xl p-6 flex-1 hidden lg:block overflow-auto w-full bg-white'>
-        {loading ? (
-          <div className='flex flex-row items-center justify-center h-full'>
-            <CircularLoading/>
-          </div>
-        ) : (
-          <JobTable data={jobs} jobType={jobType} />
-        )}
+      <div className='border border-gray-300 rounded-xl p-6 hidden h-fit lg:block w-full bg-white'>
+        <JobTable data={jobs} jobType={jobType} loading={loading} />
       </div>
     </div>
   );

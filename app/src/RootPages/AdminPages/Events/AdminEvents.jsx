@@ -148,7 +148,7 @@ function AdminEvents() {
             <div className="pt-4 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-auto mx-auto">
               {loading ? (
                 // Skeleton Cards
-                Array.from({ length: 10 }).map((_, index) => (
+                Array.from({ length: 8 }).map((_, index) => (
                   <AdminEventCard key={`skeleton-${index}`} loading={true} />
                 ))
               ) : (

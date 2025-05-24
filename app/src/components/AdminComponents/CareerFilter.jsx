@@ -31,11 +31,10 @@ function CareerFilterModal ({filters, setterFunction})
             <Filter className='text-primary'/>
             <p className='text-primary fsont-satoshi-medium text-sm'> Filter</p>
         </button>
-    </div>
         {
         open && 
             (
-                <div className="absolute z-10 mt-2 w-90 origin-top-right rounded-2xl border border-gray-200 bg-white shadow-xl p-4">
+                <div className="absolute z-10 mt-2 -ml-20 w-90 origin-top-right rounded-2xl border border-gray-200 bg-white shadow-xl p-4">
                 <div className="text-black flex flex-col gap-2">
                     {
                         filters.map(({label,value}, index) => {
@@ -69,7 +68,8 @@ function CareerFilterModal ({filters, setterFunction})
                 </div>
                 </div>
             )
-    }
+        }
+        </div>
     </div>
     )
 }

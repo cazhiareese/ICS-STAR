@@ -35,6 +35,10 @@ const Newsletter = () => {
     const URL = import.meta.env.VITE_BACKEND_URL;
     const [forYou, setForYou] = useState(null);
 
+
+    const newsletterRef = React.useRef(null);
+    const moreLikeThisRef = React.useRef(null);
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -63,14 +67,34 @@ const Newsletter = () => {
         fetchData();
     }, [newsletterid]);
 
+
+    useEffect(() => {
+        const syncHeight = () => {
+            if (newsletterRef.current && moreLikeThisRef.current) {
+                const newsletterHeight = newsletterRef.current.offsetHeight;
+                moreLikeThisRef.current.style.maxHeight = `${newsletterHeight}px`;
+            }
+        };
+    
+        // Run once after load
+        syncHeight();
+    
+        // Optional: handle window resize
+        window.addEventListener('resize', syncHeight);
+        return () => window.removeEventListener('resize', syncHeight);
+    }, [newsletter]);
+
     return (
         <div className="flex flex-col space-x-10 mx-10 my-10">
             <div className="lg:mx-20">
                 <BackButton />
             </div>
-            <div className="flex md:flex-row flex-col sm:space-x-5 justify-center lg:mx-20 xl:mx-20 xl:space-x-40">
+            <div className="flex md:flex-row flex-col sm:space-x-5 justify-center lg:mx-20 xl:mx-20 xl:space-x-40 min-h-[75vh]">
             {newsletter ? (
-                <div className="flex flex-col h-full lg:w-[80%] md:w-[70%] rounded-2xl min-w-70 sm:border-gray-200 sm:border sm:shadow-md mt-5 sm:p-5">
+                <div
+                ref={newsletterRef}
+                className="flex flex-col lg:w-[80%] md:w-[70%] rounded-2xl min-w-70 sm:border-gray-200 sm:border sm:shadow-md mt-5 sm:p-5"
+                >
                     
                         <>
                             <div className="w-full min-h-60 max-h-60 bg-primary rounded-lg overflow-hidden">
@@ -120,9 +144,17 @@ const Newsletter = () => {
                 : (
                     <SkeletonCard />
                 )}
-                <div className="flex-col items-center justify-center md:w-[50%] xl:w-[30%] sm:mt-5 mt-10 md:h-[70vh]">
+
+                <div
+                className="flex flex-col items-start justify-start md:w-[50%] xl:w-[50%] md:mt-0 mt-10 h-full md:px-0 sm:px-5"
+                >
                     <label className="text-primary font-satoshi-bold text-3xl sm:mx-5">More like this</label>
-                    <div className="mt-5 flex md:flex-col flex-row md:h-[70vh] overflow-y-auto md:space-x-0 space-x-5 py-5">
+                    <div
+                        ref={moreLikeThisRef}
+                        className="mt-5 flex md:flex-col flex-row overflow-y-auto md:space-x-0 space-x-5 py-5 md:w-auto w-full"
+                    >
+
+
                         {forYou != null && forYou.length > 0 ? (
                             forYou.map((item) => (
                                 <div key={item.newsletter_id} className="sm:my-3">

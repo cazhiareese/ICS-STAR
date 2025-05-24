@@ -102,8 +102,10 @@ const JobSearchBar =
     }, [currentPage, dependencyTrigger]);
 
     
-
-    
+    const fetchJobsWrapper = () => {
+        setCurrentPage(1);
+        fetchJobs();
+    }
     
    
 
@@ -116,17 +118,17 @@ const JobSearchBar =
             <div className="flex flex-row items-center relative h-14 w-full">
                 <input
                     type="search"
-                    className="bg-gray-100 font-satoshi-medium text-lg w-full h-full px-4 py-2 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
+                    className="bg-[#FFFFFF] font-satoshi-medium text-lg w-full h-full px-4 py-2 rounded-2xl text-black border border-gray-300 focus:border-primary focus:outline-none focus:ring-0"
                     placeholder="Enter Job"
                     value={searchInput}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            fetchJobs();
+                            fetchJobsWrapper();
                         }
                     }}
                     onChange={(e) => setSearchInput(e.target.value)}
                 />
-                <button  onClick={fetchJobs} className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
+                <button  onClick={fetchJobsWrapper} className="lg:flex hidden absolute h-full right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-2xl hover:brightness-125 items-center justify-center w-1/6 cursor-pointer">
                     <Search size={20} />
                 </button>
             </div>

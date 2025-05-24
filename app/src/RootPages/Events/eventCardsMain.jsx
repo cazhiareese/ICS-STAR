@@ -9,10 +9,12 @@ import PersonOutline from "../../assets/personoutline.png"
 import { Paperclip } from 'lucide-react';
 import CircularLoading from '../../components/LoadingComponents/circularloading';
 import ModalTemplate from '../../AuthPages/modaltemplate';
+import { jwtDecode } from "jwt-decode";
+import {showToast} from "../../components/ui/Toast.tsx"
 
 const EventCardsMain = () => {
-    const [isSticky, setIsSticky] = useState(false);
-    
+    const [userType, setUserType] = useState(null);
+
     const [reservations, setReservations] = useState([]);
     const [allEvents, setAllEvents] = useState(null);
     const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -33,57 +35,44 @@ const EventCardsMain = () => {
 
     const [isloading, setisloading]= useState(false)
 
-    useEffect(() => {
-        const fetchEvent = async () => {
+
+    const User = localStorage.getItem("token");
+
+    let userid = true;
+    const [tokenType, setTokenType] = useState("guest");
+    
+
+    const checkType = async (User) => {
+        if (User) {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setEvent(response.data);
-                console.log("Event data:", response.data);
+                const decoded = jwtDecode(User);
+                const tokentypeconst = decoded.role;
+                const userid = decoded.sub;
+                console.log("Decoded token:", decoded);
+    
+                setTokenType(tokentypeconst);
+                setUserId(userid);
+                setUser(userid);
+                setUserType(tokentypeconst);
+    
+                return { tokentypeconst, userid };
             } catch (error) {
-                console.error('Error fetching event:', error);
+                console.error("Invalid token:", error);
+                return { tokentypeconst: "guest", userid: null };
             }
-        };
-        fetchEvent();
-        console.log("Event data:", event);
+        } else {
+            console.log("No token found, defaulting to guest.");
+            setTokenType("guest");
+            return { tokentypeconst: "guest", userid: null };
+        }
+    }
+    
+    useEffect(() => {
         
-    },[]);
 
-        useEffect(() => {
-            if (!token) throw new Error("User not authenticated");
-    
-            const fetchUserId = async () => {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/profile`, {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-            
-                    if (!response.ok) {
-                        if (response.status === 401) throw new Error("Unauthorized access");
-                        throw new Error("Failed to fetch profile");
-                    }
-            
-                    const result = await response.json();
-                    console.log(result.data.user_id);
-                    console.log(result)
-                    setUserId(result.data.user_id);
-                    setUser(result.data);
-                } catch (error) {
-                    console.error("Error fetching profile:", error.message);
-                }
-            };
-            fetchUserId();   
-            console.log("Event data:", event);     
-        },[])
+        
+    }, []);
 
-    
     useEffect(() => {
         if (event && reservations.length > 0) {
             const going = reservations.some(reservation => reservation.event_id === event.event_id);
@@ -93,69 +82,63 @@ const EventCardsMain = () => {
     }, [event, reservations]);
 
     useEffect(() => {
-
+        const User = localStorage.getItem("token");
+      
         const fetchReservations = async () => {
-
-            try {
-                const response = await axios.get(`${API_BASE_URL}/events/confirmed`, {
-                    headers: {
-                      Authorization: `Bearer ${token}`
-                    }
-                  });
-                  setReservations(response.data);
-                  console.log(reservations.length);
-                  console.log(reservations);
-                  
-            } catch (error) {
-                
-                console.error('Error fetching reservations:', error);
-            }
-            
+          try {
+            const response = await axios.get(`${API_BASE_URL}/events/confirmed`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            setReservations(response.data);
+            console.log("Reservations:", response.data);
+          } catch (error) {
+            console.error('Error fetching reservations:', error);
+          }
         };
-
-
-        
-        console.log("RESERVATION SIGNAL")
-        
-
+      
         const fetchAllEvents = async () => {
+          try {
+            const response = await axios.get(`${API_BASE_URL}/events-visible-to`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            setAllEvents(response.data);
+            console.log("All Events:", response.data);
+            await fetchReservations(); // wait for reservations to finish before continuing
+          } catch (error) {
+            console.error('Error fetching all events:', error);
+          }
+        };
+      
+        const fetchEvent = async (tokenTypeParam) => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/events-visible-to`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setAllEvents(response.data);
-                console.log(allEvents)
-                fetchReservations();
-
+                const config = tokenTypeParam === "guest"
+                    ? {}
+                    : { headers: { Authorization: `Bearer ${token}` }, withCredentials: true };
+        
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/one-event/${event_id}`, config);
+                setEvent(response.data);
+                console.log("Event data Here:", response.data);
             } catch (error) {
-                console.error('Error fetching all events:', error);
-                console.log(allEvents)
+                console.error('Error fetching event:', error);
             }
         };
+      
+        const loadData = async () => {
+            const { tokentypeconst, userid } = await checkType(User);
+            await fetchAllEvents();
+            await fetchEvent(tokentypeconst);  // Pass tokenType explicitly here
+            setUserId(userid);
+            setUser(userid);
+        };
+      
+        loadData();
+      
+        setUserId(userid);
+        setUser(userid);
+      
+      }, []);
+      
 
-        fetchAllEvents();
-        // setEvent(sampleEvent)
-        console.log("Event data:", event);
-
-    }, []);
-
-    const sampleEvent = {
-        id: 1,
-        title: "Community Clean-Up Drive",
-        description: "Join us for a community clean-up event to make our neighborhood cleaner and greener.",
-        date: "2023-12-15T08:00:00Z", // UTC time format
-        location: "Central Park, Main Street",
-        organizer: "Green Earth Organization",
-        image: "https://example.com/event-image.jpg",
-        tags: ["Community", "Environment", "Volunteer"],
-        links: [
-            "https://example.com/event-details",
-            "https://example.com/registration-form"
-        ],
-        rsvp_closed: false,
-    };
 
     const parseTime = (isoTimestamp) => {
         console.log("ISO Timestamp:", isoTimestamp);
@@ -200,6 +183,7 @@ const EventCardsMain = () => {
                 data: {
                     user_id: userId
                 }
+                
             })
             .then(response => {
                 console.log("RSVP canceled:", response.data);
@@ -209,8 +193,10 @@ const EventCardsMain = () => {
                 console.error("Error canceling RSVP:", error);
             }).finally(() => {
                 setisloading(false);   
+                showToast("RSVP Successfully Cancelled", "success");
             });
             setshowModalCancel(false)
+            
 
         } else {    
             console.log("User ID being sent:", userId);
@@ -224,13 +210,14 @@ const EventCardsMain = () => {
                 console.log("RSVP confirmed:", response.data);
                 setIsGoing (true)
                 
-                
             }).catch(error => {
                 console.error("Error confirming RSVP:", error);
             }).finally(() => {
-                setisloading(false);   
+                setisloading(false);  
+                showToast("RSVP Confirmed", "success"); 
             });;
             setshowModalAdd(false)
+            
             
             
         }
@@ -275,19 +262,39 @@ const EventCardsMain = () => {
             
             
             <div className="sm:max-w-180 sm:w-[80%] w-[90%] min-h-180 rounded-4xl mb-10 overflow-hidden sm:shadow-xl bg-white relative sm:border-gray-200 sm:border-1 ">
+            
 
-            <div className='hidden sm:flex z-10 flex-row absolute right-10 top-90 px-4 py-2 rounded-full '>
-                        <div className='flex flex-row ml-auto space-x-2 items-center'>
-                        <img 
-                            src={PersonOutline}
-                            alt="Sample Image" 
-                            className='h-4 w-4'
-                        /> 
-                        <label className='flex flex-row text-primary'>
-                            {event.going_count} are Going
-                        </label>
-                        </div>
-                    </div>
+            {tokenType === "alumni" ? (
+
+                <div className='hidden sm:flex z-10 flex-row absolute right-10 top-90 px-4 py-2 rounded-full '>
+                <div className='flex flex-row ml-auto space-x-2 items-center'>
+                <img 
+                    src={PersonOutline}
+                    alt="Sample Image" 
+                    className='h-4 w-4'
+                /> 
+                <label className='flex flex-row text-primary'>
+                    {event.going_count} are Going
+                </label>
+                </div>
+                </div>
+            ): 
+            <div className='hidden sm:flex z-10 flex-row absolute right-10 top-75 px-4 py-2 rounded-full '>
+            <div className='flex flex-row ml-auto space-x-2 items-center'>
+            <img 
+                src={PersonOutline}
+                alt="Sample Image" 
+                className='h-4 w-4'
+            /> 
+            <label className='flex flex-row text-primary'>
+                {event.going_count} are Going
+            </label>
+            </div>
+            </div>
+            
+            
+            }
+            
                 <div className="h-60 sm:w-auto w-[90%] bg-primary mt-10 sm:mx-10 mx-5 rounded-2xl overflow-hidden">
                     {event.image && (
                         <img
@@ -297,10 +304,14 @@ const EventCardsMain = () => {
                         />
                     )}
                 </div>
-                <div className='pt-5 mx-10'>
-                  <RsvpStatus event={event} />
-                </div>
-                {user?.role !== "student" && (
+                {tokenType === "alumni" &&
+                    <div className='pt-5 mx-10'>
+                    <RsvpStatus event={event} />
+                  </div>
+                }
+                
+                
+                {tokenType === "alumni" && (
                     <>
                         {!event.rsvp_closed ? (
                         !isloading ? (
@@ -359,7 +370,7 @@ const EventCardsMain = () => {
                         <Calendar />
                         
                             {event.datetimes.map((datetime, index) => (
-                                <div className="flex flex-row overflow-x-scroll max-h-32 flex-shrink-0">
+                                <div className="flex flex-row max-h-32 flex-shrink-0">
                                 <label key={index} className='pr-5'>{parseTime(datetime)}</label>
                                 </div>
                             ))}

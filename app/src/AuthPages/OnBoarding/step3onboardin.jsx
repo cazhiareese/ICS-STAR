@@ -76,8 +76,8 @@ function Step3Onboarding() {
       setUnemployed(true)
       setSelfemployed(false)
       if (setUnemployedWorkExperience == true){
-        setTypeEmployed("unemployed_no_exp")
-        updateUserData("employmentType", "unemployed_no_exp")
+        setTypeEmployed("unemployed_no_experience")
+        updateUserData("employmentType", "unemployed_no_experience")
       }
       else {
         setTypeEmployed("unemployed")
@@ -161,38 +161,41 @@ function Step3Onboarding() {
   };
   
   const updateEmploymentEmployed = () => {
-
-    if (userData.jobTitle == ""){
-      setJobTitleError(true);
-      // return;
-    } else {
-      setJobTitleError(false);
-    }
-
-    if (userData.industrySector == ""){
-      setIndustryError(true);
-      // return;
-    } else {
-      setIndustryError(false);
-    }
-    
-    if (userData.workCountry == "" && userData.workCity == ""){
-      setWorkLocationError(true);
-      // return;
-    } else {
-      setWorkLocationError(false);
-    }
-
-    if (jobtitleerror || industryerror || worklocationerror){
+    const jobTitleMissing = userData.jobTitle.trim() === "";
+    const industryMissing = userData.industrySector.trim() === "";
+    const workLocationMissing =
+      userData.workCountry.trim() === "" || userData.workCity.trim() === "";
+  
+    // Update state for visual errors
+    setJobTitleError(jobTitleMissing);
+    setIndustryError(industryMissing);
+    setWorkLocationError(workLocationMissing);
+  
+    // If any are missing, prevent proceeding
+    if (jobTitleMissing || industryMissing || workLocationMissing) {
       return;
-    } else {
-      setJobTitleError(false);
-      setIndustryError(false);
-      setWorkLocationError(false);
-      setCurrentSection(4)
     }
-    
+  
+    // Proceed to next step
+    setCurrentSection(4);
   };
+
+
+const industryOptions = [
+  { value: '', label: 'Select your industry' },
+  { value: 'Agriculture, Forestry, and Fishing', label: 'Agriculture, Forestry, and Fishing' },
+  { value: 'Construction', label: 'Construction' },
+  { value: 'Finance, Insurance, and Real Estate', label: 'Finance, Insurance, and Real Estate' },
+  { value: 'Manufacturing', label: 'Manufacturing' },
+  { value: 'Mining', label: 'Mining' },
+  { value: 'Public Administration', label: 'Public Administration' },
+  { value: 'Retail Trade', label: 'Retail Trade' },
+  { value: 'Services', label: 'Services' },
+  { value: 'Transportation, Communications, Electric, Gas, and Sanitary Services', label: 'Transportation, Communications, Electric, Gas, and Sanitary Services' },
+  { value: 'Wholesale Trade', label: 'Wholesale Trade' },
+  { value: 'Other', label: 'Other' },
+];
+
 
   
   const [reasonError, setReasonError] = useState(false);
@@ -266,7 +269,7 @@ function Step3Onboarding() {
 
 
             <div className="flex flex-row items-center justify-center flex-wrap w-[100%]">
-              <div className={`flex flex-row items-center space-x-5 mt-5 md:w-100 w-[100%] border h-25  rounded-2xl px-10 border border border-neutral-300 hover:bg-secondary ${userData.employmentType=="unemployed" || userData.employmentType=="unemployed_no_exp" ? "bg-secondary border-primary": "bg-neutral-100"}`}
+              <div className={`flex flex-row items-center space-x-5 mt-5 md:w-100 w-[100%] border h-25  rounded-2xl px-10 border border border-neutral-300 hover:bg-secondary ${userData.employmentType=="unemployed" || userData.employmentType=="unemployed_no_experience" ? "bg-secondary border-primary": "bg-neutral-100"}`}
                     onClick={handleUnemployedClick}>
                 <img className="w-10 h-10 " src={Unemployed}/>
                 <label className="font-satoshi-black text-2xl text">Unemployed</label>
@@ -274,7 +277,7 @@ function Step3Onboarding() {
               </div>
 
               {/* {console.log(userData.employmentType)} */}
-              {(userData.employmentType == "unemployed" || userData.employmentType == "unemployed_no_exp") && (
+              {(userData.employmentType == "unemployed" || userData.employmentType == "unemployed_no_experience") && (
                 <div className="relative flex flex-col items-center bg-secondary px-6 lg:py-6 py-3 rounded-2xl shadow-md mt-5 lg:w-[30%] w-[100%] lg:ml-10">
                   {/* Speech bubble arrow */}
                   <div className="hidden lg:block absolute top-0 -left-6 w-0 h-0 border-t-[20px] border-t-transparent border-r-[30px] border-r-secondary border-b-[20px] border-b-transparent"></div>
@@ -296,7 +299,7 @@ function Step3Onboarding() {
                     <button className={`bg-white border text-primary px-6 py-2 rounded-lg text-lg font-satoshi-medium cursor-pointer ${unemployedWorkExperience ? "border-gray-300": "border-primary bg-secondary"}`}
                     
                             onClick={()=>{
-                              updateUserData('employmentType', "unemployed_no_exp");
+                              updateUserData('employmentType', "unemployed_no_experience");
                               setUnemployedWorkExperience(false)
                             }}>No</button>
                   </div>
@@ -329,7 +332,7 @@ function Step3Onboarding() {
       
     
     ) : (
-          userData.employmentType == "unemployed" || userData.employmentType == "unemployed_no_exp" ? 
+          userData.employmentType == "unemployed" || userData.employmentType == "unemployed_no_experience" ? 
         // Unemployed Part
 
         (<div className="flex flex-col justify-center pt-10 md:mx-30 mx-10">
@@ -345,7 +348,7 @@ function Step3Onboarding() {
                 <input
                   type="checkbox"
                   value={option.value}
-                  className="mr-5 w-5 h-5"
+                  className="mr-5 w-5 h-5 flex-shrink-0"
                   checked={selectedOptions.includes(option.value)}
                   onChange={() => handleCheckboxChange(option.value)}
                 />
@@ -480,42 +483,35 @@ function Step3Onboarding() {
           </div>
           
 
-          {/* Industry Sector */}
           <div className="relative">
-            <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">Industry Sector</label>
-            <input
-              type="text"
-              name="industrySector"
+            <label className="text-gray-700 font-satoshi-medium md:text-md text-sm">
+              Industry Sector
+            </label>
+
+            <CustomDropdownNoSearch
+              options={industryOptions}
               value={industryInput}
-              onChange={handleIndustryChange}
-              className="w-full md:p-3 p-2 border border-neutral-300 bg-neutral-100 rounded-lg focus:outline-primary mt-1"
+              onChange={(selectedValue) => {
+                setIndustryInput(selectedValue);
+                updateUserData("industrySector", selectedValue);
+              }}
+              placeholder="Select your industry"
             />
+
             {industryerror && <ErrorBox />}
 
-            {(industrySuggestions.length > 0 || loadingIndustries) && (
-              <div className="absolute left-0 top-full bg-white border border-gray-300 rounded-md shadow-md w-full max-h-40 overflow-y-auto z-20 mt-1">
-                {loadingIndustries ? (
-                  <div className="px-4 py-2 text-gray-500 flex justify-center items-center">
-                    <Loading size={20} /> <span className="ml-2 text-sm">Loading...</span>
-                  </div>
-                ) : (
-                  industrySuggestions.map((industry, index) => (
-                    <div
-                      key={index}
-                      className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-lg"
-                      onClick={() => {
-                        setIndustryInput(industry);
-                        updateUserData("industrySector", industry);
-                        setIndustrySuggestions([]);
-                      }}
-                    >
-                      {industry}
-                    </div>
-                  ))
-                )}
-              </div>
+            {/* Show input if "Other" is selected */}
+            {industryInput === "Other" && (
+              <input
+                type="text"
+                name="otherIndustry"
+                placeholder="Please specify"
+                onChange={(e) => updateUserData("industrySector", e.target.value)}
+                className="w-full md:p-3 p-2 border border-neutral-300 bg-neutral-100 rounded-lg focus:outline-primary mt-2"
+              />
             )}
           </div>
+
 
           {/* Company Name */}
           <div>
@@ -632,7 +628,7 @@ function Step3Onboarding() {
                 name="sameAsBase"
                 checked={userData.sameWorkBase}
                 onChange={()=>updateUserData("sameWorkBase", !userData.sameWorkBase)}
-                className="mr-2"
+                className="mr-2 border-neutral-300 bg-neutral-100 accent-primary rounded focus:outline-primary"
               />
               <label className="text-gray-600 md:text-md text-sm">Same as base</label>
             </div>

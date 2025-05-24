@@ -7,6 +7,10 @@ import Unathorized from "../Unauthorized";
 import ModalTemplate from "../modaltemplate";
 import CircularLoading from "../../components/LoadingComponents/circularloading";
 function Step1Onboarding() {
+
+  const MAX_FILE_SIZE_MB = 10; // 10MB
+
+
   const canvasRef = useRef(null);
   const [file, setFile] = useState(null);
   const [userImage, setUserImage] = useState("")
@@ -30,7 +34,7 @@ function Step1Onboarding() {
 
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const token = localStorage.getItem("token");
   console.log(token)
 
@@ -70,14 +74,21 @@ function Step1Onboarding() {
       };
     }, [isDragging]);
     
+    const resetImageSettings = () => {
+      updateUserData("profilePicture", null);
+      updateUserData("profilePictureFile", null);
+    };
+
 
     const captureImage = () => {
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+      const image = imageRef.current;
+  const container = containerRef.current;
+      
       if (!canvas || !imageRef.current || !containerRef.current || !imageLoaded) return;
 
-      const image = imageRef.current;
-      const container = containerRef.current;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
       const containerWidth = container.offsetWidth;
       const containerHeight = container.offsetHeight;
 
@@ -125,8 +136,18 @@ function Step1Onboarding() {
     
 
     const handleFileChange = (event) => {
+
+      
       const file = event.target.files[0];
-      if (!file) return;
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        setShowErrorModal(true);
+        return;
+      }
+
+      if (!file){
+        setShowErrorModal(true);
+        return;
+      } 
       setFile(file);
       setSelectPicture(true);
     
@@ -259,6 +280,7 @@ function Step1Onboarding() {
                 submitStep1(); // Submit the profile picture
               } else {
                 setCurrentSection(2); // Skip to next section if no image selected
+                resetImageSettings();
               }
             }}
           >
@@ -267,7 +289,11 @@ function Step1Onboarding() {
           <button
             type="button"
             className="font-satoshi-italic text-primary flex items-center justify-center w-40 p-5 text-sm underline md:order-1 flex-nowrap hover:text-hover cursor-pointer"
-            onClick={() => setCurrentSection(2)}
+            onClick={() => {
+              setCurrentSection(2);
+              resetImageSettings();
+            }
+            }
              >
               Skip for now
           </ button>
@@ -522,6 +548,16 @@ function Step1Onboarding() {
         information="Profile picture successfully submitted"
     />
 )}
+
+{showErrorModal && (
+          <ModalTemplate
+              onClose={() => {
+                setShowErrorModal(false)}}
+              choiceclose="Close"
+              header="Image File Too Large"
+              information="Image limit reached. Please select an image lower than 10mb"
+          />
+      )}
     </>
     
   );

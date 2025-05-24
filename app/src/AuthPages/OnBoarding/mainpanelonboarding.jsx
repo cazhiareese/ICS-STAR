@@ -44,7 +44,7 @@ function MainPanelOnboarding() {
                 {currentSection!=5 && currentSection!=0 && <div className= "my-10">
                     {ProgressBar[currentSection]}
                 </div>}
-                <div className="w-full rounded-xl max-h-[750px] overflow-y-auto m-auto relative">
+                <div className={`w-full rounded-xl  ${(currentSection==0 || currentSection == 5) ? "h-full":"max-h-[750px]"} overflow-y-auto m-auto relative`}>
                     {OnboardingComponents[currentSection]}
                 </div>
             </div>

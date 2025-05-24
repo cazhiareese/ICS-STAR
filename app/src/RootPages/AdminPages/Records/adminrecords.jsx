@@ -112,7 +112,7 @@ function AdminRecords() {
   return ( 
       <div className='flex flex-col lg:p-6 h-screen overflow-hidden max-w-7xl mx-auto'>
         {/* Records, search, view pending */}
-        <div className='justify-between mt-9 lg:mb-8 flex relative'>
+        <div className='justify-between lg:mb-8 flex relative'>
           {/* Records header */}
           <h1 className='text-primary font-satoshi-bold text-5xl hidden lg:block'> Records </h1>
           {/* Search and view pending */}
@@ -165,7 +165,7 @@ function AdminRecords() {
         </div>
         {/* Table for desktop*/}
         <div
-          className="border border-gray-300 h-fit rounded-xl p-6 hidden lg:block bg-white overflow-auto"
+          className="border border-gray-300 h-fit rounded-xl p-6 hidden lg:block flex-1 bg-white overflow-auto"
         >
           <UsersTable data={users} loading={loading} userType={userType}/>
         </div>

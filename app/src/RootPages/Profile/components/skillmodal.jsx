@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { XCircle } from "lucide-react";
+import { XCircle, Minus } from "lucide-react";
 
 const suggestedSkills = [
   "Artificial Intelligence",
@@ -117,36 +117,74 @@ const AddSkillsModal = ({ isOpen, onClose, onSave, existingSkills }) => {
             <h3 className="text-black font-satoshi-medium ">
               Skills and Interests
             </h3>
-            <input
-              type="text"
-              value={skillInput}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              className="w-full border-2 border-disabled px-4 py-3 rounded-2xl text-lg sm:text-sm"
-              placeholder="Enter skills..."
-              style={{ height: "50px" }}
-            />
+<div className="flex items-center gap-2">
+  <input
+    type="text"
+    value={skillInput}
+    onChange={handleInputChange}
+    onKeyDown={handleKeyDown}
+    className="w-full border-2 border-disabled px-4 py-3 rounded-2xl text-lg sm:text-sm placeholder:font-satoshi-medium placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary"
+    placeholder="Enter skills..."
+    style={{ height: "50px" }}
+  />
+  <button
+    onClick={() => {
+      const trimmedSkill = skillInput.trim();
+      const normalizedInput = trimmedSkill.toLowerCase();
+
+      const existsInSelected = selectedSkills.some(
+        (s) => s.toLowerCase() === normalizedInput
+      );
+      const existsInExisting = existingSkills.some(
+        (s) => s.toLowerCase() === normalizedInput
+      );
+
+      if (trimmedSkill && !existsInSelected && !existsInExisting) {
+        setSelectedSkills([...selectedSkills, trimmedSkill]);
+        setSkillInput("");
+        setWarning("");
+      } else if (trimmedSkill) {
+        setWarning("Skill already added.");
+        setSkillInput("");
+      }
+    }}
+    className="bg-primary text-white px-3 py-2 rounded-2xl text-lg sm:text-sm hover:bg-hover"
+  >
+    +
+  </button>
+</div>
+
 {warning && (
   <p className="text-sm text-error font-satoshi-medium">{warning}</p>
 )}
 
-            {/* Selected Skills */}
-            <div className="flex flex-wrap gap-2">
-              {selectedSkills.map((skill, index) => (
-                <span
-                  key={index}
-                  className="px-4 py-2 border-2 border-primary text-primary font-satoshi-medium rounded-full text-sm sm:text-xs"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+<div className="flex flex-wrap gap-2 mt-1">
+  {selectedSkills.map((skill, index) => (
+    <div
+      key={index}
+      className="relative flex items-center"
+    >
+      <span className="px-4 py-2 border-2 border-primary text-primary font-satoshi-medium rounded-full text-sm sm:text-xs">
+        {skill}
+      </span>
+      <Minus
+        size={13}
+        className="absolute -top-2 -right-2 text-white cursor-pointer bg-error rounded-full hover:bg-red-800"
+        onClick={() =>
+          setSelectedSkills((prev) =>
+            prev.filter((s) => s.toLowerCase() !== skill.toLowerCase())
+          )
+        }
+      />
+    </div>
+  ))}
+</div>
           </div>
 
           {/* Suggested Skills */}
           <div className="flex flex-col gap-2">
             <h3 className="text-black font-satoshi-medium">Suggestions</h3>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-3">
+            <div className="font-satoshi-medium grid grid-cols-3 gap-2 sm:grid-cols-3 text-[12px] sm:text-[17px]">
               {suggestedSkills
                 .filter((skill) => !existingSkills.includes(skill))
                 .map((skill, index) => (

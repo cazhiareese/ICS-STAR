@@ -8,6 +8,7 @@ import DonationCardSkeleton from "./Donationcomponent/DonationCardSkeleton";
 import DonationMainViewSkeleton from "./Donationcomponent/donationmainviewskeleton";
 import DonationCSkeleton from "./Donationcomponent/Donationcskeleton";
 import { Filter, Search } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 
 function DonationLanding() {
   const [donationData, setDonationData] = useState(null); // Initialize as null
@@ -20,42 +21,55 @@ function DonationLanding() {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
+      const [user, setUser] = useState(null);
+      const [userType, setUserType] = useState(null);
+  
+      //cyrus was here
+  
+  const User = localStorage.getItem("token");
+  let tokentype = "guest";
+  let userid = true;
+  
+  
+  if (User) {
+    try {
+      const decoded = jwtDecode(User);
+      tokentype = decoded.role;
+      userid = decoded.sub;
+      console.log("Decoded token:", decoded);
+      console.log("User ID:", userid);
+      console.log("Token type:", tokentype);
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
+  } else {
+    console.log("No token found, defaulting to guest.");
+  }
+  
+
+
   useEffect(() => {
+    
     const fetchData = async () => {
-      if (!token) {
-        setError("User not authenticated");
-        setLoading(false);
-        return;
-      }
+
 
       setLoading(true);
       try {
-        const dummy = {
-          
-            drive_id: "basbdjabaskckasc",
-            title: "ICS Student Scholarship Fund",
-            description: "Provide financial assistance to deserving ICS students who demonstrate academic excellence and need.",
-            target_cost: 300000,
-            image_url: "ics_scholarship.jpg",
-            total_amount_donated: 20841.42,
-            donation_count: 10,
-            created_at: "2025-04-08T13:51:01.554485Z"
-          
-        }
+
         //Fetch both APIs concurrently
-        const [donationResponse, generalResponse] = await Promise.all([
-          fetch(`${API_BASE_URL}/donationdrive`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch(`${API_BASE_URL}/gen-donation-drive`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-        ]);
+const headers = tokentype === "guest" ? {} : { Authorization: `Bearer ${token}` };
+
+const [donationResponse, generalResponse] = await Promise.all([
+  fetch(`${API_BASE_URL}/donationdrive`, {
+    method: "GET",
+    headers,
+  }),
+  fetch(`${API_BASE_URL}/gen-donation-drive`, {
+    method: "GET",
+    headers,
+  }),
+]);
+
 
         // Process donation drives
         let donationDataResult = [];

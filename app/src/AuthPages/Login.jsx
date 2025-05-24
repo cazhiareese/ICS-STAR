@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "../index.css";
+import { useAppContext } from "./AuthContext/signupcontext.jsx"
 import { PersonStanding } from "lucide-react";
 import loginBg from "../assets/login_gradientbg.jpeg";
 import Constellations from "../assets/constellationLogin.png";
@@ -15,10 +16,16 @@ import google from "../assets/google.png"
 import GuestModal from "./guestModal"
 import ModalTemplate from "./modaltemplate"
 import { useLocation } from 'react-router-dom';
+import { showToast } from "../components/ui/Toast"
+
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import axios from "axios";
+
 
 function LoginPage() {
-
+    const {  updateUserData, setCurrentSection } = useAppContext();
     const baseURL = import.meta.env.VITE_BACKEND_URL;
+    const clientId = import.meta.env.VITE_CLIENT_ID;
     const location = useLocation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -65,6 +72,39 @@ function LoginPage() {
           localStorage.setItem('lastVisitedPath', currentPath);
         }
       }, [location]);
+
+
+    const loginWithGoogle = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+        console.log('Login Success:', tokenResponse);
+            const formData = new FormData();
+            formData.append('token', tokenResponse.access_token);
+
+            const response = await axios.post(`${baseURL}/auth/google/register`, formData);
+            
+            if (response.data.message == "Logged in with Google"){
+                localStorage.setItem("token", response.data.access_token);
+                const expiresInMinutes = 5;
+                const expirationTime = new Date().getTime() + expiresInMinutes * 60 * 1000;
+                localStorage.setItem("token_expiration", expirationTime.toString());
+                fetchUserData()
+            }else{
+                console.log(response.data.data)
+                updateUserData("firstName", response.data.data.first_name)
+                updateUserData("lastName", response.data.data.last_name)
+                updateUserData("email", response.data.data.email)
+                updateUserData("password", null)
+                updateUserData("isGoogle", true)
+                setCurrentSection("0");
+                navigate("/signup");
+            }
+
+        },
+        onError: (error) => {
+        console.error('Login Failed:', error);
+        },
+        scope: 'openid email profile',
+    });
       
 
     const login = async (e) => {
@@ -88,12 +128,17 @@ function LoginPage() {
 
           if (response.ok) {
               localStorage.setItem("token", data.access_token);
-              // alert("Login Successful!");
+                const expiresInMinutess = 5;
+                const expirationTimes = new Date().getTime() + expiresInMinutess * 60 * 1000;
+                localStorage.setItem("token_expiration", expirationTimes.toString());
+            //   alert("Login Successful!");
+              showToast("Login Successful!", "success")
               fetchUserData();
             
           } else {
+              showToast("Invalid email or password!", "error")
 
-              setOpenError(true)
+            //   setOpenError(true)
 
           }
       } catch (error) {
@@ -169,10 +214,6 @@ function LoginPage() {
         
     }, [codeError]);
 
-    const loginWithGoogle = async() => {
-        
-    }
-
 
     const [position, setPosition] = useState(0);
   const maxPosition = 700; 
@@ -195,13 +236,14 @@ function LoginPage() {
 
 
   return (
-    <div className="flex items-center w-screen min-h-screen overflow-y-auto">
-        {/* Background
 
-        // <div className="absolute inset-0 object-fill bg-center scale-100 opacity-50 md:opacity-50 h-screen w-screen     bg-fixed"
-        //     style={{ backgroundImage: `url(${loginBg})` }}>
-        //     <div className="sticky inset-0"></div>
-        // </div> */}
+    <div className="flex items-center w-screen min-h-screen overflow-y-auto">
+        {/* Background */}
+
+        {/* <div className="absolute inset-0 object-fill bg-center scale-100 opacity-50 md:opacity-50 h-screen w-screen bg-fixed"
+            style={{ backgroundImage: `url(${loginBg})` }}>
+            <div className="sticky inset-0"></div>
+        </div> */}
 
         {/* Lower COnstellation */}
         <div className="absolute opacity-0 sm:opacity-100 bottom-0 left-0 sm:min-w-2xl w-3/5 ">
@@ -221,11 +263,43 @@ function LoginPage() {
             />
         </div>
 
+        <div className="hidden lg:flex flex-row justify-center lg:pt-0 lg:absolute lg:top-10 lg:left-0 lg:min-w-3xl sm:pt-50 pt-30
+                [@media(max-height:750px)]:scale-[0.8] [@media(max-height:750px)]:-translate-y-5">
+            <img 
+                src={ICSSTARHEAD}
+                alt="Login Background" 
+                className="lg:absolute lg:left-15 lg:top-0 lg:w-[30%] sm:w-50 sm:h-10 w-50"
+            />
+            <div className="hidden sm:flex flex-row">
+                <div className="w-0.75 h-10 bg-black ml-11"></div>
+                <div className="flex flex-col -mt-1 text-xl font-satoshi-bold ml-3 leading-6">
+                    <label><label className="text-primary">S</label>ystem for <label className="text-primary">T</label>racking</label>
+                    <label><label className="text-primary">A</label>lumni <label className="text-primary">R</label>elations</label>
+                </div>
+            </div>
+        </div>
+
+
         {/* Lower Portion */}
-        <div className="flex flex-col overflow-y-auto overflow-x-clip [@media(max-height:800px)]:justify-normal items-center lg:justify-center w-screen lg:h-screen lg:p-30 p-10 z-10 sm:h-[700px] sm:overflow-y-clip lg:overflow-y-auto" >
-            
+        <div className="flex flex-col justify-center items-center w-screen overflow-x-clip overflow-y-auto p-10 z-10 sm:overflow-clip overflow-clip
+                sm:h-screen
+                lg:h-screen lg:justify-center lg:p-10 lg:pt-30    
+                [@media(max-height:750px)]:scale-[0.7]
+                
+                [@media(max-height:750px)]:p-0
+                [@media(max-height:750px)]:overflow-clip
+                [@media(min-height:751px)]:scale-[1]
+                [@media(min-height:751px)]:justify-center
+                [@media(max-width:1023px)]:scale-[0.8]
+                [@media(max-width:768px)]:scale-[1]
+                [@media(max-width:1023px)]:justify-normal
+                [@media(max-width:1023px)]:overflow-y-auto
+                
+                "
+                >
+
             {/* Mobile COnstellation */}
-            <div className="sm:hidden block w-screen -mt-10 h-[220px] [@media(max-height:800px)]:opacity-40 overflow-visible opacity-40">
+            <div className="sm:hidden block w-screen -mt-10 h-[220px] [@media(max-height:800px)]:opacity-40 overflow-visible opacity-40 absolute top-0 ">
                 <img 
                     src={ConstellationsMobile}
                     alt="Login Background" 
@@ -244,13 +318,15 @@ function LoginPage() {
 
             {/* ICS-STAR */}
 
-            <div className="flex flex-row justify-center lg:pt-30 xl:pt-0 lg:absolute lg:top-10 lg:left-0 lg:min-w-3xl ">
+            <div className="flex lg:hidden flex-row justify-center lg:pt-0 lg:absolute lg:top-10 lg:left-0 lg:min-w-3xl sm:pt-10 pt-30
+            [@media(min-height:751px)]:pt-30
+            ">
                 <img 
                     src={ICSSTARHEAD}
                     alt="Login Background" 
-                    className="lg:absolute lg:left-15 lg:top-0 lg:w-[30%] md:w-50 md:h-10 w-50"
+                    className="lg:absolute lg:left-15 lg:top-0 lg:w-[30%] sm:w-50 sm:h-10 w-50"
                 />
-                <div className=" hidden md:flex flex-row ">
+                <div className=" hidden sm:flex flex-row ">
                 <div className="w-0.75 h-10 bg-black ml-11">`</div>
                 <div className="flex flex-col -mt-1 text-xl font-satoshi-bold ml-3 leading-6">
                     <label><label className="text-primary">S</label>ystem for <label className="text-primary">T</label>racking</label>
@@ -267,16 +343,23 @@ function LoginPage() {
                         <h1 className="text-4xl md:text-4xl font-satoshi-bold text-primary text-center">Across the Cosmos</h1>
             </div>
 
-            <div className=" sm:flex-row flex w-screen sm:justify-center z-20 lg:h-175 lg:min-h-155 pt-10 ">
+            <div className="sm:flex-row flex w-screen sm:justify-center z-20 lg:h-175 lg:min-h-155 py-10 ">
                 
                 {/* Login Signup */}
-                <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl lg:min-w-lg md:min-w-lg lg:bg-[#f9f9fb] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] lg:rounded-4xl">
-                        <h1 className="hidden lg:block text-8xl pt-4 font-satoshi-regular mb-0 text-[#102E46] cursor-default">Login</h1> 
+                <div onClick={() => setCodeError(false)} className="my-auto xl:ml-[5%] 2xl:ml-[15%] 3xl:ml-[30%] 4xl:ml-[25%] mx-auto flex flex-col items-center lg:justify-center h-full sm:mt-0 w-[30%]  
+                            min-h-110  sm:min-h-140 min-w-sm xl:min-w-xl sm:min-w-lg 
+                            md:min-w-lg lg:bg-[#f9f9fb] lg:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] 
+                            lg:rounded-4xl 
+                            [@media(max-width:800px)]:scale-[1]
+                            [@media(max-height:599px)]:scale-[0.8]
+                            "
+                    >
+                        <h1 className="hidden lg:block text-6xl pt-4 font-satoshi-regular mb-0 text-[#102E46] cursor-default">Login</h1> 
                         
                         
                         {/* Email Input */}
                         
-                        <div className=" flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 -mt-3 w-[60%] sm:w-[70%]">
+                        <div className=" flex flex-col justify-end pb-7 h-[25%] emailButton sm:-mb-5 -mt-3 w-[60%] sm:w-[70%] ">
 
                        
                             <label className= "block overflow-x-auto whitespace-nowrap scroll-bar-hide cursor-pointer text-gray-600 sm:text-lg font-satoshi-regular" onClick={() => {
@@ -420,19 +503,24 @@ function LoginPage() {
                             >
                             Login
                             </button>
-                            {/* <button
+
+                           
+                            <button
+
                                 className="relative bg-white border-1 py-3 rounded-3xl sm:text-lg text-sm w-[60%] sm:w-[70%] font-satoshi-regular transition mt-3 cursor-pointer hover:shadow-md hover:scale-[1.001]"
                                 onClick={()=>loginWithGoogle()}
                                 >
-                                <label className="cursor-pointer">Sign In with Google</label>
+                                <label className="cursor-pointer">Continue with Google</label>
                                 
                                     <img 
                                         src={google} 
                                         alt="Google Logo" 
                                         className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6"
                                     />
-                                
-                            </button> */}
+
+                            </button>
+
+
                             </>
                         )}
 
@@ -451,7 +539,7 @@ function LoginPage() {
 
                 {/* Description */}
                 <div className="my-auto lg:flex hidden  2xl:w-180 xl:w-150 lg:w-100 md:w-100 w-80 xl:h-50  bg-secondary ml-auto relative items-center rounded-l-2xl shadow-lg group">
-                    <label className="2xl:text-2xl xl:text-xl sm:text-md font-satoshi-regular 2xl:mx-20 xl:mx-10 md:mx-2 mx-10 my-5 space-y-5 leading-11 text-justify">
+                    <label className="2xl:text-2xl xl:text-xl sm:text-lg font-satoshi-regular 2xl:mx-20 xl:mx-10 md:mx-10 mx-10 my-5 space-y-5 leading-11 text-justify">
                         Built to connect alumni, students, and the institute.
                         <label className="font-satoshi-bold text-primary">
                         &nbsp;ICS-STAR
@@ -463,12 +551,24 @@ function LoginPage() {
             </div>
             
             
-            {/* Caption below */}
-            <div className="absolute hidden lg:flex flex-col w-full pt-10 bottom-10 -left-10 ">
-                <h1 className="text-5xl font-satoshi-regular text-right ">Bridging Alumni</h1>
-                <h1 className="text-5xl font-satoshi-bold  text-primary text-right">Across the Cosmos</h1>
+            {/* Full-width caption for tall + wide screens */}
+            <div className="hidden lg:hidden xl:flex flex-col w-screen px-10 [@media(max-height:800px)]:hidden ">
+                <h1 className="text-5xl font-satoshi-regular text-right">Bridging Alumni</h1>
+                <h1 className="text-5xl font-satoshi-bold text-primary text-right">Across the Cosmos</h1>
             </div>
+
+            
+
         </div>
+        <div className="hidden absolute bottom-10 right-10 text-right lg:flex xl:hidden flex-col w-screen px-10 [@media(max-height:800px)]:hidden">
+                <h1 className="text-5xl font-satoshi-regular text-right">Bridging Alumni</h1>
+                <h1 className="text-5xl font-satoshi-bold text-primary text-right">Across the Cosmos</h1>
+            </div>
+        <div className="hidden [@media(max-height:800px)]:flex flex-col absolute bottom-10 right-10 text-right [@media(max-width:1023px)]:hidden">
+    <h1 className="text-3xl font-satoshi-regular">Bridging Alumni</h1>
+    <h1 className="text-3xl font-satoshi-bold text-primary">Across the Cosmos</h1>
+</div>
+
         {openModal &&
             <div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">
             <div className="bg-white rounded-3xl shadow-lg p-6 w-[25rem]">
@@ -488,6 +588,7 @@ function LoginPage() {
                         onClick={() => {
                             setOpenModal(false);
                             localStorage.removeItem("token");
+                            showToast("Login Successful!", "success");
                             navigate(`/guest/dashboard`);
                         }}
                     >
@@ -498,11 +599,10 @@ function LoginPage() {
         </div>
         
         }
-
-        {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error!"/>}
+        {/* {openError && <ModalTemplate onClose={()=>setOpenError(false)} choiceclose="Close" information="Invalid email or password. Please check." header="Error!"/>} */}
         
     </div>
-    
+
   );
 }
 

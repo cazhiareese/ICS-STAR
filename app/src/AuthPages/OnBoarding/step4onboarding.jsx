@@ -25,7 +25,7 @@ export default function Step4Onboarding() {
   const [errorMessage, setErrorMessage] = useState(""); // State for error message
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { setCurrentSection, userData, updateUserData, userType } = useOnboardingContext();
@@ -109,9 +109,12 @@ export default function Step4Onboarding() {
             });
             };
             const alumPayload = {
-            ...(userData.scholarshipList?.length > 0 && { scholarships: userData.scholarshipList }),
-            ...(userData.affiliationList?.length > 0 && { affiliations: userData.affiliationList }),
-            ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
+            // ...(userData.scholarshipList?.length > 0 && { scholarships: userData.scholarshipList }),
+            // ...(userData.affiliationList?.length > 0 && { affiliations: userData.affiliationList }),
+            // ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
+            scholarships: userData.scholarshipList || [],
+            affiliations: userData.affiliationList || [],
+            roles: userData.roleList || [],
             ...((userData.employmentType === "employed" || userData.employmentType === "self_employed") && userData.industrySector && { industry: userData.industrySector }),
             ...(userData.employmentType && { employment_status: employmentEnum(userData.employmentType) }),
             ...(userData.employmentType === "unemployed" && userData.reason?.length > 0 && { reasons: reasonsEnum(userData.reason) }),
@@ -133,6 +136,8 @@ export default function Step4Onboarding() {
               ...(userData.roleList?.length > 0 && { roles: userData.roleList }),
               ...(userData.skillsInterests?.length > 0 && { skills: userData.skillsInterests }),
             };
+            console.log("Alum Payload:");
+            console.log(Array.isArray(userData.skillsInterests), userData.skillsInterests);
 
           function objectToFormData(obj) {
             const formData = new FormData();
@@ -155,7 +160,6 @@ export default function Step4Onboarding() {
           const alumFormData = objectToFormData(alumPayload);
           const studentFormData = objectToFormData(studentPayload);
 
-          
           const payload = userType === "student" ? studentFormData : alumFormData;
 
 
@@ -177,13 +181,13 @@ export default function Step4Onboarding() {
         setCurrentSection(5);
         updateUserData("userUpdatedToken", response.data.updated_token)
       } catch (error) {
+        setShowErrorModal(true)
         console.error("Error submitting onboarding information:", error);
       }
-
-
-      console.log("Onboarding information submitted successfully.");
       // setCurrentSection(5);
     } catch (error) {
+      setShowErrorModal(true)
+      
       console.error("Error submitting onboarding information:", error);
     }
   };
@@ -281,6 +285,16 @@ export default function Step4Onboarding() {
               choicecontinue="Proceed"
               header="Confirm Entries?"
               information="Please proceed if your entries are final. You may still change them in the profile section afterwards."
+          />
+      )}
+
+{showErrorModal && (
+          <ModalTemplate
+              onClose={() => {
+                setShowErrorModal(false); setLoading(false)}}
+              choiceclose="Close"
+              header="Error"
+              information="The server cannot be reached. Please try again later and ensure you have a stable internet connection."
           />
       )}
     </div>

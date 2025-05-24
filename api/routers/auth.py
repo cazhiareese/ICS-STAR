@@ -2,6 +2,7 @@ from datetime import timedelta
 from fastapi import Depends, APIRouter, HTTPException, status, Form, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from typing import Annotated, Optional
 from config.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from config.database import get_db
@@ -33,7 +34,7 @@ async def register(
     first_name: str = Form(...),
     last_name: str = Form(...),
     email: str = Form(...),
-    password: str = Form(...),
+    password: Optional[str] = Form(None),
     student_number: str = Form(...),
     user_type: str = Form(...),
     verification_file: UploadFile = File(None),
@@ -48,20 +49,10 @@ async def register(
 @router.post("/auth/google/register")
 async def google_register(
     token: str = Form(...),
-    student_number: str = Form(...),
-    user_type: UserTypeEnum = Form(...),
-    graduation_year: Optional[str] = Form(None),
-    graduation_semester: Optional[UserGradSemEnum] = Form(None),
-    verification_file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
     return await register_with_google(
         token=token,
-        student_number=student_number,
-        user_type=user_type,
-        graduation_year=graduation_year,
-        graduation_semester=graduation_semester,
-        verification_file=verification_file,
         db=db
     )
 
@@ -94,3 +85,15 @@ async def login_for_access_token(
 async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
     return CurrentUser.model_validate(current_user)
 
+@router.get("/check-password-null")
+def check_if_password_null(
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db)
+):
+    query = text("SELECT password FROM users WHERE user_id = :user_id") # No password in SQLAlchemy User Schema so query directly using PostgreSQL
+    result = db.execute(query, {"user_id": current_user.user_id})
+    row = result.first()
+
+    # print(row)
+    
+    return row[0] is None

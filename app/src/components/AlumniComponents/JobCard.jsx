@@ -24,7 +24,7 @@ function JobCard({job, selectedJobId, setSelectedJobId, setMobileExpanded}) {
         <div
         onClick={handleJobClick}
         className={`flex flex-col xl:w-[400px] lg:w-[300px] md:w-[220px] w-[300px] rounded-2xl p-8 cursor-pointer transition-all duration-200 ease-in-out
-            ${selectedJobId === (job.post_id ?? job.id) ? 'outline-2 outline-primary' : 'outline-1 outline-neutral-300'}`}
+            ${selectedJobId === (job.post_id ?? job.id) ? 'outline-2 outline-primary' : 'outline-1 outline-neutral-300'} hover:bg-white`}
         >
             {/* Title and Company */}
             <h1 className='font-satoshi-bold md:text-3xl text-2xl break-words'>{job.title}</h1>
