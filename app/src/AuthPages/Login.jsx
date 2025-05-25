@@ -87,6 +87,7 @@ function LoginPage() {
                 const expiresInMinutes = 15;
                 const expirationTime = new Date().getTime() + expiresInMinutes * 60 * 1000;
                 localStorage.setItem("token_expiration", expirationTime.toString());
+                showToast('Login Successful!', 'success');
                 fetchUserData()
             }else{
                 console.log(response.data.data)
@@ -102,6 +103,7 @@ function LoginPage() {
         },
         onError: (error) => {
         console.error('Login Failed:', error);
+        showToast('Login failed!', 'error');
         },
         scope: 'openid email profile',
     });
