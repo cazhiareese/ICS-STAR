@@ -2,7 +2,7 @@ from typing import Dict, List, Optional, Tuple
 from fastapi import Query
 from config.config import STORAGE_STRING
 from sqlalchemy.orm import Session
-from sqlalchemy import String, func, or_, text, union_all, desc
+from sqlalchemy import String, func, or_, text, union_all, desc, case
 from sqlalchemy.sql import distinct
 from models.usermodel import User
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
@@ -1397,7 +1397,8 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> tuple[lis
         User.last_name,
         MonetaryDonation.amount,
         MonetaryDonation.date_donated,
-        MonetaryDonation.proof
+        MonetaryDonation.proof,
+        MonetaryDonation.is_anonymous
     ).join(
         User, MonetaryDonation.user_id == User.user_id
     ).filter(
@@ -1418,7 +1419,7 @@ def get_all_pending_monetary_donations(db: Session, drive_id: UUID) -> tuple[lis
             donation_id=donation[0],
             donation_date=donation_date,
             donation_time=donation_time,
-            name=f"{donation[1]} {donation[2]}",
+            name=f"{donation[1]} {donation[2]}" if donation.is_anonymous == False else "Anonymous Donor",
             donation_details=donation[3] or 0,
             proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided.",
             type="Monetary"
@@ -1488,7 +1489,10 @@ def get_all_verified_donations_all_drive(
         db.query(
             func.to_char(MonetaryDonation.created_at, 'MM/DD/YY').label('Date Donated'),
             DonationDrive.title.label('Donation Drive'),
-            (User.first_name + ' ' + User.last_name).label('Name'),
+            case(
+                (MonetaryDonation.is_anonymous == True, 'Anonymous Donor'),
+                else_=(User.first_name + ' ' + User.last_name)
+            ).label('Name'),
             func.cast('Monetary', String).label('Donation Type'),
             ('₱' + func.to_char(MonetaryDonation.amount, 'FM999,999,990.00')).label('Donation Details'),
             MonetaryDonation.is_acknowledged.label('Is Acknowledged')
@@ -1565,7 +1569,8 @@ def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[Sho
         User.first_name,
         User.last_name,
         MonetaryDonation.amount,
-        MonetaryDonation.proof
+        MonetaryDonation.proof,
+        MonetaryDonation.is_anonymous
     ).join(
         User, MonetaryDonation.user_id == User.user_id
     ).filter(
@@ -1582,7 +1587,7 @@ def get_all_verified_monetary_donations(db: Session, drive_id: UUID) -> list[Sho
             donation_id=donation[0],
             donation_date=donation_date,
             donation_time=donation_time,
-            name=f"{donation[2]} {donation[3]}",
+            name=f"{donation[2]} {donation[3]}" if donation.is_anonymous == False else "Anonymous Donor",
             donation_details=donation[4] or 0,
             proof=f"{STORAGE_STRING}{donation[5]}" if donation[5] else "No proof provided.",
             type="Monetary"
@@ -1708,6 +1713,22 @@ def close_donation_drive(db: Session, drive_id: UUID) -> dict:
         "title": drive.title,
         "is_closed": drive.is_closed,
         "created_at": drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None, 
+    }
+
+def open_donation_drive(db: Session, drive_id: UUID) -> dict:
+    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id, DonationDrive.is_closed == True).first()
+
+    if not drive:
+        return False
+    
+    drive.is_closed = False
+    db.commit()
+
+    return {
+        "drive_id": drive.drive_id,
+        "title": drive.title,
+        "is_closed": drive.is_closed,
+        "created_at": drive.created_at.strftime("%m/%d/%Y") if drive.created_at else None,
     }
 
 

@@ -35,7 +35,7 @@ def donor_list(
     drive_id: UUID,
     db: Session = Depends(get_db)
 ):
-    drive = db.query(DonationDrive).filter(DonationDrive.drive_id == drive_id).first()
+    drive = db.query(DonationDrive.drive_id, DonationDrive.title).filter(DonationDrive.drive_id == drive_id).first()
     if not drive:
         raise HTTPException(status_code=404, detail="Donation drive not found.")
     
