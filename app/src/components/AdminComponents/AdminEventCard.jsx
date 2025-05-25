@@ -86,7 +86,7 @@ function AdminEventCard({ event, loading = false }) {
           {event.is_closed ? <Lock size={16} /> : <LockOpenIcon size={16} />}
           {/* <div className={`rounded-full h-2 w-2 ${event.is_closed ? 'bg-blue-600' : 'bg-green-600'}`}></div> */}
           <p>
-            <span className="font-satoshi-medium">{event.attendees}</span> attendees
+            <span className="font-satoshi-medium">{event.attendees}</span> RSVP
           </p>
         </div>
       </div>
