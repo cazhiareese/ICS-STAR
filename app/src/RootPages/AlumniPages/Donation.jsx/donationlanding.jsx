@@ -182,7 +182,7 @@ const [donationResponse, generalResponse] = await Promise.all([
   <div className="order-1 lg:order-2 lg:basis-[950px] px-8 rounded-xl text-center h-fit">
   <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-center w-full">
     {/* Container for DonationMainView */}
-    <div className="bg-disabled border border-disabled rounded-xl p-4 w-full sm:w-[650px]">
+    <div className=" border border-disabled rounded-xl p-4 w-full sm:w-[650px]">
     <DonationMainViewSkeleton />
     </div>
 

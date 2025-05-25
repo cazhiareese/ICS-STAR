@@ -234,14 +234,14 @@ function Donationform() {
             if (response.status === 200 && response.data.redirectUrl) {
                 // ✅ Automatically redirect
                 localStorage.setItem("maya_donation_amount", String(monetaryAmountInput));
-                showToast('Donation submitted successfully!', 'success');
+                // showToast('Donation submitted successfully!', 'success');
                 window.location.href = response.data.redirectUrl;
             } else {
                 console.warn("No redirect URL found in response");
             }
         } catch (error) {
             console.error("Error submitting donation:", error);
-            showToast('Error submitting donation. Please try again.', 'error');
+            // showToast('Error submitting donation. Please try again.', 'error');
         } finally {
             setSubmitting(false);
         }
