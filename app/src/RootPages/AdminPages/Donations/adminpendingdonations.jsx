@@ -159,7 +159,7 @@ function AdminPendingDonations() {
               </div>
             ) : actionType ? (
               <div className="flex flex-col flex-1 justify-center items-center w-full text-center h-full">
-                <p className="text-xl font-satoshi-medium my-70 cursor-default">Confirm {actionType} of this donation?</p>
+                <p className="text-xl font-satoshi-medium my-60 cursor-default">Confirm {actionType} of this donation?</p>
                 <div className="flex gap-3 mt-6 w-full justify-center">
                   <button
                     className="bg-gray-300 text-black px-4 py-2 rounded-3xl w-full cursor-pointer"
