@@ -12,6 +12,7 @@ import DatePicker from "react-datepicker";
 import { jwtDecode } from "jwt-decode";
 import ModalTemplate from '../../AuthPages/modaltemplate';
 import { set } from 'date-fns';
+import { showToast } from '../../components/ui/Toast.tsx';
 
 const EventsLanding = () => {
 
@@ -147,9 +148,11 @@ useEffect(() => {
             .then(response => {
                 console.log("RSVP canceled:", response.data);
                 window.location.reload();
+                showToast("RSVP Successfully Cancelled", "success");
             })
             .catch(error => {
                 console.error("Error canceling RSVP:", error);
+                showToast("Error cancelling RSVP", "error");
             });
             
             
@@ -164,8 +167,10 @@ useEffect(() => {
                 }
             }).then(response => {
                 console.log("RSVP confirmed:", response.data);
+                showToast("RSVP Confirmed", "success");
             }).catch(error => {
                 console.error("Error confirming RSVP:", error);
+                showToast("Error confirming RSVP", "error");
             });
             // alert("You have not RSVP'd for this event yet.");
             
