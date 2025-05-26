@@ -187,13 +187,14 @@ const EventCardsMain = () => {
             })
             .then(response => {
                 console.log("RSVP canceled:", response.data);
-                setIsGoing (false)
+                setIsGoing(false);
+                showToast("RSVP Successfully Cancelled", "success");
             })
             .catch(error => {
                 console.error("Error canceling RSVP:", error);
+                showToast("Error cancelling RSVP", "error");
             }).finally(() => {
-                setisloading(false);   
-                showToast("RSVP Successfully Cancelled", "success");
+                setisloading(false);
             });
             setshowModalCancel(false)
             
@@ -208,13 +209,14 @@ const EventCardsMain = () => {
                 }
             }).then(response => {
                 console.log("RSVP confirmed:", response.data);
-                setIsGoing (true)
+                setIsGoing(true);
+                showToast("RSVP Confirmed", "success");
                 
             }).catch(error => {
                 console.error("Error confirming RSVP:", error);
+                showToast("Error confirming RSVP", "error");
             }).finally(() => {
-                setisloading(false);  
-                showToast("RSVP Confirmed", "success"); 
+                setisloading(false);   
             });;
             setshowModalAdd(false)
             
@@ -231,7 +233,7 @@ const EventCardsMain = () => {
     return (
         <div className='w-full h-full pt-0 flex flex-col items-center justify-center space-y-5'>
             
-            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary" onClick={()=>{navigate("/alumni/events")}}><ArrowLeft/> <label>Go Back</label></label>
+            <label className="flex flex-row  sm:pt-0 mt-13 my-5 sm:mb-7 sm:space-x-7 ml-auto  w-full sm:pl-20  pl-10 font-satoshi-bold text-primary cursor-pointer" onClick={()=>{navigate(-1)}}><ArrowLeft/> <label>Go Back</label></label>
             {user?.role !== "student" && event.rsvp_closed==false && (
 
                 isloading ?

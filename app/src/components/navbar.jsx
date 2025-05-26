@@ -81,7 +81,7 @@ function Navbar({ tokentype, verified, banned, google }) {
           </button>
         )}
 
-    {tokentype !== "guest" && verified === true && banned === false && (
+    {tokentype !== "guest" && verified !== false && banned !== true && (
       <>
         <button
           className={`${isActive(`/${tokentype}/jobPosting`) ? "text-primary font-satoshi-bold" : "hover:text-primary"} transition`}

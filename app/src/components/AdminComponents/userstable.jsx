@@ -1,9 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, UserCircle2 } from 'lucide-react';
+import axios from "axios";
+import {showToast} from '../ui/Toast'
 
 function UsersTable({ data, loading = null, userType }) {
   const navigate = useNavigate();
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   // Ensure we always render 10 rows (data + empty rows if needed)
   const rowsToRender = loading ? Array.from({ length: 10 }) : [...data];
@@ -19,17 +22,40 @@ function UsersTable({ data, loading = null, userType }) {
     col7: '7%',  // Status
   };
 
+  async function promptInactiveUser(user_id) {
+    const token = localStorage.getItem('token')
+    try {
+      const response = await axios.post(`${API_BASE_URL}/manual-inactive-email/${user_id}`, {}, {headers: {Authorization: `Bearer ${token}`}})
+      console.log(response)
+      showToast("Successfully prompted user", 'success')
+
+    } catch (error) {
+      showToast("Failed to prompt user", 'error')
+      console.error("Failed to prompt inactive user", error)
+    }
+  }
+
   return (
     <table className="w-full table-fixed">
       {/* Table Header */}
       <thead>
         <tr className="text-left text-xs text-primary font-satoshi-regular">
           <th className="py-2 px-4" style={{ width: columnWidths.col1 }}></th>
-          <th className="py-2 px-4" style={{ width: columnWidths.col2 }}>NAME</th>
-          <th className="py-2 px-4" style={{ width: columnWidths.col3 }}>{userType === 'alum' && 'BATCH'}</th>
-          <th className="py-2 px-4" style={{ width: columnWidths.col4 }}>{userType === 'alum' ? 'BASE LOCATION' : 'STUDENT NUMBER'}</th>
-          <th className="py-2 px-4" style={{ width: columnWidths.col5 }}>{userType === 'alum' ? 'JOB TITLE' : 'GRADUATING CLASS'}</th>
-          <th className="py-2 px-4" style={{ width: columnWidths.col6 }}>LAST UPDATE</th>
+          <th className="py-2 px-4" style={{ width: columnWidths.col2 }}>
+            NAME
+          </th>
+          <th className="py-2 px-4" style={{ width: columnWidths.col3 }}>
+            {userType === "alum" && "BATCH"}
+          </th>
+          <th className="py-2 px-4" style={{ width: columnWidths.col4 }}>
+            {userType === "alum" ? "BASE LOCATION" : "STUDENT NUMBER"}
+          </th>
+          <th className="py-2 px-4" style={{ width: columnWidths.col5 }}>
+            {userType === "alum" ? "JOB TITLE" : "GRADUATING CLASS"}
+          </th>
+          <th className="py-2 px-4" style={{ width: columnWidths.col6 }}>
+            LAST UPDATE
+          </th>
           <th className="py-2 px-4" style={{ width: columnWidths.col7 }}></th>
         </tr>
       </thead>
@@ -39,35 +65,56 @@ function UsersTable({ data, loading = null, userType }) {
         {loading ? (
           // Skeleton Rows (10 rows for pagination)
           rowsToRender.map((_, index) => (
-            <tr key={`skeleton-${index}`} className="border-b border-gray-200 h-10">
+            <tr
+              key={`skeleton-${index}`}
+              className="border-b border-gray-200 h-10"
+            >
               {/* Image */}
               <td className="py-3 px-4" style={{ width: columnWidths.col1 }}>
                 <div className="rounded-full h-8 w-8 bg-gray-200 animate-pulse"></div>
               </td>
               {/* Name */}
-              <td className="py-3 px-4 gap-2 font-satoshi-bold" style={{ width: columnWidths.col2 }}>
+              <td
+                className="py-3 px-4 gap-2 font-satoshi-bold"
+                style={{ width: columnWidths.col2 }}
+              >
                 <div className="flex flex-row items-center gap-2">
                   <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
                 </div>
               </td>
               {/* Batch */}
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col3 }}>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col3 }}
+              >
                 <div className="h-6 bg-gray-200 rounded animate-pulse w-1/2"></div>
               </td>
               {/* Base Location */}
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col4 }}
+              >
                 <div className="h-6 bg-gray-200 rounded animate-pulse w-5/6"></div>
               </td>
               {/* Job Title */}
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col5 }}
+              >
                 <div className="h-6 bg-gray-200 rounded animate-pulse w-2/3"></div>
               </td>
               {/* Last Update */}
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col6 }}
+              >
                 <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
               </td>
               {/* Status */}
-              <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col7 }}>
+              <td
+                className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{ width: columnWidths.col7 }}
+              >
                 <div className="h-6 bg-gray-200 rounded animate-pulse w-1/2"></div>
               </td>
             </tr>
@@ -94,46 +141,107 @@ function UsersTable({ data, loading = null, userType }) {
                   )}
                 </td>
                 {/* Name */}
-                <td className="py-3 px-4 gap-2 font-satoshi-bold" style={{ width: columnWidths.col2 }}>
+                <td
+                  className="py-3 px-4 gap-2 font-satoshi-bold"
+                  style={{ width: columnWidths.col2 }}
+                >
                   <div className="flex flex-row items-center gap-2">
-                    <span>{user.name || 'N/A'}</span>
+                    <span>{user.name || "N/A"}</span>
                     {user.is_reported && (
-                      <ShieldAlert size={16} className="text-error flex-shrink-0" />
+                      <ShieldAlert
+                        size={16}
+                        className="text-error flex-shrink-0"
+                      />
                     )}
                   </div>
                 </td>
                 {/* Batch */}
-                <td className="py-3 px-4 whitespace-nowrap text-ellipsis" style={{ width: columnWidths.col3 }}>
-                  {userType === 'alum' ? user.batch || 'N/A' : 'N/A'}
+                <td
+                  className="py-3 px-4 whitespace-nowrap text-ellipsis"
+                  style={{ width: columnWidths.col3 }}
+                >
+                  {userType === "alum" ? user.batch || "N/A" : "N/A"}
                 </td>
                 {/* Base Location && Student Number */}
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col4 }}>
-                  {userType === 'alum' ? user.location_base || 'N/A' : user.student_number || 'N/A'}
+                <td
+                  className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ width: columnWidths.col4 }}
+                >
+                  {userType === "alum"
+                    ? user.location_base || "N/A"
+                    : user.student_number || "N/A"}
                 </td>
                 {/* Job Title && Graduating Class */}
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col5 }}>
-                  {userType === 'alum' ? user.job_title || 'N/A' : user.standing || 'N/A'}
+                <td
+                  className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ width: columnWidths.col5 }}
+                >
+                  {userType === "alum"
+                    ? user.job_title || "N/A"
+                    : user.standing || "N/A"}
                 </td>
                 {/* Last Update */}
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col6 }}>
-                  {user.last_updated || 'N/A'}
+                <td
+                  className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ width: columnWidths.col6 }}
+                >
+                  {user.last_updated || "N/A"}
                 </td>
                 {/* Is Inactive */}
-                <td className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.col7 }}>
-                  {user.is_inactive ? <p>inactive</p> : ' '}
+                <td
+                  className="py-3 px-4 whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ width: columnWidths.col7 }}
+                >
+                  {user.is_inactive ? (
+                    <button
+                      className="rounded-xl bg-error hover:bg-red-400 text-white px-2 py-1 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        promptInactiveUser(user.user_id);
+                      }}
+                    >
+                      Inactive
+                    </button>
+                  ) : (
+                    " "
+                  )}
                 </td>
               </tr>
             ))}
             {/* Empty Rows to Fill Up to 10 */}
             {Array.from({ length: emptyRows }).map((_, index) => (
-              <tr key={`empty-${index}`} className="border-b border-gray-200 h-14">
-                <td className="py-3 px-4" style={{ width: columnWidths.col1 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col2 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col3 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col4 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col5 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col6 }}></td>
-                <td className="py-3 px-4" style={{ width: columnWidths.col7 }}></td>
+              <tr
+                key={`empty-${index}`}
+                className="border-b border-gray-200 h-14"
+              >
+                <td
+                  className="py-3 px-4"
+                  style={{ width: columnWidths.col1 }}
+                ></td>
+                <td
+                  className="py-3 px-4"
+                  style={{ width: columnWidths.col2 }}
+                ></td>
+                <td
+                  className="py-3 px-4"
+                  style={{ width: columnWidths.col3 }}
+                ></td>
+                <td
+                  className="py-3 px-4"
+                  style={{ width: columnWidths.col4 }}
+                ></td>
+                <td
+                  className="py-3 px-4"
+                  style={{ width: columnWidths.col5 }}
+                ></td>
+                <td
+                  className="py-3 px-4"
+                  style={{ width: columnWidths.col6 }}
+                ></td>
+                <td
+                  className="py-3 px-4"
+                  style={{ width: columnWidths.col7 }}
+                ></td>
               </tr>
             ))}
           </>
