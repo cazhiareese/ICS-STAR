@@ -1,5 +1,8 @@
+import brevo_python
+from brevo_python.rest import ApiException
 from fastapi import HTTPException, UploadFile, File
-from config.config import SUPABASE_BUCKET, supabase_client, STORAGE_STRING
+from util.emailing.invoice import invoice_message
+from config.config import STORAGE_STRING, supabase_client, SUPABASE_BUCKET, brevo_configuration, email_sender
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func, distinct
 from models.donationmodel import DonationDrive, MonetaryDonation, InKindDonation, DonationDriveLink
@@ -9,6 +12,7 @@ from schemas.donation_schema import DonationDriveOut, OneDonationDriveOut
 from datetime import datetime, timezone
 from typing import Optional, List
 import uuid
+from uuid import UUID
 import math
 from config.config import MAYA_PUBLIC_KEY, MAYA_CANCEL, MAYA_FAIL, MAYA_SUCCESS, MAYA_URL
 import random
@@ -223,7 +227,7 @@ async def make_donation(
     is_general = Optional[bool],
 ):
     
-    name = db.query(User.first_name, User.last_name).filter(User.user_id == user.user_id).first()
+    name = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
     
     if not monetary_donation and not in_kind_donation:
         raise HTTPException(
@@ -261,13 +265,16 @@ async def make_donation(
             except Exception as e:
                 raise HTTPException(status_code=500, details=e)
             
-            return {
+            invoice = {
                 "donation_drive": drive.title,
                 "date": monetary.date_donated,
                 "user": f"{name.first_name} {name.last_name}" if not is_anonymous else "Anonymous",
                 "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
-                "amount": monetary.amount
+                "amount": monetary.amount,
+                "email": name.email
             }
+            send_email(invoice=invoice, message="Your donation will be reflected once it has been reviewed and verified by our admin team." )
+            return invoice
         else:
             return await maya_donation(drive.drive_id, amount)
     
@@ -286,24 +293,80 @@ async def make_donation(
             db.commit()
             db.refresh(in_kind)
         except Exception as e:
+            print(e)
             raise HTTPException(status_code=500, details=e)
 
-        return {
+        invoice = {
             "donation_drive": drive.title,
             "date": in_kind.date_donated,
             "user": f"{name.first_name} {name.last_name}",
-            "status": "Pending Acknowledgement",
-            "details": in_kind.description
+            "status": "Pending Acknowledgement" if in_kind.is_acknowledged is None else "Acknowledged" if in_kind.is_acknowledged is True else "Donation Denied",
+            "details": in_kind.description,
+            "email" : name.email
         }
 
-def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session):
-    name = db.query(User.first_name, User.last_name).filter(User.user_id == user_id).first()
+        send_email(invoice=invoice, message="Your donation will be reflected once it has been reviewed and verified by our admin team." )
+        return invoice
+
+
+async def anonymous_donation(
+    db: Session,
+    drive: DonationDrive,
+    monetary_donation: bool = False,
+    direct_maya: Optional[bool] = None,
+    amount: Optional[float] = None,
+    proof: Optional[UploadFile] = File(None),
+    is_anonymous = Optional[bool],
+):
+    
+    if monetary_donation:
+        if amount is None or amount <= 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid amount"
+                )
+        if not direct_maya:
+            proof_of_payment = await upload_proof(db, proof)
+            
+            monetary = MonetaryDonation(
+                date_donated = datetime.now(timezone.utc),
+                amount = amount,
+                drive_id = drive.drive_id,
+                is_anonymous = is_anonymous if is_anonymous else False,
+                proof = proof_of_payment,
+            )
+            try:
+                db.add(monetary)
+                db.commit()
+                db.refresh(monetary)
+            except Exception as e:
+                raise HTTPException(status_code=500, details=e)
+            
+            invoice = {
+                "donation_drive": drive.title,
+                "date": monetary.date_donated,
+                "user": "Anonymous",
+                "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
+                "amount": monetary.amount
+            }
+            return invoice
+        else:
+            return await maya_donation(drive.drive_id, amount)
+
+
+def maya_success(drive: DonationDrive, amount: float, db: Session, user: Optional[CurrentUser]):
+    
+    if user is not None:
+        name = db.query(User.first_name, User.last_name, User.email).filter(User.user_id == user.user_id).first()
+    else:
+        name = None
     monetary = MonetaryDonation(
                 date_donated = datetime.now(timezone.utc),
                 amount = amount,
                 drive_id = drive.drive_id,
-                user_id = user_id,
-                is_acknowledged = True
+                user_id = user.user_id if user else None,
+                is_acknowledged = True,
+                is_anonymous = True if not user else False
             )
     try:
         db.add(monetary)
@@ -311,10 +374,45 @@ def maya_success(drive: DonationDrive, amount: float, user_id: uuid, db: Session
         db.refresh(monetary)
     except Exception as e:
         raise HTTPException(status_code=500, details=e)
-    return {
+    
+    invoice = {
         "donation_drive": drive.title,
         "date": monetary.date_donated,
-        "user": f"{name.first_name} {name.last_name}",
+        "user": f"{name.first_name} {name.last_name}" if user else "Anonymous",
         "status": "Pending Acknowledgement" if monetary.is_acknowledged is None else "Acknowledged" if monetary.is_acknowledged is True else "Donation Denied",
-        "amount": monetary.amount
+        "amount": monetary.amount,
+        "email": name.email if user else "Anonymous"
+
     }
+    if user:
+        send_email(invoice=invoice, message="Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.")
+    return invoice
+
+def send_email(invoice, message):
+    try:
+        api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
+        subject = f"ICS-STAR Invoice"
+        sender = email_sender
+
+        html_content = invoice_message(
+            message=message,
+            status=invoice['status'],
+            donation_drive=invoice['donation_drive'],
+            date=invoice['date'],
+            details=invoice.get('details'),  
+            amount=invoice.get('amount')
+        )
+        to = [{"email": invoice['email'], 'name': invoice['user']}]
+        send_smtp_email = brevo_python.SendSmtpEmail(to=to, html_content=html_content, sender=sender, subject=subject)
+
+        try:
+            print("before execute")
+            api_response = api_instance.send_transac_email(send_smtp_email)
+            return {"message": api_response}
+        except ApiException as e:
+            print(f"Error: {e}")
+
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=f"Error: {e}")

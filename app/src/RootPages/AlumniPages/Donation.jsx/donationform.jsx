@@ -140,7 +140,7 @@ function Donationform() {
 
             if (response.status === 200) {
                 setDonationSuccess(true);
-                showToast('Donation submitted successfully!', 'success');
+                // showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setIsMonetaryTypeOpen(false);
@@ -188,7 +188,7 @@ function Donationform() {
 
             if (response.status === 200) {
                 setDonationSuccess(true);
-                showToast('Donation submitted successfully!', 'success');
+                // showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setIsMonetaryTypeOpen(false);
@@ -234,7 +234,7 @@ function Donationform() {
             if (response.status === 200 && response.data.redirectUrl) {
                 // ✅ Automatically redirect
                 localStorage.setItem("maya_donation_amount", String(monetaryAmountInput));
-                showToast('Donation submitted successfully!', 'success');
+                // showToast('Donation submitted successfully!', 'success');
                 window.location.href = response.data.redirectUrl;
             } else {
                 console.warn("No redirect URL found in response");
@@ -277,7 +277,7 @@ function Donationform() {
             if (response.status === 200) {
                 console.log("Donation acknowledged:", response.data);
                 setDonationSuccess(true);
-                showToast('Donation submitted successfully!', 'success');
+                // showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setSummaryHeader("Your donation will be reflected shortly. Donations made through Maya are processed automatically and does not require admin verification.");
@@ -326,7 +326,7 @@ function Donationform() {
 
             if (response.status === 200) {
                 setDonationSuccess(true);
-                showToast('Donation submitted successfully!', 'success');
+                // showToast('Donation submitted successfully!', 'success');
                 setSummaryLoading(true); // Start loading for the summary
                 setSummary(response.data); // Set summary after successful donation
                 setIsMonetaryTypeOpen(false);

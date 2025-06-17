@@ -95,16 +95,15 @@ function ReportModal({ isOpen, onClose, reports, onLimitAccess, isLoading, isCom
                     </table>
                   </div>
                   {/* Action Button */}
-                  {!isBanned && 
                     <div className="mt-4 flex justify-end">
                       <button
+                        disabled={!isBanned}
                         className="font-satoshi-medium bg-error text-white px-4 py-2 rounded-3xl w-52 cursor-pointer hover:bg-red-600"
                         onClick={onLimitAccess}
                         >
                         Limit Account Access
                       </button>
                     </div>
-                  } 
                 </div>
               ) : (
                 <div className="flex-1 flex items-center justify-center">

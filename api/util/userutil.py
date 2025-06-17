@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta, timezone
+import brevo_python
+from brevo_python.rest import ApiException
 from jose import jwt, JWTError, ExpiredSignatureError
 from google.oauth2 import id_token
 import requests
@@ -7,12 +9,15 @@ from fastapi import Depends, HTTPException, status, UploadFile, File, APIRouter,
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct, or_, func
+from sqlalchemy.exc import IntegrityError
+from psycopg2 import errors
 from passlib.context import CryptContext
-from typing import List, Optional
+from typing import Dict, List, Optional
+from util.emailing import verified
 from schemas.user import CurrentUser
 from collections import namedtuple
 
-from config.config import SECRET_KEY, ALGORITHM, SUPABASE_BUCKET, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES, GOOGLE_CLIENT_ID
+from config.config import SECRET_KEY, ALGORITHM, SUPABASE_BUCKET, SessionLocal, supabase_client, STORAGE_STRING, ACCESS_TOKEN_EXPIRE_MINUTES, GOOGLE_CLIENT_ID, brevo_configuration, email_sender
 from config.database import get_db
 from models.usermodel import User, UserTypeEnum, Orgs, UserGradSemEnum, UserScholarship, UserAffiliation, UserSkill, UserStandingEnum, UnemploymentReasonEnum, UserEmploymentStatus, UnemploymentReason
 from models.job_posting_model import JobPosting, JobPostingInterestedIn, JobPostingTag
@@ -114,8 +119,16 @@ def process_student_onboarding(
         )
         return {"message": "onboarding details updated successfully", "updated_token": access_token}
         
+    except IntegrityError as e:
+        db.rollback()
+        if isinstance(e.orig, errors.UniqueViolation):
+            raise HTTPException(status_code=409, detail="Data already exist")
+        else:
+            raise HTTPException(status_code=500, detail=f"Database integrity error: {str(e)}")
+
     except Exception as e:
-            raise HTTPException(status_code=500, detail=f'Error updating info {e}')
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f'Error updating info {e}')
         
 
 def process_alumni_onboarding(
@@ -195,8 +208,16 @@ def process_alumni_onboarding(
         )
         return {"message": "onboarding details updated successfully", "updated_token": access_token}
         
+    except IntegrityError as e:
+        db.rollback()
+        if isinstance(e.orig, errors.UniqueViolation):
+            raise HTTPException(status_code=409, detail="Data already exist")
+        else:
+            raise HTTPException(status_code=500, detail=f"Database integrity error: {str(e)}")
+
     except Exception as e:
-            raise HTTPException(status_code=500, detail=f'"Error updating info {e}"')
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f'Error updating info {e}')
 
 
 async def register_user(
@@ -314,7 +335,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         headers={"WWW-Authenticate": "Bearer"},
     )
     token_expired_exception = HTTPException(
-        status_code=500,
+        status_code=401,
         detail="Token has expired",
         headers={"WWW-Authenticate": "Bearer"},
     )
@@ -682,3 +703,24 @@ def get_user_work(
     ).filter(User.user_id==user_id).first()
     
     return work_info
+
+async def send_verification_email(user: Dict) -> bool:
+    api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(brevo_configuration))
+    subject = "[ICS-STAR]Your Account has been Verified"
+    sender = email_sender
+    html_content = verified.verify(name=user["name"])
+    to = [{"email": user["email"], "name": user["name"]}]
+    send_smtp_email = brevo_python.SendSmtpEmail(
+        to=to,
+        html_content=html_content,
+        sender=sender,
+        subject=subject
+    )
+
+    try:
+        api_response = api_instance.send_transac_email(send_smtp_email)
+        print(f"Email sent to {user['email']}: {api_response}")
+        return True
+    except ApiException as e:
+        print(f"Failed to send email to {user['email']}: {e}")
+        return False

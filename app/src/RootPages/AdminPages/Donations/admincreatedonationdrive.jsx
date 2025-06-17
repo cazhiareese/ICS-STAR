@@ -83,8 +83,6 @@ function AdminCreateDonationDrive() {
         support_links: [...prev.support_links, linkInput.trim()],
       }));
       setLinkInput('');
-    } else {
-      alert('Please enter a valid URL.');
     }
   };
 
